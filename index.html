@@ -5,71 +5,56 @@
 <title>Shubhi Education Foundation</title>
 
 <style>
-body{
-margin:0;
-font-family:Arial;
-background: linear-gradient(-45deg,#007BFF,#6f42c1,#00c9ff,#92fe9d);
-background-size: 400% 400%;
-animation: gradientBG 10s ease infinite;
-color:white;
-}
-
-@keyframes gradientBG{
-0%{background-position:0% 50%;}
-50%{background-position:100% 50%;}
-100%{background-position:0% 50%;}
-}
+body{margin:0;font-family:sans-serif;background:#0f172a;color:white;}
 
 header{
+height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+background:linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),
+url('https://images.unsplash.com/photo-1588072432836-e10032774350');
+background-size:cover;
 text-align:center;
-padding:40px;
 }
 
-.container{
-max-width:1000px;
-margin:auto;
-padding:20px;
+h1{font-size:40px;}
+
+.btn{
+background:#00ffcc;
+padding:12px 25px;
+border:none;
+border-radius:30px;
+cursor:pointer;
+margin:10px;
 }
+
+.container{max-width:1100px;margin:auto;padding:20px;}
 
 .card{
-background: rgba(255,255,255,0.1);
-backdrop-filter: blur(10px);
+background:rgba(255,255,255,0.05);
 padding:20px;
-margin:15px 0;
+margin:20px 0;
 border-radius:15px;
-box-shadow:0 4px 20px rgba(0,0,0,0.2);
 }
 
-h1,h2{
-text-align:center;
+.progress{background:#222;border-radius:20px;}
+.bar{background:#00ffcc;height:20px;width:0;}
+
+input{
+padding:10px;width:80%;margin:5px;border-radius:8px;border:none;
 }
 
-button{
-background:#00ffcc;
-border:none;
-padding:12px 25px;
+.slider img{
+width:100%;
 border-radius:10px;
-cursor:pointer;
-font-weight:bold;
+display:none;
 }
 
-img{
-max-width:100%;
-border-radius:10px;
-}
-
-.whatsapp{
-position:fixed;
-bottom:20px;
-right:20px;
-background:#25D366;
-color:white;
-padding:15px;
-border-radius:50%;
-}
+.slider img.active{display:block;}
 
 </style>
-
 </head>
 
 <body>
@@ -77,25 +62,39 @@ border-radius:50%;
 <header>
 <h1>🌈 Rainbow Public School</h1>
 <p>Shubhi Education Foundation, Dahod</p>
+<button class="btn">Donate Now</button>
 </header>
 
 <div class="container">
 
 <div class="card">
-<h2>💰 Support School Development</h2>
-<p>Help us build better education for children</p>
-<center><button>Donate Now</button></center>
+<h2>📊 Donation Progress</h2>
+<p>Target: ₹10 Crore</p>
+<div class="progress"><div class="bar" id="bar"></div></div>
+<p id="count">₹0 Raised</p>
 </div>
 
 <div class="card" style="text-align:center;">
-<h2>Scan & Donate</h2>
-<img src="gpay-qr.png">
-<p>UPI: 9408695001-1@okbizaxis</p>
+<h2>💰 Donate</h2>
+<input type="number" id="amount" placeholder="Enter amount">
+<br>
+<button class="btn" onclick="donate()">Donate Now</button>
 </div>
 
 <div class="card">
-<h2>📸 Our Work</h2>
+<h2>📸 Gallery</h2>
+<div class="slider">
+<img src="poster.png" class="active">
 <img src="poster.png">
+<img src="poster.png">
+</div>
+</div>
+
+<div class="card">
+<h2>👥 Volunteer</h2>
+<input placeholder="Name"><br>
+<input placeholder="Mobile"><br>
+<button class="btn">Submit</button>
 </div>
 
 <div class="card">
@@ -106,7 +105,36 @@ border-radius:50%;
 
 </div>
 
-<a class="whatsapp" href="https://wa.me/919408695001">💬</a>
+<script>
+
+// progress animation
+let bar=document.getElementById("bar");
+let count=document.getElementById("count");
+let value=0;
+
+let interval=setInterval(()=>{
+value+=50000;
+bar.style.width=(value/1000000000*100)+"%";
+count.innerHTML="₹"+value.toLocaleString()+" Raised";
+if(value>=1500000) clearInterval(interval);
+},100);
+
+// slider
+let slides=document.querySelectorAll(".slider img");
+let i=0;
+setInterval(()=>{
+slides[i].classList.remove("active");
+i=(i+1)%slides.length;
+slides[i].classList.add("active");
+},2000);
+
+// donate button
+function donate(){
+let amt=document.getElementById("amount").value;
+alert("Donate ₹"+amt+" (Razorpay connect baad me hoga)");
+}
+
+</script>
 
 </body>
 </html>
