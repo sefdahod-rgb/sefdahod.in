@@ -5,16 +5,69 @@
 <title>Shubhi Education Foundation</title>
 
 <style>
-body{font-family:Arial;margin:0;background:#f4f6f9;}
-header{background:linear-gradient(to right,#007BFF,#6f42c1);color:white;padding:25px;text-align:center;}
-.container{max-width:1000px;margin:auto;padding:20px;}
-.card{background:white;padding:20px;margin:15px 0;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
-.progress{background:#ddd;border-radius:20px;overflow:hidden;}
-.progress-bar{background:#28a745;height:20px;width:10%;}
-button{background:#007BFF;color:white;padding:10px 20px;border:none;border-radius:8px;}
-img{max-width:100%;border-radius:10px;}
-.footer{text-align:center;padding:10px;background:#eee;}
-.whatsapp{position:fixed;bottom:20px;right:20px;background:#25D366;color:white;padding:12px 15px;border-radius:50%;}
+body{
+margin:0;
+font-family:Arial;
+background: linear-gradient(-45deg,#007BFF,#6f42c1,#00c9ff,#92fe9d);
+background-size: 400% 400%;
+animation: gradientBG 10s ease infinite;
+color:white;
+}
+
+@keyframes gradientBG{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+header{
+text-align:center;
+padding:40px;
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+padding:20px;
+}
+
+.card{
+background: rgba(255,255,255,0.1);
+backdrop-filter: blur(10px);
+padding:20px;
+margin:15px 0;
+border-radius:15px;
+box-shadow:0 4px 20px rgba(0,0,0,0.2);
+}
+
+h1,h2{
+text-align:center;
+}
+
+button{
+background:#00ffcc;
+border:none;
+padding:12px 25px;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+}
+
+img{
+max-width:100%;
+border-radius:10px;
+}
+
+.whatsapp{
+position:fixed;
+bottom:20px;
+right:20px;
+background:#25D366;
+color:white;
+padding:15px;
+border-radius:50%;
+}
+
 </style>
 
 </head>
@@ -23,61 +76,37 @@ img{max-width:100%;border-radius:10px;}
 
 <header>
 <h1>🌈 Rainbow Public School</h1>
-<p>Conducted by Shubhi Education Foundation, Dahod</p>
+<p>Shubhi Education Foundation, Dahod</p>
 </header>
 
 <div class="container">
 
 <div class="card">
 <h2>💰 Support School Development</h2>
-<p>Target: ₹1 Crore → ₹10 Crore</p>
-
-<div class="progress">
-<div class="progress-bar"></div>
-</div>
-
-<p>Raised: ₹10,00,000 (Example)</p>
+<p>Help us build better education for children</p>
+<center><button>Donate Now</button></center>
 </div>
 
 <div class="card" style="text-align:center;">
-<h2>Donate Now</h2>
+<h2>Scan & Donate</h2>
 <img src="gpay-qr.png">
-<p><b>UPI:</b> 9408695001-1@okbizaxis</p>
+<p>UPI: 9408695001-1@okbizaxis</p>
 </div>
 
 <div class="card">
-<h2>👥 Volunteer Form</h2>
-<form>
-<input type="text" placeholder="Your Name" required><br><br>
-<input type="text" placeholder="Mobile Number" required><br><br>
-<button>Submit</button>
-</form>
-</div>
-
-<div class="card">
-<h2>📸 Gallery</h2>
+<h2>📸 Our Work</h2>
 <img src="poster.png">
 </div>
 
 <div class="card">
 <h2>📞 Contact</h2>
-<p>Phone: 9408695001</p>
-<p>Email: rpsdhd12@gmail.com</p>
-</div>
-
-<div class="card">
-<h2>🧾 Transparency</h2>
-<p>Registered NGO: Shubhi Education Foundation, Dahod</p>
-<p>80G & 12A Approved</p>
+<p>📱 9408695001</p>
+<p>📧 rpsdhd12@gmail.com</p>
 </div>
 
 </div>
 
 <a class="whatsapp" href="https://wa.me/919408695001">💬</a>
-
-<div class="footer">
-<p>© 2026 Shubhi Education Foundation</p>
-</div>
 
 </body>
 </html>
