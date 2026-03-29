@@ -10,13 +10,13 @@
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyDDPfCHyGSBWBpMUqOe5cMttnpbclJ2d9o",
-  authDomain: "sefdahod-7859b.firebaseapp.com",
-  projectId: "sefdahod-7859b"
+apiKey:"AIzaSyDDPfCHyGSBWBpMUqOe5cMttnpbclJ2d9o",
+authDomain:"sefdahod-7859b.firebaseapp.com",
+projectId:"sefdahod-7859b"
 };
 
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const db=firebase.firestore();
 
 db.collection("donations").onSnapshot(snap=>{
 let html="";
