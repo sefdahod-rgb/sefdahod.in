@@ -34,11 +34,10 @@
 <script>
 const supabase = supabase.createClient(
   'https://kqahcvaxomxmicgyyync.supabase.co',
-  'sb_publishable_5185f6qc75cme-SYhAPxVA_Rj_wvZv'
+  'sb_publishable_5185f6qc75cme_SYhAPxVA_Rj_wvZv'
 );
 document.getElementById('donateForm').addEventListener('submit', async (e) => {
-  e.preventDefault(); // ← YE LINE ZAROORI HAI
-
+  e.preventDefault(); //
   const name = document.getElementById('name').value;
   const email = document.getElementById('email').value;
   const amount = document.getElementById('amount').value;
