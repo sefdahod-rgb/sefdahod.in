@@ -20,9 +20,8 @@ table{width:100%;border-collapse:collapse;color:#333}
 th,td{border:1px solid #ddd;padding:10px;text-align:left}
 th{background:#004080;color:#fff}
 .qr{text-align:center;margin-top:15px}
-.qr img{width:260px;border:4px solid #004080;border-radius:12px}
-.gpay{ display:inline-block;margin-top:12px;padding:12px 20px;background:#0F9D58;color:#fff;border-radius:10px;text-decoration:none;font-weight:bold}
-.gpay:active{transform:scale(0.98)}
+.qr img{width:260px;border:4px solid #004080;border-radius:12px;background:#fff}
+.gpay{display:inline-block;margin-top:12px;padding:12px 20px;background:#0F9D58;color:#fff;border-radius:10px;text-decoration:none;font-weight:bold}
 </style>
 </head>
 <body><div class="overlay">
@@ -30,8 +29,6 @@ th{background:#004080;color:#fff}
 <header>
   <img src="logo.png" alt="Logo">
   <h1>Shubhi Education Foundation, Dahod</h1>
-  <p>Under Indian Society Act 1860 Guj./2249/DHD. & 
-Mumbai Public Trust Act 1950 F/2247/DHD<p>
   <p>80G: AAOTS1413MF20251 | 12A: AAOTS1413ME20241 | CSR: CSR00096110</p>
 </header>
 
@@ -53,17 +50,17 @@ Mumbai Public Trust Act 1950 F/2247/DHD<p>
 <section id="donate">
   <div class="card">
     <h2>Donate Now</h2>
-    <form onsubmit="event.preventDefault();">
+    <form id="donationForm">
       <input id="name" placeholder="Your Full Name" required>
-      <input id="email" type="email" placeholder="Your Email" required>
+      <input id="email" type="text" placeholder="Your Email" required>
       <input id="amt" type="number" placeholder="Donation Amount (₹)" required min="1">
       <input id="msg" placeholder="Message (Optional)">
-      <button type="button" onclick="saveDonation()">Submit Donation</button>
+      <button type="submit">Submit Donation</button>
     </form>
 
     <div class="qr">
       <h3>Scan & Pay via UPI</h3>
-      <img src="qr.png" alt="UPI QR Code">
+      <img src="qr.jpeg" alt="UPI QR Code">
       <a class="gpay" id="gpayBtn" href="#">Pay with GPay</a>
       <p style="margin-top:8px"><strong>UPI ID:</strong> 9408695001-1@okbizaxis</p>
     </div>
@@ -87,7 +84,52 @@ Mumbai Public Trust Act 1950 F/2247/DHD<p>
 </section>
 
 <footer style="background:rgba(0,32,64,0.9); color:#fff; text-align:center; padding:15px">
-  © 2026 Shubhi Education Foundation, Dahod
+  © 2025 Shubhi Education Foundation, Dahod
 </footer>
 
-</
+</div>
+
+<script>
+function loadDonors(){
+  const donors = JSON.parse(localStorage.getItem('donors')||'[]');
+  const table = document.getElementById('donorTable');
+  const totalEl = document.getElementById('total');
+  table.innerHTML = '<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th></tr>';
+  let total = 0;
+  donors.forEach(d=>{
+    total += Number(d.amount);
+    table.innerHTML += <tr><td>${d.name}</td><td>${d.email}</td><td>${d.amount}</td><td>${d.date}</td></tr>;
+  });
+  totalEl.textContent = total;
+}
+
+document.getElementById('donationForm').addEventListener('submit', function(e){
+  e.preventDefault(); // page reload roko
+
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const amount = document.getElementById('amt').value.trim();
+
+  if(!name || !email || !amount){
+    alert('Please fill Name, Email and Amount');
+    return;
+  }
+
+  const donors = JSON.parse(localStorage.getItem('donors')||'[]');
+  donors.unshift({name,email,amount,date:new Date().toLocaleDateString()});
+  localStorage.setItem('donors', JSON.stringify(donors));
+  loadDonors();
+
+  alert('Donation recorded. Now opening GPay...');
+  
+  // GPay kholo
+  const upi = upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amount}&cu=INR;
+  window.location.href = upi;
+
+  document.getElementById('donationForm').reset();
+});
+
+loadDonors();
+</script>
+</body>
+</html>
