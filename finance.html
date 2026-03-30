@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Finance - Shubhi Education Foundation</title><link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
+<body><div class="overlay">
+<header><img src="logo.png"><h1>Shubhi Education Foundation, Dahod</h1></header>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="donate.html">Donate</a>
+  <a href="donors.html">Donors</a>
+  <a href="finance.html" class="active">Finance</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="admin.html">Admin</a>
+  <a href="login.html">Login</a>
+</nav>
+<section><div class="card">
+<h2>Finance Panel</h2>
+<p><strong>Total Donations: ₹<span id="total">0</span></strong></p>
+</div></section>
+<script>
+const supabase = supabase.createClient('YOUR_SUPABASE_URL','YOUR_SUPABASE_ANON_KEY');
+async function load(){
+  const {data}=await supabase.from('donations').select('amount');
+  let total=0; data.forEach(d=>total+=Number(d.amount));
+  document.getElementById('total').textContent=total;
+}
+load();
+</script>
+</body></html>
