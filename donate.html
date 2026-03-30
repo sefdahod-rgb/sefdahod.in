@@ -37,22 +37,18 @@ const supabase = supabase.createClient(
   'sb_publishable_5185f6qc75cmeSYhAPxVA_Rj_wvZv'
 );
 document.getElementById('donateForm').addEventListener('submit', async (e) => {
-  e.preventDefault(); //
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
-  const amount = document.getElementById('amount').value;
-  const message = document.getElementById('message').value;
+  e.preventDefault(); // ← YE LINE SABSE UPAR
 
   const { error } = await supabase.from('donations').insert([{ name, email, amount, message }]);
 
   if (error) {
-    alert('Error: ' + error.message);
+    alert(error.message); // YAHAN ERROR DIKH JAYEGA
     return;
   }
 
   alert('Donation recorded!');
   window.location.href = upi://pay?pa=9488695001@okbizaxis&pn=SEF&am=${amount}&cu=INR;
-  e.target.reset();
+});  e.target.reset();
 });document.getElementById('gpayBtn').addEventListener('click',e=>{
   e.preventDefault();
   const amt=document.getElementById('damt').value||1;
