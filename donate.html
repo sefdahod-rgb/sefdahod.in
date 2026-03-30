@@ -1,59 +1,53 @@
 <!DOCTYPE html>
 <html lang="hi">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Donate - Shubhi Education Foundation</title><link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
-<body><div class="overlay">
-<header><img src="logo.png"><h1>Shubhi Education Foundation, Dahod</h1></header>
-<nav>
-  <a href="index.html">Home</a>
-  <a href="donate.html" class="active">Donate</a>
-  <a href="donors.html">Donors</a>
-  <a href="finance.html">Finance</a>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="admin.html">Admin</a>
-  <a href="login.html">Login</a>
-</nav>
-<section><div class="card">
-<h2>Donate Now</h2>
-<form id="donationForm">
-  <input id="dname" placeholder="Your Full Name" required>
-  <input id="demail" placeholder="Your Email" required>
-  <input id="damt" type="number" placeholder="Donation Amount (₹)" required min="1">
-  <input id="dmsg" placeholder="Message (Optional)">
-  <button type="submit">Submit & Pay with GPay</button>
-</form>
-<div class="qr">
-  <h3>Scan & Pay via UPI</h3>
-  <img src="qr.jpeg" alt="UPI QR Code">
-  <a class="gpay" id="gpayBtn" href="#">Pay with GPay</a>
-  <p><strong>UPI ID:</strong> 9408695001-1@okbizaxis</p>
-  <p style="color:#c00">Tip: Mobile se kholo, PC par GPay app nahi khulta</p>
-</div>
-</div></section>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Donate - SEF</title>
+<style>
+body{font-family:Arial;background:url('bg.jpg') center/cover fixed;color:#fff;text-align:center;padding:40px}
+form{background:rgba(0,0,0,0.7);padding:20px;border-radius:12px;max-width:400px;margin:auto}
+input,textarea,button{width:100%;padding:10px;margin:8px 0;border:none;border-radius:8px}
+button{background:#ff5722;color:#fff;font-weight:bold;cursor:pointer}
+button:hover{background:#e64a19}
+</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<h2>Donate Now</h2>
+<form id="donateForm">
+  <input id="name" type="text" placeholder="Aapka Naam" required>
+  <input id="email" type="email" placeholder="Email" required>
+  <input id="amount" type="number" placeholder="Amount (₹)" required>
+  <textarea id="message" placeholder="Message (optional)"></textarea>
+  <button type="submit">Donate</button>
+</form>
+
 <script>
 const supabase = supabase.createClient(
   'https://kqahcvaxomxmicgyyync.supabase.co',
-  'sb_publishable_5185f6qc75cmeSYhAPxVA_Rj_wvZv'   // ← UNDERSCORE
+  'sb_publishable_5185f6qc75cmeSYhAPxVA_Rj_wvZv'   // ← UNDERSCORE, aapki asli key
 );
 
 document.getElementById('donateForm').addEventListener('submit', async (e) => {
-  e.preventDefault();  // ← YE LINE NA HONE SE CLICK NAHI HOTA
+  e.preventDefault();   // ← PAGE REFRESH ROKEGA
 
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
   const amount = Number(document.getElementById('amount').value);
-  const message = document.getElementById('message').value;
+  const message = document.getElementById('message').value.trim();
 
   const { error } = await supabase.from('donations').insert([{ name, email, amount, message }]);
 
   if (error) {
-    alert('ERROR: ' + error.message);  // YAHAN REAL ERROR DIKHEGA
+    alert('Database Error: ' + error.message);
     return;
   }
 
-  alert('Donation saved!');
+  alert('Donation Saved!');
   window.location.href = upi://pay?pa=9488695001@okbizaxis&pn=SEF&am=${amount}&cu=INR;
+  e.target.reset();
 });
-</script></body></html>
+</script>
+</body>
+</html>
