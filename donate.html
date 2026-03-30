@@ -3,20 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard - SEF</title>
+<title>Donate - SEF</title>
 <style>
 body{font-family:Arial;background:url('bg.jpg') center/cover fixed;color:#fff;text-align:center;padding:40px}
-.box{background:rgba(0,0,0,0.7);padding:30px;border-radius:12px;max-width:400px;margin:auto}
-h1{font-size:48px;color:#ffeb3b;margin:0}
+form{background:rgba(0,0,0,0.7);padding:20px;border-radius:12px;max-width:400px;margin:auto}
+input,textarea,button{width:100%;padding:10px;margin:8px 0;border:none;border-radius:8px}
+button{background:#ff5722;color:#fff;font-weight:bold;cursor:pointer}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<h2>Total Donations</h2>
-<div class="box">
-  <h1 id="total">₹0</h1>
-  <p id="count">0 Donors</p>
-</div>
+<h2>Donate Now</h2>
+<form id="donateForm">
+  <input id="name" type="text" placeholder="Aapka Naam" required>
+  <input id="email" type="email" placeholder="Email" required>
+  <input id="amount" type="number" placeholder="Amount (₹)" required>
+  <textarea id="message" placeholder="Message (optional)"></textarea>
+  <button type="submit">Donate</button>
+</form>
 
 <script>
 const supabase = supabase.createClient(
@@ -24,20 +28,25 @@ const supabase = supabase.createClient(
   'sb_publishable_5185f6qc75cmeSYhAPxVA_Rj_wvZv'
 );
 
-async function loadDashboard() {
-  const { data, error } = await supabase.from('donations').select('amount');
+document.getElementById('donateForm').addEventListener('submit', async (e) => {
+  e.preventDefault();  // ← YEH LINE BINA ISKE SAVE NAHI HOGA
+
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const amount = Number(document.getElementById('amount').value);
+  const message = document.getElementById('message').value;
+
+  const { error } = await supabase.from('donations').insert([{ name, email, amount, message }]);
 
   if (error) {
-    document.getElementById('total').innerText = 'Error: ' + error.message;
+    alert('ERROR: ' + error.message);  // YAHAN ERROR DIKHEGA
     return;
   }
 
-  const total = data.reduce((sum, d) => sum + Number(d.amount), 0);
-  document.getElementById('total').innerText = ₹${total};
-  document.getElementById('count').innerText = ${data.length} Donors;
-}
-
-loadDashboard();
+  alert('Donation SAVED! Ab GPay khulega');
+  window.location.href = upi://pay?pa=9488695001@okbizaxis&pn=SEF&am=${amount}&cu=INR;
+  e.target.reset();
+});
 </script>
 </body>
 </html>
