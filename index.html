@@ -22,6 +22,7 @@ th{background:#004080;color:#fff}
 .qr{text-align:center;margin-top:15px}
 .qr img{width:260px;border:4px solid #004080;border-radius:12px;background:#fff}
 .gpay{display:inline-block;margin-top:12px;padding:12px 20px;background:#0F9D58;color:#fff;border-radius:10px;text-decoration:none;font-weight:bold}
+.note{color:#c00;font-size:14px;margin-top:8px}
 </style>
 </head>
 <body><div class="overlay">
@@ -55,7 +56,7 @@ th{background:#004080;color:#fff}
       <input id="email" type="text" placeholder="Your Email" required>
       <input id="amt" type="number" placeholder="Donation Amount (₹)" required min="1">
       <input id="msg" placeholder="Message (Optional)">
-      <button type="submit">Submit Donation</button>
+      <button type="submit">Submit & Pay with GPay</button>
     </form>
 
     <div class="qr">
@@ -63,6 +64,7 @@ th{background:#004080;color:#fff}
       <img src="qr.jpeg" alt="UPI QR Code">
       <a class="gpay" id="gpayBtn" href="#">Pay with GPay</a>
       <p style="margin-top:8px"><strong>UPI ID:</strong> 9408695001-1@okbizaxis</p>
+      <p class="note">PC par button kaam nahi karega — mobile se kholo ya QR scan karo</p>
     </div>
   </div>
 </section>
@@ -104,7 +106,7 @@ function loadDonors(){
 }
 
 document.getElementById('donationForm').addEventListener('submit', function(e){
-  e.preventDefault(); // page reload roko
+  e.preventDefault();
 
   const name = document.getElementById('name').value.trim();
   const email = document.getElementById('email').value.trim();
@@ -115,18 +117,25 @@ document.getElementById('donationForm').addEventListener('submit', function(e){
     return;
   }
 
+  // 1. DATA SAVE (aapke browser me)
   const donors = JSON.parse(localStorage.getItem('donors')||'[]');
   donors.unshift({name,email,amount,date:new Date().toLocaleDateString()});
   localStorage.setItem('donors', JSON.stringify(donors));
   loadDonors();
 
-  alert('Donation recorded. Now opening GPay...');
-  
-  // GPay kholo
-  const upi = upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amount}&cu=INR;
+  // 2. GPAY KHOLO (mobile me)
+  const upi = upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amount}&cu=INR&tn=Donation;
   window.location.href = upi;
 
   document.getElementById('donationForm').reset();
+});
+
+// GPay button alag se bhi kaam kare
+document.getElementById('gpayBtn').addEventListener('click', function(e){
+  e.preventDefault();
+  const amt = document.getElementById('amt').value || 1;
+  const upi = upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amt}&cu=INR&tn=Donation;
+  window.location.href = upi;
 });
 
 loadDonors();
