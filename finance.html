@@ -19,7 +19,7 @@
 <p><strong>Total Donations: ₹<span id="total">0</span></strong></p>
 </div></section>
 <script>
-const supabase = supabase.createClient('YOUR_SUPABASE_URL','YOUR_SUPABASE_ANON_KEY');
+const supabase = supabase.createClient('kqahcvaoxnmxfcgyyync','sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl');
 async function load(){
   const {data}=await supabase.from('donations').select('amount');
   let total=0; data.forEach(d=>total+=Number(d.amount));
