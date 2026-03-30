@@ -1,0 +1,17 @@
+<h2>Donation Receipt</h2>
+
+<p id="rname"></p>
+<p id="ramount"></p>
+<p id="rdate"></p>
+
+<button onclick="printReceipt()">Download PDF</button>
+
+<script>
+document.getElementById("rname").innerText = "Donor: Thank You";
+document.getElementById("ramount").innerText = "Amount: ₹500";
+document.getElementById("rdate").innerText = new Date().toLocaleString();
+
+function printReceipt(){
+  window.print();
+}
+</script>
