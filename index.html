@@ -1,193 +1,22 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shubhi Education Foundation</title>
-
-<style>
-body{margin:0;font-family:'Segoe UI';background:#0f172a;color:white;}
-
-nav{
-background:#020617;
-padding:15px;
-display:flex;
-justify-content:center;
-gap:20px;
-position:sticky;
-top:0;
-z-index:1000;
-}
-
-nav a{
-color:white;
-text-decoration:none;
-font-weight:bold;
-}
-
-nav a:hover{color:#00ffcc;}
-
-header{
-height:100vh;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-text-align:center;
-background:linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),
-url('https://images.unsplash.com/photo-1588072432836-e10032774350');
-background-size:cover;
-}
-
-h1{font-size:45px;}
-
-.container{max-width:1100px;margin:auto;padding:20px;}
-
-.card{
-background:rgba(255,255,255,0.05);
-padding:20px;
-margin:20px 0;
-border-radius:15px;
-backdrop-filter:blur(10px);
-transition:0.3s;
-}
-
-.card:hover{transform:translateY(-5px);}
-
-img{max-width:100%;border-radius:10px;}
-
-.btn{
-background:#00ffcc;
-padding:10px 20px;
-border:none;
-border-radius:20px;
-cursor:pointer;
-margin-top:10px;
-}
-
-input{
-padding:10px;
-margin:5px;
-border-radius:8px;
-border:none;
-width:80%;
-}
-
-.progress{background:#222;border-radius:20px;}
-.bar{background:#00ffcc;height:20px;width:0;}
-
-</style>
-</head>
-
-<body>
-
-<!-- MENU -->
-<nav>
-<a href="#">Home</a>
-<a href="#about">About</a>
-<a href="#skill">Skill</a>
-<a href="#donate">Donate</a>
-<a href="#contact">Contact</a>
-<a href="admin.html">Admin</a>
-</nav>
-
-<!-- HERO -->
-<header>
-<h1>🌈 Rainbow Public School</h1>
-<p>Shubhi Education Foundation, Dahod</p>
-<p>Shalimar Co-Oparetive Society, Muvaliya Road, Rabdal, Dahod Gujarat - 389151</p>
-</header>
-
-<div class="container">
-
-<!-- ABOUT -->
-<div class="card" id="about">
-<h2>🏫 About NGO</h2>
-<p>Shubhi Education Foundation works to provide quality education and equal opportunities for children in rural areas.</p>
+<!-- NAVBAR -->
+<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:white;">
+  <h2>Rainbow Public School</h2>
+  <div>
+    <a href="#">Home</a> |
+    <a href="#">About</a> |
+    <a href="#">Admission</a> |
+    <a href="#">Gallery</a> |
+    <a href="#">Contact</a>
+  </div>
 </div>
 
-<!-- SKILL -->
-<div class="card" id="skill">
-<h2>🧑‍🎓 Skill Development</h2>
-<p>We provide computer education, spoken English, and vocational training programs.</p>
-<img src="poster.png">
+<!-- SLIDER -->
+<div class="slider">
+  <img src="https://via.placeholder.com/1200x500" id="slide">
+
+  <div class="text">
+    <h2>Annual Day</h2>
+    <p>Students performing activities</p>
+    <button>Read More</button>
+  </div>
 </div>
-
-<img src="poster2.png">
-</div>
-  
-<!-- DONATE -->
-<div class="card" id="donate">
-<h2>💰 Donate</h2>
-<input type="text" id="name" placeholder="Your Name"><br>
-<input type="number" id="amount" placeholder="Amount"><br>
-<button class="btn" onclick="donate()">Donate</button>
-</div>
-
-<!-- QR -->
-<div class="card">
-<h2>📱 Scan & Pay</h2>
-<img src="gpay-qr.png">
-<p>UPI: 9408695001-1@okbizaxis</p>
-</div>
-
-<!-- COUNTER -->
-<div class="card">
-<h2>📊 Donation Progress</h2>
-<div class="progress"><div class="bar" id="bar"></div></div>
-<p id="count">₹0 Raised</p>
-</div>
-
-<!-- CONTACT -->
-<div class="card" id="contact">
-<h2>📞 Contact</h2>
-<p>📱 9408695001</p>
-<p>📧 rpsdhd12@gmail.com</p>
-</div>
-
-</div>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDDPfCHyGSBWBpMUqOe5cMttnpbclJ2d9o",
-  authDomain: "sefdahod-7859b.firebaseapp.com",
-  projectId: "sefdahod-7859b",
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-function donate(){
-let name=document.getElementById("name").value;
-let amount=document.getElementById("amount").value;
-
-if(name=="" || amount==""){
-alert("Fill details");
-return;
-}
-
-db.collection("donations").add({
-name:name,
-amount:amount,
-time:new Date()
-});
-
-alert("Thank you!");
-}
-
-// counter
-db.collection("donations").onSnapshot(snap=>{
-let total=0;
-snap.forEach(doc=>{
-total+=parseInt(doc.data().amount);
-});
-document.getElementById("count").innerHTML="₹"+total.toLocaleString()+" Raised";
-document.getElementById("bar").style.width=(total/1000000000*100)+"%";
-});
-</script>
-
-</body>
-</html>
