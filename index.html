@@ -1,24 +1,95 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>SHUBHI EDUCATION FOUNDATION</title>
+<title>NGO System</title>
 
-<link rel="stylesheet" href="style.css">
+<style>
+body { font-family: Arial; text-align:center; }
+input, button { padding:10px; margin:5px; }
+.hidden { display:none; }
+</style>
 
 </head>
 
 <body>
 
-<h1>Rainbow Public School</h1>
+<h1>Shubhi Education Foundation</h1>
 
-<img src="img1.jpg" width="300">
+<!-- LOGIN -->
+<div id="login">
+<h2>Admin Login</h2>
+<input type="text" id="username" placeholder="Username">
+<input type="password" id="password" placeholder="Password">
+<button onclick="login()">Login</button>
+</div>
 
-<h2>Celebration</h2>
-<p>Students performing activities</p>
+<!-- DASHBOARD -->
+<div id="dashboard" class="hidden">
+<h2>Dashboard</h2>
 
-<button>Read More</button>
+<h3>Add Donation</h3>
+<input type="text" id="name" placeholder="Donor Name">
+<input type="number" id="amount" placeholder="Amount">
+<button onclick="addDonation()">Save</button>
 
-<script src="script.js"></script>
+<h3>Donor List</h3>
+<ul id="list"></ul>
+
+<button onclick="downloadPDF()">Download Receipt</button>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+let data = JSON.parse(localStorage.getItem("donors")) || [];
+
+function login(){
+let u = document.getElementById("username").value;
+let p = document.getElementById("password").value;
+
+if(u=="admin" && p=="1234"){
+document.getElementById("login").style.display="none";
+document.getElementById("dashboard").style.display="block";
+loadList();
+}else{
+alert("Wrong login");
+}
+}
+
+function addDonation(){
+let name = document.getElementById("name").value;
+let amount = document.getElementById("amount").value;
+
+data.push({name, amount});
+localStorage.setItem("donors", JSON.stringify(data));
+
+loadList();
+}
+
+function loadList(){
+let list = document.getElementById("list");
+list.innerHTML="";
+data.forEach(d=>{
+list.innerHTML += `<li>${d.name} - ₹${d.amount}</li>`;
+});
+}
+
+function downloadPDF(){
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF();
+
+doc.text("Donation Receipt", 20, 20);
+
+let y = 40;
+data.forEach(d=>{
+doc.text(`${d.name} - ₹${d.amount}`, 20, y);
+y+=10;
+});
+
+doc.save("receipt.pdf");
+}
+</script>
 
 </body>
 </html>
