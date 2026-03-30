@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Donors - Shubhi Education Foundation</title><link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
+<body><div class="overlay">
+<header><img src="logo.png"><h1>Shubhi Education Foundation, Dahod</h1></header>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="donate.html">Donate</a>
+  <a href="donors.html" class="active">Donors</a>
+  <a href="finance.html">Finance</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="admin.html">Admin</a>
+  <a href="login.html">Login</a>
+</nav>
+<section><div class="card">
+<h2>Our Donors</h2>
+<table id="donorTable"><tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th></tr></table>
+</div></section>
+<script>
+const supabase = supabase.createClient('YOUR_SUPABASE_URL','YOUR_SUPABASE_ANON_KEY');
+async function load(){
+  const {data}=await supabase.from('donations').select('*').order('id',{ascending:false});
+  const t=document.getElementById('donorTable');
+  t.innerHTML='<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th></tr>';
+  data.forEach(d=>t.innerHTML+=<tr><td>${d.name}</td><td>${d.email}</td><td>${d.amount}</td><td>${new Date(d.created_at).toLocaleDateString()}</td></tr>);
+}
+load();
+</script>
+</body></html>
