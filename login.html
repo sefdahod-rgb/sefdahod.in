@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Login - Shubhi Education Foundation</title><link rel="stylesheet" href="style.css"></head>
+<body><div class="overlay">
+<header><img src="logo.png"><h1>Shubhi Education Foundation, Dahod</h1></header>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="donate.html">Donate</a>
+  <a href="donors.html">Donors</a>
+  <a href="finance.html">Finance</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="admin.html">Admin</a>
+  <a href="login.html" class="active">Login</a>
+</nav>
+<section><div class="card login-box">
+<h2>Admin Login</h2>
+<input id="uname" placeholder="Username">
+<input id="upass" type="password" placeholder="Password">
+<button onclick="doLogin()">Login</button>
+<p id="loginErr" style="color:#c00"></p>
+</div></section>
+<script>
+function doLogin(){
+  if(document.getElementById('uname').value==='admin' && document.getElementById('upass').value==='admin123'){
+    localStorage.setItem('isAdmin','yes');
+    window.location.href='admin.html';
+  }else{
+    document.getElementById('loginErr').textContent='Invalid credentials';
+  }
+}
+</script>
+</body></html>
