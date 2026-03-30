@@ -26,7 +26,10 @@ if(localStorage.getItem('isAdmin')==='yes'){
   document.getElementById('adminArea').classList.remove('hide');
   document.getElementById('adminLock').classList.add('hide');
 }
-const supabase = supabase.createClient('kqahcvaoxnmxfcgyyync','sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl');
+const supabase = supabase.createClient(
+  'https://kqahcvaxomxmicgyyync.supabase.co',
+  'sb_publishable_5185f6qc75cmeSYhAPxVA_Rj_wvZv'
+);
 async function load(){
   const {data}=await supabase.from('donations').select('*').order('id',{ascending:false});
   const t=document.getElementById('adminTable');
