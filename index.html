@@ -3,26 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shubhi Education Foundation</title>
+<title>Shubhi Education Foundation, Dahod</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-body{font-family:Arial;margin:0;background:url('bg.jpg') center/cover fixed;color:#fff}
-.overlay{background:rgba(0,0,0,0.75);min-height:100vh;padding-bottom:30px}
-header{background:rgba(0,64,128,0.9);padding:20px;text-align:center}
-header img{height:90px;margin-bottom:10px}
-nav{background:rgba(0,48,96,0.9);display:flex;justify-content:center;flex-wrap:wrap}
-nav a{color:#fff;padding:14px 20px;text-decoration:none}
-section{padding:30px;max-width:1100px;margin:auto}
-.card{background:rgba(255,255,255,0.95);color:#333;padding:20px;border-radius:12px;margin-bottom:20px;box-shadow:0 4px 10px rgba(0,0,0,0.3)}
-input,button{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box}
-button{background:#004080;color:#fff;border:none;font-weight:bold;cursor:pointer}
-button:hover{background:#002f60}
+:root{--blue:#004080;--dark:#002f60;--green:#0F9D58}
+*{box-sizing:border-box;font-family:system-ui,Arial}
+body{margin:0;background:url('bg.jpg') center/cover fixed;color:#fff}
+.overlay{background:rgba(0,0,0,0.75);min-height:100vh;padding-bottom:40px}
+header{background:var(--blue);padding:20px;text-align:center}
+header img{height:90px;border-radius:12px;background:#fff;padding:5px}
+h1{margin:10px 0 5px;font-size:24px}
+nav{background:var(--dark);display:flex;flex-wrap:wrap;justify-content:center}
+nav button{background:transparent;color:#fff;border:none;padding:14px 18px;cursor:pointer;font-weight:600}
+nav button.active{background:#001f40}
+section{padding:20px;max-width:1100px;margin:auto;display:none}
+section.active{display:block}
+.card{background:rgba(255,255,255,0.96);color:#333;padding:20px;border-radius:14px;box-shadow:0 6px 14px rgba(0,0,0,.35)}
+input,button,textarea{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:10px;font-size:16px}
+button{background:var(--blue);color:#fff;border:none;font-weight:bold;cursor:pointer}
+button:hover{background:var(--dark)}
 table{width:100%;border-collapse:collapse;color:#333}
 th,td{border:1px solid #ddd;padding:10px;text-align:left}
-th{background:#004080;color:#fff}
+th{background:var(--blue);color:#fff}
 .qr{text-align:center;margin-top:15px}
-.qr img{width:260px;border:4px solid #004080;border-radius:12px;background:#fff}
-.gpay{display:inline-block;margin-top:12px;padding:12px 20px;background:#0F9D58;color:#fff;border-radius:10px;text-decoration:none;font-weight:bold}
-.note{color:#c00;font-size:14px;margin-top:8px}
+.qr img{width:260px;border:4px solid var(--blue);border-radius:12px;background:#fff}
+.gpay{display:inline-block;margin-top:12px;padding:12px 20px;background:var(--green);color:#fff;border-radius:10px;text-decoration:none;font-weight:bold}
+.info{line-height:1.6}
+.hide{display:none}
+.login-box{max-width:420px;margin:40px auto}
 </style>
 </head>
 <body><div class="overlay">
@@ -30,45 +38,52 @@ th{background:#004080;color:#fff}
 <header>
   <img src="logo.png" alt="Logo">
   <h1>Shubhi Education Foundation, Dahod</h1>
-  <p>80G: AAOTS1413MF20251 | 12A: AAOTS1413ME20241 | CSR: CSR00096110</p>
+  <p>Reg No: 123456 | 80G: AAOTS1413MF20251 | 12A: AAOTS1413ME20241 | CSR: CSR00096110</p>
+  <p class="info">Address: Rainbow Public School, Shalimar co-operative society, Muvaliya Road, Rabdal, Dahod Gujarat - 389151<br>
+  Email: sefdahod@gmail.com | Mobile: 948695001 | Landline: 02673-450038</p>
 </header>
 
 <nav>
-  <a href="#about">About</a>
-  <a href="#donate">Donate</a>
-  <a href="#donors">Donors</a>
-  <a href="#finance">Finance</a>
+  <button onclick="show('home')" class="active">Home</button>
+  <button onclick="show('donate')">Donate</button>
+  <button onclick="show('donors')">Donors</button>
+  <button onclick="show('finance')">Finance</button>
+  <button onclick="show('admin')">Admin</button>
+  <button onclick="show('login')">Login</button>
 </nav>
 
-<section id="about">
+<!-- HOME -->
+<section id="home" class="active">
   <div class="card">
     <h2>About Us</h2>
-    <p>Education support and social welfare in Dahod.</p>
-    <p><strong>Bank:</strong> 33300100005524 | IFSC: BARB0GODIRD | BANK OF BARODA</p>
+    <p>Shubhi Education Foundation is committed to supporting education and social welfare in Dahod. We provide scholarships, learning resources, and community programs.</p>
+    <p><strong>Our Mission:</strong> Quality education for every child.</p>
   </div>
 </section>
 
+<!-- DONATE -->
 <section id="donate">
   <div class="card">
     <h2>Donate Now</h2>
     <form id="donationForm">
-      <input id="name" placeholder="Your Full Name" required>
-      <input id="email" type="text" placeholder="Your Email" required>
-      <input id="amt" type="number" placeholder="Donation Amount (₹)" required min="1">
-      <input id="msg" placeholder="Message (Optional)">
+      <input id="dname" placeholder="Your Full Name" required>
+      <input id="demail" placeholder="Your Email" required>
+      <input id="damt" type="number" placeholder="Donation Amount (₹)" required min="1">
+      <input id="dmsg" placeholder="Message (Optional)">
       <button type="submit">Submit & Pay with GPay</button>
     </form>
 
     <div class="qr">
       <h3>Scan & Pay via UPI</h3>
-      <img src="qr.jpeg" alt="UPI QR Code">
+      <img src="qr.png" alt="UPI QR Code">
       <a class="gpay" id="gpayBtn" href="#">Pay with GPay</a>
-      <p style="margin-top:8px"><strong>UPI ID:</strong> 9408695001-1@okbizaxis</p>
-      <p class="note">PC par button kaam nahi karega — mobile se kholo ya QR scan karo</p>
+      <p><strong>UPI ID:</strong> 9408695001-1@okbizaxis</p>
+      <p class="note" style="color:#c00">Tip: Open it on your mobile, the GPay app doesn't open on a PC</p>
     </div>
   </div>
 </section>
 
+<!-- DONORS -->
 <section id="donors">
   <div class="card">
     <h2>Our Donors</h2>
@@ -78,6 +93,7 @@ th{background:#004080;color:#fff}
   </div>
 </section>
 
+<!-- FINANCE -->
 <section id="finance">
   <div class="card">
     <h2>Finance Panel</h2>
@@ -85,58 +101,104 @@ th{background:#004080;color:#fff}
   </div>
 </section>
 
-<footer style="background:rgba(0,32,64,0.9); color:#fff; text-align:center; padding:15px">
+<!-- LOGIN -->
+<section id="login">
+  <div class="card login-box">
+    <h2>Admin Login</h2>
+    <input id="uname" placeholder="Username">
+    <input id="upass" type="password" placeholder="Password">
+    <button onclick="doLogin()">Login</button>
+    <p id="loginErr" style="color:#c00"></p>
+  </div>
+</section>
+
+<!-- ADMIN -->
+<section id="admin">
+  <div class="card">
+    <h2>Admin Panel</h2>
+    <div id="adminArea" class="hide">
+      <table id="adminTable">
+        <tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th><th>Action</th></tr>
+      </table>
+    </div>
+    <p id="adminLock">Please login to access admin panel.</p>
+  </div>
+</section>
+
+<footer style="background:var(--dark); color:#fff; text-align:center; padding:15px">
   © 2025 Shubhi Education Foundation, Dahod
 </footer>
 
 </div>
 
 <script>
-function loadDonors(){
-  const donors = JSON.parse(localStorage.getItem('donors')||'[]');
-  const table = document.getElementById('donorTable');
+// SUPABASE (apni keys daalo)
+const supabase = supabase.createClient(
+  'YOUR_SUPABASE_URL',
+  'YOUR_SUPABASE_ANON_KEY'
+);
+
+function show(id){
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+async function loadDonors(){
+  const { data } = await supabase.from('donations').select('*').order('id',{ascending:false});
+  const t = document.getElementById('donorTable');
+  const t2 = document.getElementById('adminTable');
   const totalEl = document.getElementById('total');
-  table.innerHTML = '<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th></tr>';
+  t.innerHTML = '<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th></tr>';
+  t2.innerHTML = '<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th><th>Action</th></tr>';
   let total = 0;
-  donors.forEach(d=>{
+  (data||[]).forEach(d=>{
     total += Number(d.amount);
-    table.innerHTML += <tr><td>${d.name}</td><td>${d.email}</td><td>${d.amount}</td><td>${d.date}</td></tr>;
+    t.innerHTML += <tr><td>${d.name}</td><td>${d.email}</td><td>${d.amount}</td><td>${new Date(d.created_at).toLocaleDateString()}</td></tr>;
+    t2.innerHTML += <tr><td>${d.name}</td><td>${d.email}</td><td>${d.amount}</td><td>${new Date(d.created_at).toLocaleDateString()}</td><td><button onclick="del(${d.id})" style="background:#c00">Delete</button></td></tr>;
   });
   totalEl.textContent = total;
 }
 
-document.getElementById('donationForm').addEventListener('submit', function(e){
+document.getElementById('donationForm').addEventListener('submit', async function(e){
   e.preventDefault();
-
-  const name = document.getElementById('name').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const amount = document.getElementById('amt').value.trim();
-
-  if(!name || !email || !amount){
-    alert('Please fill Name, Email and Amount');
-    return;
-  }
-
-  // 1. DATA SAVE (aapke browser me)
-  const donors = JSON.parse(localStorage.getItem('donors')||'[]');
-  donors.unshift({name,email,amount,date:new Date().toLocaleDateString()});
-  localStorage.setItem('donors', JSON.stringify(donors));
+  const name=document.getElementById('dname').value.trim();
+  const email=document.getElementById('demail').value.trim();
+  const amount=document.getElementById('damt').value.trim();
+  if(!name||!email||!amount){alert('Please fill all fields');return;}
+  await supabase.from('donations').insert([{name,email,amount}]);
   loadDonors();
-
-  // 2. GPAY KHOLO (mobile me)
-  const upi = upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amount}&cu=INR&tn=Donation;
-  window.location.href = upi;
-
-  document.getElementById('donationForm').reset();
+  alert('Donation recorded!');
+  const upi=upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amount}&cu=INR;
+  window.location.href=upi;
+  this.reset();
 });
 
-// GPay button alag se bhi kaam kare
-document.getElementById('gpayBtn').addEventListener('click', function(e){
+document.getElementById('gpayBtn').addEventListener('click',e=>{
   e.preventDefault();
-  const amt = document.getElementById('amt').value || 1;
-  const upi = upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amt}&cu=INR&tn=Donation;
-  window.location.href = upi;
+  const amt=document.getElementById('damt').value||1;
+  window.location.href=upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amt}&cu=INR;
 });
+
+function doLogin(){
+  const u=document.getElementById('uname').value;
+  const p=document.getElementById('upass').value;
+  if(u==='admin' && p==='admin123'){
+    document.getElementById('adminArea').classList.remove('hide');
+    document.getElementById('adminLock').classList.add('hide');
+    loadDonors();
+  }else{
+    document.getElementById('loginErr').textContent='Invalid credentials';
+  }
+}
+
+async function del(id){
+  if(confirm('Delete this donation?')){
+    await supabase.from('donations').delete().eq('id',id);
+    loadDonors();
+  }
+}
 
 loadDonors();
 </script>
