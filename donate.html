@@ -37,7 +37,7 @@ const supabase = supabase.createClient(
   'sb_publishable_5185f6qc75cmeSYhAPxVA_Rj_wvZv'
 );
 document.getElementById('donateForm').addEventListener('submit', async (e) => {
-  e.preventDefault(); // ← YE LINE SABSE UPAR
+  e.preventDefault(); //
 
   const { error } = await supabase.from('donations').insert([{ name, email, amount, message }]);
 
