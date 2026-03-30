@@ -1,52 +1,22 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Dashboard - Shubhi Education Foundation</title>
-<link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - SEF</title>
+<style>
+body{font-family:Arial;background:url('bg.jpg') center/cover fixed;color:#fff;text-align:center;padding:40px}
+.box{background:rgba(0,0,0,0.7);padding:30px;border-radius:12px;max-width:400px;margin:auto}
+h1{font-size:48px;color:#ffeb3b;margin:0}
+</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body><div class="overlay">
-<header>
-  <img src="logo.png"><h1>Shubhi Education Foundation, Dahod</h1>
-  <p>Reg No: 123456 | 80G: AAOTS1413MF20251 | 12A: AAOTS1413ME20241 | CSR: CSR00096110</p>
-  <p class="info">Address: Rainbow Public School, Shalimar co-operative society, Muvaliya Road, Rabdal, Dahod Gujarat - 389151<br>
-  Email: sefdahod@gmail.com | Mobile: 948695001 | Landline: 02673-450038</p>
-</header>
-<nav>
-  <a href="index.html">Home</a>
-  <a href="donate.html">Donate</a>
-  <a href="donors.html">Donors</a>
-  <a href="finance.html">Finance</a>
-  <a href="dashboard.html" class="active">Dashboard</a>
-  <a href="admin.html">Admin</a>
-  <a href="login.html">Login</a>
-</nav>
-
-<section>
-  <div class="grid">
-    <div class="card">
-      <h2>Total Donations</h2>
-      <h3 style="font-size:32px;color:var(--blue)">₹<span id="total">0</span></h3>
-    </div>
-    <div class="card">
-      <h2>Total Donors</h2>
-      <h3 style="font-size:32px;color:var(--blue)"><span id="count">0</span></h3>
-    </div>
-  </div>
-
-  <div class="grid">
-    <div class="card">
-      <h2>Donations by Month</h2>
-      <canvas id="barChart" height="220"></canvas>
-    </div>
-    <div class="card">
-      <h2>Top Donors</h2>
-      <canvas id="pieChart" height="220"></canvas>
-    </div>
-  </div>
-</section>
+<body>
+<h2>Total Donations</h2>
+<div class="box">
+  <h1 id="total">₹0</h1>
+  <p id="count">0 Donors</p>
+</div>
 
 <script>
 const supabase = supabase.createClient(
@@ -54,32 +24,20 @@ const supabase = supabase.createClient(
   'sb_publishable_5185f6qc75cmeSYhAPxVA_Rj_wvZv'
 );
 
-async function load(){
-  const {data}=await supabase.from('donations').select('*');
-  const total = data.reduce((sum,d)=>sum+Number(d.amount),0);
-  document.getElementById('total').textContent=total;
-  document.getElementById('count').textContent=data.length;
+async function loadDashboard() {
+  const { data, error } = await supabase.from('donations').select('amount');
 
-  // Month-wise data
-  const monthMap={};
-  data.forEach(d=>{
-    const m=new Date(d.created_at).toLocaleString('en-US',{month:'short'});
-    monthMap[m]=(monthMap[m]||0)+Number(d.amount);
-  });
-  new Chart(document.getElementById('barChart'),{
-    type:'bar',
-    data:{labels:Object.keys(monthMap),datasets:[{label:'Amount ₹',data:Object.values(monthMap),backgroundColor:'#004080'}]}
-  });
+  if (error) {
+    document.getElementById('total').innerText = 'Error: ' + error.message;
+    return;
+  }
 
-  // Top 5 donors
-  const donorMap={};
-  data.forEach(d=>donorMap[d.name]=(donorMap[d.name]||0)+Number(d.amount));
-  const top=Object.entries(donorMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  new Chart(document.getElementById('pieChart'),{
-    type:'pie',
-    data:{labels:top.map(x=>x[0]),datasets:[{data:top.map(x=>x[1])}]}
-  });
+  const total = data.reduce((sum, d) => sum + Number(d.amount), 0);
+  document.getElementById('total').innerText = ₹${total};
+  document.getElementById('count').innerText = ${data.length} Donors;
 }
-load();
+
+loadDashboard();
 </script>
-</body></html>
+</body>
+</html>
