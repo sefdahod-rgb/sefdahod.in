@@ -3,165 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shubhi Education Foundation - Dahod</title>
+<title>Shubhi Education Foundation</title>
 <style>
-body {font-family: Arial, sans-serif; margin:0; background:#f4f7fb; color:#333;}
-header {background:#004080; color:#fff; padding:20px; text-align:center;}
-header h1 {margin:0; font-size:28px;}
-header p {margin:5px 0 0;}
-nav a{
-  color:white;
-  margin:10px;
-  text-decoration:none;
-}
-
-/* HERO */
-.hero{
-  background:('photo.jpg') no-repeat center/cover;
-  color:white;
-  padding:100px 20px;
-  text-align:center;
-}
-.hero h1{
-  font-size:40px;
-}
-.btn{
-  background:#ff6600;
-  padding:10px 20px;
-  color:white;
-  border:none;
-  cursor:pointer;
-  margin-top:10px;
-}
-nav {background:#003060; display:flex; justify-content:center;}
-nav a {color:#fff; padding:14px 20px; text-decoration:none;}
-nav a:hover {background:#002040;}
-section {padding:30px; max-width:1100px; margin:auto;}
-.card {background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); margin-bottom:20px;}
-input, textarea, button, select {width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:8px;}
-button {background:#004080; color:#fff; border:none; cursor:pointer; font-weight:bold;}
-button:hover {background:#002040;}
-table {width:100%; border-collapse:collapse;}
-th, td {border:1px solid #ddd; padding:10px; text-align:left;}
-th {background:#004080; color:#fff;}
-footer {background:#002040; color:#fff; text-align:center; padding:15px;}
+body{font-family:Arial;margin:0;background:url('bg.jpg') center/cover fixed;color:#fff}
+.overlay{background:rgba(0,0,0,0.75);min-height:100vh;padding-bottom:30px}
+header{background:rgba(0,64,128,0.9);padding:20px;text-align:center}
+header img{height:90px;margin-bottom:10px}
+nav{background:rgba(0,48,96,0.9);display:flex;justify-content:center;flex-wrap:wrap}
+nav a{color:#fff;padding:14px 20px;text-decoration:none}
+section{padding:30px;max-width:1100px;margin:auto}
+.card{background:rgba(255,255,255,0.95);color:#333;padding:20px;border-radius:12px;margin-bottom:20px}
+input,button{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:8px}
+button{background:#004080;color:#fff;border:none;font-weight:bold}
+table{width:100%;border-collapse:collapse;color:#333}
+th,td{border:1px solid #ddd;padding:10px}
+th{background:#004080;color:#fff}
+.qr{text-align:center;margin-top:15px}
+.qr img{width:260px;border:4px solid #004080;border-radius:12px}
 </style>
 </head>
-<body>
-
-<header>
-<h1>Shubhi Education Foundation, Dahod</h1>
-<p>Reg. Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD.</p>
-<p>80G: AAOTS1413MF20251 | 12A: AAOTS1413ME20241 | CSR: CSR00096110</p>
-</header>
+<body><div class="overlay">
+<header><img src="logo.png"><h1>Shubhi Education Foundation, Dahod</h1>
+<p>80G: AAOTS1413MF20251 | 12A: AAOTS1413ME20241 | CSR: CSR00096110</p></header>
 
 <nav>
 <a href="#about">About</a>
 <a href="#donate">Donate</a>
 <a href="#donors">Donors</a>
-<a href="#finance">Finance Panel</a>
-<a href="#admin">Admin Panel</a>
+<a href="#finance">Finance</a>
 </nav>
 
-<section id="about">
-<div class="card">
+<section id="about"><div class="card">
 <h2>About Us</h2>
-<p>Shubhi Education Foundation is committed to providing education support and social welfare in Dahod.</p>
-<p><strong>Bank Details:</strong><br>
-Account No: 33300100005524<br>
-IFSC: BARB0GODIRD<br>
-Bank: BANK OF BARODA</p>
-<img src="attachment://0" alt="Donation QR" style="max-width:250px;">
-</div>
-</section>
+<p>Education support and social welfare in Dahod.</p>
+<p><strong>Bank:</strong> 33300100005524 | IFSC: BARB0GODIRD</p>
+</div></section>
 
-<section id="donate">
-<div class="card">
+<section id="donate"><div class="card">
 <h2>Donate Now</h2>
-<form id="donationForm">
-<input type="text" id="donorName" placeholder="Your Full Name" required>
-<input type="email" id="donorEmail" placeholder="Your Email" required>
-<input type="number" id="donorAmount" placeholder="Donation Amount (₹)" required>
-<input type="text" id="donorMessage" placeholder="Message (Optional)">
-<button type="submit">Submit Donation</button>
-</form>
-<p style="color:green" id="donateMsg"></p>
-</div>
-</section>
+<form><input placeholder="Your Full Name" required>
+<input type="email" placeholder="Your Email" required>
+<input type="number" placeholder="Donation Amount (₹)" required>
+<button type="submit">Submit Donation</button></form>
+<div class="qr"><h3>Scan & Pay via UPI</h3>
+<img src="qr.png"><p><strong>UPI ID:</strong> 9408695001-1@okbizaxis</p></div>
+</div></section>
 
-<section id="donors">
-<div class="card">
-<h2>Our Donors</h2>
-<table id="donorTable">
-<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th></tr>
-</table>
-</div>
-</section>
+<section id="donors"><div class="card"><h2>Our Donors</h2>
+<table><tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th></tr></table></div></section>
 
-<section id="finance">
-<div class="card">
-<h2>Finance Panel</h2>
-<p>Total Donations: ₹<span id="totalDonation">0</span></p>
-<table id="financeTable">
-<tr><th>Date</th><th>Donor</th><th>Amount (₹)</th></tr>
-</table>
-</div>
-</section>
+<section id="finance"><div class="card"><h2>Finance Panel</h2>
+<p><strong>Total Donations: ₹0</strong></p></div></section>
 
-<section id="admin">
-<div class="card">
-<h2>Admin Panel</h2>
-<p>Yahan aap donors ka record edit/delete kar sakte ho.</p>
-<table id="adminTable">
-<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Action</th></tr>
-</table>
-</div>
-</section>
-
-<footer>
-<p>© 2025 Shubhi Education Foundation, Dahod</p>
-</footer>
-
-<script>
-let donors = [];
-
-// Donation submit
-document.getElementById("donationForm").addEventListener("submit", function(e){
-e.preventDefault();
-let name = document.getElementById("donorName").value;
-let email = document.getElementById("donorEmail").value;
-let amount = parseFloat(document.getElementById("donorAmount").value);
-let date = new Date().toLocaleDateString();
-
-donors.push({name,email,amount,date});
-
-document.getElementById("donateMsg").innerText = "Thank you "+name+" for your donation of ₹"+amount;
-this.reset();
-updateTables();
-});
-
-function updateTables(){
-document.getElementById("donorTable").innerHTML = "<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th></tr>";
-document.getElementById("financeTable").innerHTML = "<tr><th>Date</th><th>Donor</th><th>Amount (₹)</th></tr>";
-document.getElementById("adminTable").innerHTML = "<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Action</th></tr>";
-
-let total = 0;
-donors.forEach((d,i)=>{
-total += d.amount;
-document.getElementById("donorTable").innerHTML += <tr><td>${d.name}</td><td>${d.email}</td><td>${d.amount}</td><td>${d.date}</td></tr>;
-document.getElementById("financeTable").innerHTML += <tr><td>${d.date}</td><td>${d.name}</td><td>${d.amount}</td></tr>;
-document.getElementById("adminTable").innerHTML += <tr><td>${d.name}</td><td>${d.email}</td><td>${d.amount}</td><td><button onclick="deleteDonor(${i})">Delete</button></td></tr>;
-});
-document.getElementById("totalDonation").innerText = total;
-}
-
-function deleteDonor(index){
-if(confirm("Delete this donor entry?")){
-donors.splice(index,1);
-updateTables();
-}
-}
-</script>
-
-</body>
-</html>
+</div></body></html>
