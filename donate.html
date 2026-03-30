@@ -31,28 +31,29 @@
   <p style="color:#c00">Tip: Mobile se kholo, PC par GPay app nahi khulta</p>
 </div>
 </div></section>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const supabase = supabase.createClient(
   'https://kqahcvaxomxmicgyyync.supabase.co',
-  'sb_publishable_5185f6qc75cmeSYhAPxVA_Rj_wvZv'
+  'sb_publishable_5185f6qc75cmeSYhAPxVA_Rj_wvZv'   // ← UNDERSCORE
 );
+
 document.getElementById('donateForm').addEventListener('submit', async (e) => {
-  e.preventDefault(); //
+  e.preventDefault();  // ← YE LINE NA HONE SE CLICK NAHI HOTA
+
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const amount = Number(document.getElementById('amount').value);
+  const message = document.getElementById('message').value;
 
   const { error } = await supabase.from('donations').insert([{ name, email, amount, message }]);
 
   if (error) {
-    alert(error.message); // YAHAN ERROR DIKH JAYEGA
+    alert('ERROR: ' + error.message);  // YAHAN REAL ERROR DIKHEGA
     return;
   }
 
-  alert('Donation recorded!');
+  alert('Donation saved!');
   window.location.href = upi://pay?pa=9488695001@okbizaxis&pn=SEF&am=${amount}&cu=INR;
-});  e.target.reset();
-});document.getElementById('gpayBtn').addEventListener('click',e=>{
-  e.preventDefault();
-  const amt=document.getElementById('damt').value||1;
-  window.location.href=upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amt}&cu=INR;
 });
-</script>
-</body></html>
+</script></body></html>
