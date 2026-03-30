@@ -1,34 +1,59 @@
 <!DOCTYPE html>
 <html lang="hi">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Donors - Shubhi Education Foundation</title><link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
-<body><div class="overlay">
-<header><img src="logo.png"><h1>Shubhi Education Foundation, Dahod</h1></header>
-<nav>
-  <a href="index.html">Home</a>
-  <a href="donate.html">Donate</a>
-  <a href="donors.html" class="active">Donors</a>
-  <a href="finance.html">Finance</a>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="admin.html">Admin</a>
-  <a href="login.html">Login</a>
-</nav>
-<section><div class="card">
-<h2>Our Donors</h2>
-<table id="donorTable"><tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th></tr></table>
-</div></section>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Donors - SEF</title>
+<style>
+body{font-family:Arial;background:url('bg.jpg') center/cover fixed;color:#fff;padding:40px}
+table{width:100%;border-collapse:collapse;background:rgba(0,0,0,0.7);border-radius:12px;overflow:hidden}
+th,td{padding:12px;border-bottom:1px solid #555;text-align:left}
+th{background:#ff5722}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<h2>All Donors</h2>
+<table>
+  <thead><tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th></tr></thead>
+  <tbody id="donorTable"><tr><td colspan="4">Loading...</td></tr></tbody>
+</table>
+
 <script>
 const supabase = supabase.createClient(
   'https://kqahcvaxomxmicgyyync.supabase.co',
   'sb_publishable_5185f6qc75cmeSYhAPxVA_Rj_wvZv'
 );
-async function load(){
-  const {data}=await supabase.from('donations').select('*').order('id',{ascending:false});
-  const t=document.getElementById('donorTable');
-  t.innerHTML='<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th></tr>';
-  data.forEach(d=>t.innerHTML+=<tr><td>${d.name}</td><td>${d.email}</td><td>${d.amount}</td><td>${new Date(d.created_at).toLocaleDateString()}</td></tr>);
+
+async function loadDonors() {
+  const { data, error } = await supabase
+    .from('donations')
+    .select('*')
+    .order('id', { ascending: false });
+
+  const tbody = document.getElementById('donorTable');
+
+  if (error) {
+    tbody.innerHTML = <tr><td colspan="4">Error: ${error.message}</td></tr>;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    tbody.innerHTML = <tr><td colspan="4">Koi donation abhi nahi hui</td></tr>;
+    return;
+  }
+
+  tbody.innerHTML = data.map(d => `
+    <tr>
+      <td>${d.name}</td>
+      <td>${d.email}</td>
+      <td>₹${d.amount}</td>
+      <td>${new Date(d.created_at).toLocaleString()}</td>
+    </tr>
+  `).join('');
 }
-load();
+
+loadDonors();
 </script>
-</body></html>
+</body>
+</html>
