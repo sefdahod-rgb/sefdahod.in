@@ -4,18 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard - SEF</title>
-<style>
-body{font-family:Arial;background:url('bg.jpg') center/cover fixed;color:#fff;text-align:center;padding:40px}
-.box{background:rgba(0,0,0,0.7);padding:30px;border-radius:12px;max-width:400px;margin:auto}
-h1{font-size:48px;color:#ffeb3b;margin:0}
-</style>
+<link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="donate.html">Donate</a>
+  <a href="donors.html">Donors</a>
+  <a href="dashboard.html">Dashboard</a>
+</nav>
+
+<div class="container">
 <h2>Total Donations</h2>
-<div class="box">
-  <h1 id="total">₹0</h1>
-  <p id="count">0 Donors</p>
+<h1 id="total">₹0</h1>
+<p id="count">0 Donors</p>
 </div>
 
 <script>
@@ -26,17 +29,12 @@ const supabase = supabase.createClient(
 
 async function loadDashboard() {
   const { data, error } = await supabase.from('donations').select('amount');
-
-  if (error) {
-    document.getElementById('total').innerText = 'Error: ' + error.message;
-    return;
-  }
+  if (error) { document.getElementById('total').innerText = 'ERROR: ' + error.message; return; }
 
   const total = data.reduce((sum, d) => sum + Number(d.amount), 0);
   document.getElementById('total').innerText = ₹${total};
   document.getElementById('count').innerText = ${data.length} Donors;
 }
-
 loadDashboard();
 </script>
 </body>
