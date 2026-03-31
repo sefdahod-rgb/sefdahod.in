@@ -4,94 +4,82 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SEF - Shree Education Foundation</title>
+
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-  *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-  body{background:linear-gradient(135deg,#fff5f7,#ffe0ec);color:#333;scroll-behavior:smooth}
-  header{background:#e91e63;color:#fff;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
-  nav{display:flex;justify-content:space-between;align-items:center;padding:14px 30px;max-width:1100px;margin:auto}
-  nav h1{font-size:22px}
-  nav a{color:#fff;text-decoration:none;margin:0 14px;font-weight:bold}
-  nav a:hover{text-decoration:underline}
-  
-  .hero{background:url('https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat;height:350px;display:flex;align-items:center;justify-content:center;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,0.6)}
-  .hero h2{font-size:36px;background:rgba(233,30,99,0.7);padding:16px 24px;border-radius:12px}
-  
-  section{max-width:900px;margin:40px auto;padding:20px;background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(233,30,99,0.15)}
-  h2{color:#e91e63;margin-bottom:16px;text-align:center}
-  input,textarea{width:100%;padding:12px;margin:8px 0;border:1px solid #ffd6e2;border-radius:8px;font-size:15px}
-  button{width:100%;padding:14px;background:#e91e63;color:#fff;border:none;border-radius:8px;font-size:16px;cursor:pointer;font-weight:bold}
-  button:hover{background:#c2185b}
-  .donor{border-bottom:1px solid #ffd6e2;padding:10px 0}
-  .total{font-size:42px;color:#e91e63;font-weight:bold;text-align:center;margin:20px 0}
-  footer{text-align:center;padding:20px;color:#777;font-size:14px}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:linear-gradient(135deg,#fff5f7,#ffe0ec)}
+header{background:#e91e63;color:#fff;position:sticky;top:0}
+nav{display:flex;justify-content:space-between;padding:15px}
+nav a{color:#fff;margin:0 10px;text-decoration:none}
+section{max-width:900px;margin:30px auto;padding:20px;background:#fff;border-radius:10px}
+h2{text-align:center;color:#e91e63;margin-bottom:10px}
+input,textarea{width:100%;padding:10px;margin:5px 0}
+button{width:100%;padding:12px;background:#e91e63;color:#fff;border:none}
+.total{font-size:30px;text-align:center;color:#e91e63}
 </style>
 </head>
+
 <body>
 
 <header>
-  <nav>
-    <h1>SEF</h1>
-    <div>
-      <a href="#home">Home</a>
-      <a href="#donate">Donate</a>
-      <a href="#donors">Donors</a>
-      <a href="#dashboard">Dashboard</a>
-    </div>
-  </nav>
+<nav>
+<h2>SEF</h2>
+<div>
+<a href="#donate">Donate</a>
+<a href="#donors">Donors</a>
+</div>
+</nav>
 </header>
 
-<section id="home" class="hero">
-  <h2>Shiksha ke liye Aapka Sahyog</h2>
-</section>
-
 <section id="donate">
-  <h2>Donation Form</h2>
-  <form id="donateForm">
-    <input id="name" placeholder="Aapka Naam" required>
-    <input id="email" type="email" placeholder="Aapka Email" required>
-    <input id="amount" type="number" placeholder="Amount (₹)" required>
-    <textarea id="message" placeholder="Message (optional)" rows="3"></textarea>
-    <button type="submit">Donate Now</button>
-  </form>
-  <p id="msg" style="text-align:center;color:green;margin-top:10px"></p>
+<h2>Donation Form</h2>
+
+<form id="donateForm">
+<input id="name" placeholder="Name" required>
+<input id="email" type="email" placeholder="Email" required>
+<input id="amount" type="number" placeholder="Amount ₹" required>
+<textarea id="message" placeholder="Message"></textarea>
+<button type="submit">Donate</button>
+</form>
+
+<p id="msg"></p>
 </section>
 
 <section id="donors">
-  <h2>Hamare Donors</h2>
-  <div id="list">Loading...</div>
+<h2>Donors List</h2>
+<div id="list">Loading...</div>
 </section>
 
-<section id="dashboard">
-  <h2>Total Donations</h2>
-  <div class="total" id="total">₹0</div>
+<section>
+<h2>Total Donation</h2>
+<div id="total" class="total">₹0</div>
 </section>
-
-<footer>© 2025 Shree Education Foundation</footer>
 
 <script>
-const supabase = supabase.createClient(
-  'https://kqahcvaxomxmicgyyync.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmF4b214bWljZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2MDc2MjcsImV4cCI6MjA2ODE4MzYyN30.0kjx7uLb4b8j9cQ5y7ZvK2m9n4pLqRwTdGhFyYxAaBc'
+const supabaseClient = supabase.createClient(
+  "https://kqahcvaxomxmicgyyync.supabase.co",
+  "sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl"
 );
 
-// DONATE
-document.getElementById('donateForm').addEventListener('submit', async (e) => {
+// SUBMIT
+document.getElementById("donateForm").addEventListener("submit", async (e)=>{
   e.preventDefault();
-  const { error } = await supabase.from('donations').insert([{
-    name: document.getElementById('name').value,
-    email: document.getElementById('email').value,
-    amount: Number(document.getElementById('amount').value),
-    message: document.getElementById('message').value
+
+  const { error } = await supabaseClient.from("donations").insert([{
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    amount: Number(document.getElementById("amount").value),
+    message: document.getElementById("message").value
   }]);
 
   if(error){
-    document.getElementById('msg').style.color='red';
-    document.getElementById('msg').innerText = 'Error: ' + error.message;
+    document.getElementById("msg").innerText = error.message;
   } else {
-    document.getElementById('msg').style.color='green';
-    document.getElementById('msg').innerText = 'Shukriya! Aapka donation save ho gaya';
-    document.getElementById('donateForm').reset();
+    document.getElementById("msg").innerText = "Donation Saved ✅";
+    document.getElementById("donateForm").reset();
     loadDonors();
     loadTotal();
   }
@@ -99,20 +87,45 @@ document.getElementById('donateForm').addEventListener('submit', async (e) => {
 
 // LOAD DONORS
 async function loadDonors(){
-  const { data, error } = await supabase.from('donations').select('*').order('created_at',{ascending:false});
-  const list = document.getElementById('list');
-  list.innerHTML = error ? 'Error: '+error.message : 
-    data.map(d => <div class="donor"><strong>${d.name}</strong> - ₹${d.amount}<div style="font-size12px;color:#666">${new Date(d.created_at).toLocaleString()}</div>${d.message?<div>${d.message}</div>:''}</div>).join('') || 'Koi donor nahi';
+  const { data, error } = await supabaseClient
+    .from("donations")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  const list = document.getElementById("list");
+
+  if(error){
+    list.innerText = error.message;
+    return;
+  }
+
+  list.innerHTML = (data || []).map(d => `
+    <div>
+      <b>${d.name}</b> - ₹${d.amount}
+      <div style="font-size:12px">
+        ${new Date(d.created_at).toLocaleString()}
+      </div>
+      ${d.message ? `<div>${d.message}</div>` : ""}
+      <hr>
+    </div>
+  `).join("") || "No donors yet";
 }
 
-// LOAD TOTAL
+// TOTAL
 async function loadTotal(){
-  const { data, error } = await supabase.from('donations').select('amount');
-  document.getElementById('total').innerText = error ? 'Error' : '₹' + data.reduce((a,b)=>a+b.amount,0);
+  const { data } = await supabaseClient
+    .from("donations")
+    .select("amount");
+
+  const total = (data || []).reduce((a,b)=>a+(b.amount||0),0);
+
+  document.getElementById("total").innerText = "₹" + total;
 }
 
+// LOAD
 loadDonors();
 loadTotal();
 </script>
+
 </body>
 </html>
