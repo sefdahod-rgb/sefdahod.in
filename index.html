@@ -1,22 +1,52 @@
-<!-- NAVBAR -->
-<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:white;">
-  <h2>Rainbow Public School</h2>
-  <div>
-    <a href="#">Home</a> |
-    <a href="#">About</a> |
-    <a href="#">Admission</a> |
-    <a href="#">Gallery</a> |
-    <a href="#">Contact</a>
-  </div>
+<!DOCTYPE html>
+<html lang="hi">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin - Shubhi Education Foundation</title><link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
+<body><div class="overlay">
+<header><img src="logo.png"><h1>Shubhi Education Foundation, Dahod</h1></header>
+<p>Under Indian Society Act 1860 Guj./2249/DHD. & 
+Mumbai Public Trust Act 1950 F/2247/DHD</p>
+  <p>80G Registration No. :-AAOTS1413MF20251
+12A Registration No. :- AAOTS1413ME20241
+CSR no.:- CSR00096110</p>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="donate.html">Donate</a>
+  <a href="donors.html">Donors</a>
+  <a href="finance.html">Finance</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="admin.html" class="active">Admin</a>
+  <a href="login.html">Login</a>
+</nav>
+<section><div class="card">
+<h2>Admin Panel</h2>
+<div id="adminArea" class="hide">
+  <table id="adminTable"><tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th><th>Action</th></tr></table>
 </div>
-
-<!-- SLIDER -->
-<div class="slider">
-  <img src="https://via.placeholder.com/1200x500" id="slide">
-
-  <div class="text">
-    <h2>Annual Day</h2>
-    <p>Students performing activities</p>
-    <button>Read More</button>
-  </div>
-</div>
+<p id="adminLock">Please login to access admin panel.</p>
+</div></section>
+<script>
+if(localStorage.getItem('isAdmin')==='yes'){
+  document.getElementById('adminArea').classList.remove('hide');
+  document.getElementById('adminLock').classList.add('hide');
+}
+const supabase = supabase.createClient(
+  'https://kqahcvaxomxmicgyyync.supabase.co',
+  'sb_publishable_5185f6qc75cmeSYhAPxVA_Rj_wvZv'
+);
+async function load(){
+  const {data}=await supabase.from('donations').select('*').order('id',{ascending:false});
+  const t=document.getElementById('adminTable');
+  t.innerHTML='<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th><th>Action</th></tr>';
+  data.forEach(d=>t.innerHTML+=<tr><td>${d.name}</td><td>${d.email}</td><td>${d.amount}</td><td>${new Date(d.created_at).toLocaleDateString()}</td><td><button onclick="del(${d.id})" style="background:#c00">Delete</button></td></tr>);
+}
+async function del(id){
+  if(confirm('Delete this donation?')){
+    await supabase.from('donations').delete().eq('id',id);
+    load();
+  }
+}
+load();
+</script>
+</body></html>
