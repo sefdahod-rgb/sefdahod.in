@@ -4,23 +4,27 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Donate - SEF</title>
-<style>
-body{font-family:Arial;background:url('bg.jpg') center/cover fixed;color:#fff;text-align:center;padding:40px}
-form{background:rgba(0,0,0,0.7);padding:20px;border-radius:12px;max-width:400px;margin:auto}
-input,textarea,button{width:100%;padding:10px;margin:8px 0;border:none;border-radius:8px}
-button{background:#ff5722;color:#fff;font-weight:bold;cursor:pointer}
-</style>
+<link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="donate.html">Donate</a>
+  <a href="donors.html">Donors</a>
+  <a href="dashboard.html">Dashboard</a>
+</nav>
+
+<div class="container">
 <h2>Donate Now</h2>
 <form id="donateForm">
   <input id="name" type="text" placeholder="Aapka Naam" required>
   <input id="email" type="email" placeholder="Email" required>
-  <input id="amount" type="number" placeholder="Amount (₹)" required>
+  <input id="amount" type="number" placeholder="Amount (₹)" required min="1">
   <textarea id="message" placeholder="Message (optional)"></textarea>
   <button type="submit">Donate</button>
 </form>
+</div>
 
 <script>
 const supabase = supabase.createClient(
@@ -29,21 +33,21 @@ const supabase = supabase.createClient(
 );
 
 document.getElementById('donateForm').addEventListener('submit', async (e) => {
-  e.preventDefault();  // ← YEH LINE BINA ISKE SAVE NAHI HOGA
-
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
+  e.preventDefault();
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
   const amount = Number(document.getElementById('amount').value);
-  const message = document.getElementById('message').value;
+  const message = document.getElementById('message').value.trim();
 
   const { error } = await supabase.from('donations').insert([{ name, email, amount, message }]);
 
   if (error) {
-    alert('ERROR: ' + error.message);  // YAHAN ERROR DIKHEGA
+    alert('Database Error: ' + error.message);
+    console.error(error);
     return;
   }
 
-  alert('Donation SAVED! Ab GPay khulega');
+  alert('Donation Saved!');
   window.location.href = upi://pay?pa=9488695001@okbizaxis&pn=SEF&am=${amount}&cu=INR;
   e.target.reset();
 });
