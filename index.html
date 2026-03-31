@@ -60,13 +60,13 @@ button{width:100%;padding:12px;background:#e91e63;color:#fff;border:none}
 
 <script>
 const supabaseClient = supabase.createClient(
-  'https://kqahcvaxomxmicgyyync.supabase.co',
-  'sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl'
+  "https://kqahcvaxomxmicgyyync.supabase.co",
+  :sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl"
 );
 
 // SUBMIT
-document.getElementById("donateForm").addEventListener("submit", async (e)=>{
-  e.preventDefault();
+document.getElementById("donateForm").addEventListener('submit', async (e)=>{
+e.preventDefault();
 
   const { error } = await supabaseClient.from("donations").insert([{
     name: document.getElementById("name").value,
