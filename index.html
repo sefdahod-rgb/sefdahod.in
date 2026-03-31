@@ -1,23 +1,19 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SEF - Shree Education Foundation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shubhi Education Foundation</title>
 
-<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:linear-gradient(135deg,#fff5f7,#ffe0ec)}
-header{background:#e91e63;color:#fff;position:sticky;top:0}
-nav{display:flex;justify-content:space-between;padding:15px}
-nav a{color:#fff;margin:0 10px;text-decoration:none}
-section{max-width:900px;margin:30px auto;padding:20px;background:#fff;border-radius:10px}
-h2{text-align:center;color:#e91e63;margin-bottom:10px}
-input,textarea{width:100%;padding:10px;margin:5px 0}
-button{width:100%;padding:12px;background:#e91e63;color:#fff;border:none}
+body{font-family:Arial;background:#f5f5f5;margin:0}
+header{background:#e91e63;color:#fff;padding:15px;text-align:center}
+section{padding:20px;max-width:800px;margin:auto}
+input,button{width:100%;padding:10px;margin:5px 0}
+button{background:#e91e63;color:white;border:none}
+.card{background:white;padding:15px;margin:10px 0;border-radius:10px}
 .total{font-size:30px;text-align:center;color:#e91e63}
 </style>
 </head>
@@ -25,106 +21,72 @@ button{width:100%;padding:12px;background:#e91e63;color:#fff;border:none}
 <body>
 
 <header>
-<nav>
-<h2>SEF</h2>
-<div>
-<a href="#donate">Donate</a>
-<a href="#donors">Donors</a>
-</div>
-</nav>
+<h1>Shubhi Education Foundation</h1>
+<p>Dahod | Donate for Education</p>
 </header>
 
-<section id="donate">
-<h2>Donation Form</h2>
-
-<form id="donateForm">
+<section>
+<h2>Donate Now</h2>
+<form id="form">
 <input id="name" placeholder="Name" required>
-<input id="email" type="email" placeholder="Email" required>
 <input id="amount" type="number" placeholder="Amount ₹" required>
-<textarea id="message" placeholder="Message"></textarea>
-<button type="submit">Donate</button>
+<button>Donate</button>
 </form>
 
 <p id="msg"></p>
-</section>
 
-<section id="donors">
-<h2>Donors List</h2>
-<div id="list">Loading...</div>
+<h3>Scan & Pay (GPay)</h3>
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=9408695001@upi&pn=SEF" />
+
 </section>
 
 <section>
 <h2>Total Donation</h2>
-<div id="total" class="total">₹0</div>
+<div class="total" id="total">₹0</div>
+</section>
+
+<section>
+<h2>Donors</h2>
+<div id="list"></div>
 </section>
 
 <script>
+
 const supabaseClient = supabase.createClient(
-  "https://kqahcvaxomxmicgyyync.supabase.co",
-  :sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl"
+  'https://kqahcvaxomxmcgyyync.supabase.co',
+  'PASTE_YOUR_KEY_HERE'
 );
 
-// SUBMIT
-document.getElementById("donateForm").addEventListener('submit', async (e)=>{
+// ADD DONATION
+document.getElementById('form').addEventListener('submit', async(e)=>{
 e.preventDefault();
 
-  const { error } = await supabaseClient.from("donations").insert([{
-    name: document.getElementById("name").value,
-    email: document.getElementById("email").value,
-    amount: Number(document.getElementById("amount").value),
-    message: document.getElementById("message").value
-  }]);
+const name=document.getElementById('name').value;
+const amount=document.getElementById('amount').value;
 
-  if(error){
-    document.getElementById("msg").innerText = error.message;
-  } else {
-    document.getElementById("msg").innerText = "Donation Saved ✅";
-    document.getElementById("donateForm").reset();
-    loadDonors();
-    loadTotal();
-  }
+const {error}=await supabaseClient.from('donations').insert([{name,amount}]);
+
+if(error){
+document.getElementById('msg').innerText=error.message;
+}else{
+document.getElementById('msg').innerText="Thank you!";
+load();
+}
 });
 
-// LOAD DONORS
-async function loadDonors(){
-  const { data, error } = await supabaseClient
-    .from("donations")
-    .select("*")
-    .order("created_at",{ascending:false});
+// LOAD DATA
+async function load(){
+const {data}=await supabaseClient.from('donations').select('*');
 
-  const list = document.getElementById("list");
+document.getElementById('list').innerHTML=
+(data||[]).map(d=><div class="card">${d.name} - ₹${d.amount}</div>).join('');
 
-  if(error){
-    list.innerText = error.message;
-    return;
-  }
-
-  list.innerHTML = (data || []).map(d => `
-    <div>
-      <b>${d.name}</b> - ₹${d.amount}
-      <div style="font-size:12px">
-        ${new Date(d.created_at).toLocaleString()}
-      </div>
-      ${d.message ? `<div>${d.message}</div>` : ""}
-      <hr>
-    </div>
-  `).join("") || "No donors yet";
+document.getElementById('total').innerText="₹"+
+(data||[]).reduce((a,b)=>a+b.amount,0);
 }
 
-// TOTAL
-async function loadTotal(){
-  const { data } = await supabaseClient
-    .from("donations")
-    .select("amount");
+load();
 
-  const total = (data || []).reduce((a,b)=>a+(b.amount||0),0);
-
-  document.getElementById("total").innerText = "₹" + total;
-}
-
-// LOAD
-loadDonors();
-loadTotal();
 </script>
 
 </body>
