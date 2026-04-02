@@ -24,7 +24,7 @@ CSR no.:- CSR00096110</p>
     <p><strong>Total Donations: ₹<span id="total">0</span></strong></p>
   </div>
 </section>
-<script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></scrip>
 const supabase = supabase.createClient('https://kqahcvaoxnmxfcgyyync.supabase.co','sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl');
 async function load(){
   const {data}=await supabase.from('donations').select('amount');
