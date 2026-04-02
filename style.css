@@ -23,4 +23,3 @@ th{background:var(--blue);color:#fff}
 .login-box{max-width:420px;margin:40px auto}
 .slider{position: relative;width: 100%;max-width: 800px;margin: auto;overflow: hidden;}
 .slide{width: 100%;display: none;}
-.slide.active:{display: block;}
