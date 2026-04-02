@@ -26,22 +26,22 @@ Mumbai Public Trust Act 1950 F/2247/DHD<p>
     <p>Shubhi Education Foundation is committed to supporting education and social welfare in Dahod. We provide scholarships, learning resources, and community programs.</p>
     <p><strong>Our Mission:</strong> Quality education for every child.</p>
     <div class="slider">
-    <img src="poster.png"> class="slide active">
-    <img src="poster2.png"> class="slide">
-    <img src="img3.jpg"> class="slide">
+    <img src="poster.png" class="slide active">
+    <img src="poster2.png" class="slide">
+    <img src="img3.jpg" class="slide">
     </div>
 </section>
-  <script>
-let slides = document.querySelectorAll(".slide");
-let index = 0;
-
-function showSlide() {
-  slides.forEach(slide => slide.classList.remove("active"));
-  slides[index].classList.add("active");
-  index = (index + 1) % slides.length;
-}
-
-setInterval(showSlide, 3000);
-</script>
+<script>
+window.onload = function() {
+  let slides = document.querySelectorAll(".slide");
+  let index = 0;
+  function showSlide() {
+    slides.forEach(slide => slide.classList.remove("active"));
+    slides[index].classList.add("active");
+    index = (index + 1) % slides.length;
+  }
+  setInterval(showSlide, 3000);
+};
+</script></script>
 <footer style="background:var(--dark); color:#fff; text-align:center; padding:15px">© 2026 Shubhi Education Foundation, Dahod</footer>
 </body></html>
