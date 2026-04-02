@@ -34,22 +34,26 @@ Mumbai Public Trust Act 1950 F/2247/DHD</p>
 </section>
 <script>
 let index = 0;
+let slides;
 
-function startSlider() {
-  let slides = document.querySelectorAll(".slide");
+document.addEventListener("DOMContentLoaded", function () {
+  slides = document.querySelectorAll(".slide");
 
-  setInterval(function() {
-    slides.forEach(slide => slide.classList.remove("active"));
-    slides[index].classList.add("active");
+  setInterval(function () {
+    // sabko hide karo
+    for (let i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";
+    }
+
+    // next slide dikhayo
+    slides[index].style.display = "block";
+
     index++;
-
     if (index >= slides.length) {
       index = 0;
     }
-  }, 3000);
-}
-
-window.onload = startSlider;
-</script>
+  }, 2000);
+});
+</script>>
 <footer style="background:var(--dark); color:#fff; text-align:center; padding:15px">© 2026 Shubhi Education Foundation, Dahod</footer>
 </body></html>
