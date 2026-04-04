@@ -39,25 +39,45 @@ CSR no.:- CSR00096110</p>
     </div>
   </div>
 </section>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const supabase = supabase.createClient('https://kqahcvaoxnmxfcgyyync.supabase.co','sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl');
-document.getElementById('donationForm').addEventListener('submit', async e=>{
-  e.preventDefault();
-  const name=document.getElementById('dname').value.trim();
-  const email=document.getElementById('demail').value.trim();
-  const amount=document.getElementById('damt').value.trim();
-  if(!name||!email||!amount){alert('Please fill all fields');return;}
-  await supabase.from('donations').insert([{name,email,amount}]);
-  alert('Donation recorded!');
-  window.location.href=upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amount}&cu=INR;
-  e.target.reset();
-});
-document.getElementById('gpayBtn').addEventListener('click',e=>{
-  e.preventDefault();
-  const amt=document.getElementById('damt').value||1;
-  window.location.href=upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amt}&cu=INR;
-});
- </script>
+  const SUPABASE_URL = "https://kqahcvaoxnmxfggyyync.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_SIBSJ6qcJ5Emg-SYhXPnW..."; // apna pura key daalo
+
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  document.getElementById("donationForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("dname").value.trim();
+    const email = document.getElementById("demail").value.trim();
+    const amount = parseInt(document.getElementById("damt").value.trim());
+    const msg = document.getElementById("dmsg").value.trim();
+
+    if(!name || !email || !amount){
+      alert("Please fill all fields");
+      return;
+    }
+
+    const { error } = await supabase.from("donations").insert([{ name, email, amount, message: msg }]);
+
+    if(error){
+      alert("Error: " + error.message);
+      console.log(error);
+      return;
+    }
+
+    alert("Donation recorded!");
+    // UPI link open karo
+    window.location.href = upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amount}&cu=INR;
+    e.target.reset();
+  });
+
+  document.getElementById("gpayBtn").addEventListener("click", (e)=>{
+    e.preventDefault();
+    const amt = document.getElementById("damt").value || 0;
+    window.location.href = upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amt}&cu=INR;
+  });
+</script>
   <div>
     <section>
       <footer style="background:var(--dark); color:#fff; text-align:center; padding:15px">© Rainbow Public School, Rabdal, Dahod</footer>
