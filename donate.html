@@ -66,16 +66,16 @@ CSR no.:- CSR00096110</p>
       return;
     }
 
-    alert("Donation recorded!");
+    alert("Thank you! Donation recorded.");
     // UPI link open karo
-    window.location.href = upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amount}&cu=INR;
+    window.location.href = 'upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amount}&cu=INR';
     e.target.reset();
   });
 
   document.getElementById("gpayBtn").addEventListener("click", (e)=>{
     e.preventDefault();
     const amt = document.getElementById("damt").value || 0;
-    window.location.href = upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amt}&cu=INR;
+    window.location.href = 'upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amt}&cu=INR';
   });
 </script>
   <div>
