@@ -14,6 +14,7 @@ CSR no.:- CSR00096110</p>
   Email: sefdahod@gmail.com | Mobile: 948695001 | Landline: 02673-450037</p>
 <nav>
   <a href="index.html">Home</a>
+  <a href="dashboard.html">Dashboard</a>
   <a href="donate.html">Donate</a>
   <a href="donors.html" class="active">Donors</a>
   <a href="finance.html">Finance</a>
@@ -33,7 +34,7 @@ async function load(){
   const t=document.getElementById('donorTable');
   t.innerHTML='<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th></tr>';
   data.forEach(d=>t.innerHTML+=<tr><td>${d.name}</td><td>${d.email}</td><td>${d.amount}</td><td>${new Date(d.created_at).toLocaleDateString()}</td></tr>);
-}</td></tr>')
+}</td></tr>');
 load();
 </script>
 </body></html>
