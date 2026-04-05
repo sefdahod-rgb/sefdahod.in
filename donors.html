@@ -33,7 +33,7 @@ async function load(){
   const t=document.getElementById('donorTable');
   t.innerHTML='<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th></tr>';
   data.forEach(d=>t.innerHTML+=<tr><td>${d.name}</td><td>${d.email}</td><td>${d.amount}</td><td>${new Date(d.created_at).toLocaleDateString()}</td></tr>);
-}
+}</td></tr>')
 load();
 </script>
 </body></html>
