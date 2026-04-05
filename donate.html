@@ -62,12 +62,12 @@
     const amount = parseInt(document.getElementById("damt").value.trim());
     const msg = document.getElementById("dmsg").value.trim();
 
-    if(!name || !email || !amount || !message){
+    if(!name || !email || !amount){
       alert("Please fill all fields");
       return;
     }
 
-    const { error } = await client.from("donations").insert([{ name, email, amount, message: msg }]);
+    const { error } = await client.from("donations").insert([{ name, email, amount, message: }]);
 
     if(error){
       alert("Error: " + error.message);
