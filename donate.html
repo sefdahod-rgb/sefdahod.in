@@ -33,7 +33,7 @@
           <input type="text" id="dname" placeholder="Your Full Name" required><br><br>
           <input type="email" id="demail" placeholder="Your Email" required><br><br>
           <input type="number" id="damt" placeholder="Donation Amount (₹)" required min="1"><br><br>
-          <textarea id="dmsg" placeholder="Message (Optional)"></textarea><br><br>
+          <textarea id="dmsg" placeholder="Massage (Optional)"></textarea><br><br>
           <button type="submit">Submit & Pay with GPay</button>
         </form>
         <div class="qr">
@@ -67,10 +67,10 @@
       return;
     }
 
-    const { error } = await client.from("donations").insert([{ name, email, amount }]);
+    const { error } = await client.from("donations").insert([{ name, email, amount, massage: msg }]);
 
     if(error){
-      alert("Error: " + error.message);
+      alert("Error: " + error.massage);
       console.log(error);
       return;
     }
