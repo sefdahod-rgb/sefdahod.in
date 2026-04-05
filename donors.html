@@ -27,7 +27,7 @@ CSR no.:- CSR00096110</p>
   </div>
 </section>
 <script>
-const supabase = supabase.createClient('https://kqahcvaoxnmxfcgyyync.supabase.co','sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl');
+const supabase = supabase.createClient('https://kqahcvaoxnmxfcgyyync.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg');
 async function load(){
   const {data}=await supabase.from('donations').select('*').order('id',{ascending:false});
   const t=document.getElementById('donorTable');
