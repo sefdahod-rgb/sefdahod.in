@@ -1,17 +1,171 @@
-<h2>Donation Receipt</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Donation Receipt</title>
 
-<p id="rname"></p>
-<p id="ramount"></p>
-<p id="rdate"></p>
+<style>
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f5f5f5;
+  padding: 20px;
+}
 
-<button onclick="printReceipt()">Download PDF</button>
+.receipt {
+  max-width: 700px;
+  margin: auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header img {
+  height: 70px;
+}
+
+.header h2 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.sub {
+  font-size: 12px;
+  color: gray;
+}
+
+/* Title */
+.title {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 2px solid #000;
+  padding-bottom: 5px;
+}
+
+/* Table */
+.table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+.table td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Footer */
+.footer {
+  margin-top: 40px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.sign {
+  text-align: right;
+}
+
+/* Button */
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: green;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+@media print {
+  button {
+    display: none;
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="receipt">
+
+  <!-- Header -->
+  <div class="header">
+    <img src="logo.png">
+    <div>
+      <h2>Shubhi Education Foundation</h2>
+      <div class="sub">Dahod, Gujarat</div>
+    </div>
+  </div>
+
+  <!-- Title -->
+  <div class="title">DONATION RECEIPT</div>
+
+  <!-- Info -->
+  <table class="table">
+    <tr>
+      <td><b>Receipt No:</b></td>
+      <td id="rno"></td>
+    </tr>
+    <tr>
+      <td><b>Date:</b></td>
+      <td id="date"></td>
+    </tr>
+    <tr>
+      <td><b>Donor Name:</b></td>
+      <td id="name"></td>
+    </tr>
+    <tr>
+      <td><b>Email:</b></td>
+      <td id="email"></td>
+    </tr>
+    <tr>
+      <td><b>Amount:</b></td>
+      <td>₹ <span id="amount"></span></td>
+    </tr>
+    <tr>
+      <td><b>Payment Mode:</b></td>
+      <td>UPI</td>
+    </tr>
+  </table>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>
+      <p>Thank you for your generous support 🙏</p>
+    </div>
+
+    <div class="sign">
+      <p>Authorized Signature</p>
+      <p>___________________</p>
+    </div>
+  </div>
+
+  <!-- Button -->
+  <button onclick="window.print()">Download / Print PDF</button>
+
+</div>
 
 <script>
-document.getElementById("rname").innerText = "Donor: Thank You";
-document.getElementById("ramount").innerText = "Amount: ₹500";
-document.getElementById("rdate").innerText = new Date().toLocaleString();
+const d = JSON.parse(localStorage.getItem("donorData"));
 
-function printReceipt(){
-  window.print();
+if(d){
+  document.getElementById("rno").innerText = "SEF-" + Date.now();
+  document.getElementById("date").innerText = new Date(d.created_at).toLocaleDateString();
+  document.getElementById("name").innerText = d.name;
+  document.getElementById("email").innerText = d.email;
+  document.getElementById("amount").innerText = d.amount;
 }
 </script>
+
+</body>
+</html>
