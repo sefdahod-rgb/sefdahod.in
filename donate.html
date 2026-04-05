@@ -67,7 +67,7 @@
       return;
     }
 
-    const { error } = await client.from("donations").insert([{ name, email, amount, message: }]);
+    const { error } = await client.from("donations").insert([{ name, email, amount }]);
 
     if(error){
       alert("Error: " + error.message);
