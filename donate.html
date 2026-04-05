@@ -14,6 +14,7 @@ CSR no.:- CSR00096110</p>
   Email: sefdahod@gmail.com | Mobile: 948695001 | Landline: 02673-450037</p>
 <nav>
   <a href="index.html">Home</a>
+  <a href="dashboard.html">dashboard</a>
   <a href="donate.html" class="active">Donate</a>
   <a href="donors.html">Donors</a>
   <a href="finance.html">Finance</a>
@@ -41,9 +42,7 @@ CSR no.:- CSR00096110</p>
 </section>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  
   const supabase = window.supabase.createClient("https://kqahcvaoxnmxfcgyyync.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg");
-
   document.getElementById("donationForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const name = document.getElementById("dname").value.trim();
