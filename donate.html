@@ -1,48 +1,58 @@
 <!DOCTYPE html>
 <html lang="hi">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Donate - Shubhi Education Foundation</title><link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
-<body><div class="overlay">
-<header><img src="logo.png"><h1>Shubhi Education Foundation, Dahod</h1></header>
-  </p> Registratio no.:- Under Indian Society Act 1860 Guj./2249/DHD. & 
-Mumbai Public Trust Act 1950 F/2247/DHD</p>
-  <p>80G Registration No. :-AAOTS1413MF20251
-12A Registration No. :- AAOTS1413ME20241
-CSR no.:- CSR00096110</p>
-  <p class="info">Address: Rainbow Public School, Shalimar co-operative society, Muvaliya Road, Rabdal, Dahod Gujarat - 389151<br>
-  Email: sefdahod@gmail.com | Mobile: 948695001 | Landline: 02673-450037</p>
-<nav>
-  <a href="index.html">Home</a>
-  <a href="dashboard.html">dashboard</a>
-  <a href="donate.html" class="active">Donate</a>
-  <a href="donors.html">Donors</a>
-  <a href="finance.html">Finance</a>
-  <a href="admin.html">Admin</a>
-  <a href="login.html">Login</a>
-</nav>
-<section>
-  <div class="card">
-    <h2>Donate Now</h2>
-    <form id="donationForm">
-      <input type="text" id="dname" placeholder="Your Full Name" required><br><br>
-      <input type="email" id="demail" placeholder="Your Email" required><br><br>
-      <input type="number" id="damt" type="number" placeholder="Donation Amount (₹)" required min="1"><br><br>
-      <input id="dmsg" placeholder="Message (Optional)"></textarea><br><
-      <button type="submit">Submit & Pay with GPay</button>
-    </form>
-    <div class="qr">
-      <h3>Scan & Pay via UPI</h3>
-      <img src="qr.jpeg" alt="UPI QR Code">
-      <a class="gpay" id="gpayBtn" href="#">Pay with GPay</a>
-      <p><strong>UPI ID:</strong> 9408695001-1@okbizaxis</p>
-      <p style="color:#c00">Tip: Open it on your mobile; the GPay app isn't opening on the PC.</p>
-    </div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Donate - Shubhi Education Foundation</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="overlay">
+    <header>
+      <img src="logo.png">
+      <h1>Shubhi Education Foundation, Dahod</h1>
+    </header>
+    <p>Registration no.:- Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD</p>
+    <p>80G Registration No. :-AAOTS1413MF20251 12A Registration No. :- AAOTS1413ME20241 CSR no.:- CSR00096110</p>
+    <p class="info">Address: Rainbow Public School, Shalimar co-operative society, Muvaliya Road, Rabdal, Dahod Gujarat - 389151<br>
+      Email: sefdahod@gmail.com | Mobile: 9408695001 | Landline: 02673-450037</p>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">dashboard</a>
+      <a href="donate.html" class="active">Donate</a>
+      <a href="donors.html">Donors</a>
+      <a href="finance.html">Finance</a>
+      <a href="admin.html">Admin</a>
+      <a href="login.html">Login</a>
+    </nav>
+    <section>
+      <div class="card">
+        <h2>Donate Now</h2>
+        <form id="donationForm">
+          <input type="text" id="dname" placeholder="Your Full Name" required><br><br>
+          <input type="email" id="demail" placeholder="Your Email" required><br><br>
+          <input type="number" id="damt" placeholder="Donation Amount (₹)" required min="1"><br><br>
+          <textarea id="dmsg" placeholder="Message (Optional)"></textarea><br><br>
+          <button type="submit">Submit & Pay with GPay</button>
+        </form>
+        <div class="qr">
+          <h3>Scan & Pay via UPI</h3>
+          <img src="qr.jpeg" alt="UPI QR Code">
+          <a class="gpay" id="gpayBtn" href="#">Pay with GPay</a>
+          <p><strong>UPI ID:</strong> 9408695001-1@okbizaxis</p>
+          <p style="color:#c00">Tip: Open it on your mobile; the GPay app isn't opening on the PC.</p>
+        </div>
+      </div>
+    </section>
   </div>
-</section>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <footer style="background:var(--dark); color:#fff; text-align:center; padding:15px">© Rainbow Public School, Rabdal, Dahod</footer>
+
 <script>
-  const supabase = window.supabase.createClient("https://kqahcvaoxnmxfcgyyync.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg");
+  // variable ka naam 'client' rakha, 'supabase' nahi
+  const client = window.supabase.createClient("https://kqahcvaoxnmxfcgyyync.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg");
+
   document.getElementById("donationForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const name = document.getElementById("dname").value.trim();
@@ -55,7 +65,7 @@ CSR no.:- CSR00096110</p>
       return;
     }
 
-    const { error } = await supabase.from("donations").insert([{ name, email, amount, message: msg }]);
+    const { error } = await client.from("donations").insert([{ name, email, amount, message: msg }]);
 
     if(error){
       alert("Error: " + error.message);
@@ -64,21 +74,16 @@ CSR no.:- CSR00096110</p>
     }
 
     alert("Thank you! Donation recorded.");
-    // UPI link open karo
-    window.location.href = 'upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amount}&cu=INR';
+    // backticks ` ` use kiye for ${amount}
+    window.location.href = upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amount}&cu=INR;
     e.target.reset();
   });
 
   document.getElementById("gpayBtn").addEventListener("click", (e)=>{
     e.preventDefault();
     const amt = document.getElementById("damt").value || 0;
-    window.location.href = 'upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amt}&cu=INR';
+    window.location.href = upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amt}&cu=INR;
   });
 </script>
-  <div>
-    <section>
-      <footer style="background:var(--dark); color:#fff; text-align:center; padding:15px">© Rainbow Public School, Rabdal, Dahod</footer>
-
 </body>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-</body></html>
+</html>
