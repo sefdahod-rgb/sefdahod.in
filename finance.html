@@ -11,7 +11,7 @@ Mumbai Public Trust Act 1950 F/2247/DHD</p>
 12A Registration No. :- AAOTS1413ME20241
 CSR no.:- CSR00096110</p>
   <p class="info">Address: Rainbow Public School, Shalimar co-operative society, Muvaliya Road, Rabdal, Dahod Gujarat - 389151<br>
-  Email: sefdahod@gmail.com | Mobile: 948695001 | Landline: 02673-450037</p>
+  Email: sefdahod@gmail.com | Mobile: 9408695001 | Landline: 02673-450037</p>
 <nav>
   <a href="index.html">Home</a>
   <a href="dashboard.html">Dashboard</a>
@@ -27,7 +27,7 @@ CSR no.:- CSR00096110</p>
     <p><strong>Total Donations: ₹<span id="total">0</span></strong></p>
   </div>
 </section>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></scrip>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 const supabase = supabase.createClient('https://kqahcvaoxnmxfcgyyync.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg');
 async function load(){
   const {data}=await supabase.from('donations').select('amount');
