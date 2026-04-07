@@ -49,11 +49,10 @@ function openReceipt(d){
  t.innerHTML = '<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th><th>Receipt</th></tr>`;
   if(error){
     console.log(error);
-    t.innerHTML += `<tr><td colspan="5">Error loading data</td></tr>`;
-    return;
-  }
+    t.innerHTML += '<tr><td colspan="5">Error loading data</td></tr>`;
+    return;}
     if(!data || data.length === 0){
-    t.innerHTML += `<tr><td colspan="5">No donors found</td></tr>`;
+    t.innerHTML += '<tr><td colspan="5">No donors found</td></tr>`;
     return;
   }
   data.forEach(d => {
