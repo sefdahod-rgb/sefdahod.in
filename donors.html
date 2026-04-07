@@ -38,15 +38,12 @@ function openReceipt(d){
     + "&email=" + encodeURIComponent(d.email)
     + "&amount=" + d.amount
     + "&date=" + encodeURIComponent(d.created_at);
-
-  window.open(url, "_blank");
-}  
+  window.open(url, "_blank");}
   async function load(){
-
   const { data, error } = await client
     .from('donations')
     .select('*')
-    .order('id', { ascending: false });
+    .order('id', { ascending: false });}
 
   const t = document.getElementById('donorTable');
  t.innerHTML = '<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th><th>Receipt</th></tr>`;
