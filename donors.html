@@ -54,10 +54,14 @@ async function load(){
       <td>${d.amount}</td>
       <td>${new Date(d.created_at).toLocaleDateString()}</td>
       <td>
-        <button onclick='openReceipt(${JSON.stringify(d)})'>
-          Receipt
-        </button>
-      </td>
+       function openReceipt(d){
+  const url = "receipt.html?name=" + encodeURIComponent(d.name)
+    + "&email=" + encodeURIComponent(d.email)
+    + "&amount=" + d.amount
+    + "&date=" + encodeURIComponent(d.created_at);
+
+  window.open(url, "_blank");
+}      </td>
     </tr>
   `;
 });
