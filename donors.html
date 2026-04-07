@@ -45,9 +45,6 @@ async function load(){
   const t = document.getElementById('donorTable');
 
   t.innerHTML = '<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th></tr>';
-<button onclick='openReceipt(${JSON.stringify(d)})'>
-  Receipt
-</button>
 
   data.forEach(d => {
     t.innerHTML += `
