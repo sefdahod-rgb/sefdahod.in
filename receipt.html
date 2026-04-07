@@ -3,28 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Donation Receipt</title>
-<!DOCTYPE html>
-<html lang="hi">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Admin - Shubhi Education Foundation</title><link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
-<body><div class="overlay">
-<header><img src="logo.png"><h1>Shubhi Education Foundation, Dahod</h1></header>
-<p>Under Indian Society Act 1860 Guj./2249/DHD. & 
-Mumbai Public Trust Act 1950 F/2247/DHD</p>
-  <p>80G Registration No. :-AAOTS1413MF20251
-12A Registration No. :- AAOTS1413ME20241
-CSR no.:- CSR00096110</p>
-<nav>
-  <a href="index.html">Home</a>
-  <a href="donate.html">Donate</a>
-  <a href="donors.html">Donors</a>
-  <a href="finance.html">Finance</a>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="admin.html" class="active">Admin</a>
-  <a href="login.html">Login</a>
-</nav>
-<section><div class="card">
+
 <style>
 body {
   font-family: 'Segoe UI', sans-serif;
@@ -41,28 +20,16 @@ body {
   border: 1px solid #ddd;
 }
 
-/* Header */
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 15px;
 }
 
 .header img {
   height: 70px;
 }
 
-.header h2 {
-  margin: 0;
-  color: #2c3e50;
-}
-
-.sub {
-  font-size: 12px;
-  color: gray;
-}
-
-/* Title */
 .title {
   text-align: center;
   margin: 20px 0;
@@ -72,7 +39,6 @@ body {
   padding-bottom: 5px;
 }
 
-/* Table */
 .table {
   width: 100%;
   margin-top: 20px;
@@ -84,18 +50,12 @@ body {
   border-bottom: 1px solid #ddd;
 }
 
-/* Footer */
 .footer {
   margin-top: 40px;
   display: flex;
   justify-content: space-between;
 }
 
-.sign {
-  text-align: right;
-}
-
-/* Button */
 button {
   margin-top: 20px;
   padding: 10px 20px;
@@ -103,13 +63,10 @@ button {
   color: #fff;
   border: none;
   cursor: pointer;
-  border-radius: 5px;
 }
 
 @media print {
-  button {
-    display: none;
-  }
+  button { display: none; }
 }
 </style>
 
@@ -119,19 +76,13 @@ button {
 
 <div class="receipt">
 
-  <!-- Header -->
   <div class="header">
     <img src="logo.png">
-    <div>
-      <h2>Shubhi Education Foundation</h2>
-      <div class="sub">Dahod, Gujarat</div>
-    </div>
+    <h2>Shubhi Education Foundation</h2>
   </div>
 
-  <!-- Title -->
   <div class="title">DONATION RECEIPT</div>
 
-  <!-- Info -->
   <table class="table">
     <tr>
       <td><b>Receipt No:</b></td>
@@ -153,38 +104,34 @@ button {
       <td><b>Amount:</b></td>
       <td>₹ <span id="amount"></span></td>
     </tr>
-    <tr>
-      <td><b>Payment Mode:</b></td>
-      <td>UPI</td>
-    </tr>
   </table>
 
-  <!-- Footer -->
   <div class="footer">
-    <div>
-      <p>Thank you for your generous support 🙏</p>
-    </div>
-
-    <div class="sign">
-      <p>Authorized Signature</p>
-      <p>___________________</p>
-    </div>
+    <div>Thank you for your support 🙏</div>
+    <div>Authorized Signature</div>
   </div>
 
-  <!-- Button -->
   <button onclick="window.print()">Download / Print PDF</button>
 
 </div>
 
 <script>
-const d = JSON.parse(localStorage.getItem("donorData"));
+// ✅ URL से data लो (FINAL FIX)
+const params = new URLSearchParams(window.location.search);
 
-if(d){
+const name = params.get("name");
+const email = params.get("email");
+const amount = params.get("amount");
+const date = params.get("date");
+
+if(name){
   document.getElementById("rno").innerText = "SEF-" + Date.now();
-  document.getElementById("date").innerText = new Date(d.created_at).toLocaleDateString();
-  document.getElementById("name").innerText = d.name;
-  document.getElementById("email").innerText = d.email;
-  document.getElementById("amount").innerText = d.amount;
+  document.getElementById("date").innerText = new Date(date).toLocaleDateString();
+  document.getElementById("name").innerText = name;
+  document.getElementById("email").innerText = email;
+  document.getElementById("amount").innerText = amount;
+} else {
+  document.getElementById("name").innerText = "No Data";
 }
 </script>
 
