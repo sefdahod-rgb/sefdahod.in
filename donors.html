@@ -34,18 +34,31 @@ const client = window.supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg'
 );
 function openReceipt(d){
-  const url = `receipt.html?name=${encodeURIComponent(d.name)}&email=${encodeURIComponent(d.email)}&amount=${d.amount}&date=${encodeURIComponent(d.created_at)}`;
+  const url = "receipt.html?name=" + encodeURIComponent(d.name)
+    + "&email=" + encodeURIComponent(d.email)
+    + "&amount=" + d.amount
+    + "&date=" + encodeURIComponent(d.created_at);
+
   window.open(url, "_blank");
-}
-async function load(){
-  const { data } = await client
+}}
+  async function load(){
+
+  const { data, error } = await client
     .from('donations')
     .select('*')
     .order('id', { ascending: false });
+
   const t = document.getElementById('donorTable');
-
-  t.innerHTML = '<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th><th>Receipt</th></tr>';
-
+ t.innerHTML = '<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th><th>Receipt</th></tr>`;
+  if(error){
+    console.log(error);
+    t.innerHTML += `<tr><td colspan="5">Error loading data</td></tr>`;
+    return;
+  }
+    if(!data || data.length === 0){
+    t.innerHTML += `<tr><td colspan="5">No donors found</td></tr>`;
+    return;
+  }
   data.forEach(d => {
   t.innerHTML += `
     <tr>
@@ -65,6 +78,14 @@ async function load(){
     </tr>
   `;
 });
+    <button onclick='openReceipt(${JSON.stringify(d)})'>
+            Receipt
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+
   load();
 </script>
 </body></html>
