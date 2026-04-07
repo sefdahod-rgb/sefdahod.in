@@ -44,13 +44,7 @@ async function load(){
     .order('id', { ascending: false });
   const t = document.getElementById('donorTable');
 
-  t.innerHTML = '<tr>
-  <th>Name</th>
-  <th>Email</th>
-  <th>Amount (₹)</th>
-  <th>Date</th>
-  <th>Receipt</th>
-</tr>
+  t.innerHTML = '<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th><th>Receipt</th></tr>';
 
   data.forEach(d => {
   t.innerHTML += `
@@ -67,4 +61,5 @@ async function load(){
     </tr>
   `;
 });
+  load();
 </script></body></html>
