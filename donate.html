@@ -86,5 +86,14 @@
     const amt = document.getElementById("damt").value || 0;
     window.location.href = 'upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amt}&cu=INR';
   });
+  const receiptNo = "SEF-" + Date.now();
+
+await client.from("donations").insert([{
+  name,
+  email,
+  amount,
+  receipt_no: receiptNo,
+  status: "pending"
+}]);
 </script></body>
 </html>
