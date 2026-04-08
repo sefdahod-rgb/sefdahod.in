@@ -48,5 +48,19 @@ async function del(id){
   }
 }
 load();
+  function exportCSV(data){
+  let csv = "Name,Email,Amount\n";
+
+  data.forEach(d => {
+    csv += `${d.name},${d.email},${d.amount}\n`;
+  });
+
+  const blob = new Blob([csv]);
+  const a = document.createElement("a");
+
+  a.href = URL.createObjectURL(blob);
+  a.download = "donors.csv";
+  a.click();
+}
 </script>
 </body></html>
