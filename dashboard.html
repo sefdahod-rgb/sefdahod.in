@@ -67,12 +67,17 @@ CSR no.:- CSR00096110
 <p id="total"></p>
 
 <script>
-const { data } = await client.from("donations").select("amount");
 
-let total = 0;
-data.forEach(d => total += d.amount);
+async function loadDashboard(){
 
-document.getElementById("total").innerText = "₹ " + total;
+  const { data } = await client.from("donations").select("amount");
+
+  let total = 0;
+  data.forEach(d => total += d.amount);
+
+  document.getElementById("total").innerText = "₹ " + total;
+}
+loadDashboard();
 </script>
 <script>
   const client = window.supabase.createClient(
