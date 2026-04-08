@@ -16,7 +16,6 @@ CSR no.:- CSR00096110</p>
   <a href="index.html">Home</a>
   <a href="dashboard.html">Dashboard</a>
   <a href="donate.html">Donate</a>
-  <a href="receipt.html">Receipt</a>
   <a href="donors.html" class="active">Donors</a>
   <a href="finance.html">Finance</a>
   <a href="admin.html">Admin</a>
@@ -33,45 +32,28 @@ const client = window.supabase.createClient(
   'https://kqahcvaoxnmxfcgyyync.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg'
 );
-function openReceipt(name, email, amount, date){
-  const url = "receipt.html?name=" + encodeURIComponent(name)
-    + "&email=" + encodeURIComponent(email)
-    + "&amount=" + amount
-    + "&date=" + encodeURIComponent(date);
 
-  window.open(url, "_blank");
-}
-  async function load(){
-  const { data, error } = await client
+async function load(){
+  const { data } = await client
     .from('donations')
     .select('*')
-    .order('id', { ascending: false });}
+    .order('id', { ascending: false });
+
   const t = document.getElementById('donorTable');
-   t.innerHTML = '<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th><th>Receipt</th></tr>';
-   if(error){console.log(error);
-    t.innerHTML += '<tr><td colspan="5">Error loading data</td></tr>';
-    return;}
-    if(!data || data.length === 0){
-    t.innerHTML += '<tr><td colspan="5">No donors found</td></tr>`;
-    return;  }
+
+  t.innerHTML = '<tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th></tr>';
+
   data.forEach(d => {
-  t.innerHTML += `
-    <tr>
-      <td>${d.name}</td>
-      <td>${d.email}</td>
-      <td>${d.amount}</td>
-      <td>${new Date(d.created_at).toLocaleDateString()}</td>
-      <td>
-       
-});
-    <button onclick='openReceipt(${JSON.stringify(d)})'>
-            Receipt
-          </button>
-        </td>
+    t.innerHTML += `
+      <tr>
+        <td>${d.name}</td>
+        <td>${d.email}</td>
+        <td>${d.amount}</td>
+        <td>${new Date(d.created_at).toLocaleDateString()}</td>
       </tr>
     `;
   });
+}
 
-  load();
-</script>
-</body></html>
+load();
+</script></body></html>
