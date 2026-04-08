@@ -56,5 +56,14 @@ async function load(){
 }
 
 load();
+  function openReceipt(name, email, amount, date, receipt){
+  const url = "receipt.html?name=" + encodeURIComponent(name)
+    + "&email=" + encodeURIComponent(email)
+    + "&amount=" + amount
+    + "&date=" + encodeURIComponent(date)
+    + "&receipt=" + receipt;
+
+  window.open(url, "_blank");
+}
   <button onclick="openReceipt('${d.name}','${d.email}','${d.amount}','${d.created_at}','${d.receipt_no}')">
 </script></body></html>
