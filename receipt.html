@@ -7,38 +7,56 @@
 <style>
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: #f5f5f5;
+  background: #eaeaea;
   padding: 20px;
 }
 
 .receipt {
-  max-width: 700px;
+  max-width: 750px;
   margin: auto;
   background: #fff;
   padding: 30px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  position: relative;
 }
 
+/* Watermark */
+.receipt::before {
+  content: "SEF";
+  position: absolute;
+  font-size: 120px;
+  color: rgba(0,0,0,0.05);
+  top: 40%;
+  left: 30%;
+  transform: rotate(-30deg);
+}
+
+/* Header */
 .header {
   display: flex;
   align-items: center;
-  gap: 15px;
+  justify-content: space-between;
 }
 
 .header img {
   height: 70px;
 }
 
-.title {
-  text-align: center;
-  margin: 20px 0;
-  font-size: 20px;
-  font-weight: bold;
-  border-bottom: 2px solid #000;
-  padding-bottom: 5px;
+.header h2 {
+  margin: 0;
 }
 
+/* Title */
+.title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  margin: 20px 0;
+  border-bottom: 2px solid #000;
+}
+
+/* Info Table */
 .table {
   width: 100%;
   margin-top: 20px;
@@ -46,23 +64,43 @@ body {
 }
 
 .table td {
-  padding: 10px;
+  padding: 12px;
   border-bottom: 1px solid #ddd;
 }
 
+/* Highlight amount */
+.amount {
+  font-size: 18px;
+  font-weight: bold;
+  color: green;
+}
+
+/* Footer */
 .footer {
   margin-top: 40px;
   display: flex;
   justify-content: space-between;
 }
 
+.sign {
+  text-align: right;
+}
+
+/* QR */
+.qr {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Button */
 button {
   margin-top: 20px;
   padding: 10px 20px;
-  background: green;
+  background: #28a745;
   color: #fff;
   border: none;
   cursor: pointer;
+  border-radius: 6px;
 }
 
 @media print {
@@ -76,13 +114,19 @@ button {
 
 <div class="receipt">
 
+  <!-- Header -->
   <div class="header">
     <img src="logo.png">
-    <h2>Shubhi Education Foundation</h2>
+    <div>
+      <h2>Shubhi Education Foundation</h2>
+      <small>Dahod, Gujarat</small>
+    </div>
   </div>
 
+  <!-- Title -->
   <div class="title">DONATION RECEIPT</div>
 
+  <!-- Table -->
   <table class="table">
     <tr>
       <td><b>Receipt No:</b></td>
@@ -102,22 +146,42 @@ button {
     </tr>
     <tr>
       <td><b>Amount:</b></td>
-      <td>₹ <span id="amount"></span></td>
+      <td class="amount">₹ <span id="amount"></span></td>
+    </tr>
+    <tr>
+      <td><b>Payment Mode:</b></td>
+      <td>UPI</td>
     </tr>
   </table>
 
-  <div class="footer">
-    <div>Thank you for your support 🙏</div>
-    <div>Authorized Signature</div>
+  <!-- QR -->
+  <div class="qr">
+    <canvas id="qrcode"></canvas>
+    <p style="font-size:12px;">Scan to verify</p>
   </div>
 
+  <!-- Footer -->
+  <div class="footer">
+    <div>
+      Thank you for your generous support 🙏
+    </div>
+    <div class="sign">
+      Authorized Signature<br>
+      ___________________
+    </div>
+  </div>
+
+  <!-- Button -->
   <button onclick="window.print()">Download / Print PDF</button>
 
 </div>
 
+<!-- QR Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
 <script>
-// ✅ URL से data लो (FINAL FIX)
-const params = new URLSearchParams(window.location.search);
+const receipt = params.get("receipt");
+document.getElementById("rno").innerText = receipt;const params = new URLSearchParams(window.location.search);
 
 const name = params.get("name");
 const email = params.get("email");
@@ -125,11 +189,21 @@ const amount = params.get("amount");
 const date = params.get("date");
 
 if(name){
-  document.getElementById("rno").innerText = "SEF-" + Date.now();
+  const receiptNo = "SEF-" + Date.now();
+
+  document.getElementById("rno").innerText = receiptNo;
   document.getElementById("date").innerText = new Date(date).toLocaleDateString();
   document.getElementById("name").innerText = name;
   document.getElementById("email").innerText = email;
   document.getElementById("amount").innerText = amount;
+
+  // QR Code
+  new QRious({
+    element: document.getElementById('qrcode'),
+    value: receiptNo + " | " + name + " | ₹" + amount,
+    size: 120
+  });
+
 } else {
   document.getElementById("name").innerText = "No Data";
 }
