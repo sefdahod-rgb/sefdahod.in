@@ -72,8 +72,7 @@ CSR no.:- CSR00096110
 const { data } = await client.from("donations").select("amount");
 
   let total = 0;
-  data.for Each(d => total += d.amount);
-
+  data.forEach(d => total += d.amount);
   document.getElementById("total").innerText = "₹ " + total;
 }
 loadDashboard();
