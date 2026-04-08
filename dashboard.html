@@ -70,7 +70,7 @@ CSR no.:- CSR00096110
 
 async function loadDashboard(){
 
-  const { data } = await client.from("donations").select("amount");
+  const { data } = 'await client.from("donations").select("amount")';
 
   let total = 0;
   data.forEach(d => total += d.amount);
