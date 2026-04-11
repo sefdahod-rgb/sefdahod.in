@@ -132,11 +132,11 @@ const receipt = params.get("receipt");
 
 // Fill data
 document.getElementById("rno").innerText = receipt || "SEF-" + Date.now();
-document.getElementById("date").innerText = date ? new Date(date).toLocaleDateString() : new Date().toLocaleDateString();
+document.getElementById("date").innerText = date 
+  ? new Date(date).toLocaleDateString() 
+  : new Date().toLocaleDateString();
+
 document.getElementById("name").innerText = name || "-";
 document.getElementById("email").innerText = email || "-";
 document.getElementById("amount").innerText = amount || "0";
 </script>
-
-</body>
-</html>
