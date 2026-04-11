@@ -56,6 +56,7 @@ const client = window.supabase.createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
+// FORM SUBMIT
 document.getElementById("donationForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -64,15 +65,15 @@ document.getElementById("donationForm").addEventListener("submit", async (e) => 
   const amount = parseInt(document.getElementById("damt").value.trim());
   const msg = document.getElementById("dmsg").value.trim();
 
-  if(!name || !email || !amount){
+  if (!name || !email || !amount) {
     alert("Please fill all fields");
     return;
   }
 
-  // ✅ Receipt number generate
+  // Receipt number
   const receiptNo = "SEF-" + Date.now();
 
-  // ✅ Save in database
+  // Save data
   const { error } = await client.from("donations").insert([{
     name: name,
     email: email,
@@ -82,7 +83,7 @@ document.getElementById("donationForm").addEventListener("submit", async (e) => 
     status: "pending"
   }]);
 
-  if(error){
+  if (error) {
     alert("Error: " + error.message);
     console.log(error);
     return;
@@ -90,15 +91,18 @@ document.getElementById("donationForm").addEventListener("submit", async (e) => 
 
   alert("Redirecting to payment...");
 
-  // ✅ UPI redirect (FIXED)
+  // UPI Payment open
   window.location.href = `upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amount}&cu=INR`;
 
-  e.target.reset();
+  // Receipt open after 3 sec
+  setTimeout(() => {
+    window.location.href = `receipt.html?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&amount=${amount}&receipt=${receiptNo}`;
+  }, 3000);
+
 });
-window.location.href = `receipt.html?name=${name}&email=${email}&amount=${amount}&receipt=${receiptNo}`;
-}, 3000);
-// ✅ GPay button
-document.getElementById("gpayBtn").addEventListener("click", (e)=>{
+
+// GPay Button
+document.getElementById("gpayBtn").addEventListener("click", (e) => {
   e.preventDefault();
 
   const amt = document.getElementById("damt").value || 0;
