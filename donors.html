@@ -44,7 +44,6 @@ function openReceipt(name, email, amount, date, receipt){
 }
 
 async function load(){
-
   const { data, error } = await client
     .from('donations')
     .select('*')
@@ -64,7 +63,6 @@ async function load(){
 
   if(error){
     console.log(error);
-    t.innerHTML += `<tr><td colspan="5">Error loading data</td></tr>`;
     return;
   }
 
