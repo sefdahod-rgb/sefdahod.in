@@ -28,7 +28,7 @@ body {
 .page::before {
   content: "DONATION";
   position: absolute;
-  font-size: 100px;
+  font-size: 90px;
   color: rgba(0,0,0,0.05);
   top: 40%;
   left: 20%;
@@ -39,7 +39,7 @@ body {
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   border-bottom: 2px solid #000;
   padding-bottom: 10px;
 }
@@ -48,11 +48,30 @@ body {
   height: 70px;
 }
 
+.header-right {
+  text-align: right;
+  max-width: 70%;
+}
+
+.header-right h1 {
+  margin: 0;
+  font-size: 26px;
+  color: #1a1a1a;
+}
+
+.header-right p {
+  font-size: 12px;
+  margin: 4px 0;
+  line-height: 1.4;
+}
+
 .title {
   text-align: center;
   font-size: 22px;
   font-weight: bold;
   margin: 15px 0;
+  border-bottom: 1px solid #000;
+  padding-bottom: 5px;
 }
 
 /* TABLE */
@@ -92,19 +111,30 @@ td {
   margin-top: 10px;
 }
 
-/* BUTTON */
-button {
+/* BUTTONS */
+.buttons {
   margin-top: 20px;
+}
+
+button {
   padding: 10px 15px;
-  background: green;
   color: white;
   border: none;
   cursor: pointer;
   border-radius: 5px;
 }
 
+.print-btn {
+  background: green;
+}
+
+.home-btn {
+  background: #007bff;
+  margin-right: 10px;
+}
+
 @media print {
-  button { display: none; }
+  .buttons { display: none; }
   body { background: white; }
   .page { box-shadow: none; }
 }
@@ -119,14 +149,17 @@ button {
   <div class="header">
     <img src="logo.png">
 
-    <div style="text-align:right; max-width:60%;">
-  <h1 style="margin:0; font-size:28px; color:#1a1a1a;">
-    Shubhi Education Foundation
-  </h1>      
-      <div style="text-align:right; font-size:12px; max-width:60%;">
-      <b>Reg: Indian Society Act 1860 & Mumbai Public Trust Act 1950</b><br>
-      80G: AAOTS1413MF20251 | 12A: AAOTS1413ME20241 | CSR: CSR00096110<br>
-      Address: Rainbow Public School, Muvaliya Road, Rabdal, Dahod - 389151
+    <div class="header-right">
+      <h1>Shubhi Education Foundation</h1>
+      <p>
+        Reg: Indian Society Act 1860 & Mumbai Public Trust Act 1950
+      </p>
+      <p>
+        80G: AAOTS1413MF20251 | 12A: AAOTS1413ME20241 | CSR: CSR00096110
+      </p>
+      <p>
+        Address: Rainbow Public School, Muvaliya Road, Rabdal, Dahod - 389151
+      </p>
     </div>
   </div>
 
@@ -142,29 +175,29 @@ button {
     <tr><td><b>Payment Mode</b></td><td>UPI / Online</td></tr>
   </table>
 
-  <!-- QR CODE -->
-  <h4>Scan for Receipt Verification</h4>
+  <!-- QR -->
+  <h4>Scan for Verification</h4>
   <div id="qrcode"></div>
 
   <!-- FOOTER -->
   <div class="footer">
     <div>Thank you for your generous support 🙏</div>
-
-    <div class="signature">
-      Authorized Signature
-    </div>
+    <div class="signature">Authorized Signature</div>
   </div>
 
 </div>
-<a href="index.html">
-  <button style="background:#007bff; margin-right:10px;">
-    ⬅ Back to Home
-  </button>
-</a>
-<button onclick="window.print()">Print / Download PDF</button>
+
+<!-- BUTTONS -->
+<div class="buttons">
+  <a href="index.html">
+    <button class="home-btn">⬅ Back to Home</button>
+  </a>
+
+  <button class="print-btn" onclick="window.print()">Print / Download PDF</button>
+</div>
 
 <script>
-// AUTO DATA
+// DATA
 const params = new URLSearchParams(window.location.search);
 
 const name = params.get("name") || "-";
@@ -173,7 +206,7 @@ const amount = params.get("amount") || "0";
 const date = params.get("date") || new Date().toISOString();
 const receipt = params.get("receipt") || "SEF-" + Date.now();
 
-// Fill fields
+// Fill
 document.getElementById("rno").innerText = receipt;
 document.getElementById("name").innerText = name;
 document.getElementById("email").innerText = email;
@@ -181,15 +214,12 @@ document.getElementById("amount").innerText = amount;
 document.getElementById("date").innerText =
   new Date(date).toLocaleDateString();
 
-// QR CODE DATA
-const qrData = `
-Receipt: ${receipt}
-Name: ${name}
-Amount: ₹${amount}
-Date: ${new Date(date).toLocaleDateString()}
-`;
+// ✅ FIXED QR (short data → no overflow error)
+const qrData = `SEF Receipt
+No:${receipt}
+Amt:₹${amount}`;
 
-// Generate QR
+// QR generate
 new QRCode(document.getElementById("qrcode"), {
   text: qrData,
   width: 120,
