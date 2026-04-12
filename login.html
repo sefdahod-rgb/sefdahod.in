@@ -27,10 +27,11 @@ CSR no.:- CSR00096110</p>
 </div></section>
 <script>
 function doLogin(){
-  if(document.getElementById('uname').value==='admin' && document.getElementById('upass').value==='admin123'){
-    localStorage.setItem('isAdmin','yes');
-    window.location.href='admin.html';
-  }else{
+  if(u === 'admin' && p === 'admin123'){
+  localStorage.setItem('isAdmin','true');
+  sessionStorage.setItem('adminActive','1');
+  window.location.href='admin.html';
+}  }else{
     document.getElementById('loginErr').textContent='Invalid credentials';
   }
 }
