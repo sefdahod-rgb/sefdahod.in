@@ -10,6 +10,7 @@
 
 <style>
 .hide{display:none;}
+
 .logout-btn{
   background:red;
   color:white;
@@ -19,16 +20,29 @@
   cursor:pointer;
   float:right;
 }
-table{width:100%;border-collapse:collapse;margin-top:20px;}
-th,td{border:1px solid #ccc;padding:8px;text-align:left;}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+
+th,td{
+  border:1px solid #ccc;
+  padding:8px;
+  text-align:left;
+}
+
 th{background:#f2f2f2;}
+
+.card{padding:20px;background:white;border-radius:10px;}
 </style>
 </head>
 
 <body>
 
+<!-- 🔐 SECURITY CHECK -->
 <script>
-// 🔐 HARD SECURITY CHECK (BLOCK DIRECT ACCESS)
 if(localStorage.getItem("isAdmin") !== "true"){
   alert("Access Denied! Please login first.");
   window.location.href = "login.html";
@@ -41,7 +55,6 @@ if(localStorage.getItem("isAdmin") !== "true"){
   <img src="logo.png">
   <h1>Shubhi Education Foundation, Dahod</h1>
 
-  <!-- LOGOUT BUTTON -->
   <button class="logout-btn" onclick="logout()">Logout</button>
 </header>
 
@@ -62,7 +75,7 @@ Under Indian Society Act 1860 & Mumbai Public Trust Act 1950
 
 <h2>Admin Panel</h2>
 
-<p id="loading">Loading data...</p>
+<p id="loading">Loading donations...</p>
 
 <table id="adminTable"></table>
 
@@ -73,13 +86,12 @@ Under Indian Society Act 1860 & Mumbai Public Trust Act 1950
 
 <script>
 
-// 🔐 SUPABASE CONNECTION
-const client = supabase.createClient(
-  "https://kqahcvaoxnmxfcgyyync.supabase.co",
-  "YOUR_SUPABASE_ANON_KEY"
-);
+const SUPABASE_URL = "https://kqahcvaoxnmxfcgyyync.supabase.co";
+const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
 
-// 🚀 LOGOUT FUNCTION (FINAL)
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// 🚪 LOGOUT (FINAL)
 function logout(){
   localStorage.removeItem("isAdmin");
   sessionStorage.clear();
@@ -87,7 +99,7 @@ function logout(){
   window.location.href = "login.html";
 }
 
-// 📦 LOAD DATA
+// 📦 LOAD DONATIONS
 async function load(){
 
   const { data, error } = await client
@@ -117,10 +129,10 @@ async function load(){
   data.forEach(d => {
     table.innerHTML += `
       <tr>
-        <td>${d.name}</td>
-        <td>${d.email}</td>
-        <td>₹${d.amount}</td>
-        <td>${new Date(d.created_at).toLocaleDateString()}</td>
+        <td>${d.name || "-"}</td>
+        <td>${d.email || "-"}</td>
+        <td>₹${d.amount || 0}</td>
+        <td>${d.created_at ? new Date(d.created_at).toLocaleDateString() : "-"}</td>
         <td>
           <button onclick="deleteDonor('${d.id}')" style="background:red;color:white;border:none;padding:5px;">
             Delete
@@ -133,9 +145,19 @@ async function load(){
 
 // 🗑 DELETE
 async function deleteDonor(id){
-  if(confirm("Are you sure?")){
-    await client.from("donations").delete().eq("id", id);
-    load();
+
+  if(confirm("Delete this donation?")){
+
+    const { error } = await client
+      .from("donations")
+      .delete()
+      .eq("id", id);
+
+    if(error){
+      alert("Delete failed");
+    } else {
+      load();
+    }
   }
 }
 
