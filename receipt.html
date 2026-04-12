@@ -13,7 +13,7 @@ body {
   padding: 20px;
 }
 
-/* A4 PAGE */
+/* A4 */
 .page {
   width: 210mm;
   min-height: 297mm;
@@ -24,18 +24,18 @@ body {
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
-/* WATERMARK */
+/* Watermark */
 .page::before {
   content: "DONATION";
   position: absolute;
-  font-size: 90px;
+  font-size: 80px;
   color: rgba(0,0,0,0.05);
   top: 40%;
   left: 20%;
   transform: rotate(-30deg);
 }
 
-/* HEADER */
+/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -50,21 +50,14 @@ body {
 
 .header-right {
   text-align: right;
-  max-width: 70%;
 }
 
 .header-right h1 {
   margin: 0;
-  font-size: 26px;
-  color: #1a1a1a;
+  font-size: 24px;
 }
 
-.header-right p {
-  font-size: 12px;
-  margin: 4px 0;
-  line-height: 1.4;
-}
-
+/* Title */
 .title {
   text-align: center;
   font-size: 22px;
@@ -74,11 +67,10 @@ body {
   padding-bottom: 5px;
 }
 
-/* TABLE */
+/* Table */
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
 }
 
 td {
@@ -92,7 +84,7 @@ td {
   font-size: 18px;
 }
 
-/* FOOTER */
+/* Footer */
 .footer {
   display: flex;
   justify-content: space-between;
@@ -111,25 +103,25 @@ td {
   margin-top: 10px;
 }
 
-/* BUTTONS */
+/* Buttons */
 .buttons {
   margin-top: 20px;
 }
 
 button {
   padding: 10px 15px;
-  color: white;
   border: none;
+  color: white;
   cursor: pointer;
   border-radius: 5px;
 }
 
-.print-btn {
+.print {
   background: green;
 }
 
-.home-btn {
-  background: #007bff;
+.home {
+  background: blue;
   margin-right: 10px;
 }
 
@@ -151,14 +143,14 @@ button {
 
     <div class="header-right">
       <h1>Shubhi Education Foundation</h1>
-      <p>
+      <p style="font-size:12px;">
         Reg: Indian Society Act 1860 & Mumbai Public Trust Act 1950
       </p>
-      <p>
+      <p style="font-size:12px;">
         80G: AAOTS1413MF20251 | 12A: AAOTS1413ME20241 | CSR: CSR00096110
       </p>
-      <p>
-        Address: Rainbow Public School, Muvaliya Road, Rabdal, Dahod - 389151
+      <p style="font-size:12px;">
+        Dahod, Gujarat - 389151
       </p>
     </div>
   </div>
@@ -175,13 +167,11 @@ button {
     <tr><td><b>Payment Mode</b></td><td>UPI / Online</td></tr>
   </table>
 
-  <!-- QR -->
   <h4>Scan for Verification</h4>
   <div id="qrcode"></div>
 
-  <!-- FOOTER -->
   <div class="footer">
-    <div>Thank you for your generous support 🙏</div>
+    <div>Thank you for your support 🙏</div>
     <div class="signature">Authorized Signature</div>
   </div>
 
@@ -190,36 +180,43 @@ button {
 <!-- BUTTONS -->
 <div class="buttons">
   <a href="index.html">
-    <button class="home-btn">⬅ Back to Home</button>
+    <button class="home">⬅ Back to Home</button>
   </a>
 
-  <button class="print-btn" onclick="window.print()">Print / Download PDF</button>
+  <button class="print" onclick="window.print()">Print / PDF</button>
 </div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
+try {
+  const params = new URLSearchParams(window.location.search);
 
-const name = params.get("name") || "-";
-const email = params.get("email") || "-";
-const amount = params.get("amount") || "0";
-const date = params.get("date") || new Date().toISOString();
-const receipt = params.get("receipt") || ("SEF-" + Date.now());
+  const name = params.get("name") || "-";
+  const email = params.get("email") || "-";
+  const amount = params.get("amount") || "0";
+  const date = params.get("date") || new Date().toISOString();
+  const receipt = params.get("receipt") || ("SEF-" + Date.now());
 
-// Fill data
-document.getElementById("rno").innerText = receipt;
-document.getElementById("name").innerText = name;
-document.getElementById("email").innerText = email;
-document.getElementById("amount").innerText = amount;
-document.getElementById("date").innerText =
-  new Date(date).toLocaleDateString();
+  // Fill data
+  document.getElementById("rno").innerText = receipt;
+  document.getElementById("name").innerText = name;
+  document.getElementById("email").innerText = email;
+  document.getElementById("amount").innerText = amount;
+  document.getElementById("date").innerText =
+    new Date(date).toLocaleDateString();
 
-// SAFE QR (NO OVERFLOW)
-const qrText = "SEF|" + receipt;
+  // SAFE QR (ONLY ID)
+  const qrText = "SEF-RECEIPT-" + receipt;
 
-// QR GENERATE
-new QRCode(document.getElementById("qrcode"), {
-  text: qrText,
-  width: 120,
-  height: 120
-});
+  new QRCode(document.getElementById("qrcode"), {
+    text: qrText,
+    width: 120,
+    height: 120
+  });
+
+} catch (err) {
+  console.log("Error fixed:", err);
+}
 </script>
+
+</body>
+</html>
