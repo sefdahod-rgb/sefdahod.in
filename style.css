@@ -1,1 +1,26 @@
-:root{--blue:#004080;--dark:#002f60;--green:#0F9D58} *{box-sizing:border-box;font-family:system-ui,Arial} body{margin:0;background:url('bg.jpg') center/cover fixed;color:#fff} .overlay{background:rgba(0,0,0,0.75);min-height:100vh;padding-bottom:40px} header{background:var(--blue);padding:20px;text-align:center} header img{height:90px;border-radius:12px;background:#fff;padding:5px} h1{margin:10px 0 5px;font-size:24px} nav{background:var(--dark);display:flex;flex-wrap:wrap;justify-content:center} nav a{color:#fff;text-decoration:none;padding:14px 18px;font-weight:600} nav a.active{background:#001f40} section{padding:20px;max-width:1100px;margin:auto} .card{background:rgba(255,255,255,0.96);color:#333;padding:20px;border-radius:14px;box-shadow:0 6px 14px rgba(0,0,0,.35)} input,button,textarea{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:10px;font-size:16px} button{background:var(--blue);color:#fff;border:none;font-weight:bold;cursor:pointer} button:hover{background:var(--dark)} table{width:100%;border-collapse:collapse;color:#333} th,td{border:1px solid #ddd;padding:10px;text-align:left} th{background:var(--blue);color:#fff} .qr{text-align:center;margin-top:15px} .qr img{width:260px;border:4px solid var(--blue);border-radius:12px;background:#fff} .gpay{display:inline-block;margin-top:12px;padding:12px 20px;background:var(--green);color:#fff;border-radius:10px;text-decoration:none;font-weight:bold} .info{line-height:1.6} .login-box{max-width:420px;margin:40px auto} .slider{position: relative;width: 100%;max-width: 800px;margin: auto;overflow: hidden;} .slide{width: 100%;display: none;} body{ margin:0; font-family:Arial; } /* FULL SCREEN BACKGROUND */ .login-bg{ height:100vh; width:100%; background:linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url("https://images.unsplash.com/photo-1522071820081-009f0129c71c") center/cover no-repeat; display:flex; justify-content:center; align-items:center; } /* LOGIN BOX */ .login-box{ width:320px; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); padding:25px; border-radius:12px; color:white; box-shadow:0 0 20px rgba(0,0,0,0.4); } input{ width:100%; padding:10px; margin:10px 0; border:none; border-radius:6px; } button{ width:100%; padding:10px; background:green; color:white; border:none; border-radius:6px; cursor:pointer; }
+:root{--blue:#004080;--dark:#002f60;--green:#0F9D58} 
+*{box-sizing:border-box;font-family:system-ui,Arial} 
+body{margin:0;background:url('bg.jpg') center/cover fixed;color:#fff} 
+.overlay{background:rgba(0,0,0,0.75);min-height:100vh;padding-bottom:40px}
+header{background:var(--blue);padding:20px;text-align:center} 
+header img{height:90px;border-radius:12px;background:#fff;padding:5px} h1{margin:10px 0 5px;font-size:24px} 
+nav{background:var(--dark);display:flex;flex-wrap:wrap;justify-content:center} 
+nav a{color:#fff;text-decoration:none;padding:14px 18px;font-weight:600} 
+nav a.active{background:#001f40} section{padding:20px;max-width:1100px;margin:auto} 
+.card{background:rgba(255,255,255,0.96);color:#333;padding:20px;border-radius:14px;box-shadow:0 6px 14px rgba(0,0,0,.35)} 
+input,button,textarea{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:10px;font-size:16px} 
+button{background:var(--blue);color:#fff;border:none;font-weight:bold;cursor:pointer} button:hover{background:var(--dark)} 
+table{width:100%;border-collapse:collapse;color:#333} th,td{border:1px solid #ddd;padding:10px;text-align:left} 
+th{background:var(--blue);color:#fff} .qr{text-align:center;margin-top:15px} 
+.qr img{width:260px;border:4px solid var(--blue);border-radius:12px;background:#fff} 
+.gpay{display:inline-block;margin-top:12px;padding:12px 20px;background:var(--green);color:#fff;border-radius:10px;text-decoration:none;font-weight:bold} 
+.info{line-height:1.6} 
+.login-box{max-width:420px;margin:40px auto} 
+.slider{position: relative;width: 100%;max-width: 800px;margin: auto;overflow: hidden;} 
+.slide{width: 100%;display: none;} body{ margin:0; font-family:Arial; } /* FULL SCREEN BACKGROUND */ 
+.login-bg{ height:100vh; width:100%; background:linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), 
+  url("https://images.unsplash.com/photo-1522071820081-009f0129c71c") center/cover no-repeat; display:flex; 
+justify-content:center; align-items:center; } /* LOGIN BOX */ 
+.login-box{ width:320px; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); padding:25px; border-radius:12px; color:white; 
+ box-shadow:0 0 20px rgba(0,0,0,0.4); } input{ width:100%; padding:10px; margin:10px 0; border:none; border-radius:6px; } 
+button{ width:100%; padding:10px; background:green; color:white; border:none; border-radius:6px; cursor:pointer; }
