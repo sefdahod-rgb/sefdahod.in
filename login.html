@@ -1,14 +1,31 @@
 <!DOCTYPE html>
 <html lang="hi">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Login - Shubhi Education Foundation</title><link rel="stylesheet" href="style.css"></head>
-<body><div class="overlay">
-<header><img src="logo.png"><h1>Shubhi Education Foundation, Dahod</h1></header>
-  <p>Under Indian Society Act 1860 Guj./2249/DHD. & 
-Mumbai Public Trust Act 1950 F/2247/DHD</p>
-  <p>80G Registration No. :-AAOTS1413MF20251
-12A Registration No. :- AAOTS1413ME20241
-CSR no.:- CSR00096110</p>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Login - Shubhi Education Foundation</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="overlay">
+
+<header>
+  <img src="logo.png">
+  <h1>Shubhi Education Foundation, Dahod</h1>
+</header>
+
+<p>
+Under Indian Society Act 1860 Guj./2249/DHD & Mumbai Public Trust Act 1950 F/2247/DHD
+</p>
+
+<p>
+80G Registration No.: AAOTS1413MF20251 <br>
+12A Registration No.: AAOTS1413ME20241 <br>
+CSR No.: CSR00096110
+</p>
+
 <nav>
   <a href="index.html">Home</a>
   <a href="donate.html">Donate</a>
@@ -18,22 +35,47 @@ CSR no.:- CSR00096110</p>
   <a href="admin.html">Admin</a>
   <a href="login.html" class="active">Login</a>
 </nav>
-<section><div class="card login-box">
+
+<section>
+<div class="card login-box">
+
 <h2>Admin Login</h2>
+
 <input id="uname" placeholder="Username">
 <input id="upass" type="password" placeholder="Password">
+
 <button onclick="doLogin()">Login</button>
-<p id="loginErr" style="color:#c00"></p>
-</div></section>
+
+<p id="loginErr" style="color:red;"></p>
+
+</div>
+</section>
+
+</div>
+
 <script>
+
 function doLogin(){
-  if(u === 'admin' && p === 'admin123'){
-  localStorage.setItem('isAdmin','true');
-  sessionStorage.setItem('adminActive','1');
-  window.location.href='admin.html';
-}  }else{
-    document.getElementById('loginErr').textContent='Invalid credentials';
+
+  // GET VALUES
+  const u = document.getElementById("uname").value;
+  const p = document.getElementById("upass").value;
+
+  // CHECK LOGIN
+  if(u === "admin" && p === "admin123"){
+
+    localStorage.setItem("isAdmin", "true");
+    sessionStorage.setItem("adminActive", "1");
+
+    alert("Login Successful!");
+    window.location.href = "admin.html";
+
+  } else {
+    document.getElementById("loginErr").innerText = "Invalid username or password";
   }
 }
+
 </script>
-</body></html>
+
+</body>
+</html>
