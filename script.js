@@ -2,6 +2,10 @@ const images = [
   "img1.jpg",
   "img2.jpg",
   "img3.jpg"
+  "img5.jpg"
+   "img5.jpg"
+  "poster.png"
+"poster2.png"
 ];
 
 let i = 0;
