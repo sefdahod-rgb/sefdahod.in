@@ -95,10 +95,12 @@ const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 function logout(){
   localStorage.removeItem("isAdmin");
   sessionStorage.clear();
-  alert("Logged out successfully");
-  window.location.href = "login.html";
-}
 
+  alert("Logged out successfully");
+
+  // ✅ GO TO HOME INSTEAD OF LOGIN
+  window.location.href = "index.html";
+}
 // 📦 LOAD DONATIONS
 async function load(){
 
