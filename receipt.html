@@ -2,148 +2,193 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Donation Receipt</title>
+<title>NGO Donation Receipt</title>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
 <style>
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background: #eaeaea;
+  font-family: Arial, sans-serif;
+  background: #ddd;
   padding: 20px;
 }
 
-.receipt {
-  max-width: 750px;
+/* A4 PAGE */
+.page {
+  width: 210mm;
+  min-height: 297mm;
   margin: auto;
-  background: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  border: 1px solid #ccc;
+  background: white;
+  padding: 20mm;
   position: relative;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
-/* Watermark */
-.receipt::before {
-  content: "SEF";
+/* WATERMARK */
+.page::before {
+  content: "DONATION";
   position: absolute;
-  font-size: 120px;
+  font-size: 100px;
   color: rgba(0,0,0,0.05);
   top: 40%;
-  left: 30%;
+  left: 20%;
   transform: rotate(-30deg);
 }
 
-/* Header */
+/* HEADER */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 2px solid #000;
+  padding-bottom: 10px;
 }
 
 .header img {
   height: 70px;
 }
 
-/* Title */
 .title {
   text-align: center;
   font-size: 22px;
   font-weight: bold;
-  margin: 20px 0;
-  border-bottom: 2px solid #000;
+  margin: 15px 0;
 }
 
-/* Table */
-.table {
+/* TABLE */
+table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 10px;
 }
 
-.table td {
+td {
   padding: 10px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #eee;
 }
 
 .amount {
   color: green;
   font-weight: bold;
+  font-size: 18px;
 }
 
-/* Footer */
+/* FOOTER */
 .footer {
-  margin-top: 40px;
   display: flex;
   justify-content: space-between;
+  margin-top: 40px;
 }
 
-/* Button */
+.signature {
+  border-top: 1px solid #000;
+  width: 200px;
+  text-align: center;
+  padding-top: 5px;
+}
+
+/* QR */
+#qrcode {
+  margin-top: 10px;
+}
+
+/* BUTTON */
 button {
   margin-top: 20px;
-  padding: 10px 20px;
+  padding: 10px 15px;
   background: green;
   color: white;
   border: none;
-  border-radius: 6px;
   cursor: pointer;
+  border-radius: 5px;
 }
 
 @media print {
   button { display: none; }
+  body { background: white; }
+  .page { box-shadow: none; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="receipt">
+<div class="page">
 
-<div class="header">
-  <img src="logo.png">
-  <h2>Shubhi Education Foundation</h2>
-  <p>Registration No.:- Under Indian Society Act 1860 Guj./2249/DHD. & 
-Mumbai Public Trust Act 1950 F/2247/DHD</p>
-  <p2>80G Registration No. :-AAOTS1413MF20251
-12A Registration No. :- AAOTS1413ME20241
-CSR no.:- CSR00096110</p2>
-  <p3 class="info">Address: Rainbow Public School, Shalimar co-operative society, Muvaliya Road, Rabdal, Dahod Gujarat - 389151<br>
-  Email: sefdahod@gmail.com | Mobile: 9408695001 | Landline: 02673-450037</p3>
+  <!-- HEADER -->
+  <div class="header">
+    <img src="logo.png">
+
+    <div style="text-align:right; font-size:12px; max-width:60%;">
+      <b>Shubhi Education Foundation</b><br>
+      Reg: Indian Society Act 1860 & Mumbai Public Trust Act 1950<br>
+      80G: AAOTS1413MF20251 | 12A: AAOTS1413ME20241 | CSR: CSR00096110<br>
+      Address: Rainbow Public School, Muvaliya Road, Rabdal, Dahod - 389151
+    </div>
+  </div>
+
+  <div class="title">DONATION RECEIPT</div>
+
+  <!-- DETAILS -->
+  <table>
+    <tr><td><b>Receipt No</b></td><td id="rno"></td></tr>
+    <tr><td><b>Date</b></td><td id="date"></td></tr>
+    <tr><td><b>Name</b></td><td id="name"></td></tr>
+    <tr><td><b>Email</b></td><td id="email"></td></tr>
+    <tr><td><b>Amount</b></td><td class="amount">₹ <span id="amount"></span></td></tr>
+    <tr><td><b>Payment Mode</b></td><td>UPI / Online</td></tr>
+  </table>
+
+  <!-- QR CODE -->
+  <h4>Scan for Receipt Verification</h4>
+  <div id="qrcode"></div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div>Thank you for your generous support 🙏</div>
+
+    <div class="signature">
+      Authorized Signature
+    </div>
+  </div>
+
 </div>
 
-<div class="title">DONATION RECEIPT</div>
-
-<table class="table">
-<tr><td><b>Receipt No:</b></td><td id="rno"></td></tr>
-<tr><td><b>Date:</b></td><td id="date"></td></tr>
-<tr><td><b>Name:</b></td><td id="name"></td></tr>
-<tr><td><b>Email:</b></td><td id="email"></td></tr>
-<tr><td><b>Amount:</b></td><td class="amount">₹ <span id="amount"></span></td></tr>
-<tr><td><b>Payment Mode:</b></td><td>UPI</td></tr>
-</table>
-
-<div class="footer">
-  <div>Thank you for your support 🙏</div>
-  <div>Signature</div>
-</div>
-
-<button onclick="window.print()">Download / Print</button>
-
-</div>
+<button onclick="window.print()">Print / Download PDF</button>
 
 <script>
+// AUTO DATA
 const params = new URLSearchParams(window.location.search);
 
-const name = params.get("name");
-const email = params.get("email");
-const amount = params.get("amount");
-const date = params.get("date");
-const receipt = params.get("receipt");
+const name = params.get("name") || "-";
+const email = params.get("email") || "-";
+const amount = params.get("amount") || "0";
+const date = params.get("date") || new Date().toISOString();
+const receipt = params.get("receipt") || "SEF-" + Date.now();
 
-// Fill data
-document.getElementById("rno").innerText = receipt || "SEF-" + Date.now();
-document.getElementById("date").innerText = date 
-  ? new Date(date).toLocaleDateString() 
-  : new Date().toLocaleDateString();
+// Fill fields
+document.getElementById("rno").innerText = receipt;
+document.getElementById("name").innerText = name;
+document.getElementById("email").innerText = email;
+document.getElementById("amount").innerText = amount;
+document.getElementById("date").innerText =
+  new Date(date).toLocaleDateString();
 
-document.getElementById("name").innerText = name || "-";
-document.getElementById("email").innerText = email || "-";
-document.getElementById("amount").innerText = amount || "0";
+// QR CODE DATA
+const qrData = `
+Receipt: ${receipt}
+Name: ${name}
+Amount: ₹${amount}
+Date: ${new Date(date).toLocaleDateString()}
+`;
+
+// Generate QR
+new QRCode(document.getElementById("qrcode"), {
+  text: qrData,
+  width: 120,
+  height: 120
+});
 </script>
+
+</body>
+</html>
