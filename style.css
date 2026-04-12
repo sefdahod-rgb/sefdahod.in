@@ -1,192 +1,20 @@
-:root{
-  --blue:#004080;
-  --dark:#002f60;
-  --green:#0F9D58;
-}
-
-/* RESET */
-*{
-  box-sizing:border-box;
-  font-family:system-ui,Arial;
-  margin:0;
-  padding:0;
-}
-
-body{
-  background:url('bg.jpg') center/cover fixed;
-  color:#fff;
-}
-
-/* OVERLAY */
-.overlay{
-  background:rgba(0,0,0,0.75);
-  min-height:100vh;
-  padding-bottom:40px;
-}
-
-/* HEADER */
-header{
-  background:var(--blue);
-  padding:20px;
-  text-align:center;
-}
-
-header img{
-  height:90px;
-  border-radius:12px;
-  background:#fff;
-  padding:5px;
-}
-
-h1{
-  margin:10px 0 5px;
-  font-size:24px;
-}
-
-/* NAV */
-nav{
-  background:var(--dark);
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-}
-
-nav a{
-  color:#fff;
-  text-decoration:none;
-  padding:14px 18px;
-  font-weight:600;
-}
-
-nav a.active{
-  background:#001f40;
-}
-
-/* SECTION */
-section{
-  padding:20px;
-  max-width:1100px;
-  margin:auto;
-}
-
-/* CARD */
-.card{
-  background:rgba(255,255,255,0.96);
-  color:#333;
-  padding:20px;
-  border-radius:14px;
-  box-shadow:0 6px 14px rgba(0,0,0,.35);
-}
-
-/* INPUTS */
-input,textarea{
-  width:100%;
-  padding:12px;
-  margin:8px 0;
-  border:1px solid #ccc;
-  border-radius:10px;
-  font-size:16px;
-}
-
-/* BUTTON */
-button{
-  width:100%;
-  padding:12px;
-  background:var(--blue);
-  color:#fff;
-  border:none;
-  font-weight:bold;
-  cursor:pointer;
-  border-radius:10px;
-  transition:0.3s;
-}
-
-button:hover{
-  background:var(--dark);
-}
-
-/* TABLE */
-table{
-  width:100%;
-  border-collapse:collapse;
-  color:#333;
-}
-
-th,td{
-  border:1px solid #ddd;
-  padding:10px;
-  text-align:left;
-}
-
-th{
-  background:var(--blue);
-  color:#fff;
-}
-
-/* QR */
-.qr{
-  text-align:center;
-  margin-top:15px;
-}
-
-.qr img{
-  width:260px;
-  border:4px solid var(--blue);
-  border-radius:12px;
-  background:#fff;
-}
-
-/* G-PAY */
-.gpay{
-  display:inline-block;
-  margin-top:12px;
-  padding:12px 20px;
-  background:var(--green);
-  color:#fff;
-  border-radius:10px;
-  text-decoration:none;
-  font-weight:bold;
-}
-
-/* LOGIN PAGE ONLY */
-.login-bg{
-  height:100vh;
-  width:100%;
-  background:
-    linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),
-    url("https://images.unsplash.com/photo-1522071820081-009f0129c71c")
-    center/cover no-repeat;
-
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-/* LOGIN BOX FIXED */
-.login-box{
-  width:320px;
-  background:rgba(255,255,255,0.1);
-  backdrop-filter:blur(12px);
-  padding:25px;
-  border-radius:12px;
-  color:white;
-  box-shadow:0 0 20px rgba(0,0,0,0.4);
-}
 .hero-slider{
   position:relative;
   width:100%;
-  height:80vh;
+  height:70vh;
   overflow:hidden;
-  font-family:Arial;
 }
 
-/* SLIDES */
+/* EACH SLIDE */
 .slide{
   position:absolute;
+  top:0;
+  left:0;
   width:100%;
   height:100%;
   background-size:cover;
   background-position:center;
+
   opacity:0;
   transition:opacity 1s ease;
 }
@@ -194,6 +22,7 @@ th{
 /* ACTIVE SLIDE */
 .slide.active{
   opacity:1;
+  z-index:1;
 }
 
 /* DARK OVERLAY */
@@ -202,17 +31,18 @@ th{
   position:absolute;
   width:100%;
   height:100%;
-  background:linear-gradient(to right,rgba(0,0,0,0.7),rgba(0,0,0,0.2));
+  background:rgba(0,0,0,0.4);
 }
 
 /* CONTENT */
 .content{
   position:absolute;
   top:50%;
-  left:60px;
+  left:50px;
   transform:translateY(-50%);
   color:white;
   max-width:500px;
+  z-index:2;
 }
 
 .content h1{
@@ -225,11 +55,10 @@ th{
   margin-bottom:15px;
 }
 
-/* BUTTON */
 .content button{
   padding:12px 20px;
   border:none;
-  background:#e50914; /* Netflix red */
+  background:#e50914;
   color:white;
   font-weight:bold;
   border-radius:6px;
@@ -239,18 +68,19 @@ th{
 /* DOTS */
 .dots{
   position:absolute;
-  bottom:20px;
+  bottom:15px;
   width:100%;
   text-align:center;
+  z-index:2;
 }
 
 .dot{
-  display:inline-block;
   width:10px;
   height:10px;
   margin:5px;
+  display:inline-block;
   border-radius:50%;
-  background:#888;
+  background:#777;
   cursor:pointer;
 }
 
@@ -260,15 +90,15 @@ th{
 
 /* MOBILE */
 @media(max-width:768px){
-  .content{
-    left:20px;
+  .hero-slider{
+    height:50vh;
   }
 
   .content h1{
-    font-size:26px;
+    font-size:24px;
   }
 
-  .hero-slider{
-    height:60vh;
+  .content{
+    left:20px;
   }
 }
