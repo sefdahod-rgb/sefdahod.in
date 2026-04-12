@@ -1,17 +1,54 @@
 <!DOCTYPE html>
 <html lang="hi">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Home - Shubhi Education Foundation</title><link rel="stylesheet" href="style.css"></head>
-<body><div class="overlay">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Home - Shubhi Education Foundation</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+/* SIMPLE CLEAN SLIDER */
+.slider{
+  position:relative;
+  width:100%;
+  max-width:900px;
+  margin:auto;
+  overflow:hidden;
+  border-radius:12px;
+}
+
+.slide{
+  width:100%;
+  height:350px;
+  object-fit:cover;
+  display:none;
+}
+
+.slide.active{
+  display:block;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="overlay">
+
 <header>
   <img src="logo.png" alt="Logo">
   <h1>Shubhi Education Foundation, Dahod</h1>
-  <p>Registration No.:- Under Indian Society Act 1860 Guj./2249/DHD. & 
-Mumbai Public Trust Act 1950 F/2247/DHD</p>
+
+  <p>Registration No.:- Indian Society Act 1860 Guj./2249/DHD & Mumbai Public Trust Act 1950 F/2247/DHD</p>
   <p>80G: AAOTS1413MF20251 | 12A: AAOTS1413ME20241 | CSR: CSR00096110</p>
-  <p class="info">Address: Rainbow Public School, Shalimar co-operative society, Muvaliya Road, Rabdal, Dahod Gujarat - 389151<br>
-  Email: sefdahod@gmail.com | Mobile: 9408695001 | Landline: 02673-450037</p>
+
+  <p class="info">
+    Address: Rainbow Public School, Muvaliya Road, Rabdal, Dahod Gujarat - 389151<br>
+    Email: sefdahod@gmail.com | Mobile: 9408695001
+  </p>
 </header>
+
 <nav>
   <a href="index.html" class="active">Home</a>
   <a href="dashboard.html">Dashboard</a>
@@ -22,45 +59,54 @@ Mumbai Public Trust Act 1950 F/2247/DHD</p>
   <a href="admin.html">Admin</a>
   <a href="login.html">Login</a>
 </nav>
-<section>
-  <section>
-  <div class="card">
-    <h2>About Us</h2>
-    <p>Shubhi Education Foundation is committed to supporting education and social welfare in Dahod. We provide scholarships, learning resources, and community programs.</p>
-    <p><strong>Our Mission:</strong> Quality education for every child.</p>
 
-    <div class="slider">
-      <img src="poster.png" class="slide active">
-      <img src="poster2.png" class="slide">
-      <img src="img1.jpg" class="slide">
-      <img src="img2.jpg" class="slide">
-      <img src="img3.jpg" class="slide">
-      <img src="img4.jpg" class="slide">
-      <img src="img5.jpg" class="slide">
-      </div>
+<section>
+
+<div class="card">
+
+<h2>About Us</h2>
+
+<p>
+Shubhi Education Foundation is committed to supporting education and social welfare in Dahod.
+</p>
+
+<p><strong>Our Mission:</strong> Quality education for every child.</p>
+
+<!-- SLIDER -->
+<div class="slider">
+
+  <img src="poster.png" class="slide active">
+  <img src="poster2.png" class="slide">
+  <img src="img1.jpg" class="slide">
+  <img src="img2.jpg" class="slide">
+  <img src="img3.jpg" class="slide">
+
+</div>
+
+</div>
+
 </section>
+
+<footer style="background:var(--dark);color:#fff;text-align:center;padding:15px">
+© 2026 Shubhi Education Foundation, Dahod
+</footer>
+
+</div>
+
 <script>
 let index = 0;
-let slides;
+const slides = document.querySelectorAll(".slide");
 
-document.addEventListener("DOMContentLoaded", function () {
-  slides = document.querySelectorAll(".slide");
+function showSlide(){
+  slides.forEach(s => s.classList.remove("active"));
+  slides[index].classList.add("active");
 
-  setInterval(function () {
-    // sabko hide karo
-    for (let i = 0; i < slides.length; i++) {
-      slides[i].style.display = "none";
-    }
+  index = (index + 1) % slides.length;
+}
 
-    // next slide dikhayo
-    slides[index].style.display = "block";
+showSlide();
+setInterval(showSlide, 2500);
+</script>
 
-    index++;
-    if (index >= slides.length) {
-      index = 0;
-    }
-  }, 2000);
-});
-</script>>
-<footer style="background:var(--dark); color:#fff; text-align:center; padding:15px">© 2026 Shubhi Education Foundation, Dahod</footer>
-</body></html>
+</body>
+</html>
