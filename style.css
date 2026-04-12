@@ -109,7 +109,7 @@ button:hover{
 table{
   width:100%;
   border-collapse:collapse;
-  color:#333;
+  color:#ffffff;
 }
 
 th,td{
@@ -120,7 +120,7 @@ th,td{
 
 th{
   background:var(--blue);
-  color:#fff;
+  color:#fffffff;
 }
 
 /* QR */
