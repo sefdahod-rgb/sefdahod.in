@@ -197,16 +197,15 @@ button {
 </div>
 
 <script>
-// DATA
 const params = new URLSearchParams(window.location.search);
 
 const name = params.get("name") || "-";
 const email = params.get("email") || "-";
 const amount = params.get("amount") || "0";
 const date = params.get("date") || new Date().toISOString();
-const receipt = params.get("receipt") || "SEF-" + Date.now();
+const receipt = params.get("receipt") || ("SEF-" + Date.now());
 
-// Fill
+// Fill data
 document.getElementById("rno").innerText = receipt;
 document.getElementById("name").innerText = name;
 document.getElementById("email").innerText = email;
@@ -214,18 +213,13 @@ document.getElementById("amount").innerText = amount;
 document.getElementById("date").innerText =
   new Date(date).toLocaleDateString();
 
-// ✅ FIXED QR (short data → no overflow error)
-const qrData = `SEF Receipt ID: 
-No.:${receipt}`;
-Amt:₹${amount}`;
+// SAFE QR (NO OVERFLOW)
+const qrText = "SEF|" + receipt;
 
-// QR generate
+// QR GENERATE
 new QRCode(document.getElementById("qrcode"), {
-  text: qrData,
+  text: qrText,
   width: 120,
   height: 120
 });
 </script>
-
-</body>
-</html>
