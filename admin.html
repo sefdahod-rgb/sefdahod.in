@@ -4,19 +4,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Admin - Shubhi Education Foundation</title>
+
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+.hide{display:none;}
+.logout-btn{
+  background:red;
+  color:white;
+  padding:8px 12px;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+  float:right;
+}
+table{width:100%;border-collapse:collapse;margin-top:20px;}
+th,td{border:1px solid #ccc;padding:8px;text-align:left;}
+th{background:#f2f2f2;}
+</style>
 </head>
 
 <body>
+
+<script>
+// 🔐 HARD SECURITY CHECK (BLOCK DIRECT ACCESS)
+if(localStorage.getItem("isAdmin") !== "true"){
+  alert("Access Denied! Please login first.");
+  window.location.href = "login.html";
+}
+</script>
+
 <div class="overlay">
 
 <header>
   <img src="logo.png">
   <h1>Shubhi Education Foundation, Dahod</h1>
+
+  <!-- LOGOUT BUTTON -->
+  <button class="logout-btn" onclick="logout()">Logout</button>
 </header>
 
-<p>Under Indian Society Act 1860 Guj./2249/DHD & Mumbai Public Trust Act 1950 F/2247/DHD</p>
+<p>
+Under Indian Society Act 1860 & Mumbai Public Trust Act 1950
+</p>
 
 <nav>
   <a href="index.html">Home</a>
@@ -28,13 +59,12 @@
 
 <section>
 <div class="card">
+
 <h2>Admin Panel</h2>
 
-<div id="adminArea" class="hide">
-  <table id="adminTable"></table>
-</div>
+<p id="loading">Loading data...</p>
 
-<p id="adminLock">Please login to access admin panel.</p>
+<table id="adminTable"></table>
 
 </div>
 </section>
@@ -43,19 +73,21 @@
 
 <script>
 
-// Login check
-if(localStorage.getItem('isAdmin')==='yes'){
-  document.getElementById('adminArea').classList.remove('hide');
-  document.getElementById('adminLock').classList.add('hide');
-}
-
-// Supabase
-const client = window.supabase.createClient(
+// 🔐 SUPABASE CONNECTION
+const client = supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+  "YOUR_SUPABASE_ANON_KEY"
 );
 
-// Load data
+// 🚀 LOGOUT FUNCTION (FINAL)
+function logout(){
+  localStorage.removeItem("isAdmin");
+  sessionStorage.clear();
+  alert("Logged out successfully");
+  window.location.href = "login.html";
+}
+
+// 📦 LOAD DATA
 async function load(){
 
   const { data, error } = await client
@@ -63,10 +95,16 @@ async function load(){
     .select("*")
     .order("id", { ascending: false });
 
-  const t = document.getElementById("adminTable");
+  const table = document.getElementById("adminTable");
 
-  // header
-  t.innerHTML = `
+  if(error){
+    table.innerHTML = "<tr><td>Error loading data</td></tr>";
+    return;
+  }
+
+  document.getElementById("loading").style.display = "none";
+
+  table.innerHTML = `
     <tr>
       <th>Name</th>
       <th>Email</th>
@@ -76,21 +114,15 @@ async function load(){
     </tr>
   `;
 
-  if(error){
-    console.log(error);
-    return;
-  }
-
-  // rows
   data.forEach(d => {
-    t.innerHTML += `
+    table.innerHTML += `
       <tr>
         <td>${d.name}</td>
         <td>${d.email}</td>
-        <td>${d.amount}</td>
+        <td>₹${d.amount}</td>
         <td>${new Date(d.created_at).toLocaleDateString()}</td>
         <td>
-          <button onclick="deleteDonor(${d.id})" style="background:red;color:white">
+          <button onclick="deleteDonor('${d.id}')" style="background:red;color:white;border:none;padding:5px;">
             Delete
           </button>
         </td>
@@ -99,15 +131,15 @@ async function load(){
   });
 }
 
-// Delete
+// 🗑 DELETE
 async function deleteDonor(id){
-  if(confirm("Delete this donation?")){
+  if(confirm("Are you sure?")){
     await client.from("donations").delete().eq("id", id);
     load();
   }
 }
 
-// Start
+// INIT
 load();
 
 </script>
