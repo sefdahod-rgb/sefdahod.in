@@ -215,8 +215,8 @@ document.getElementById("date").innerText =
   new Date(date).toLocaleDateString();
 
 // ✅ FIXED QR (short data → no overflow error)
-const qrData = `SEF Receipt ID: ${receipt}`;
-
+const qrData = `SEF Receipt ID: 
+No.:${receipt}`;
 Amt:₹${amount}`;
 
 // QR generate
