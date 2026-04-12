@@ -9,134 +9,179 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-.hide{display:none;}
-
-.logout-btn{
-  background:red;
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
   color:white;
-  padding:8px 12px;
-  border:none;
-  border-radius:5px;
-  cursor:pointer;
-  float:right;
 }
 
+/* LOGIN BOX */
+.login-box{
+  max-width:320px;
+  margin:120px auto;
+  background:#1e293b;
+  padding:25px;
+  border-radius:12px;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+}
+
+button{
+  padding:10px;
+  width:100%;
+  border:none;
+  cursor:pointer;
+  border-radius:6px;
+}
+
+.login-btn{background:green;color:white}
+
+/* DASHBOARD */
+.dashboard{
+  display:none;
+  padding:20px;
+}
+
+/* TOP BAR */
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#111827;
+  padding:10px 15px;
+  border-radius:10px;
+}
+
+.logout{
+  background:red;
+  color:white;
+  width:auto;
+  padding:8px 15px;
+}
+
+/* TABLE */
 table{
   width:100%;
-  border-collapse:collapse;
   margin-top:20px;
+  border-collapse:collapse;
+  background:#111827;
+  border-radius:10px;
+  overflow:hidden;
 }
 
 th,td{
-  border:1px solid #ccc;
-  padding:8px;
-  text-align:left;
+  padding:10px;
+  border-bottom:1px solid #333;
 }
 
-th{background:#f2f2f2;}
+th{background:#1e293b;}
 
-.card{padding:20px;background:white;border-radius:10px;}
+.hide{display:none}
 </style>
 </head>
 
 <body>
 
-<!-- 🔐 SECURITY CHECK -->
+<!-- 🔐 LOGIN SCREEN -->
+<div id="loginScreen" class="login-box">
+  <h2>Admin Login</h2>
+
+  <input id="user" placeholder="Username">
+  <input id="pass" type="password" placeholder="Password">
+
+  <button class="login-btn" onclick="login()">Login</button>
+
+  <p id="msg" style="color:red"></p>
+</div>
+
+<!-- 🚀 DASHBOARD -->
+<div id="dashboard" class="dashboard">
+
+  <div class="topbar">
+    <h3>SEF Donation Dashboard</h3>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+
+  <table id="table"></table>
+
+</div>
+
 <script>
-if(localStorage.getItem("isAdmin") !== "true"){
-  alert("Access Denied! Please login first.");
-  window.location.href = "login.html";
+
+// 🔗 SUPABASE
+const client = supabase.createClient(
+  "https://kqahcvaoxnmxfcgyyync.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+);
+
+// 🔐 LOGIN (SAME PAGE)
+function login(){
+
+  const u = document.getElementById("user").value;
+  const p = document.getElementById("pass").value;
+
+  if(u==="admin" && p==="admin123"){
+
+    localStorage.setItem("isAdmin","true");
+
+    showDashboard();
+
+  } else {
+    document.getElementById("msg").innerText="Invalid login";
+  }
 }
-</script>
 
-<div class="overlay">
-
-<header>
-  <img src="logo.png">
-  <h1>Shubhi Education Foundation, Dahod</h1>
-
-  <button class="logout-btn" onclick="logout()">Logout</button>
-</header>
-
-<p>
-Under Indian Society Act 1860 & Mumbai Public Trust Act 1950
-</p>
-
-<nav>
-  <a href="index.html">Home</a>
-  <a href="donate.html">Donate</a>
-  <a href="donors.html">Donors</a>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="admin.html" class="active">Admin</a>
-</nav>
-
-<section>
-<div class="card">
-
-<h2>Admin Panel</h2>
-
-<p id="loading">Loading donations...</p>
-
-<table id="adminTable"></table>
-
-</div>
-</section>
-
-</div>
-
-<script>
-
-const SUPABASE_URL = "https://kqahcvaoxnmxfcgyyync.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg";
-
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-// 🚪 LOGOUT (FINAL)
+// 🚪 LOGOUT (BACK TO LOGIN SCREEN)
 function logout(){
   localStorage.removeItem("isAdmin");
-  sessionStorage.clear();
-
-  alert("Logged out successfully");
-
-  // ✅ GO TO HOME INSTEAD OF LOGIN
-  window.location.href = "index.html";
+  showLogin();
 }
-// 📦 LOAD DONATIONS
-async function load(){
 
-  const { data, error } = await client
+// 🔁 SHOW LOGIN
+function showLogin(){
+  document.getElementById("loginScreen").style.display="block";
+  document.getElementById("dashboard").style.display="none";
+}
+
+// 🔁 SHOW DASHBOARD
+function showDashboard(){
+  document.getElementById("loginScreen").style.display="none";
+  document.getElementById("dashboard").style.display="block";
+  loadData();
+}
+
+// 📦 LOAD DATA
+async function loadData(){
+
+  const { data } = await client
     .from("donations")
     .select("*")
-    .order("id", { ascending: false });
+    .order("id",{ascending:false});
 
-  const table = document.getElementById("adminTable");
+  let table = document.getElementById("table");
 
-  if(error){
-    table.innerHTML = "<tr><td>Error loading data</td></tr>";
-    return;
-  }
-
-  document.getElementById("loading").style.display = "none";
-
-  table.innerHTML = `
+  table.innerHTML=`
     <tr>
       <th>Name</th>
       <th>Email</th>
       <th>Amount</th>
-      <th>Date</th>
       <th>Action</th>
     </tr>
   `;
 
-  data.forEach(d => {
-    table.innerHTML += `
+  data.forEach(d=>{
+    table.innerHTML+=`
       <tr>
-        <td>${d.name || "-"}</td>
-        <td>${d.email || "-"}</td>
-        <td>₹${d.amount || 0}</td>
-        <td>${d.created_at ? new Date(d.created_at).toLocaleDateString() : "-"}</td>
+        <td>${d.name||"-"}</td>
+        <td>${d.email||"-"}</td>
+        <td>₹${d.amount||0}</td>
         <td>
-          <button onclick="deleteDonor('${d.id}')" style="background:red;color:white;border:none;padding:5px;">
+          <button onclick="deleteRow('${d.id}')" style="background:red;color:white;border:none;padding:5px;">
             Delete
           </button>
         </td>
@@ -146,25 +191,19 @@ async function load(){
 }
 
 // 🗑 DELETE
-async function deleteDonor(id){
-
-  if(confirm("Delete this donation?")){
-
-    const { error } = await client
-      .from("donations")
-      .delete()
-      .eq("id", id);
-
-    if(error){
-      alert("Delete failed");
-    } else {
-      load();
-    }
+async function deleteRow(id){
+  if(confirm("Delete this record?")){
+    await client.from("donations").delete().eq("id",id);
+    loadData();
   }
 }
 
-// INIT
-load();
+// 🔐 AUTO CHECK
+if(localStorage.getItem("isAdmin")==="true"){
+  showDashboard();
+}else{
+  showLogin();
+}
 
 </script>
 
