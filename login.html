@@ -24,10 +24,6 @@ body{
   text-align:center;
 }
 
-.login-box h2{
-  margin-bottom:20px;
-}
-
 input{
   width:100%;
   padding:10px;
@@ -47,10 +43,6 @@ button{
   cursor:pointer;
 }
 
-button:hover{
-  background:#0c7c45;
-}
-
 #msg{
   color:red;
   font-size:13px;
@@ -65,39 +57,32 @@ button:hover{
 
   <h2>Admin Login</h2>
 
-  <input id="user" placeholder="Username">
-  <input id="pass" type="password" placeholder="Password">
+  <!-- ✅ FORM ADD -->
+  <form onsubmit="login(event)">
+    <input id="user" placeholder="Username" required>
+    <input id="pass" type="password" placeholder="Password" required>
 
-  <button onclick="login()">Login</button>
+    <button type="submit">Login</button>
+  </form>
 
   <p id="msg"></p>
 
 </div>
 
 <script>
-
-<script>
-function login(){
+function login(e){
+  e.preventDefault(); // page reload stop
 
   const u = document.getElementById("user").value.trim();
   const p = document.getElementById("pass").value.trim();
 
-  console.log("User:", u);
-  console.log("Pass:", p);
-
   if(u === "admin" && p === "admin123"){
-
     localStorage.setItem("isAdmin","yes");
-
-    alert("Login Success");
     window.location.href = "admin.html";
-
   } else {
     document.getElementById("msg").innerText = "Invalid login";
   }
 }
-</script>
-
 </script>
 
 </body>
