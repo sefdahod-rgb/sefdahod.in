@@ -100,7 +100,7 @@ document.getElementById("donationForm").addEventListener("submit", async functio
       }
 
       // ✅ redirect (IMPORTANT FIX)
-      window.location.href = "receipt.html?name=" + encodeURIComponent(name)
+      window.location.href = `upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amount}&cu=INR`;
         + "&email=" + encodeURIComponent(email)
         + "&amount=" + amount
         + "&receipt=" + receiptNo;
