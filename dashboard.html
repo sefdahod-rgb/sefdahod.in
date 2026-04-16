@@ -1,134 +1,155 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Dashboard - Shubhi Education Foundation</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dashboard - Shubhi Education Foundation</title>
 
-  <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Chart -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+.stats{display:flex;gap:15px;flex-wrap:wrap}
+.card-box{flex:1;min-width:200px;background:#fff;padding:15px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.card-box h3{font-size:14px;color:#666}
+.card-box p{font-size:22px;font-weight:bold}
 
-  <style>
-    .stats {display:flex; gap:20px; flex-wrap:wrap; margin:20px 0;}
-    .stat-card {flex:1; min-width:200px; background:#fff; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,.1);}
-    .stat-card h3 {margin:0; font-size:16px; color:#666;}
-    .stat-card p {margin:10px 0 0; font-size:28px; font-weight:bold; color:#2c3e50;}
-    .chart-box {background:#fff; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,.1); margin-top:20px;}
-  </style>
+.list{margin-top:20px;background:#fff;padding:15px;border-radius:10px}
+</style>
 </head>
 
 <body>
 <div class="overlay">
 
 <header>
-  <img src="logo.png">
-  <h1>Shubhi Education Foundation, Dahod</h1>
+<h1>Dashboard - Shubhi Education Foundation</h1>
 </header>
 
 <nav>
-  <a href="index.html">Home</a>
-  <a href="dashboard.html" class="active">Dashboard</a>
-  <a href="donate.html">Donate</a>
-  <a href="donors.html">Donors</a>
-  <a href="receipt.html">Receipt</a>
-  <a href="finance.html">Finance</a>
-  <a href="admin.html">Admin</a>
+<a href="index.html">Home</a>
+<a href="dashboard.html" class="active">Dashboard</a>
+<a href="donate.html">Donate</a>
+<a href="donors.html">Donors</a>
+<a href="admin.html">Admin</a>
 </nav>
 
 <section>
-  <div class="card">
-    <h2>Dashboard</h2>
 
-    <div class="stats">
-      <div class="stat-card">
-        <h3>Total Donations</h3>
-        <p id="totalAmount">₹0</p>
-      </div>
+<div class="stats">
+<div class="card-box"><h3>Total Donation</h3><p id="total">₹0</p></div>
+<div class="card-box"><h3>Total Donors</h3><p id="donors">0</p></div>
+<div class="card-box"><h3>Average</h3><p id="avg">₹0</p></div>
+<div class="card-box"><h3>Today</h3><p id="today">₹0</p></div>
+<div class="card-box"><h3>This Month</h3><p id="month">₹0</p></div>
+</div>
 
-      <div class="stat-card">
-        <h3>Total Donors</h3>
-        <p id="totalDonors">0</p>
-      </div>
+<div class="list">
+<h3>Last 7 Days</h3>
+<canvas id="chart"></canvas>
+</div>
 
-      <div class="stat-card">
-        <h3>Avg Donation</h3>
-        <p id="avgDonation">₹0</p>
-      </div>
-    </div>
+<div class="list">
+<h3>Top Donors</h3>
+<ul id="topDonors"></ul>
+</div>
 
-    <div class="chart-box">
-      <h3>Donations - Last 7 Days</h3>
-      <canvas id="donationChart"></canvas>
-    </div>
+<div class="list">
+<h3>Recent Donations</h3>
+<ul id="recent"></ul>
+</div>
 
-  </div>
 </section>
-
 </div>
 
 <script>
 const client = window.supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+  "YOUR_SUPABASE_KEY"
 );
 
-async function loadDashboard(){
+async function load(){
 
-  const { data, error } = await client
-    .from("donations")
-    .select("amount, created_at");
+const { data, error } = await client
+  .from("donations")
+  .select("*")
+  .eq("status","success");
 
-  if(error){
-    console.log("Error:", error);
-    return;
+if(error){
+  console.log(error);
+  return;
+}
+
+// 📊 Stats
+let total = 0;
+data.forEach(d=> total += Number(d.amount)||0);
+
+const donors = data.length;
+const avg = donors ? Math.round(total/donors) : 0;
+
+// 📅 Today / Month
+let today = 0;
+let month = 0;
+
+const now = new Date();
+
+data.forEach(d=>{
+  const dt = new Date(d.created_at);
+
+  if(dt.toDateString() === now.toDateString()){
+    today += Number(d.amount)||0;
   }
 
-  // Stats
-  const total = data.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
-  const donors = data.length;
-  const avg = donors ? Math.round(total / donors) : 0;
+  if(dt.getMonth() === now.getMonth()){
+    month += Number(d.amount)||0;
+  }
+});
 
-  document.getElementById("totalAmount").innerText = "₹" + total;
-  document.getElementById("totalDonors").innerText = donors;
-  document.getElementById("avgDonation").innerText = "₹" + avg;
+document.getElementById("total").innerText = "₹"+total;
+document.getElementById("donors").innerText = donors;
+document.getElementById("avg").innerText = "₹"+avg;
+document.getElementById("today").innerText = "₹"+today;
+document.getElementById("month").innerText = "₹"+month;
 
-  // Last 7 days
-  const last7 = [...Array(7)].map((_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (6 - i));
-    return d.toISOString().split('T')[0];
-  });
+// 📈 Last 7 days
+const days = [...Array(7)].map((_,i)=>{
+  const d = new Date();
+  d.setDate(d.getDate()- (6-i));
+  return d.toISOString().split('T')[0];
+});
 
-  const totals = last7.map(day => {
-    return data
-      .filter(d => (d.created_at || "").startsWith(day))
-      .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
-  });
+const totals = days.map(day=>{
+  return data.filter(d=> (d.created_at||"").startsWith(day))
+  .reduce((s,d)=> s + (Number(d.amount)||0),0);
+});
 
-  new Chart(document.getElementById("donationChart"), {
-    type: "bar",
-    data: {
-      labels: last7.map(d => new Date(d).toLocaleDateString('en-IN', {day:'2-digit', month:'short'})),
-      datasets: [{
-        label: "Donation ₹",
-        data: totals,
-        backgroundColor: "#4CAF50"
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } }
-    }
-  });
+new Chart(document.getElementById("chart"),{
+  type:"bar",
+  data:{
+    labels: days.map(d=> new Date(d).toLocaleDateString()),
+    datasets:[{data:totals}]
+  }
+});
+
+// 🏆 Top Donors
+const sorted = [...data].sort((a,b)=> b.amount - a.amount).slice(0,5);
+const top = document.getElementById("topDonors");
+
+sorted.forEach(d=>{
+  top.innerHTML += `<li>${d.name} - ₹${d.amount}</li>`;
+});
+
+// 🕒 Recent
+const recent = document.getElementById("recent");
+
+data.slice(-5).reverse().forEach(d=>{
+  recent.innerHTML += `<li>${d.name} donated ₹${d.amount}</li>`;
+});
 
 }
 
-loadDashboard();
+load();
 </script>
 
 </body>
