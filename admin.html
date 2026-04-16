@@ -12,6 +12,8 @@
 .btn{padding:6px 10px;border:none;border-radius:5px;cursor:pointer}
 .delete{background:red;color:#fff}
 .logout{background:#333;color:#fff;float:right}
+.refresh{background:#0F9D58;color:#fff;margin-right:10px}
+.search{padding:8px;width:100%;margin-bottom:10px}
 </style>
 </head>
 
@@ -29,6 +31,10 @@
 
 <h2>Donations</h2>
 
+<input type="text" id="search" class="search" placeholder="Search by name...">
+
+<button class="btn refresh" onclick="load()">Refresh</button>
+
 <table id="adminTable" width="100%">
 <tr>
 <th>Name</th>
@@ -45,19 +51,25 @@
 </div>
 
 <script>
-// 🔐 LOGIN CHECK
-if(localStorage.getItem("isAdmin") !== "yes"){
-  alert("Login Required");
-  window.location.href = "login.html";
-}
-
 // 🔌 Supabase
 const client = window.supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 );
 
+// 🔐 REAL AUTH CHECK (NEXT LEVEL)
+async function checkAuth(){
+  const { data } = await client.auth.getSession();
+
+  if(!data.session){
+    alert("Login Required");
+    window.location.href = "login.html";
+  }
+}
+
 // 🔄 Load Data
+let allData = [];
+
 async function load(){
   const { data, error } = await client
     .from("donations")
@@ -70,6 +82,12 @@ async function load(){
     return;
   }
 
+  allData = data;
+  render(data);
+}
+
+// 📊 Render Table
+function render(data){
   const t = document.getElementById("adminTable");
 
   t.innerHTML = `
@@ -95,7 +113,14 @@ async function load(){
   });
 }
 
-// ❌ DELETE FIXED
+// 🔍 SEARCH
+document.getElementById("search").addEventListener("input", function(){
+  const val = this.value.toLowerCase();
+  const filtered = allData.filter(d => d.name.toLowerCase().includes(val));
+  render(filtered);
+});
+
+// ❌ DELETE
 async function del(id){
   if(confirm("Delete this donation?")){
     
@@ -111,17 +136,19 @@ async function del(id){
     }
 
     alert("Deleted successfully");
-    load(); // refresh
+    load();
   }
 }
 
-// 🔓 LOGOUT
-function logout(){
+// 🔓 LOGOUT (REAL)
+async function logout(){
+  await client.auth.signOut();
   localStorage.removeItem("isAdmin");
   window.location.href = "login.html";
 }
 
-// 🚀 Start
+// 🚀 START
+checkAuth();
 load();
 </script>
 
