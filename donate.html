@@ -57,12 +57,12 @@ const client = window.supabase.createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
-document.getElementById("donationForm").addEventListener("submit", async (e) => {
+document.getElementById("donationForm").addEventListener("submit", async function(e) {
   e.preventDefault();
 
   const name = document.getElementById("dname").value.trim();
   const email = document.getElementById("demail").value.trim();
-  const amount = parseInt(document.getElementById("damt").value.trim());
+  const amount = parseInt(document.getElementById("damt").value);
 
   if(!name || !email || !amount){
     alert("Fill all fields");
@@ -76,31 +76,41 @@ document.getElementById("donationForm").addEventListener("submit", async (e) => 
     amount: amount * 100,
     currency: "INR",
     name: "Shubhi Education Foundation",
-    method: {
-    upi: true
-  },
+    description: "Donation",
 
-  handler: function (response) {
-    // success code
-  }
-};
-      // ✅ Save only after success
-      await client.from("donations").insert([{
-        name,
-        email,
-        amount,
+    method: {
+      upi: true
+    },
+
+    handler: async function (response) {
+
+      const { error } = await client.from("donations").insert([{
+        name: name,
+        email: email,
+        amount: amount,
         receipt_no: receiptNo,
         payment_id: response.razorpay_payment_id,
         status: "success"
       }]);
 
-      // ✅ Redirect to receipt
-      window.location.href = `receipt.html?name=${name}&email=${email}&amount=${amount}&receipt=${receiptNo}`;
+      if(error){
+        alert("Save Error");
+        console.log(error);
+        return;
+      }
+
+      // ✅ redirect (IMPORTANT FIX)
+      window.location.href = "receipt.html?name=" + encodeURIComponent(name)
+        + "&email=" + encodeURIComponent(email)
+        + "&amount=" + amount
+        + "&receipt=" + receiptNo;
     },
+
     prefill: {
       name: name,
       email: email
     },
+
     theme: {
       color: "#28a745"
     }
