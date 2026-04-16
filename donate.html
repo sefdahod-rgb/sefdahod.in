@@ -49,63 +49,64 @@
 
   <footer style="background:var(--dark); color:#fff; text-align:center; padding:15px">© Rainbow Public School, Rabdal, Dahod</footer>
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 <script>
 const client = window.supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
-// FORM SUBMIT
 document.getElementById("donationForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const name = document.getElementById("dname").value.trim();
   const email = document.getElementById("demail").value.trim();
   const amount = parseInt(document.getElementById("damt").value.trim());
-  const msg = document.getElementById("dmsg").value.trim();
 
-  if (!name || !email || !amount) {
-    alert("Please fill all fields");
+  if(!name || !email || !amount){
+    alert("Fill all fields");
     return;
   }
 
-  // Receipt number
   const receiptNo = "SEF-" + Date.now();
 
-  // Save data
-  const { error } = await client.from("donations").insert([{
-    name: name,
-    email: email,
-    amount: amount,
-    message: msg,
-    receipt_no: receiptNo,
-    status: "pending"
-  }]);
+  const options = {
+    key: "rzp_live_SeDR91zuvNa9fG",
+    amount: amount * 100,
+    currency: "INR",
+    name: "Shubhi Education Foundation",
+    method: {
+    upi: true
+  },
 
-  if (error) {
-    alert("Error: " + error.message);
-    console.log(error);
-    return;
+  handler: function (response) {
+    // success code
   }
+};
+      // ✅ Save only after success
+      await client.from("donations").insert([{
+        name,
+        email,
+        amount,
+        receipt_no: receiptNo,
+        payment_id: response.razorpay_payment_id,
+        status: "success"
+      }]);
 
-  alert("Redirecting to payment...");
+      // ✅ Redirect to receipt
+      window.location.href = `receipt.html?name=${name}&email=${email}&amount=${amount}&receipt=${receiptNo}`;
+    },
+    prefill: {
+      name: name,
+      email: email
+    },
+    theme: {
+      color: "#28a745"
+    }
+  };
 
-  // UPI Payment open
-  window.location.href = `upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amount}&cu=INR`;
-
-  // Receipt open after 3 sec
-  setTimeout(() => {
-  window.location.href = `receipt.html?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&amount=${amount}&receipt=${receiptNo}`;
-  }, 3000);
-
-});
-
-// GPay Button
-document.getElementById("gpayBtn").addEventListener("click", (e) => {
-  e.preventDefault();
-
-  const amt = document.getElementById("damt").value || 0;
-
-  window.location.href = `upi://pay?pa=9408695001-1@okbizaxis&pn=Shubhi%20Education%20Foundation&am=${amt}&cu=INR`;
+  const rzp = new Razorpay(options);
+  rzp.open();
 });
 </script>
