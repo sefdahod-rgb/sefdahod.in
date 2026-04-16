@@ -26,3 +26,19 @@ color:#fff;border-radius:10px;text-decoration:none;font-weight:bold}
  color:white; box-shadow:0 0 20px rgba(0,0,0,0.4); } input{ width:100%; padding:10px; margin:10px 0; border:none; 
 border-radius:6px; } button{ width:100%; padding:10px; background:green; color:white; border:none; 
 border-radius:6px; cursor:pointer; }
+.logout{
+  background: linear-gradient(135deg,#ff4d4d,#cc0000);
+  color:#fff;
+  float:right;
+  padding:8px 14px;
+  border:none;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:bold;
+  transition:0.3s;
+}
+
+.logout:hover{
+  background: linear-gradient(135deg,#cc0000,#990000);
+  transform: scale(1.05);
+}
