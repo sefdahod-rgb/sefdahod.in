@@ -45,40 +45,38 @@ button{
 
 #msg{
   color:red;
-  font-size:13px;
 }
 </style>
-
 </head>
 
 <body>
 
 <div class="login-box">
-
   <h2>Admin Login</h2>
 
-  <!-- ✅ FORM ADD -->
   <form onsubmit="login(event)">
     <input id="user" placeholder="Username" required>
     <input id="pass" type="password" placeholder="Password" required>
-
     <button type="submit">Login</button>
   </form>
 
   <p id="msg"></p>
-
 </div>
 
 <script>
 function login(e){
-  e.preventDefault(); // page reload stop
+  e.preventDefault();
 
   const u = document.getElementById("user").value.trim();
   const p = document.getElementById("pass").value.trim();
 
   if(u === "admin" && p === "admin123"){
     localStorage.setItem("isAdmin","yes");
-    window.location.href = "admin.html";
+
+    setTimeout(()=>{
+      window.location.href = "admin.html";
+    },200);
+
   } else {
     document.getElementById("msg").innerText = "Invalid login";
   }
