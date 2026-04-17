@@ -91,20 +91,35 @@ document.getElementById("donationForm").addEventListener("submit", function(e){
 
     handler: async function (response) {
 
-      // ✅ SAVE DATA
-      const { error } = await client.from("donations").insert([{
-        name: name,
-        email: email,
-        amount: amount,
-        receipt_no: receiptNo,
-        payment_id: response.razorpay_payment_id,
-        status: "success"
-      }]);
+  try{
 
-      if(error){
-        alert("Database error");
-        console.log(error);
-        return;
+    const { error } = await client.from("donations").insert([{
+      name: name,
+      email: email,
+      amount: amount,
+      receipt_no: receiptNo,
+      payment_id: response.razorpay_payment_id || "",
+      status: "success"
+    }]);
+
+    if(error){
+      console.log(error);
+      alert(error.message);
+      return;
+    }
+
+    window.location.href =
+      "receipt.html?name=" + encodeURIComponent(name)
+      + "&email=" + encodeURIComponent(email)
+      + "&amount=" + amount
+      + "&receipt=" + receiptNo
+      + "&date=" + encodeURIComponent(new Date().toISOString());
+
+  } catch(err){
+    console.log(err);
+    alert("Unexpected error");
+  }
+}        return;
       }
 
       // ✅ REDIRECT TO RECEIPT
