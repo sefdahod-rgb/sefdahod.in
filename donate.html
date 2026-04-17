@@ -5,59 +5,70 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Donate - Shubhi Education Foundation</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- ✅ SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- ✅ RAZORPAY -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
+
 <body>
-  <div class="overlay">
-    <header>
-      <img src="logo.png">
-      <h1>Shubhi Education Foundation, Dahod</h1>
-    </header>
-    <p>Registration no.:- Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD</p>
-    <p>80G Registration No. :-AAOTS1413MF20251 12A Registration No. :- AAOTS1413ME20241 CSR no.:- CSR00096110</p>
-    <p class="info">Address: Rainbow Public School, Shalimar co-operative society, Muvaliya Road, Rabdal, Dahod Gujarat - 389151<br>
-      Email: sefdahod@gmail.com | Mobile: 9408695001 | Landline: 02673-450037</p>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="dashboard.html">Dashboard</a>
-      <a href="donate.html" class="active">Donate</a>
-      <a href="donors.html">Donors</a>
-      <a href="receipt.html">Receipt</a>
-      <a href="finance.html">Finance</a>
-      <a href="admin.html">Admin</a>
-    </nav>
-    <section>
-      <div class="card">
-        <h2>Donate Now</h2>
-        <form id="donationForm">
-          <input type="text" id="dname" placeholder="Your Full Name" required><br><br>
-          <input type="email" id="demail" placeholder="Your Email" required><br><br>
-          <input type="number" id="damt" placeholder="Donation Amount (₹)" required min="1"><br><br>
-          <textarea id="dmsg" placeholder="Message (Optional)"></textarea><br><br>
-          <button type="submit">Submit & Pay with GPay</button>
-        </form>
-        <div class="qr">
-          <h3>Scan & Pay via UPI</h3>
-          <img src="qr.jpeg" alt="UPI QR Code">
-          <a class="gpay" id="gpayBtn" href="#">Pay with GPay</a>
-          <p><strong>UPI ID:</strong> 9408695001-1@okbizaxis</p>
-          <p style="color:#c00">Tip: Open it on your mobile; the GPay app isn't opening on the PC.</p>
-        </div>
-      </div>
-    </section>
-  </div>
+<div class="overlay">
 
-  <footer style="background:var(--dark); color:#fff; text-align:center; padding:15px">© Rainbow Public School, Rabdal, Dahod</footer>
+<header>
+  <img src="logo.png">
+  <h1>Shubhi Education Foundation, Dahod</h1>
+</header>
 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<p>Registration no.:- Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD</p>
+<p>80G Registration No. :-AAOTS1413MF20251 12A Registration No. :- AAOTS1413ME20241 CSR no.:- CSR00096110</p>
+
+<p class="info">
+Address: Rainbow Public School, Shalimar co-operative society, Muvaliya Road, Rabdal, Dahod Gujarat - 389151<br>
+Email: sefdahod@gmail.com | Mobile: 9408695001
+</p>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="donate.html" class="active">Donate</a>
+  <a href="donors.html">Donors</a>
+  <a href="receipt.html">Receipt</a>
+  <a href="admin.html">Admin</a>
+</nav>
+
+<section>
+<div class="card">
+
+<h2>Donate Now</h2>
+
+<form id="donationForm">
+  <input type="text" id="dname" placeholder="Your Full Name" required><br><br>
+  <input type="email" id="demail" placeholder="Your Email" required><br><br>
+  <input type="number" id="damt" placeholder="Donation Amount (₹)" required min="1"><br><br>
+  <textarea id="dmsg" placeholder="Message (Optional)"></textarea><br><br>
+  <button type="submit">Donate Securely</button>
+</form>
+
+</div>
+</section>
+
+</div>
+
+<footer style="background:#002f60;color:#fff;text-align:center;padding:15px">
+© Shubhi Education Foundation
+</footer>
 
 <script>
+// ✅ SUPABASE CLIENT
 const client = window.supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
-document.getElementById("donationForm").addEventListener("submit", async function(e) {
+// ✅ FORM SUBMIT
+document.getElementById("donationForm").addEventListener("submit", function(e){
   e.preventDefault();
 
   const name = document.getElementById("dname").value.trim();
@@ -65,14 +76,14 @@ document.getElementById("donationForm").addEventListener("submit", async functio
   const amount = parseInt(document.getElementById("damt").value);
 
   if(!name || !email || !amount){
-    alert("Fill all fields");
+    alert("Please fill all fields");
     return;
   }
 
   const receiptNo = "SEF-" + Date.now();
 
   const options = {
-    key: "rzp_live_SeDR91zuvNa9fG", // ✔ YOUR KEY
+    key: "rzp_live_SeDR91zuvNa9fG", // ✅ LIVE KEY
     amount: amount * 100,
     currency: "INR",
     name: "Shubhi Education Foundation",
@@ -80,7 +91,7 @@ document.getElementById("donationForm").addEventListener("submit", async functio
 
     handler: async function (response) {
 
-      // ✅ SAVE IN DATABASE
+      // ✅ SAVE DATA
       const { error } = await client.from("donations").insert([{
         name: name,
         email: email,
@@ -91,13 +102,18 @@ document.getElementById("donationForm").addEventListener("submit", async functio
       }]);
 
       if(error){
-        alert("Database Save Error");
+        alert("Database error");
         console.log(error);
         return;
       }
 
-      // ✅ REDIRECT TO RECEIPT (FINAL FIX)
-      window.location.href = `receipt.html?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&amount=${amount}&receipt=${receiptNo}&date=${encodeURIComponent(new Date().toISOString())}`;
+      // ✅ REDIRECT TO RECEIPT
+      window.location.href =
+        "receipt.html?name=" + encodeURIComponent(name) +
+        "&email=" + encodeURIComponent(email) +
+        "&amount=" + amount +
+        "&receipt=" + receiptNo +
+        "&date=" + new Date().toISOString();
     },
 
     prefill: {
@@ -106,11 +122,14 @@ document.getElementById("donationForm").addEventListener("submit", async functio
     },
 
     theme: {
-      color: "#28a745"
+      color: "#0F9D58"
     }
   };
 
   const rzp = new Razorpay(options);
   rzp.open();
 });
- </script>
+</script>
+
+</body>
+</html>
