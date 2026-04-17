@@ -83,52 +83,42 @@ document.getElementById("donationForm").addEventListener("submit", function(e){
   const receiptNo = "SEF-" + Date.now();
 
   const options = {
-    key: "rzp_live_SeDR91zuvNa9fG", // ✅ LIVE KEY
+    key: "rzp_live_SeDR91zuvNa9fG",
     amount: amount * 100,
     currency: "INR",
     name: "Shubhi Education Foundation",
     description: "Donation",
 
     handler: async function (response) {
+      try {
+        // ✅ SAVE TO DATABASE
+        const { error } = await client.from("donations").insert([{
+          name: name,
+          email: email,
+          amount: amount,
+          receipt_no: receiptNo,
+          payment_id: response.razorpay_payment_id || "",
+          status: "success"
+        }]);
 
-  try{
+        if(error){
+          console.log("DB ERROR:", error);
+          alert(error.message);
+          return;
+        }
 
-    const { error } = await client.from("donations").insert([{
-      name: name,
-      email: email,
-      amount: amount,
-      receipt_no: receiptNo,
-      payment_id: response.razorpay_payment_id || "",
-      status: "success"
-    }]);
+        // ✅ SUCCESS REDIRECT
+        window.location.href =
+          "receipt.html?name=" + encodeURIComponent(name) +
+          "&email=" + encodeURIComponent(email) +
+          "&amount=" + amount +
+          "&receipt=" + receiptNo +
+          "&date=" + encodeURIComponent(new Date().toISOString());
 
-    if(error){
-      console.log(error);
-      alert(error.message);
-      return;
-    }
-
-    window.location.href =
-      "receipt.html?name=" + encodeURIComponent(name)
-      + "&email=" + encodeURIComponent(email)
-      + "&amount=" + amount
-      + "&receipt=" + receiptNo
-      + "&date=" + encodeURIComponent(new Date().toISOString());
-
-  } catch(err){
-    console.log(err);
-    alert("Unexpected error");
-  }
-}        return;
+      } catch(err){
+        console.log("CATCH ERROR:", err);
+        alert("Unexpected error");
       }
-
-      // ✅ REDIRECT TO RECEIPT
-      window.location.href =
-        "receipt.html?name=" + encodeURIComponent(name) +
-        "&email=" + encodeURIComponent(email) +
-        "&amount=" + amount +
-        "&receipt=" + receiptNo +
-        "&date=" + new Date().toISOString();
     },
 
     prefill: {
@@ -145,6 +135,3 @@ document.getElementById("donationForm").addEventListener("submit", function(e){
   rzp.open();
 });
 </script>
-
-</body>
-</html>
