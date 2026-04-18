@@ -75,6 +75,7 @@ const { data, error } = await client
   .from("donations")
   .select("*");
 
+
 if(error){
   console.log("ERROR:", error);
   alert("Database error");
@@ -89,8 +90,9 @@ if(!data || data.length === 0){
 }
 
 // ✅ FILTER SAFE
-const filtered = data.filter(d => d.status === "success" || !d.status);
-
+const filtered = data.filter(d =>
+  d.status === "success" || d.status === "pending"
+);
 // 📊 TOTAL
 let total = 0;
 filtered.forEach(d => total += Number(d.amount) || 0);
