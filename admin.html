@@ -7,44 +7,92 @@
 
 <link rel="stylesheet" href="style.css">
 
-<!-- ✅ SUPABASE (IMPORTANT) -->
+<!-- ✅ SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-body{font-family:Segoe UI}
+body{
+  font-family:Segoe UI;
+  margin:0;
+  background:#0f172a;
+}
 
-.btn{padding:6px 10px;border:none;border-radius:5px;cursor:pointer}
-.delete{background:red;color:#fff}
-.logout{
-  background: linear-gradient(135deg,#ff4d4d,#cc0000);
+.overlay{
+  padding:20px;
+}
+
+/* HEADER */
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#1e293b;
   color:#fff;
-  float:right;
-  padding:8px 14px;
+  padding:15px;
+  border-radius:10px;
+}
+
+.logout{
+  background:linear-gradient(135deg,#ff4d4d,#cc0000);
+  color:#fff;
+  padding:8px 15px;
   border:none;
   border-radius:20px;
   cursor:pointer;
 }
-.refresh{background:#0F9D58;color:#fff;margin-right:10px}
-.search{padding:8px;width:100%;margin-bottom:10px}
 
+/* CARD */
 .card{
   background:#1e293b;
   color:#fff;
+  padding:20px;
+  margin-top:20px;
+  border-radius:10px;
 }
 
+/* INPUT */
+.search{
+  padding:10px;
+  width:100%;
+  margin-bottom:10px;
+  border-radius:6px;
+  border:none;
+}
+
+/* BUTTONS */
+.btn{
+  padding:8px 12px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.refresh{
+  background:#0F9D58;
+  color:#fff;
+  margin-bottom:10px;
+}
+
+.delete{
+  background:#ff3333;
+  color:#fff;
+}
+
+/* TABLE */
 table{
   width:100%;
   border-collapse:collapse;
   background:#111827;
+  color:#fff;
 }
-th, td {
+
+th, td{
   padding:10px;
-  text-align:left;
   border-bottom:1px solid #333;
 }
 
 th{
-  background:#f5f5f5;
+  background:#374151;
 }
 </style>
 </head>
@@ -63,10 +111,9 @@ if(localStorage.getItem("isAdmin") !== "yes"){
 
 <header>
   <h1>Admin Panel</h1>
-  <button class="btn logout" onclick="logout()">Logout</button>
+  <button class="logout" onclick="logout()">Logout</button>
 </header>
 
-<section>
 <div class="card">
 
 <h2>Donations</h2>
@@ -86,20 +133,24 @@ if(localStorage.getItem("isAdmin") !== "yes"){
 </table>
 
 </div>
-</section>
 
 </div>
 
 <script>
+// 🔌 SUPABASE
 const client = window.supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+  "YOUR_ANON_KEY_HERE"
 );
+
+// 🔄 LOAD DATA
+let allData = [];
 
 async function load(){
   const { data, error } = await client
     .from("donations")
-    .select("*");
+    .select("*")
+    .order("id", { ascending:false });
 
   console.log("DATA:", data);
   console.log("ERROR:", error);
@@ -125,6 +176,15 @@ async function load(){
     return;
   }
 
+  allData = data;
+
+  render(data);
+}
+
+// 📊 RENDER
+function render(data){
+  const t = document.getElementById("adminTable");
+
   data.forEach(d=>{
     t.innerHTML += `
     <tr>
@@ -133,18 +193,57 @@ async function load(){
       <td>₹${d.amount || 0}</td>
       <td>${d.created_at ? new Date(d.created_at).toLocaleDateString() : "-"}</td>
       <td>
-        <button onclick="del(${d.id})">Delete</button>
+        <button class="btn delete" onclick="del(${d.id})">Delete</button>
       </td>
     </tr>`;
   });
 }
 
+// 🔍 SEARCH
+document.getElementById("search").addEventListener("input", function(){
+  const val = this.value.toLowerCase();
+  const filtered = allData.filter(d =>
+    (d.name || "").toLowerCase().includes(val)
+  );
+  document.getElementById("adminTable").innerHTML = `
+  <tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Amount</th>
+    <th>Date</th>
+    <th>Action</th>
+  </tr>`;
+  render(filtered);
+});
+
+// ❌ DELETE
 async function del(id){
-  if(confirm("Delete?")){
-    await client.from("donations").delete().eq("id", id);
+  if(confirm("Delete this donation?")){
+    const { error } = await client
+      .from("donations")
+      .delete()
+      .eq("id", id);
+
+    if(error){
+      alert("Delete failed");
+      console.log(error);
+      return;
+    }
+
+    alert("Deleted");
     load();
   }
 }
 
+// 🔓 LOGOUT
+function logout(){
+  localStorage.clear();
+  window.location.replace("index.html");
+}
+
+// 🚀 START
 load();
 </script>
+
+</body>
+</html>
