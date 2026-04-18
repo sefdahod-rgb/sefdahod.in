@@ -15,7 +15,6 @@
 .card-box{flex:1;min-width:200px;background:#fff;padding:15px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
 .card-box h3{font-size:14px;color:#666}
 .card-box p{font-size:22px;font-weight:bold}
-
 .list{margin-top:20px;background:#fff;padding:15px;border-radius:10px}
 </style>
 </head>
@@ -64,6 +63,7 @@
 </div>
 
 <script>
+// ✅ SUPABASE
 const client = window.supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
@@ -73,55 +73,69 @@ async function load(){
 
 const { data, error } = await client
   .from("donations")
-  .select("*")
-  .eq("status","success");
+  .select("*");
 
 if(error){
-  console.log(error);
+  console.log("ERROR:", error);
+  alert("Database error");
   return;
 }
 
-// 📊 Stats
-let total = 0;
-data.forEach(d=> total += Number(d.amount)||0);
+// ✅ EMPTY CHECK
+if(!data || data.length === 0){
+  document.getElementById("total").innerText = "₹0";
+  document.getElementById("donors").innerText = "0";
+  return;
+}
 
-const donors = data.length;
+// ✅ FILTER SAFE
+const filtered = data.filter(d => d.status === "success" || !d.status);
+
+// 📊 TOTAL
+let total = 0;
+filtered.forEach(d => total += Number(d.amount) || 0);
+
+const donors = filtered.length;
 const avg = donors ? Math.round(total/donors) : 0;
 
-// 📅 Today / Month
+// 📅 TODAY / MONTH
 let today = 0;
 let month = 0;
-
 const now = new Date();
 
-data.forEach(d=>{
+filtered.forEach(d=>{
+  if(!d.created_at) return;
+
   const dt = new Date(d.created_at);
 
   if(dt.toDateString() === now.toDateString()){
     today += Number(d.amount)||0;
   }
 
-  if(dt.getMonth() === now.getMonth()){
+  if(dt.getMonth() === now.getMonth() && dt.getFullYear() === now.getFullYear()){
     month += Number(d.amount)||0;
   }
 });
 
+// UI UPDATE
 document.getElementById("total").innerText = "₹"+total;
 document.getElementById("donors").innerText = donors;
 document.getElementById("avg").innerText = "₹"+avg;
 document.getElementById("today").innerText = "₹"+today;
 document.getElementById("month").innerText = "₹"+month;
 
-// 📈 Last 7 days
-const days = [...Array(7)].map((_,i)=>{
+// 📈 LAST 7 DAYS
+const days = [];
+for(let i=6;i>=0;i--){
   const d = new Date();
-  d.setDate(d.getDate()- (6-i));
-  return d.toISOString().split('T')[0];
-});
+  d.setDate(d.getDate()-i);
+  days.push(d.toISOString().split('T')[0]);
+}
 
 const totals = days.map(day=>{
-  return data.filter(d=> (d.created_at||"").startsWith(day))
-  .reduce((s,d)=> s + (Number(d.amount)||0),0);
+  return filtered
+    .filter(d => d.created_at && d.created_at.startsWith(day))
+    .reduce((sum,d)=> sum + (Number(d.amount)||0),0);
 });
 
 new Chart(document.getElementById("chart"),{
@@ -132,20 +146,27 @@ new Chart(document.getElementById("chart"),{
   }
 });
 
-// 🏆 Top Donors
-const sorted = [...data].sort((a,b)=> b.amount - a.amount).slice(0,5);
+// 🏆 TOP DONORS
 const top = document.getElementById("topDonors");
+top.innerHTML = "";
 
-sorted.forEach(d=>{
-  top.innerHTML += `<li>${d.name} - ₹${d.amount}</li>`;
-});
+[...filtered]
+  .sort((a,b)=> b.amount - a.amount)
+  .slice(0,5)
+  .forEach(d=>{
+    top.innerHTML += `<li>${d.name} - ₹${d.amount}</li>`;
+  });
 
-// 🕒 Recent
+// 🕒 RECENT
 const recent = document.getElementById("recent");
+recent.innerHTML = "";
 
-data.slice(-5).reverse().forEach(d=>{
-  recent.innerHTML += `<li>${d.name} donated ₹${d.amount}</li>`;
-});
+filtered
+  .slice(-5)
+  .reverse()
+  .forEach(d=>{
+    recent.innerHTML += `<li>${d.name} donated ₹${d.amount}</li>`;
+  });
 
 }
 
