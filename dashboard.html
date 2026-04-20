@@ -30,6 +30,7 @@
 <a href="index.html">Home</a>
 <a href="dashboard.html" class="active">Dashboard</a>
 <a href="donate.html">Donate</a>
+<a href="receipt.html">Receipt</a>
 <a href="donors.html">Donors</a>
 <a href="admin.html">Admin</a>
 </nav>
@@ -70,106 +71,100 @@ const client = window.supabase.createClient(
 );
 
 async function load(){
+  const { data, error } = await client.from("donations").select("*");
 
-const { data, error } = await client
-  .from("donations")
-  .select("*");
-
-
-if(error){
-  console.log("ERROR:", error);
-  alert("Database error");
-  return;
-}
-
-// ✅ EMPTY CHECK
-if(!data || data.length === 0){
-  document.getElementById("total").innerText = "₹0";
-  document.getElementById("donors").innerText = "0";
-  return;
-}
-
-// ✅ FILTER SAFE
-const filtered = data.filter(d =>
-  d.status === "success" || d.status === "pending"
-);
-// 📊 TOTAL
-let total = 0;
-filtered.forEach(d => total += Number(d.amount) || 0);
-
-const donors = filtered.length;
-const avg = donors ? Math.round(total/donors) : 0;
-
-// 📅 TODAY / MONTH
-let today = 0;
-let month = 0;
-const now = new Date();
-
-filtered.forEach(d=>{
-  if(!d.created_at) return;
-
-  const dt = new Date(d.created_at);
-
-  if(dt.toDateString() === now.toDateString()){
-    today += Number(d.amount)||0;
+  if(error){
+    console.log("ERROR:", error);
+    alert("Database error");
+    return;
   }
 
-  if(dt.getMonth() === now.getMonth() && dt.getFullYear() === now.getFullYear()){
-    month += Number(d.amount)||0;
+  if(!data || data.length === 0){
+    return;
   }
-});
 
-// UI UPDATE
-document.getElementById("total").innerText = "₹"+total;
-document.getElementById("donors").innerText = donors;
-document.getElementById("avg").innerText = "₹"+avg;
-document.getElementById("today").innerText = "₹"+today;
-document.getElementById("month").innerText = "₹"+month;
+  // ✅ USE ALL DATA (NO STATUS BUG)
+  const filtered = data;
 
-// 📈 LAST 7 DAYS
-const days = [];
-for(let i=6;i>=0;i--){
-  const d = new Date();
-  d.setDate(d.getDate()-i);
-  days.push(d.toISOString().split('T')[0]);
-}
+  // 📊 TOTAL
+  let total = 0;
+  filtered.forEach(d => total += Number(d.amount) || 0);
 
-const totals = days.map(day=>{
-  return filtered
-    .filter(d => d.created_at && d.created_at.startsWith(day))
-    .reduce((sum,d)=> sum + (Number(d.amount)||0),0);
-});
+  const donors = filtered.length;
+  const avg = donors ? Math.round(total/donors) : 0;
 
-new Chart(document.getElementById("chart"),{
-  type:"bar",
-  data:{
-    labels: days.map(d=> new Date(d).toLocaleDateString()),
-    datasets:[{data:totals}]
-  }
-});
+  // 📅 TODAY / MONTH
+  let today = 0;
+  let month = 0;
+  const now = new Date();
 
-// 🏆 TOP DONORS
-const top = document.getElementById("topDonors");
-top.innerHTML = "";
+  filtered.forEach(d=>{
+    if(!d.created_at) return;
 
-[...filtered]
-  .sort((a,b)=> b.amount - a.amount)
-  .slice(0,5)
-  .forEach(d=>{
-    top.innerHTML += `<li>${d.name} - ₹${d.amount}</li>`;
+    const dt = new Date(d.created_at);
+
+    if(dt.toDateString() === now.toDateString()){
+      today += Number(d.amount)||0;
+    }
+
+    if(dt.getMonth() === now.getMonth() && dt.getFullYear() === now.getFullYear()){
+      month += Number(d.amount)||0;
+    }
   });
 
-// 🕒 RECENT
-const recent = document.getElementById("recent");
-recent.innerHTML = "";
+  // UI UPDATE
+  document.getElementById("total").innerText = "₹"+total;
+  document.getElementById("donors").innerText = donors;
+  document.getElementById("avg").innerText = "₹"+avg;
+  document.getElementById("today").innerText = "₹"+today;
+  document.getElementById("month").innerText = "₹"+month;
 
-filtered
-  .slice(-5)
-  .reverse()
-  .forEach(d=>{
-    recent.innerHTML += `<li>${d.name} donated ₹${d.amount}</li>`;
+  // 📈 LAST 7 DAYS
+  const days = [];
+  for(let i=6;i>=0;i--){
+    const d = new Date();
+    d.setDate(d.getDate()-i);
+    days.push(d.toISOString().split('T')[0]);
+  }
+
+  const totals = days.map(day=>{
+    return filtered
+      .filter(d => d.created_at && d.created_at.startsWith(day))
+      .reduce((sum,d)=> sum + (Number(d.amount)||0),0);
   });
 
+  new Chart(document.getElementById("chart"),{
+    type:"bar",
+    data:{
+      labels: days.map(d=> new Date(d).toLocaleDateString()),
+      datasets:[{
+        label:"Donations ₹",
+        data:totals
+      }]
+    }
+  });
+
+  // 🏆 TOP DONORS
+  const top = document.getElementById("topDonors");
+  top.innerHTML = "";
+
+  [...filtered]
+    .sort((a,b)=> b.amount - a.amount)
+    .slice(0,5)
+    .forEach(d=>{
+      top.innerHTML += `<li>${d.name} - ₹${d.amount}</li>`;
+    });
+
+  // 🕒 RECENT
+  const recent = document.getElementById("recent");
+  recent.innerHTML = "";
+
+  filtered
+    .slice(-5)
+    .reverse()
+    .forEach(d=>{
+      recent.innerHTML += `<li>${d.name} donated ₹${d.amount}</li>`;
+    });
 }
 
 load();
