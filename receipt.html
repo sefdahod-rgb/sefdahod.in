@@ -188,26 +188,57 @@ button {
 
 <script>
 try {
+  <script>
+try {
   const params = new URLSearchParams(window.location.search);
 
-const receipt = params.get("receipt");
-const name = params.get("name");
-const email = params.get("email");
-const amount = params.get("amount");
-const date = params.get("date");
+  const receipt = params.get("receipt") || "N/A";
+  const name = params.get("name") || "N/A";
+  const email = params.get("email") || "N/A";
+  const amount = params.get("amount") || "0";
+  const dateParam = params.get("date");
 
-document.getElementById("rno").innerText = receipt;
-document.getElementById("name").innerText = name;
-document.getElementById("email").innerText = email;
-document.getElementById("amount").innerText = amount;
-document.getElementById("date").innerText =
-  new Date(date).toLocaleDateString();
+  const date = dateParam 
+    ? new Date(dateParam).toLocaleDateString() 
+    : new Date().toLocaleDateString();
 
-// QR
-const qrText = "SEF-RECEIPT-" + receipt;
+  // ✅ Elements exist check (important)
+  const rnoEl = document.getElementById("rno");
+  const nameEl = document.getElementById("name");
+  const emailEl = document.getElementById("email");
+  const amountEl = document.getElementById("amount");
+  const dateEl = document.getElementById("date");
 
-new QRCode(document.getElementById("qrcode"), {
-  text: qrText,
-  width: 120,
-  height: 120
-});
+  if (!rnoEl || !nameEl || !emailEl || !amountEl || !dateEl) {
+    throw new Error("HTML elements missing");
+  }
+
+  // ✅ Fill data
+  rnoEl.innerText = receipt;
+  nameEl.innerText = name;
+  emailEl.innerText = email;
+  amountEl.innerText = amount;
+  dateEl.innerText = date;
+
+  // ✅ QR safe generate
+  if (receipt !== "N/A") {
+    const qrText = "SEF-RECEIPT-" + receipt;
+
+    new QRCode(document.getElementById("qrcode"), {
+      text: qrText,
+      width: 120,
+      height: 120
+    });
+  }
+
+} catch (err) {
+  console.log("Receipt Error:", err);
+
+  document.body.innerHTML = `
+    <h2 style="text-align:center;color:red;margin-top:50px">
+      ❌ Receipt Load Error<br><br>
+      Please try again or contact support
+    </h2>
+  `;
+}
+</script>
