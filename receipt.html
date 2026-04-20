@@ -190,34 +190,24 @@ button {
 try {
   const params = new URLSearchParams(window.location.search);
 
-document.getElementById("rno").innerText = params.get("receipt");
-document.getElementById("name").innerText = params.get("name");
-document.getElementById("email").innerText = params.get("email");
-document.getElementById("amount").innerText = params.get("amount");
+const receipt = params.get("receipt");
+const name = params.get("name");
+const email = params.get("email");
+const amount = params.get("amount");
+const date = params.get("date");
+
+document.getElementById("rno").innerText = receipt;
+document.getElementById("name").innerText = name;
+document.getElementById("email").innerText = email;
+document.getElementById("amount").innerText = amount;
 document.getElementById("date").innerText =
-  new Date(params.get("date")).toLocaleDateString();
+  new Date(date).toLocaleDateString();
 
-  // Fill data
-  document.getElementById("rno").innerText = receipt;
-  document.getElementById("name").innerText = name;
-  document.getElementById("email").innerText = email;
-  document.getElementById("amount").innerText = amount;
-  document.getElementById("date").innerText =
-    new Date(date).toLocaleDateString();
+// QR
+const qrText = "SEF-RECEIPT-" + receipt;
 
-  // SAFE QR (ONLY ID)
-  const qrText = "SEF-RECEIPT-" + receipt;
-
-  new QRCode(document.getElementById("qrcode"), {
-    text: qrText,
-    width: 120,
-    height: 120
-  });
-
-} catch (err) {
-  console.log("Error fixed:", err);
-}
-</script>
-
-</body>
-</html>
+new QRCode(document.getElementById("qrcode"), {
+  text: qrText,
+  width: 120,
+  height: 120
+});
