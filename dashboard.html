@@ -91,9 +91,8 @@ body{
   flex:1;
   padding:20px;
 
-  background:rgba(255,255,255,0.85); /* transparent white */
-  backdrop-filter:blur(6px);
-  min-height:100vh;
+  background:rgba(255,255,255,0.95); /* clear white */
+  /* backdrop-filter: blur(6px); ❌ REMOVE THIS */
 }
 
 /* HEADER */
@@ -131,7 +130,7 @@ body{
 /* BOX */
 .box{
   margin-top:20px;
-  background:#ffffff;
+  background:#ffffff; /* white */
   padding:20px;
   border-radius:12px;
   box-shadow:0 6px 20px rgba(0,0,0,0.1);
@@ -150,15 +149,21 @@ canvas{
   padding:10px;
 }
 /* BOX */
-.box{
-  margin-top:20px;
-  background:#1e293b;
-  padding:20px;
-  border-radius:12px;
+.box h3{
+  color:#0f172a; /* dark text */
 }
 
-ul{list-style:none;padding:0}
-li{padding:8px;border-bottom:1px solid #333}
+.box li{
+  color:#334155; /* visible grey */
+  padding:10px;
+  border-bottom:1px solid #e2e8f0;
+}
+
+ul{
+  list-style:none;
+  padding:0;
+  margin:0;
+}
 
 </style>
 </head>
