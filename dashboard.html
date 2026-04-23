@@ -3,165 +3,224 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Dashboard - Shubhi Education Foundation</title>
-
-<link rel="stylesheet" href="style.css">
+<title>SEF Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-.stats{display:flex;gap:15px;flex-wrap:wrap}
-.card-box{flex:1;min-width:200px;background:#fff;padding:15px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
-.card-box h3{font-size:14px;color:#666}
-.card-box p{font-size:22px;font-weight:bold}
-.list{margin-top:20px;background:#fff;padding:15px;border-radius:10px}
+body{
+  margin:0;
+  font-family:Segoe UI;
+  background:#0f172a;
+  color:#fff;
+}
+
+/* SIDEBAR */
+.sidebar{
+  width:230px;
+  height:100vh;
+  position:fixed;
+  background:#020617;
+  padding:20px;
+}
+.sidebar h2{
+  font-size:18px;
+  margin-bottom:20px;
+}
+.sidebar a{
+  display:block;
+  padding:10px;
+  color:#94a3b8;
+  text-decoration:none;
+  border-radius:8px;
+}
+.sidebar a:hover{
+  background:#1e293b;
+  color:#fff;
+}
+
+/* MAIN */
+.main{
+  margin-left:250px;
+  padding:20px;
+}
+
+/* CARDS */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:15px;
+}
+.card{
+  padding:20px;
+  border-radius:12px;
+  background:#1e293b;
+}
+.card h3{
+  color:#94a3b8;
+  font-size:13px;
+}
+.card p{
+  font-size:24px;
+  font-weight:bold;
+}
+
+/* CHART */
+.chart{
+  margin-top:20px;
+  background:#1e293b;
+  padding:20px;
+  border-radius:12px;
+}
+
+/* FLEX BOX */
+.row{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:20px;
+  margin-top:20px;
+}
+
+.box{
+  background:#1e293b;
+  padding:20px;
+  border-radius:12px;
+}
+
+ul{list-style:none;padding:0}
+li{padding:8px;border-bottom:1px solid #333}
+
 </style>
 </head>
 
 <body>
-<div class="overlay">
 
-<header>
-<h1>Dashboard - Shubhi Education Foundation</h1>
-</header>
-
-<nav>
-<a href="index.html">Home</a>
-<a href="dashboard.html" class="active">Dashboard</a>
-<a href="donate.html">Donate</a>
-<a href="receipt.html">Receipt</a>
-<a href="donors.html">Donors</a>
-<a href="admin.html">Admin</a>
-</nav>
-
-<section>
-
-<div class="stats">
-<div class="card-box"><h3>Total Donation</h3><p id="total">₹0</p></div>
-<div class="card-box"><h3>Total Donors</h3><p id="donors">0</p></div>
-<div class="card-box"><h3>Average</h3><p id="avg">₹0</p></div>
-<div class="card-box"><h3>Today</h3><p id="today">₹0</p></div>
-<div class="card-box"><h3>This Month</h3><p id="month">₹0</p></div>
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>Shubhi Education Foundation Dahod</h2>
+  <a href="#">Dashboard</a>
+  <a href="donors.html">Donors</a>
+  <a href="donate.html">Donate</a>
+  <a href="admin.html">Admin</a>
 </div>
 
-<div class="list">
-<h3>Last 7 Days</h3>
-<canvas id="chart"></canvas>
+<!-- MAIN -->
+<div class="main">
+
+<h1>Dashboard</h1>
+
+<!-- CARDS -->
+<div class="cards">
+  <div class="card"><h3>Total</h3><p id="total">₹0</p></div>
+  <div class="card"><h3>Donors</h3><p id="donors">0</p></div>
+  <div class="card"><h3>Today</h3><p id="today">₹0</p></div>
+  <div class="card"><h3>Month</h3><p id="month">₹0</p></div>
 </div>
 
-<div class="list">
-<h3>Top Donors</h3>
-<ul id="topDonors"></ul>
+<!-- CHART -->
+<div class="chart">
+  <h3>Last 7 Days</h3>
+  <canvas id="chart"></canvas>
 </div>
 
-<div class="list">
-<h3>Recent Donations</h3>
-<ul id="recent"></ul>
+<!-- ROW -->
+<div class="row">
+
+<!-- RECENT -->
+<div class="box">
+  <h3>Recent Donations</h3>
+  <ul id="recent"></ul>
 </div>
 
-</section>
+<!-- TOP -->
+<div class="box">
+  <h3>Top Donors</h3>
+  <ul id="top"></ul>
+</div>
+
+</div>
+
 </div>
 
 <script>
-const client = window.supabase.createClient(
+const client = supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
 async function load(){
-  try {
-    const { data, error } = await client.from("donations").select("*");
 
-    if (error) {
-      console.log("DB ERROR:", error);
-      return;
-    }
+const { data } = await client.from("donations").select("*");
 
-    console.log("DATA:", data); // DEBUG
+if(!data || data.length===0){
+document.getElementById("recent").innerHTML="<li>No data</li>";
+document.getElementById("top").innerHTML="<li>No data</li>";
+return;
+}
 
-    const rows = Array.isArray(data) ? data : [];
+// STATS
+let total=0;
+data.forEach(d=> total+=Number(d.amount)||0);
 
-    // 👉 SAFE NUMBERS
-    const amounts = rows.map(r => Number(r.amount) || 0);
+let donors=data.length;
+let today=0, month=0;
+let now=new Date();
 
-    const total = amounts.reduce((s,v)=>s+v,0);
-    const donors = rows.length;
-    const avg = donors ? Math.round(total/donors) : 0;
+data.forEach(d=>{
+let dt=new Date(d.created_at);
+if(dt.toDateString()===now.toDateString()) today+=Number(d.amount)||0;
+if(dt.getMonth()===now.getMonth()) month+=Number(d.amount)||0;
+});
 
-    // 👉 DATE CALC
-    let today = 0, month = 0;
-    const now = new Date();
+document.getElementById("total").innerText="₹"+total;
+document.getElementById("donors").innerText=donors;
+document.getElementById("today").innerText="₹"+today;
+document.getElementById("month").innerText="₹"+month;
 
-    rows.forEach(r=>{
-      if(!r.created_at) return;
+// CHART
+let days=[...Array(7)].map((_,i)=>{
+let d=new Date();
+d.setDate(d.getDate()-(6-i));
+return d.toISOString().split('T')[0];
+});
 
-      const dt = new Date(r.created_at);
-      const amt = Number(r.amount) || 0;
+let totals=days.map(day=>{
+return data.filter(d=>(d.created_at||"").startsWith(day))
+.reduce((s,d)=>s+(Number(d.amount)||0),0);
+});
 
-      if (dt.toDateString() === now.toDateString()) {
-        today += amt;
-      }
+new Chart(document.getElementById("chart"),{
+type:"line",
+data:{
+labels:days.map(d=>new Date(d).toLocaleDateString()),
+datasets:[{
+data:totals,
+borderColor:"#22c55e",
+fill:true
+}]
+}
+});
 
-      if (dt.getMonth() === now.getMonth() &&
-          dt.getFullYear() === now.getFullYear()) {
-        month += amt;
-      }
-    });
+// RECENT
+let r=document.getElementById("recent");
+r.innerHTML="";
+data.slice(-5).reverse().forEach(d=>{
+r.innerHTML+=`<li>${d.name} - ₹${d.amount}</li>`;
+});
 
-    // 👉 UI UPDATE (force text)
-    document.getElementById("total").textContent = "₹ " + total;
-    document.getElementById("donors").textContent = donors;
-    document.getElementById("avg").textContent = "₹ " + avg;
-    document.getElementById("today").textContent = "₹ " + today;
-    document.getElementById("month").textContent = "₹ " + month;
+// TOP
+let t=document.getElementById("top");
+t.innerHTML="";
+[...data].sort((a,b)=>b.amount-a.amount).slice(0,5)
+.forEach(d=>{
+t.innerHTML+=`<li>${d.name} - ₹${d.amount}</li>`;
+});
 
-    // 👉 CHART
-    const days = [];
-    for(let i=6;i>=0;i--){
-      const d = new Date();
-      d.setDate(d.getDate()-i);
-      days.push(d.toISOString().split('T')[0]);
-    }
-
-    const totals = days.map(day=>{
-      return rows
-        .filter(r => r.created_at && r.created_at.startsWith(day))
-        .reduce((sum,r)=> sum + (Number(r.amount)||0),0);
-    });
-
-    new Chart(document.getElementById("chart"),{
-      type:"bar",
-      data:{
-        labels: days.map(d=> new Date(d).toLocaleDateString()),
-        datasets:[{ label:"Donations ₹", data:totals }]
-      }
-    });
-
-    // 👉 TOP DONORS
-    const top = document.getElementById("topDonors");
-    top.innerHTML = "";
-    [...rows]
-      .sort((a,b)=>(Number(b.amount)||0)-(Number(a.amount)||0))
-      .slice(0,5)
-      .forEach(d=>{
-        top.innerHTML += `<li>${d.name || "Unknown"} - ₹${d.amount || 0}</li>`;
-      });
-
-    // 👉 RECENT
-    const recent = document.getElementById("recent");
-    recent.innerHTML = "";
-    [...rows]
-      .slice(-5)
-      .reverse()
-      .forEach(d=>{
-        recent.innerHTML += `<li>${d.name || "Unknown"} donated ₹${d.amount || 0}</li>`;
-      });
-
-  } catch(err) {
-    console.log("SCRIPT ERROR:", err);
-  }
 }
 
 load();
 </script>
+
+</body>
+</html>
