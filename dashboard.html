@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>SEF Dashboard</title>
+<title>Dashboard - SEF Dahod</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -14,36 +14,74 @@ body{
   font-family:Segoe UI;
   background:#0f172a;
   color:#fff;
+  display:flex;
 }
 
 /* SIDEBAR */
 .sidebar{
-  width:230px;
-  height:100vh;
-  position:fixed;
+  width:270px;
+  min-height:100vh;
   background:#020617;
   padding:20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
-.sidebar h2{
-  font-size:18px;
-  margin-bottom:20px;
+
+/* LOGO + DETAILS CENTER */
+.logo{
+  text-align:center;
 }
-.sidebar a{
-  display:block;
-  padding:10px;
+
+.logo img{
+  width:70px;
+  margin-bottom:10px;
+}
+
+.logo h2{
+  font-size:16px;
+  margin:5px 0;
+}
+
+.logo p{
+  font-size:12px;
   color:#94a3b8;
-  text-decoration:none;
-  border-radius:8px;
+  margin:4px 0;
 }
-.sidebar a:hover{
-  background:#1e293b;
+
+/* MENU */
+.menu{
+  width:100%;
+  margin-top:20px;
+}
+
+.menu a{
+  display:block;
+  padding:12px;
+  margin:8px 0;
+  text-decoration:none;
+  color:#cbd5f5;
+  border-radius:10px;
+  background:#0f172a;
+  transition:0.3s;
+}
+
+.menu a:hover{
+  background:linear-gradient(135deg,#2563eb,#7c3aed);
   color:#fff;
+  transform:translateX(5px);
 }
 
 /* MAIN */
 .main{
-  margin-left:250px;
+  flex:1;
   padding:20px;
+}
+
+/* HEADER CENTER */
+.header{
+  text-align:center;
+  margin-bottom:20px;
 }
 
 /* CARDS */
@@ -52,37 +90,27 @@ body{
   grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
   gap:15px;
 }
+
 .card{
+  background:#1e293b;
   padding:20px;
   border-radius:12px;
-  background:#1e293b;
+  text-align:center;
 }
+
 .card h3{
   color:#94a3b8;
   font-size:13px;
 }
+
 .card p{
   font-size:24px;
   font-weight:bold;
 }
 
-/* CHART */
-.chart{
-  margin-top:20px;
-  background:#1e293b;
-  padding:20px;
-  border-radius:12px;
-}
-
-/* FLEX BOX */
-.row{
-  display:grid;
-  grid-template-columns:2fr 1fr;
-  gap:20px;
-  margin-top:20px;
-}
-
+/* BOX */
 .box{
+  margin-top:20px;
   background:#1e293b;
   padding:20px;
   border-radius:12px;
@@ -96,97 +124,65 @@ li{padding:8px;border-bottom:1px solid #333}
 
 <body>
 
-<!-- 🔷 SIDEBAR -->
+<!-- SIDEBAR -->
 <div class="sidebar">
 
-  <div class="logo-section">
-    <img src="logo.png">
-    <h2>SEF Dahod</h2>
-  </div>
+<div class="logo">
+<img src="logo.png">
 
-  <nav>
-    <a class="active" href="#">🏠 Dashboard</a>
-    <a href="index.html">🏡 Home</a>
-    <a href="donors.html">👥 Donors</a>
-    <a href="donate.html">💰 Donate</a>
-    <a href="admin.html">⚙ Admin</a>
-  </nav>
+<h2>Shubhi Education Foundation</h2>
 
+<p>Registration No:</p>
+<p>Guj./2249/DHD & F/2247/DHD</p>
+
+<p>80G: AAOTS1413MF20251</p>
+<p>12A: AAOTS1413ME20241</p>
+<p>CSR: CSR00096110</p>
+
+<p>📍 Dahod, Gujarat</p>
+
+<p>📧 sefdahod@gmail.com</p>
+<p>📱 9408695001</p>
 </div>
 
+<div class="menu">
+<a href="#">🏠 Dashboard</a>
+<a href="index.html">🏡 Home</a>
+<a href="donors.html">👥 Donors</a>
+<a href="donate.html">💳 Donate</a>
+<a href="admin.html">⚙️ Admin</a>
+</div>
 
-<!-- 🔷 HEADER -->
-<div class="main">
-
-<header class="top-header">
-
-  <div class="header-box">
-
-   
-    <!-- CENTER TEXT -->
-    <div class="center">
-      <h1>Shubhi Education Foundation, Dahod</h1>
-
-      <p>
-        Registration No.: Under Indian Society Act 1860 Guj./2249/DHD & Mumbai Public Trust Act 1950 F/2247/DHD
-      </p>
-
-      <p>
-        80G: AAOTS1413MF20251 | 12A: AAOTS1413ME20241 | CSR: CSR00096110
-      </p>
-
-      <p>
-        📍 Rainbow Public School, Shalimar Society, Muvaliya Road, Rabdal, Dahod - 389151
-      </p>
-
-      <p>
-        📧 sefdahod@gmail.com | 📱 9408695001 | ☎️ 02673-450037
-      </p>
-    </div>
-
-  </div>
-
-</header>  <a href="#">Dashboard</a>
-  <a href="index.html">Home</a>
-  <a href="donors.html">Donors</a>
-  <a href="donate.html">Donate</a>
-  <a href="admin.html">Admin</a>
 </div>
 
 <!-- MAIN -->
 <div class="main">
 
+<div class="header">
 <h1>Dashboard</h1>
+<p>Welcome to Shubhi Education Foundation</p>
+</div>
 
-<!-- CARDS -->
 <div class="cards">
-  <div class="card"><h3>Total</h3><p id="total">₹0</p></div>
-  <div class="card"><h3>Donors</h3><p id="donors">0</p></div>
-  <div class="card"><h3>Today</h3><p id="today">₹0</p></div>
-  <div class="card"><h3>Month</h3><p id="month">₹0</p></div>
+<div class="card"><h3>Total</h3><p id="total">₹0</p></div>
+<div class="card"><h3>Donors</h3><p id="donors">0</p></div>
+<div class="card"><h3>Today</h3><p id="today">₹0</p></div>
+<div class="card"><h3>Month</h3><p id="month">₹0</p></div>
 </div>
 
-<!-- CHART -->
-<div class="chart">
-  <h3>Last 7 Days</h3>
-  <canvas id="chart"></canvas>
-</div>
-
-<!-- ROW -->
-<div class="row">
-
-<!-- RECENT -->
 <div class="box">
-  <h3>Recent Donations</h3>
-  <ul id="recent"></ul>
+<h3>Last 7 Days</h3>
+<canvas id="chart"></canvas>
 </div>
 
-<!-- TOP -->
 <div class="box">
-  <h3>Top Donors</h3>
-  <ul id="top"></ul>
+<h3>Top Donors</h3>
+<ul id="top"></ul>
 </div>
 
+<div class="box">
+<h3>Recent Donations</h3>
+<ul id="recent"></ul>
 </div>
 
 </div>
@@ -202,17 +198,19 @@ async function load(){
 const { data } = await client.from("donations").select("*");
 
 if(!data || data.length===0){
-document.getElementById("recent").innerHTML="<li>No data</li>";
 document.getElementById("top").innerHTML="<li>No data</li>";
+document.getElementById("recent").innerHTML="<li>No data</li>";
 return;
 }
 
-// STATS
 let total=0;
 data.forEach(d=> total+=Number(d.amount)||0);
 
-let donors=data.length;
-let today=0, month=0;
+document.getElementById("total").innerText="₹"+total;
+document.getElementById("donors").innerText=data.length;
+
+// TODAY & MONTH
+let today=0,month=0;
 let now=new Date();
 
 data.forEach(d=>{
@@ -221,8 +219,6 @@ if(dt.toDateString()===now.toDateString()) today+=Number(d.amount)||0;
 if(dt.getMonth()===now.getMonth()) month+=Number(d.amount)||0;
 });
 
-document.getElementById("total").innerText="₹"+total;
-document.getElementById("donors").innerText=donors;
 document.getElementById("today").innerText="₹"+today;
 document.getElementById("month").innerText="₹"+month;
 
@@ -241,7 +237,7 @@ return data.filter(d=>(d.created_at||"").startsWith(day))
 new Chart(document.getElementById("chart"),{
 type:"line",
 data:{
-labels:days.map(d=>new Date(d).toLocaleDateString()),
+labels:days,
 datasets:[{
 data:totals,
 borderColor:"#22c55e",
@@ -250,19 +246,19 @@ fill:true
 }
 });
 
-// RECENT
-let r=document.getElementById("recent");
-r.innerHTML="";
-data.slice(-5).reverse().forEach(d=>{
-r.innerHTML+=`<li>${d.name} - ₹${d.amount}</li>`;
-});
-
 // TOP
-let t=document.getElementById("top");
-t.innerHTML="";
+let top=document.getElementById("top");
+top.innerHTML="";
 [...data].sort((a,b)=>b.amount-a.amount).slice(0,5)
 .forEach(d=>{
-t.innerHTML+=`<li>${d.name} - ₹${d.amount}</li>`;
+top.innerHTML+=`<li>${d.name} - ₹${d.amount}</li>`;
+});
+
+// RECENT
+let recent=document.getElementById("recent");
+recent.innerHTML="";
+data.slice(-5).reverse().forEach(d=>{
+recent.innerHTML+=`<li>${d.name} donated ₹${d.amount}</li>`;
 });
 
 }
