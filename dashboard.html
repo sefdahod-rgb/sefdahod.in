@@ -12,8 +12,8 @@
 body{
   margin:0;
   font-family:Segoe UI;
-  background:#0f172a;
-  color:#fff;
+  background:#f1f5f9; /* light background */
+  color:#0f172a;
   display:flex;
 }
 
@@ -21,20 +21,21 @@ body{
 .sidebar{
   width:270px;
   min-height:100vh;
-  background:#020617;
+  background:#ffffff;
   padding:20px;
   display:flex;
   flex-direction:column;
   align-items:center;
+  box-shadow:0 0 20px rgba(0,0,0,0.08);
 }
 
-/* LOGO + DETAILS CENTER */
+/* LOGO */
 .logo{
   text-align:center;
 }
 
 .logo img{
-  width:70px;
+  width:75px;
   margin-bottom:10px;
 }
 
@@ -45,7 +46,7 @@ body{
 
 .logo p{
   font-size:12px;
-  color:#94a3b8;
+  color:#64748b;
   margin:4px 0;
 }
 
@@ -60,16 +61,24 @@ body{
   padding:12px;
   margin:8px 0;
   text-decoration:none;
-  color:#cbd5f5;
+  color:#065f46;
   border-radius:10px;
-  background:#0f172a;
+  background:#ecfdf5;
   transition:0.3s;
+  font-weight:500;
 }
 
+/* HOVER GREEN */
 .menu a:hover{
-  background:linear-gradient(135deg,#2563eb,#7c3aed);
+  background:linear-gradient(135deg,#22c55e,#16a34a);
   color:#fff;
   transform:translateX(5px);
+}
+
+/* ACTIVE BUTTON */
+.menu a.active{
+  background:linear-gradient(135deg,#16a34a,#15803d);
+  color:#fff;
 }
 
 /* MAIN */
@@ -78,7 +87,7 @@ body{
   padding:20px;
 }
 
-/* HEADER CENTER */
+/* HEADER */
 .header{
   text-align:center;
   margin-bottom:20px;
@@ -92,22 +101,45 @@ body{
 }
 
 .card{
-  background:#1e293b;
+  background:#ffffff;
   padding:20px;
   border-radius:12px;
   text-align:center;
+  box-shadow:0 4px 15px rgba(0,0,0,0.08);
 }
 
 .card h3{
-  color:#94a3b8;
+  color:#64748b;
   font-size:13px;
 }
 
 .card p{
   font-size:24px;
   font-weight:bold;
+  color:#16a34a;
 }
 
+/* BOX */
+.box{
+  margin-top:20px;
+  background:#ffffff;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.08);
+}
+
+ul{list-style:none;padding:0}
+li{
+  padding:10px;
+  border-bottom:1px solid #e2e8f0;
+}
+
+/* CHART */
+canvas{
+  background:#f8fafc;
+  border-radius:10px;
+  padding:10px;
+}
 /* BOX */
 .box{
   margin-top:20px;
