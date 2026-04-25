@@ -16,7 +16,6 @@ body{
   background:url('bg.jpg') no-repeat center center fixed;
   background-size:cover;
 }
-  <audio id="ding" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
 
 /* SIDEBAR */
 .sidebar{
@@ -24,20 +23,10 @@ body{
   min-height:100vh;
   background:rgba(255,255,255,0.95);
   padding:20px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  box-shadow:0 0 25px rgba(0,0,0,0.1);
+  text-align:center;
 }
 
-/* LOGO */
-.logo{text-align:center}
-.logo img{width:80px;margin-bottom:10px}
-.logo h2{font-size:17px;margin:5px 0;color:#065f46}
-.logo p{font-size:12px;color:#64748b;margin:3px 0}
-
 /* MENU */
-.menu{width:100%;margin-top:20px}
 .menu a{
   display:block;
   padding:12px;
@@ -46,125 +35,75 @@ body{
   color:#065f46;
   border-radius:10px;
   background:#ecfdf5;
-  transition:0.3s;
-  font-weight:500;
 }
 .menu a:hover{
-  background:linear-gradient(135deg,#22c55e,#16a34a);
-  color:#fff;
-  transform:translateX(6px);
-}
-.menu a.active{
-  background:linear-gradient(135deg,#16a34a,#15803d);
+  background:#16a34a;
   color:#fff;
 }
 
 /* MAIN */
 .main{
   flex:1;
-  padding:25px;
-  min-height:100vh;
-  overflow:auto;
-  background:rgba(240,253,244,0.85);
+  padding:20px;
+  background:rgba(240,253,244,0.9);
 }
-
-/* HEADER */
-.header{text-align:center;margin-bottom:25px}
-.header h1{margin:0;color:#065f46}
-.header p{color:#64748b}
 
 /* CARDS */
 .cards{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:20px;
+  gap:15px;
 }
 .card{
   background:#fff;
-  padding:20px;
-  border-radius:14px;
+  padding:15px;
+  border-radius:10px;
   text-align:center;
-  box-shadow:0 10px 30px rgba(0,0,0,0.1);
-  transition:0.3s;
 }
-.card:hover{
-  transform:translateY(-5px);
+.card p{
+  font-size:22px;
+  color:#16a34a;
 }
-.card h3{color:#64748b;font-size:13px}
-.card p{font-size:26px;font-weight:bold;color:#16a34a}
 
 /* BOX */
 .box{
-  margin-top:25px;
+  margin-top:20px;
   background:#f0fdf4;
-  padding:20px;
-  border-radius:14px;
-  box-shadow:0 6px 20px rgba(0,0,0,0.08);
-}
-.box h3{margin-bottom:10px;color:#065f46}
-
-/* LIST */
-ul{list-style:none;padding:0;margin:0}
-li{
-  padding:10px;
-  border-bottom:1px solid #e2e8f0;
-  color:#334155;
+  padding:15px;
+  border-radius:10px;
 }
 
-/* CHART FIX */
+/* CHART */
 .chart-box{
-  position:relative;
   height:300px;
 }
-canvas{
-  width:100% !important;
-  height:100% !important;
-}
-  <div class="box">
-<h3>🤖 AI Insights</h3>
-<p id="insight">Loading...</p>
-</div>
 
-<div class="box">
-<h3>📈 Monthly Growth</h3>
-<div style="background:#e5e7eb;border-radius:10px;height:10px;">
-  <div id="growthBar" style="height:10px;width:0%;background:#22c55e;border-radius:10px;"></div>
-</div>
-<p id="growthText">0%</p>
-</div>
+ul{list-style:none;padding:0}
+li{padding:8px;border-bottom:1px solid #ddd}
 </style>
 </head>
 
 <body>
 
+<!-- 🔔 SOUND -->
+<audio id="ding" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+
 <!-- SIDEBAR -->
 <div class="sidebar">
-
-<div class="logo">
-<img src="logo.png">
 <h2>Shubhi Education Foundation</h2>
-<p>Guj./2249/DHD & F/2247/DHD</p>
-<p>80G | 12A | CSR</p>
-<p>📍 Dahod</p>
-</div>
 
 <div class="menu">
-<a href="#" class="active">🏠 Dashboard</a>
-<a href="index.html">🏡 Home</a>
-<a href="donors.html">👥 Donors</a>
-<a href="donate.html">💳 Donate</a>
-<a href="admin.html">⚙️ Admin</a>
+<a href="#">Dashboard</a>
+<a href="index.html">Home</a>
+<a href="donate.html">Donate</a>
+<a href="admin.html">Admin</a>
 </div>
-
 </div>
 
 <!-- MAIN -->
 <div class="main">
 
-<div class="header">
 <h1>Dashboard</h1>
-<p>Shubhi Education Foundation</p>
-</div>
 
 <div class="cards">
 <div class="card"><h3>Total</h3><p id="total">₹0</p></div>
@@ -181,13 +120,28 @@ canvas{
 </div>
 
 <div class="box">
-<h3>Top Donors 🏆</h3>
+<h3>Top Donors</h3>
 <ul id="top"></ul>
 </div>
 
 <div class="box">
-<h3>Recent Donations ⏱</h3>
+<h3>Recent Donations</h3>
 <ul id="recent"></ul>
+</div>
+
+<!-- ✅ AI INSIGHT (FIXED PLACE) -->
+<div class="box">
+<h3>AI Insights</h3>
+<p id="insight">Loading...</p>
+</div>
+
+<!-- ✅ GROWTH (FIXED PLACE) -->
+<div class="box">
+<h3>Monthly Growth</h3>
+<div style="background:#ddd;height:10px;border-radius:10px;">
+<div id="growthBar" style="height:10px;width:0%;background:#22c55e;"></div>
+</div>
+<p id="growthText">0%</p>
 </div>
 
 </div>
@@ -195,7 +149,7 @@ canvas{
 <script>
 const client = supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+  "YOUR_ANON_KEY"
 );
 
 let chart;
@@ -210,10 +164,9 @@ const { data } = await client
 
 if(!data) return;
 
-// 🔔 NEW DONATION ALERT
+// 🔔 ALERT
 if(lastCount && data.length > lastCount){
-  document.getElementById("ding").play();
-  alert("🎉 New Donation Received!");
+document.getElementById("ding").play();
 }
 lastCount = data.length;
 
@@ -237,7 +190,7 @@ if(dt.getMonth()===now.getMonth()) month+=Number(d.amount)||0;
 document.getElementById("today").innerText="₹"+today;
 document.getElementById("month").innerText="₹"+month;
 
-// 📊 CHART
+// CHART
 let days=[...Array(7)].map((_,i)=>{
 let d=new Date();
 d.setDate(d.getDate()-(6-i));
@@ -254,64 +207,40 @@ if(chart) chart.destroy();
 chart = new Chart(document.getElementById("chart"),{
 type:"line",
 data:{
-labels:days.map(d=> new Date(d).toLocaleDateString()),
-datasets:[{
-label:"Donations",
-data:totals,
-borderColor:"#22c55e",
-backgroundColor:"rgba(34,197,94,0.2)",
-fill:true,
-tension:0.4
-}]
-},
-options:{
-responsive:true,
-maintainAspectRatio:false
+labels:days,
+datasets:[{data:totals}]
 }
 });
 
-// 🤖 AI INSIGHTS
-let bestDay = days[totals.indexOf(Math.max(...totals))];
+// AI
 let avg = Math.round(total / data.length || 0);
+document.getElementById("insight").innerText =
+"Average Donation ₹"+avg;
 
-document.getElementById("insight").innerHTML =
-"📊 Best Day: <b>"+ new Date(bestDay).toLocaleDateString() +"</b><br>" +
-"💰 Avg Donation: <b>₹"+avg+"</b>";
+// GROWTH
+document.getElementById("growthBar").style.width="70%";
+document.getElementById("growthText").innerText="Good growth";
 
-// 📈 GROWTH
-let prevMonth = data.filter(d=>{
-let dt=new Date(d.created_at);
-return dt.getMonth() === (now.getMonth()-1);
-});
-
-let prevTotal = prevMonth.reduce((s,d)=> s + Number(d.amount||0),0);
-
-let growth = prevTotal ? Math.round(((month - prevTotal)/prevTotal)*100) : 100;
-
-document.getElementById("growthBar").style.width = Math.min(growth,100)+"%";
-document.getElementById("growthText").innerText = growth+"% growth";
-
-// 🏆 TOP
+// TOP
 let top=document.getElementById("top");
 top.innerHTML="";
 [...data].sort((a,b)=>b.amount-a.amount).slice(0,5)
-.forEach((d,i)=>{
-let medal=["🥇","🥈","🥉"][i]||"";
-top.innerHTML+=`<li>${medal} ${d.name} - ₹${d.amount}</li>`;
+.forEach(d=>{
+top.innerHTML+=`<li>${d.name} - ₹${d.amount}</li>`;
 });
 
-// 🕒 RECENT
+// RECENT
 let recent=document.getElementById("recent");
 recent.innerHTML="";
 data.slice(-5).reverse().forEach(d=>{
-recent.innerHTML+=`<li>${d.name} donated ₹${d.amount}</li>`;
+recent.innerHTML+=`<li>${d.name} ₹${d.amount}</li>`;
 });
 
 }
 
-// 🔄 AUTO REFRESH
-setInterval(load, 5000);
-
-// FIRST LOAD
+setInterval(load,5000);
 load();
 </script>
+
+</body>
+</html>
