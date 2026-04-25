@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Finance Pro Max - SEF Dahod</title>
+<title>Finance - SEF Dahod</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -100,6 +100,7 @@ canvas{
 
 <script>
 if(localStorage.getItem("isAdmin") !== "yes"){
+  localStorage.setItem("redirectAfterLogin","finance.html");
   location.href="login.html";
 }
 </script>
