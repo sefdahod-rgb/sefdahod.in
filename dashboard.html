@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>SEF Dashboard</title>
+<title>SEF AI Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -23,42 +23,25 @@ body{
   min-height:100vh;
   background:rgba(255,255,255,0.95);
   padding:20px;
-  box-shadow:0 0 25px rgba(0,0,0,0.1);
 }
 
-.logo{
-  text-align:center;
-}
-.logo img{
-  width:80px;
-}
-.logo h2{
-  font-size:16px;
-  color:#065f46;
-}
+.logo{text-align:center}
+.logo img{width:80px}
+.logo h2{color:#065f46}
 
 /* MENU */
-.menu{
-  margin-top:20px;
-}
 .menu a{
   display:block;
   padding:12px;
   margin:10px 0;
-  text-decoration:none;
   border-radius:10px;
+  text-decoration:none;
   background:#ecfdf5;
   color:#065f46;
-  font-weight:500;
   transition:0.3s;
 }
 .menu a:hover{
-  background:linear-gradient(135deg,#22c55e,#16a34a);
-  color:#fff;
-  transform:translateX(6px);
-}
-.menu a.active{
-  background:linear-gradient(135deg,#16a34a,#15803d);
+  background:#16a34a;
   color:#fff;
 }
 
@@ -66,15 +49,7 @@ body{
 .main{
   flex:1;
   padding:25px;
-  background:rgba(240,253,244,0.85);
-}
-
-/* HEADER */
-.header{
-  text-align:center;
-}
-.header h1{
-  color:#065f46;
+  background:rgba(240,253,244,0.9);
 }
 
 /* CARDS */
@@ -82,18 +57,12 @@ body{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
   gap:20px;
-  margin-top:20px;
 }
 .card{
   background:#fff;
   padding:20px;
   border-radius:12px;
   text-align:center;
-  box-shadow:0 10px 25px rgba(0,0,0,0.1);
-}
-.card p{
-  font-size:26px;
-  color:#16a34a;
 }
 
 /* BOX */
@@ -104,47 +73,45 @@ body{
   border-radius:12px;
 }
 
-/* CHART */
+/* FIX GRAPH FULL WIDTH */
 .chart-box{
-  height:280px;
+  width:100%;
+  height:320px;
 }
 
-/* LIST */
-ul{list-style:none;padding:0}
-li{
-  padding:10px;
-  border-bottom:1px solid #ddd;
+canvas{
+  width:100% !important;
+  height:100% !important;
 }
+
+li{padding:8px;border-bottom:1px solid #ddd}
 </style>
 </head>
 
 <body>
 
+<audio id="ding" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+
 <!-- SIDEBAR -->
 <div class="sidebar">
-
 <div class="logo">
 <img src="logo.png">
 <h2>Shubhi Education Foundation</h2>
 </div>
 
 <div class="menu">
-<a href="#" class="active">🏠 Dashboard</a>
+<a href="#">🏠 Dashboard</a>
 <a href="index.html">🏡 Home</a>
 <a href="donors.html">👥 Donors</a>
 <a href="donate.html">💳 Donate</a>
 <a href="admin.html">⚙️ Admin</a>
 </div>
-
 </div>
 
 <!-- MAIN -->
 <div class="main">
 
-<div class="header">
-<h1>Dashboard</h1>
-<p>Live Donation Overview</p>
-</div>
+<h1>AI Dashboard</h1>
 
 <div class="cards">
 <div class="card"><h3>Total</h3><p id="total">₹0</p></div>
@@ -171,8 +138,8 @@ li{
 </div>
 
 <div class="box">
-<h3>AI Insight</h3>
-<p id="insight">Loading...</p>
+<h3>🤖 AI Insight</h3>
+<p id="insight"></p>
 </div>
 
 </div>
@@ -180,26 +147,35 @@ li{
 <script>
 const client = supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+  "👉 APNI ANON KEY DAALO"
 );
 
 let chart;
+let lastCount = 0;
 
 async function load(){
 
 const { data } = await client
 .from("donations")
-.select("*");
+.select("*")
+.order("created_at",{ascending:true});
 
-if(!data) return;
+if(!data || data.length===0) return;
 
+// 🔔 SOUND
+if(lastCount && data.length > lastCount){
+  document.getElementById("ding").play();
+}
+lastCount = data.length;
+
+// TOTAL
 let total=0;
 data.forEach(d=> total+=Number(d.amount)||0);
 
 document.getElementById("total").innerText="₹"+total;
 document.getElementById("donors").innerText=data.length;
 
-// TODAY
+// TODAY / MONTH
 let today=0,month=0;
 let now=new Date();
 
@@ -212,7 +188,7 @@ if(dt.getMonth()===now.getMonth()) month+=Number(d.amount)||0;
 document.getElementById("today").innerText="₹"+today;
 document.getElementById("month").innerText="₹"+month;
 
-// CHART
+// GRAPH FIX
 let days=[...Array(7)].map((_,i)=>{
 let d=new Date();
 d.setDate(d.getDate()-(6-i));
@@ -229,18 +205,21 @@ if(chart) chart.destroy();
 chart = new Chart(document.getElementById("chart"),{
 type:"line",
 data:{
-labels:days,
+labels:days.map(d=> new Date(d).toLocaleDateString()),
 datasets:[{
+label:"Donations ₹",
 data:totals,
-borderColor:"#22c55e",
-fill:true
+borderColor:"#16a34a",
+backgroundColor:"rgba(34,197,94,0.2)",
+fill:true,
+tension:0.4
 }]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false
 }
 });
-
-// AI
-document.getElementById("insight").innerText =
-"Total ₹"+total+" collected from "+data.length+" donors";
 
 // TOP
 let top=document.getElementById("top");
@@ -254,10 +233,22 @@ top.innerHTML+=`<li>${d.name} - ₹${d.amount}</li>`;
 let recent=document.getElementById("recent");
 recent.innerHTML="";
 data.slice(-5).reverse().forEach(d=>{
-recent.innerHTML+=`<li>${d.name} ₹${d.amount}</li>`;
+recent.innerHTML+=`<li>${d.name} donated ₹${d.amount}</li>`;
 });
 
+// 🤖 AI
+let avg = Math.round(total/data.length);
+let bestDay = days[totals.indexOf(Math.max(...totals))];
+
+document.getElementById("insight").innerHTML =
+"📊 Best Day: "+ new Date(bestDay).toLocaleDateString() +
+"<br>💰 Avg Donation: ₹"+avg+
+"<br>🚀 Total: ₹"+total;
+
 }
+
+// AUTO REFRESH
+setInterval(load,5000);
 
 load();
 </script>
