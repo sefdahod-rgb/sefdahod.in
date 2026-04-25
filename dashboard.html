@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>SEF Ultra Pro Dashboard</title>
+<title>SEF Ultra Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -14,20 +13,22 @@ body{
   margin:0;
   font-family:Segoe UI;
   display:flex;
-  background:#ecfdf5;
+  background:url('bg.jpg') no-repeat center center fixed;
+  background-size:cover;
 }
 
 /* SIDEBAR */
 .sidebar{
-  width:260px;
-  background:#065f46;
-  color:#fff;
-  min-height:100vh;
+  width:280px;
+  background:#ffffffee;
   padding:20px;
+  box-shadow:0 0 20px rgba(0,0,0,0.1);
 }
 
-.sidebar h2{margin:0;font-size:16px}
-.sidebar p{font-size:12px;color:#d1fae5}
+.logo{text-align:center}
+.logo img{width:90px}
+.logo h2{font-size:16px;color:#065f46}
+.logo p{font-size:12px;color:#555}
 
 /* MENU */
 .menu a{
@@ -37,10 +38,10 @@ body{
   text-decoration:none;
   background:#ecfdf5;
   color:#065f46;
-  border-radius:8px;
+  border-radius:10px;
 }
 .menu a:hover{
-  background:#22c55e;
+  background:#16a34a;
   color:#fff;
 }
 
@@ -48,6 +49,7 @@ body{
 .main{
   flex:1;
   padding:20px;
+  background:#f0fdf4dd;
 }
 
 /* CARDS */
@@ -56,18 +58,13 @@ body{
   grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
   gap:15px;
 }
-
 .card{
   background:#fff;
   padding:20px;
   border-radius:12px;
   text-align:center;
 }
-
-.card p{
-  font-size:22px;
-  color:#16a34a;
-}
+.card p{font-size:24px;color:#16a34a}
 
 /* BOX */
 .box{
@@ -77,67 +74,59 @@ body{
   border-radius:12px;
 }
 
-/* CHART */
-.chart-box{
-  height:300px;
-}
-canvas{
-  width:100%!important;
-  height:100%!important;
-}
+/* CHART FIX */
+.chart-box{height:300px}
+canvas{width:100%!important;height:100%!important}
 
-/* LIST */
-li{
-  padding:8px;
-  border-bottom:1px solid #eee;
-}
-
-/* BUTTON */
-.admin-btn{
-  background:red;
-  color:#fff;
-  border:none;
-  padding:4px 8px;
-  border-radius:5px;
-  cursor:pointer;
-}
+ul{list-style:none;padding:0}
+li{padding:8px;border-bottom:1px solid #ddd}
 </style>
 </head>
 
 <body>
 
-<!-- 🔔 SOUND -->
-<audio id="ding" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
-
 <!-- SIDEBAR -->
 <div class="sidebar">
+<div class="logo">
+<img src="logo.png">
 <h2>Shubhi Education Foundation</h2>
-<p>Dahod, Gujarat</p>
+
+<p>Under Indian Society Act 1860</p>
+<p>Guj./2249/DHD & F/2247/DHD</p>
+
+<p>80G: AAOTS1413MF20251</p>
+<p>12A: AAOTS1413ME20241</p>
+<p>CSR: CSR00096110</p>
+
+<p>📍 Dahod</p>
+<p>📧 sefdahod@gmail.com</p>
+<p>📱 9408695001</p>
+</div>
 
 <div class="menu">
-<a href="#">Dashboard</a>
-<a href="index.html">Home</a>
-<a href="donate.html">Donate</a>
-<a href="admin.html">Admin</a>
+<a href="#">🏠 Dashboard</a>
+<a href="index.html">🏡 Home</a>
+<a href="donors.html">👥 Donors</a>
+<a href="donate.html">💳 Donate</a>
+<a href="admin.html">⚙️ Admin</a>
 </div>
 </div>
 
 <!-- MAIN -->
 <div class="main">
 
-<h1>🚀 Live Dashboard</h1>
+<h1>Dashboard</h1>
 
 <div class="cards">
 <div class="card"><h3>Total</h3><p id="total">₹0</p></div>
 <div class="card"><h3>Donors</h3><p id="donors">0</p></div>
 <div class="card"><h3>Today</h3><p id="today">₹0</p></div>
+<div class="card"><h3>Month</h3><p id="month">₹0</p></div>
 </div>
 
 <div class="box">
 <h3>📊 Last 7 Days</h3>
-<div class="chart-box">
-<canvas id="chart"></canvas>
-</div>
+<div class="chart-box"><canvas id="chart"></canvas></div>
 </div>
 
 <div class="box">
@@ -151,62 +140,44 @@ li{
 </div>
 
 <div class="box">
-<h3>🤖 AI Insights</h3>
-<p id="ai"></p>
+<h3>🤖 AI Insight</h3>
+<p id="ai">Loading...</p>
 </div>
 
 </div>
+
+<audio id="sound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
 
 <script>
-const supabaseClient = supabase.createClient(
-"https://kqahcvaoxnmxfcgyyync.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+const client = supabase.createClient(
+  "https://kqahcvaoxnmxfcgyyync.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
 let chart;
 let lastCount = 0;
 
-// 🎤 VOICE
 function speak(text){
-  let msg = new SpeechSynthesisUtterance(text);
-  msg.lang = "en-IN";
-  speechSynthesis.speak(msg);
+  let speech = new SpeechSynthesisUtterance(text);
+  speech.lang="hi-IN";
+  speech.rate=1;
+  window.speechSynthesis.speak(speech);
 }
 
 async function load(){
 
-const { data, error } = await supabaseClient
-.from("donations")
-.select("*")
-.order("created_at",{ascending:true});
+const { data } = await client
+  .from("donations")
+  .select("*")
+  .order("created_at",{ascending:true});
 
-if(error){
-console.log(error);
-return;
-}
+if(!data) return;
 
-if(!data || data.length === 0){
-document.getElementById("top").innerHTML="<li>No data</li>";
-document.getElementById("recent").innerHTML="<li>No data</li>";
-return;
-}
-
-// 🔔 ALERT + VOICE + WHATSAPP
+// 🔔 SOUND + VOICE
 if(lastCount && data.length > lastCount){
-
-let last = data[data.length-1];
-
-// sound
-document.getElementById("ding").play();
-
-// voice
-speak("New donation received " + last.amount + " rupees");
-
-// whatsapp
-window.open(`https://wa.me/?text=New Donation ₹${last.amount} by ${last.name}`);
-
+  document.getElementById("sound").play();
+  speak("नई donation प्राप्त हुई");
 }
-
 lastCount = data.length;
 
 // TOTAL
@@ -216,19 +187,20 @@ data.forEach(d=> total+=Number(d.amount)||0);
 document.getElementById("total").innerText="₹"+total;
 document.getElementById("donors").innerText=data.length;
 
-// TODAY
-let today=0;
+// TODAY & MONTH
+let today=0,month=0;
 let now=new Date();
 
 data.forEach(d=>{
 let dt=new Date(d.created_at);
-if(dt.toDateString()===now.toDateString())
-today+=Number(d.amount)||0;
+if(dt.toDateString()===now.toDateString()) today+=Number(d.amount)||0;
+if(dt.getMonth()===now.getMonth()) month+=Number(d.amount)||0;
 });
 
 document.getElementById("today").innerText="₹"+today;
+document.getElementById("month").innerText="₹"+month;
 
-// GRAPH
+// CHART
 let days=[...Array(7)].map((_,i)=>{
 let d=new Date();
 d.setDate(d.getDate()-(6-i));
@@ -242,14 +214,13 @@ return data.filter(d=>(d.created_at||"").startsWith(day))
 
 if(chart) chart.destroy();
 
-chart=new Chart(document.getElementById("chart"),{
+chart = new Chart(document.getElementById("chart"),{
 type:"line",
 data:{
 labels:days.map(d=> new Date(d).toLocaleDateString()),
 datasets:[{
-label:"Donations",
 data:totals,
-borderColor:"#22c55e",
+borderColor:"#16a34a",
 backgroundColor:"rgba(34,197,94,0.2)",
 fill:true,
 tension:0.4
@@ -258,7 +229,12 @@ tension:0.4
 options:{responsive:true,maintainAspectRatio:false}
 });
 
-// TOP DONORS
+// AI INSIGHT
+let avg = Math.round(total / data.length || 0);
+document.getElementById("ai").innerText =
+"Average ₹"+avg+" | Donations growing 🚀";
+
+// TOP
 let top=document.getElementById("top");
 top.innerHTML="";
 [...data].sort((a,b)=>b.amount-a.amount).slice(0,5)
@@ -266,21 +242,20 @@ top.innerHTML="";
 top.innerHTML+=`<li>${d.name} - ₹${d.amount}</li>`;
 });
 
-// RECENT
+// RECENT + WHATSAPP
 let recent=document.getElementById("recent");
 recent.innerHTML="";
 data.slice(-5).reverse().forEach(d=>{
 recent.innerHTML+=`<li>${d.name} donated ₹${d.amount}</li>`;
-});
 
-// 🤖 AI
-let avg=Math.round(total/data.length||0);
-document.getElementById("ai").innerText=
-"Average Donation ₹"+avg+" | Total ₹"+total;
+// 📲 WhatsApp message
+let msg = `Thank you ${d.name} for donating ₹${d.amount}`;
+let url = "https://wa.me/?text="+encodeURIComponent(msg);
+console.log("WhatsApp:", url);
+});
 
 }
 
-// AUTO REFRESH
 setInterval(load,5000);
 load();
 </script>
