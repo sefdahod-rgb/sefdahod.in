@@ -95,15 +95,18 @@ function login(e){
   let savedPass = localStorage.getItem("adminPass") || DEFAULT_PASS;
 
   if(u === DEFAULT_USER && p === savedPass){
+
     localStorage.setItem("isAdmin","yes");
 
-    setTimeout(()=>{
-      window.location.href = "admin.html";
-    },200);
+    // 🔥 last page check
+    let go = localStorage.getItem("redirectAfterLogin") || "admin.html";
+
+    window.location.href = go;
 
   } else {
     document.getElementById("msg").innerText = "Invalid login";
   }
+}
 }
 
 // 🔁 FORGOT PASSWORD
