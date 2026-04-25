@@ -24,15 +24,11 @@ body{
   padding:20px;
   box-shadow:0 5px 20px rgba(0,0,0,0.1);
 }
-
 .header img{width:80px}
 .header h1{margin:5px;color:#065f46}
 
 /* NAV */
-nav{
-  text-align:center;
-  padding:10px;
-}
+nav{text-align:center;padding:10px}
 nav a{
   margin:5px;
   text-decoration:none;
@@ -56,10 +52,7 @@ nav a{
   text-align:center;
   box-shadow:0 6px 20px rgba(0,0,0,0.08);
 }
-.card p{
-  font-size:22px;
-  color:#16a34a;
-}
+.card p{font-size:22px;color:#16a34a}
 
 /* BOX */
 .box{
@@ -69,14 +62,9 @@ nav a{
   border-radius:12px;
 }
 
-/* CHART FIX */
-.chart-box{
-  height:300px;
-}
-canvas{
-  width:100%!important;
-  height:100%!important;
-}
+/* CHART */
+.chart-box{height:300px}
+canvas{width:100%!important;height:100%!important}
 
 /* BUTTON */
 .btn{
@@ -140,6 +128,8 @@ if(localStorage.getItem("isAdmin") !== "yes"){
 </div>
 
 <script>
+
+// 🔗 Supabase
 const client = supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
@@ -147,27 +137,36 @@ const client = supabase.createClient(
 
 let chart;
 
+// 📊 LOAD DATA
 async function load(){
 
-// SAFE FETCH
-const { data = [] } = await client.from("donations").select("*");
-const { data: exp = [] } = await client.from("expenses").select("*");
+try{
+
+// DONATIONS
+const { data: donations = [] } = await client.from("donations").select("*");
+
+// EXPENSES
+const { data: expenses = [] } = await client.from("expenses").select("*");
 
 let total=0,today=0,month=0,year=0,expense=0;
 let now=new Date();
 
-data.forEach(d=>{
-let amt=Number(d.amount)||0;
-total+=amt;
+// DONATIONS LOOP
+donations.forEach(d=>{
+  let amt=Number(d.amount)||0;
+  total+=amt;
 
-let dt=new Date(d.created_at);
+  let dt=new Date(d.created_at);
 
-if(dt.toDateString()===now.toDateString()) today+=amt;
-if(dt.getMonth()===now.getMonth()) month+=amt;
-if(dt.getFullYear()===now.getFullYear()) year+=amt;
+  if(dt.toDateString()===now.toDateString()) today+=amt;
+  if(dt.getMonth()===now.getMonth()) month+=amt;
+  if(dt.getFullYear()===now.getFullYear()) year+=amt;
 });
 
-exp.forEach(e=> expense+=Number(e.amount)||0);
+// EXPENSE LOOP
+expenses.forEach(e=>{
+  expense+=Number(e.amount)||0;
+});
 
 // UI UPDATE
 document.getElementById("total").innerText="₹"+total;
@@ -179,49 +178,57 @@ document.getElementById("balance").innerText="₹"+(year-expense);
 
 // CHART
 let days=[...Array(7)].map((_,i)=>{
-let d=new Date();
-d.setDate(d.getDate()-(6-i));
-return d.toISOString().split('T')[0];
+  let d=new Date();
+  d.setDate(d.getDate()-(6-i));
+  return d.toISOString().split('T')[0];
 });
 
 let totals=days.map(day=>{
-return data.filter(d=>(d.created_at||"").startsWith(day))
-.reduce((s,d)=>s+(Number(d.amount)||0),0);
+  return donations.filter(x=>(x.created_at||"").startsWith(day))
+  .reduce((s,x)=>s+(Number(x.amount)||0),0);
 });
 
 if(chart) chart.destroy();
 
 chart = new Chart(document.getElementById("chart"),{
-type:"line",
-data:{
-labels:days.map(d=> new Date(d).toLocaleDateString()),
-datasets:[{
-label:"Donations",
-data:totals,
-borderColor:"#16a34a",
-backgroundColor:"rgba(34,197,94,0.2)",
-fill:true,
-tension:0.4
-}]
-},
-options:{
-responsive:true,
-maintainAspectRatio:false
-}
+  type:"line",
+  data:{
+    labels:days.map(d=> new Date(d).toLocaleDateString()),
+    datasets:[{
+      label:"Donations",
+      data:totals,
+      borderColor:"#16a34a",
+      backgroundColor:"rgba(34,197,94,0.2)",
+      fill:true,
+      tension:0.4
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false
+  }
 });
 
+}catch(err){
+console.log("ERROR:", err);
 }
 
+}
+
+// 🖨 PRINT
 function printReport(){
-window.print();
+  window.print();
 }
 
+// 🔐 LOGOUT
 function logout(){
-localStorage.clear();
-window.location.href="index.html";
+  localStorage.clear();
+  window.location.href="index.html";
 }
 
+// 🚀 START
 load();
+
 </script>
 
 </body>
