@@ -15,44 +15,33 @@ body{
   display:flex;
   background:url('bg.jpg') no-repeat center center fixed;
   background-size:cover;
-} .top-header{
-  text-align:center;
-  background:#ffffff;
-  padding:20px;
-  border-radius:12px;
-  margin-bottom:20px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.1);
-}
-
-.top-header img{
-  width:80px;
-  margin-bottom:10px;
-}
-
-.top-header h1{
-  margin:5px 0;
-  color:#065f46;
-  font-size:24px;
-}
-
-.top-header p{
-  margin:4px 0;
-  color:#475569;
-  font-size:13px;
 }
 
 /* SIDEBAR */
 .sidebar{
   width:280px;
+  min-height:100vh;
   background:#ffffffee;
-  padding:20px;
+  padding:15px;
   box-shadow:0 0 20px rgba(0,0,0,0.1);
+  overflow-y:auto;
 }
 
-.logo{text-align:center}
-.logo img{width:90px}
-.logo h2{font-size:16px;color:#065f46}
-.logo p{font-size:12px;color:#555}
+/* HEADER INSIDE SIDEBAR */
+.top-header{
+  text-align:center;
+}
+.top-header img{
+  width:80px;
+}
+.top-header h1{
+  font-size:18px;
+  color:#065f46;
+}
+.top-header p{
+  font-size:12px;
+  color:#555;
+}
 
 /* MENU */
 .menu a{
@@ -63,6 +52,7 @@ body{
   background:#ecfdf5;
   color:#065f46;
   border-radius:10px;
+  font-weight:500;
 }
 .menu a:hover{
   background:#16a34a;
@@ -74,6 +64,15 @@ body{
   flex:1;
   padding:20px;
   background:#f0fdf4dd;
+}
+
+/* MAIN HEADER CENTER */
+.main-header{
+  text-align:center;
+  background:#fff;
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:20px;
 }
 
 /* CARDS */
@@ -88,7 +87,10 @@ body{
   border-radius:12px;
   text-align:center;
 }
-.card p{font-size:24px;color:#16a34a}
+.card p{
+  font-size:24px;
+  color:#16a34a;
+}
 
 /* BOX */
 .box{
@@ -98,34 +100,35 @@ body{
   border-radius:12px;
 }
 
-/* CHART FIX */
+/* CHART */
 .chart-box{height:300px}
-canvas{width:100%!important;height:100%!important}
+canvas{
+  width:100%!important;
+  height:100%!important;
+}
 
+/* LIST */
 ul{list-style:none;padding:0}
-li{padding:8px;border-bottom:1px solid #ddd}
+li{
+  padding:8px;
+  border-bottom:1px solid #ddd;
+}
 </style>
 </head>
 
 <body>
 
 <!-- SIDEBAR -->
+<div class="sidebar">
+
 <div class="top-header">
   <img src="logo.png">
   <h1>Shubhi Education Foundation</h1>
-
-  <p>
-  Under Indian Society Act 1860 Guj./2249/DHD & Mumbai Public Trust Act 1950 F/2247/DHD
-  </p>
-
-  <p>
-  80G: AAOTS1413MF20251 | 12A: AAOTS1413ME20241 | CSR: CSR00096110
-  </p>
-
-  <p>
-  📍 Rainbow Public School, Dahod | 📧 sefdahod@gmail.com | 📱 9408695001
-  </p>
+  <p>Guj./2249/DHD & F/2247/DHD</p>
+  <p>80G | 12A | CSR</p>
+  <p>📍 Dahod</p>
 </div>
+
 <div class="menu">
 <a href="#">🏠 Dashboard</a>
 <a href="index.html">🏡 Home</a>
@@ -133,10 +136,17 @@ li{padding:8px;border-bottom:1px solid #ddd}
 <a href="donate.html">💳 Donate</a>
 <a href="admin.html">⚙️ Admin</a>
 </div>
+
 </div>
 
 <!-- MAIN -->
 <div class="main">
+
+<!-- CENTER HEADER -->
+<div class="main-header">
+  <h2>Shubhi Education Foundation</h2>
+  <p>Under Indian Society Act 1860 & Mumbai Public Trust Act</p>
+</div>
 
 <h1>Dashboard</h1>
 
@@ -149,7 +159,9 @@ li{padding:8px;border-bottom:1px solid #ddd}
 
 <div class="box">
 <h3>📊 Last 7 Days</h3>
-<div class="chart-box"><canvas id="chart"></canvas></div>
+<div class="chart-box">
+<canvas id="chart"></canvas>
+</div>
 </div>
 
 <div class="box">
@@ -174,7 +186,7 @@ li{padding:8px;border-bottom:1px solid #ddd}
 <script>
 const client = supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+  "YOUR_ANON_KEY"
 );
 
 let chart;
@@ -183,7 +195,6 @@ let lastCount = 0;
 function speak(text){
   let speech = new SpeechSynthesisUtterance(text);
   speech.lang="hi-IN";
-  speech.rate=1;
   window.speechSynthesis.speak(speech);
 }
 
@@ -196,10 +207,10 @@ const { data } = await client
 
 if(!data) return;
 
-// 🔔 SOUND + VOICE
+// SOUND + VOICE
 if(lastCount && data.length > lastCount){
   document.getElementById("sound").play();
-  speak("नई donation प्राप्त हुई");
+  speak("नई donation आई है");
 }
 lastCount = data.length;
 
@@ -210,7 +221,7 @@ data.forEach(d=> total+=Number(d.amount)||0);
 document.getElementById("total").innerText="₹"+total;
 document.getElementById("donors").innerText=data.length;
 
-// TODAY & MONTH
+// TODAY / MONTH
 let today=0,month=0;
 let now=new Date();
 
@@ -242,6 +253,7 @@ type:"line",
 data:{
 labels:days.map(d=> new Date(d).toLocaleDateString()),
 datasets:[{
+label:"Donations",
 data:totals,
 borderColor:"#16a34a",
 backgroundColor:"rgba(34,197,94,0.2)",
@@ -252,10 +264,10 @@ tension:0.4
 options:{responsive:true,maintainAspectRatio:false}
 });
 
-// AI INSIGHT
+// AI
 let avg = Math.round(total / data.length || 0);
 document.getElementById("ai").innerText =
-"Average ₹"+avg+" | Donations growing 🚀";
+"Average ₹"+avg+" | Growth अच्छा चल रहा है 🚀";
 
 // TOP
 let top=document.getElementById("top");
@@ -265,16 +277,11 @@ top.innerHTML="";
 top.innerHTML+=`<li>${d.name} - ₹${d.amount}</li>`;
 });
 
-// RECENT + WHATSAPP
+// RECENT
 let recent=document.getElementById("recent");
 recent.innerHTML="";
 data.slice(-5).reverse().forEach(d=>{
 recent.innerHTML+=`<li>${d.name} donated ₹${d.amount}</li>`;
-
-// 📲 WhatsApp message
-let msg = `Thank you ${d.name} for donating ₹${d.amount}`;
-let url = "https://wa.me/?text="+encodeURIComponent(msg);
-console.log("WhatsApp:", url);
 });
 
 }
