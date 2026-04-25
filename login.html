@@ -43,8 +43,21 @@ button{
   cursor:pointer;
 }
 
+button:hover{
+  background:#0c7f47;
+}
+
+.link{
+  margin-top:10px;
+  display:block;
+  color:#0F9D58;
+  cursor:pointer;
+  font-size:14px;
+}
+
 #msg{
   color:red;
+  margin-top:10px;
 }
 </style>
 </head>
@@ -60,17 +73,28 @@ button{
     <button type="submit">Login</button>
   </form>
 
+  <span class="link" onclick="forgot()">Forgot Password?</span>
+
   <p id="msg"></p>
 </div>
 
 <script>
+
+// 🔐 DEFAULT + SECRET
+const DEFAULT_USER = "admin";
+const DEFAULT_PASS = "admin123";
+const SECRET_CODE = "SEF2026"; // change this
+
+// LOGIN
 function login(e){
   e.preventDefault();
 
   const u = document.getElementById("user").value.trim();
   const p = document.getElementById("pass").value.trim();
 
-  if(u === "admin" && p === "admin123"){
+  let savedPass = localStorage.getItem("adminPass") || DEFAULT_PASS;
+
+  if(u === DEFAULT_USER && p === savedPass){
     localStorage.setItem("isAdmin","yes");
 
     setTimeout(()=>{
@@ -81,6 +105,29 @@ function login(e){
     document.getElementById("msg").innerText = "Invalid login";
   }
 }
+
+// 🔁 FORGOT PASSWORD
+function forgot(){
+
+  let code = prompt("Enter Secret Code");
+
+  if(code !== SECRET_CODE){
+    alert("Wrong Secret Code ❌");
+    return;
+  }
+
+  let newPass = prompt("Enter New Password");
+
+  if(!newPass || newPass.length < 4){
+    alert("Password must be at least 4 characters");
+    return;
+  }
+
+  localStorage.setItem("adminPass", newPass);
+
+  alert("✅ Password Changed Successfully");
+}
+
 </script>
 
 </body>
