@@ -117,7 +117,7 @@ tr:hover{
 
 <script>
 if(localStorage.getItem("isAdmin") !== "yes"){
-  alert("Login Required");
+  localStorage.setItem("redirectAfterLogin","admin.html");
   location.href="login.html";
 }
 </script>
