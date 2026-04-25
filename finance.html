@@ -67,12 +67,11 @@ nav a{
   background:#fff;
   padding:20px;
   border-radius:12px;
-  overflow:hidden;
 }
 
 /* CHART FIX */
 .chart-box{
-  height:280px;
+  height:300px;
 }
 canvas{
   width:100%!important;
@@ -114,6 +113,7 @@ if(localStorage.getItem("isAdmin") !== "yes"){
 <nav>
 <a href="index.html">Home</a>
 <a href="dashboard.html">Dashboard</a>
+<a href="finance.html">Finance</a>
 <a href="admin.html">Admin</a>
 <a href="#" onclick="logout()">Logout</a>
 </nav>
@@ -148,11 +148,9 @@ let chart;
 
 async function load(){
 
-// DONATIONS
-const { data } = await client.from("donations").select("*");
-
-// EXPENSES
-const { data: exp } = await client.from("expenses").select("*");
+// SAFE FETCH
+const { data = [] } = await client.from("donations").select("*");
+const { data: exp = [] } = await client.from("expenses").select("*");
 
 let total=0,today=0,month=0,year=0,expense=0;
 let now=new Date();
@@ -170,7 +168,7 @@ if(dt.getFullYear()===now.getFullYear()) year+=amt;
 
 exp.forEach(e=> expense+=Number(e.amount)||0);
 
-// SET VALUES
+// UI UPDATE
 document.getElementById("total").innerText="₹"+total;
 document.getElementById("today").innerText="₹"+today;
 document.getElementById("month").innerText="₹"+month;
@@ -195,13 +193,19 @@ if(chart) chart.destroy();
 chart = new Chart(document.getElementById("chart"),{
 type:"line",
 data:{
-labels:days,
+labels:days.map(d=> new Date(d).toLocaleDateString()),
 datasets:[{
+label:"Donations",
 data:totals,
 borderColor:"#16a34a",
 backgroundColor:"rgba(34,197,94,0.2)",
-fill:true
+fill:true,
+tension:0.4
 }]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false
 }
 });
 
