@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Admin Pro Max</title>
+<title>Admin Ultra Pro</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -24,28 +24,23 @@ body{
   padding:15px 20px;
 }
 
-.left{
+.logo{height:50px}
+.title{font-weight:bold}
+
+.actions{
   display:flex;
-  align-items:center;
   gap:10px;
 }
 
-.logo{
-  height:50px;
-}
-
-.title{
-  font-weight:bold;
-}
-
-.logout{
-  background:#ff3333;
+.btn{
+  padding:8px 12px;
   border:none;
-  padding:8px 14px;
-  border-radius:20px;
-  color:#fff;
+  border-radius:6px;
   cursor:pointer;
 }
+
+.logout{background:#ff3333;color:#fff}
+.toggle{background:#444;color:#fff}
 
 /* STATS */
 .stats{
@@ -61,17 +56,12 @@ body{
   background:#1e293b;
   padding:15px;
   border-radius:10px;
+  transition:0.3s;
 }
+.box:hover{transform:scale(1.05)}
 
-.box h3{
-  font-size:12px;
-  color:#aaa;
-}
-
-.box p{
-  font-size:22px;
-  font-weight:bold;
-}
+.box h3{font-size:12px;color:#aaa}
+.box p{font-size:22px;font-weight:bold}
 
 /* CARD */
 .card{
@@ -89,22 +79,15 @@ body{
   margin-bottom:10px;
 }
 
-.btn{
-  padding:8px 12px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
+/* TABLE */
+.table-wrap{
+  max-height:400px;
+  overflow:auto;
 }
 
-.delete{background:#ff4444;color:#fff}
-.refresh{background:#0F9D58;color:#fff}
-.export{background:#2563eb;color:#fff}
-
-/* TABLE */
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:10px;
 }
 
 th,td{
@@ -114,7 +97,19 @@ th,td{
 
 th{
   background:#374151;
+  position:sticky;
+  top:0;
 }
+
+tr:hover{
+  background:#1f2937;
+}
+
+/* BUTTON COLORS */
+.delete{background:#ff4444;color:#fff}
+.edit{background:#f59e0b;color:#fff}
+.refresh{background:#0F9D58;color:#fff}
+.export{background:#2563eb;color:#fff}
 </style>
 </head>
 
@@ -129,11 +124,15 @@ if(localStorage.getItem("isAdmin") !== "yes"){
 
 <!-- HEADER -->
 <div class="header">
-  <div class="left">
+  <div style="display:flex;align-items:center;gap:10px">
     <img src="logo.png" class="logo">
     <div class="title">Shubhi Education Foundation</div>
   </div>
-  <button class="logout" onclick="logout()">Logout</button>
+
+  <div class="actions">
+    <button class="btn toggle" onclick="toggleMode()">🌗</button>
+    <button class="btn logout" onclick="logout()">Logout</button>
+  </div>
 </div>
 
 <!-- STATS -->
@@ -152,15 +151,9 @@ if(localStorage.getItem("isAdmin") !== "yes"){
 <button class="btn refresh" onclick="load()">Refresh</button>
 <button class="btn export" onclick="exportCSV()">Export CSV</button>
 
-<table id="table">
-<tr>
-<th>Name</th>
-<th>Email</th>
-<th>Amount</th>
-<th>Date</th>
-<th>Action</th>
-</tr>
-</table>
+<div class="table-wrap">
+<table id="table"></table>
+</div>
 
 </div>
 
@@ -180,14 +173,19 @@ async function load(){
     return;
   }
 
-  allData=data;
+  allData=data || [];
 
-  render(data);
-  stats(data);
+  render(allData);
+  stats(allData);
 }
 
 function render(data){
   const t=document.getElementById("table");
+
+  if(data.length===0){
+    t.innerHTML="<tr><td>No Data</td></tr>";
+    return;
+  }
 
   t.innerHTML=`<tr>
 <th>Name</th><th>Email</th><th>Amount</th><th>Date</th><th>Action</th>
@@ -197,10 +195,13 @@ function render(data){
     t.innerHTML+=`
     <tr>
       <td>${d.name}</td>
-      <td>${d.email}</td>
+      <td>${d.email||"-"}</td>
       <td>₹${d.amount}</td>
       <td>${new Date(d.created_at).toLocaleDateString()}</td>
-      <td><button class="btn delete" onclick="del(${d.id})">Delete</button></td>
+      <td>
+        <button class="btn edit" onclick="edit(${d.id},'${d.name}',${d.amount})">Edit</button>
+        <button class="btn delete" onclick="del(${d.id})">Delete</button>
+      </td>
     </tr>`;
   });
 }
@@ -233,17 +234,32 @@ document.getElementById("search").addEventListener("input",function(){
 
 // DELETE
 async function del(id){
-  if(confirm("Delete?")){
+  if(confirm("Delete this donation?")){
     await client.from("donations").delete().eq("id",id);
     load();
   }
+}
+
+// EDIT
+async function edit(id,name,amount){
+  let newName=prompt("Edit Name",name);
+  let newAmount=prompt("Edit Amount",amount);
+
+  if(!newName || !newAmount) return;
+
+  await client.from("donations").update({
+    name:newName,
+    amount:newAmount
+  }).eq("id",id);
+
+  load();
 }
 
 // EXPORT CSV
 function exportCSV(){
   let csv="Name,Email,Amount\n";
   allData.forEach(d=>{
-    csv+=`${d.name},${d.email},${d.amount}\n`;
+    csv+=`${d.name},${d.email||""},${d.amount}\n`;
   });
 
   const blob=new Blob([csv],{type:"text/csv"});
@@ -253,11 +269,25 @@ function exportCSV(){
   a.click();
 }
 
+// DARK/LIGHT MODE
+function toggleMode(){
+  if(document.body.style.background=="white"){
+    document.body.style.background="#0f172a";
+    document.body.style.color="#fff";
+  }else{
+    document.body.style.background="white";
+    document.body.style.color="#000";
+  }
+}
+
 // LOGOUT
 function logout(){
   localStorage.clear();
   location.href="index.html";
 }
+
+// AUTO REFRESH
+setInterval(load,10000);
 
 load();
 </script>
