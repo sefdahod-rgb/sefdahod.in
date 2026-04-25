@@ -1,46 +1,257 @@
 <!DOCTYPE html>
 <html lang="hi">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Finance - Shubhi Education Foundation</title><link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
-<body><div class="overlay">
-<header><img src="logo.png"><h1>Shubhi Education Foundation, Dahod</h1></header>
-  <p>Registration no.:- Under Indian Society Act 1860 Guj./2249/DHD. & 
-Mumbai Public Trust Act 1950 F/2247/DHD</p>
-  <p>80G Registration No. :-AAOTS1413MF20251
-12A Registration No. :- AAOTS1413ME20241
-CSR no.:- CSR00096110</p>
-  <p class="info">Address: Rainbow Public School, Shalimar co-operative society, Muvaliya Road, Rabdal, Dahod Gujarat - 389151<br>
-  Email: sefdahod@gmail.com | Mobile: 9408695001 | Landline: 02673-450037</p>
-<nav>
-  <a href="index.html">Home</a>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="donate.html">Donate</a>
-  <a href="donors.html">Donors</a>
-  <a href="receipt.html">Receipt</a>
-  <a href="finance.html" class="active">Finance</a>
-  <a href="admin.html">Admin</a>
-</nav>
-<section>
-  <div class="card">
-    <h2>Finance Panel</h2>
-    <p><strong>Total Donations: ₹<span id="total">0</span></strong></p>
-  </div>
-</section>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const client = window.supabase.createClient("https://kqahcvaoxnmxfcgyyync.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg");
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI NGO ERP - SEF</title>
 
-  async function load(){
-    const { data, error } = await client.from("donations").select("amount");
-    if(error){
-      console.log(error);
-      return;
-    }
-    let total = 0;
-    data.forEach(d => total += Number(d.amount) || 0);
-    document.getElementById("total").textContent = total;
-  }
-  load();
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{margin:0;font-family:Segoe UI;background:#eef8f3}
+
+/* HEADER */
+.header{text-align:center;background:#fff;padding:20px}
+.header img{width:70px}
+.header h1{color:#065f46;margin:5px}
+
+/* NAV */
+nav{background:#16a34a;padding:10px;text-align:center}
+nav a{color:#fff;margin:10px;text-decoration:none}
+
+/* CONTAINER */
+.container{padding:20px}
+
+/* CARDS */
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:15px;
+}
+.card{background:#fff;padding:20px;border-radius:10px;text-align:center}
+.card p{font-size:24px;color:#16a34a}
+
+/* BOX */
+.box{margin-top:20px;background:#fff;padding:20px;border-radius:10px}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px;border-bottom:1px solid #eee}
+
+/* BUTTON */
+button{
+padding:8px 12px;
+border:none;
+border-radius:6px;
+background:#16a34a;
+color:#fff;
+cursor:pointer;
+margin:5px;
+}
+
+/* LOGIN */
+.login{display:flex;justify-content:center;align-items:center;height:100vh}
+.login-box{background:#fff;padding:30px;border-radius:10px;width:300px;text-align:center}
+
+input{padding:8px;margin:5px;width:100%}
+</style>
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+const client = supabase.createClient(
+"https://kqahcvaoxnmxfcgyyync.supabase.co",
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+);
+
+/* LOGIN */
+if(localStorage.getItem("erpAdmin")!=="yes"){
+document.getElementById("app").innerHTML=`
+<div class="login">
+<div class="login-box">
+<h2>ERP Login</h2>
+<input id="u" placeholder="Username">
+<input id="p" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p id="msg"></p>
+</div>
+</div>`;
+}else{
+loadUI();
+}
+
+function login(){
+if(u.value==="admin" && p.value==="1234"){
+localStorage.setItem("erpAdmin","yes");
+location.reload();
+}else{
+msg.innerText="Wrong Login";
+}
+}
+
+/* UI */
+function loadUI(){
+document.getElementById("app").innerHTML=`
+<div class="header">
+<img src="logo.png">
+<h1>Shubhi Education Foundation</h1>
+<p>80G | 12A | CSR Registered</p>
+</div>
+
+<nav>
+<a href="#">ERP Dashboard</a>
+<a href="#" onclick="logout()">Logout</a>
+</nav>
+
+<div class="container">
+
+<div class="cards">
+<div class="card"><h3>Income</h3><p id="income">₹0</p></div>
+<div class="card"><h3>Expense</h3><p id="expense">₹0</p></div>
+<div class="card"><h3>Balance</h3><p id="balance">₹0</p></div>
+</div>
+
+<div class="box">
+<h3>Add Expense</h3>
+<input id="title" placeholder="Expense Title">
+<input id="amount" type="number" placeholder="Amount">
+<button onclick="addExpense()">Add</button>
+</div>
+
+<div class="box">
+<h3>📊 Income vs Expense</h3>
+<canvas id="chart"></canvas>
+</div>
+
+<div class="box">
+<h3>🤖 AI Insight</h3>
+<p id="ai"></p>
+</div>
+
+<div class="box">
+<h3>Transactions</h3>
+<button onclick="exportCSV()">Export CSV</button>
+<table id="table">
+<tr><th>Type</th><th>Name</th><th>Amount</th><th>Date</th></tr>
+</table>
+</div>
+
+</div>
+`;
+
+loadData();
+}
+
+let allDon=[], allExp=[], chart;
+
+/* LOAD */
+async function loadData(){
+const {data:don}=await client.from("donations").select("*");
+const {data:exp}=await client.from("expenses").select("*");
+
+allDon=don||[];
+allExp=exp||[];
+
+stats();
+table();
+chartMake();
+ai();
+}
+
+/* STATS */
+function stats(){
+let income=allDon.reduce((s,d)=>s+Number(d.amount||0),0);
+let expense=allExp.reduce((s,d)=>s+Number(d.amount||0),0);
+
+document.getElementById("income").innerText="₹"+income;
+document.getElementById("expense").innerText="₹"+expense;
+document.getElementById("balance").innerText="₹"+(income-expense);
+}
+
+/* TABLE */
+function table(){
+let t=document.getElementById("table");
+t.innerHTML=`<tr><th>Type</th><th>Name</th><th>Amount</th><th>Date</th></tr>`;
+
+allDon.forEach(d=>{
+t.innerHTML+=`<tr><td>Income</td><td>${d.name}</td><td>₹${d.amount}</td><td>${new Date(d.created_at).toLocaleDateString()}</td></tr>`;
+});
+
+allExp.forEach(d=>{
+t.innerHTML+=`<tr><td>Expense</td><td>${d.title}</td><td>₹${d.amount}</td><td>${new Date(d.created_at).toLocaleDateString()}</td></tr>`;
+});
+}
+
+/* ADD EXPENSE */
+async function addExpense(){
+let t=title.value;
+let a=amount.value;
+
+if(!t || !a) return alert("Fill all");
+
+await client.from("expenses").insert([{title:t,amount:a}]);
+
+title.value="";
+amount.value="";
+loadData();
+}
+
+/* CHART */
+function chartMake(){
+let income=allDon.reduce((s,d)=>s+Number(d.amount||0),0);
+let expense=allExp.reduce((s,d)=>s+Number(d.amount||0),0);
+
+if(chart) chart.destroy();
+
+chart=new Chart(document.getElementById("chart"),{
+type:"pie",
+data:{
+labels:["Income","Expense"],
+datasets:[{data:[income,expense],backgroundColor:["#22c55e","#ef4444"]}]
+}
+});
+}
+
+/* AI */
+function ai(){
+let income=allDon.reduce((s,d)=>s+Number(d.amount||0),0);
+let expense=allExp.reduce((s,d)=>s+Number(d.amount||0),0);
+
+let msg="";
+
+if(income>expense){
+msg="NGO is in profit 👍";
+}else{
+msg="Expenses ज्यादा हैं ⚠️";
+}
+
+document.getElementById("ai").innerText=msg;
+}
+
+/* CSV */
+function exportCSV(){
+let csv="Type,Name,Amount\n";
+
+allDon.forEach(d=> csv+=`Income,${d.name},${d.amount}\n`);
+allExp.forEach(d=> csv+=`Expense,${d.title},${d.amount}\n`);
+
+let blob=new Blob([csv]);
+let a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="erp.csv";
+a.click();
+}
+
+/* LOGOUT */
+function logout(){
+localStorage.clear();
+location.reload();
+}
 </script>
-</body></html>
+
+</body>
+</html>
