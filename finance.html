@@ -136,15 +136,6 @@ if(localStorage.getItem("isAdmin") !== "yes"){
 <button class="btn" onclick="addExpense()">Add</button>
 </div>
 
-<!-- FILTER -->
-<div class="box">
-<h3>📅 Filter</h3>
-<input type="date" id="from">
-<input type="date" id="to">
-<button class="btn" onclick="filterData()">Apply</button>
-<button class="btn" onclick="load()">Reset</button>
-</div>
-
 <!-- BUTTONS -->
 <div style="text-align:center">
 <button class="btn" onclick="printReport()">🧾 Print</button>
@@ -169,19 +160,22 @@ let chart;
 
 async function load(){
 
-const { data = [] } = await client.from("donations").select("*");
-let expenses = [];
+// SAFE FETCH
+const { data: donations = [] } = await client.from("donations").select("*");
 
+let expenses = [];
 try{
   const res = await client.from("expenses").select("*");
   expenses = res.data || [];
-}catch(e){}
+}catch(e){
+  console.log("No expense table");
+}
 
 // CALC
 let total=0,today=0,month=0,year=0,exp=0;
 let now=new Date();
 
-data.forEach(d=>{
+donations.forEach(d=>{
 let a=Number(d.amount)||0;
 total+=a;
 
@@ -209,7 +203,7 @@ return d.toISOString().split('T')[0];
 });
 
 let income=days.map(day=>{
-return data.filter(d=>(d.created_at||"").startsWith(day))
+return donations.filter(d=>(d.created_at||"").startsWith(day))
 .reduce((s,d)=>s+(Number(d.amount)||0),0);
 });
 
@@ -247,33 +241,16 @@ alert("Added ✅");
 load();
 }
 
-// FILTER
-async function filterData(){
-let from=document.getElementById("from").value;
-let to=document.getElementById("to").value;
-
-const { data=[] } = await client
-.from("donations")
-.select("*")
-.gte("created_at",from)
-.lte("created_at",to);
-
-let total=0;
-data.forEach(d=> total+=Number(d.amount)||0);
-
-document.getElementById("total").innerText="₹"+total;
-}
-
-// CSV
+// CSV FIXED
 async function exportCSV(){
 const { data=[] } = await client.from("donations").select("*");
 
 let csv="Name,Amount,Date\n";
 data.forEach(d=>{
-csv+=${d.name},${d.amount},${d.created_at}\n;
-})
+csv += `${d.name},${d.amount},${d.created_at}\n`;
+});
 
-let blob=new Blob([csv]);
+let blob=new Blob([csv],{type:"text/csv"});
 let a=document.createElement("a");
 a.href=URL.createObjectURL(blob);
 a.download="report.csv";
@@ -285,10 +262,11 @@ function printReport(){
 window.print();
 }
 
-// LOGOUT
+// LOGOUT FIXED
 function logout(){
-localStorage.clear();
-window.location.href="index.html";
+localStorage.removeItem("isAdmin");
+alert("Logged out");
+window.location.href="login.html";
 }
 
 load();
