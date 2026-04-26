@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Finance - SEF Dahod</title>
+<title>Finance ERP Ultra - SEF Dahod</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -22,32 +22,26 @@ body{
   text-align:center;
   background:#ffffff;
   padding:20px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.1);
 }
-
-.header img{width:80px}
-.header h1{margin:5px;color:#065f46}
+.header img{width:70px}
 
 /* NAV */
-nav{
-  text-align:center;
-  padding:10px;
-}
+nav{text-align:center;padding:10px;}
 nav a{
   margin:5px;
-  text-decoration:none;
   padding:8px 12px;
   background:#16a34a;
   color:#fff;
+  text-decoration:none;
   border-radius:6px;
 }
 
 /* CARDS */
 .cards{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:15px;
-  padding:20px;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:10px;
+  padding:15px;
 }
 .card{
   background:#fff;
@@ -55,43 +49,44 @@ nav a{
   border-radius:10px;
   text-align:center;
 }
-.card p{
-  font-size:22px;
-  color:#16a34a;
-}
+.card p{color:#16a34a;font-size:20px}
 
 /* BOX */
 .box{
-  margin:20px;
+  margin:15px;
   background:#fff;
-  padding:20px;
-  border-radius:12px;
+  padding:15px;
+  border-radius:10px;
 }
 
-/* INPUT */
-input{
-  padding:8px;
-  margin:5px;
+/* TABLE */
+table{
+  width:100%;
+  border-collapse:collapse;
 }
+th,td{
+  padding:8px;
+  border-bottom:1px solid #ddd;
+}
+th{background:#16a34a;color:#fff}
 
 /* BUTTON */
 .btn{
-  padding:8px 12px;
+  padding:6px 10px;
   border:none;
   border-radius:6px;
-  background:#0F9D58;
+  background:#16a34a;
   color:#fff;
   cursor:pointer;
 }
+.del{background:red}
+.edit{background:#2563eb}
 
 /* CHART */
-.chart-box{height:300px}
-canvas{width:100%!important;height:100%!important}
+.chart-box{height:250px}
 
-/* PRINT */
 @media print{
   nav,button{display:none}
-  body{background:#fff}
 }
 </style>
 </head>
@@ -99,7 +94,7 @@ canvas{width:100%!important;height:100%!important}
 <body>
 
 <script>
-if(localStorage.getItem("isAdmin") !== "yes"){
+if(localStorage.getItem("isAdmin")!=="yes"){
   localStorage.setItem("redirectAfterLogin","finance.html");
   location.href="login.html";
 }
@@ -107,9 +102,9 @@ if(localStorage.getItem("isAdmin") !== "yes"){
 
 <div class="header">
 <img src="logo.png">
-<h1>Shubhi Education Foundation</h1>
+<h2>Shubhi Education Foundation</h2>
   <p>Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD</p>
-<p>Finance</p>
+<p>Finance ERP (Audit Ready)</p>
 </div>
 
 <nav>
@@ -121,34 +116,44 @@ if(localStorage.getItem("isAdmin") !== "yes"){
 
 <!-- CARDS -->
 <div class="cards">
-<div class="card"><h3>Total</h3><p id="total">₹0</p></div>
-<div class="card"><h3>Today</h3><p id="today">₹0</p></div>
-<div class="card"><h3>Month</h3><p id="month">₹0</p></div>
-<div class="card"><h3>Year</h3><p id="year">₹0</p></div>
-<div class="card"><h3>Expenses</h3><p id="expense">₹0</p></div>
-<div class="card"><h3>Balance</h3><p id="balance">₹0</p></div>
+<div class="card"><h4>Total Income</h4><p id="income">₹0</p></div>
+<div class="card"><h4>Expense</h4><p id="expense">₹0</p></div>
+<div class="card"><h4>Balance</h4><p id="balance">₹0</p></div>
 </div>
 
-<!-- EXPENSE -->
+<!-- ADD INCOME -->
 <div class="box">
-<h3>➕ Add Expense</h3>
+<h3>➕ Add Income</h3>
+<input id="inc_amt" placeholder="Amount ₹">
+<input id="inc_note" placeholder="Note">
+<button class="btn" onclick="addIncome()">Add</button>
+</div>
+
+<!-- ADD EXPENSE -->
+<div class="box">
+<h3>➖ Add Expense</h3>
 <input id="exp_amt" placeholder="Amount ₹">
 <input id="exp_note" placeholder="Note">
 <button class="btn" onclick="addExpense()">Add</button>
 </div>
 
-<!-- BUTTONS -->
-<div style="text-align:center">
-<button class="btn" onclick="printReport()">🧾 Print</button>
-<button class="btn" onclick="exportCSV()">📁 CSV</button>
+<!-- REPORT -->
+<div class="box">
+<h3>📊 Income + Expense Report</h3>
+<button class="btn" onclick="printReport()">Print</button>
+<button class="btn" onclick="exportCSV()">CSV</button>
+
+<table id="table">
+<tr>
+<th>Type</th><th>Amount</th><th>Note</th><th>Date</th><th>Action</th>
+</tr>
+</table>
 </div>
 
 <!-- CHART -->
 <div class="box">
-<h3>📊 Income vs Expense</h3>
-<div class="chart-box">
-<canvas id="chart"></canvas>
-</div>
+<h3>📈 Graph</h3>
+<div class="chart-box"><canvas id="chart"></canvas></div>
 </div>
 
 <script>
@@ -159,99 +164,147 @@ const client = supabase.createClient(
 
 let chart;
 
+// LOAD DATA
 async function load(){
 
-// SAFE FETCH
-const { data: donations = [] } = await client.from("donations").select("*");
+const { data:don=[] } = await client.from("donations").select("*");
+let income=[],expense=[];
 
-let expenses = [];
 try{
-  const res = await client.from("expenses").select("*");
-  expenses = res.data || [];
-}catch(e){
-  console.log("No expense table");
-}
+  income = (await client.from("income").select("*")).data || [];
+}catch{}
+
+try{
+  expense = (await client.from("expenses").select("*")).data || [];
+}catch{}
 
 // CALC
-let total=0,today=0,month=0,year=0,exp=0;
-let now=new Date();
+let totalIncome=0,totalExpense=0;
 
-donations.forEach(d=>{
-let a=Number(d.amount)||0;
-total+=a;
+don.forEach(d=> totalIncome+=Number(d.amount)||0);
+income.forEach(i=> totalIncome+=Number(i.amount)||0);
+expense.forEach(e=> totalExpense+=Number(e.amount)||0);
 
-let dt=new Date(d.created_at);
-if(dt.toDateString()===now.toDateString()) today+=a;
-if(dt.getMonth()===now.getMonth()) month+=a;
-if(dt.getFullYear()===now.getFullYear()) year+=a;
+document.getElementById("income").innerText="₹"+totalIncome;
+document.getElementById("expense").innerText="₹"+totalExpense;
+document.getElementById("balance").innerText="₹"+(totalIncome-totalExpense);
+
+// TABLE
+let table=document.getElementById("table");
+table.innerHTML=`<tr>
+<th>Type</th><th>Amount</th><th>Note</th><th>Date</th><th>Action</th>
+</tr>`;
+
+// DONATION
+don.forEach(d=>{
+table.innerHTML+=`
+<tr>
+<td>Donation</td>
+<td>₹${d.amount}</td>
+<td>${d.name}</td>
+<td>${new Date(d.created_at).toLocaleDateString()}</td>
+<td>-</td>
+</tr>`;
 });
 
-expenses.forEach(e=> exp+=Number(e.amount)||0);
+// INCOME
+income.forEach(i=>{
+table.innerHTML+=`
+<tr>
+<td>Income</td>
+<td>₹${i.amount}</td>
+<td>${i.note}</td>
+<td>${new Date(i.created_at).toLocaleDateString()}</td>
+<td>
+<button class="btn edit" onclick="editIncome(${i.id})">Edit</button>
+<button class="btn del" onclick="deleteIncome(${i.id})">Delete</button>
+</td>
+</tr>`;
+});
 
-// UI
-document.getElementById("total").innerText="₹"+total;
-document.getElementById("today").innerText="₹"+today;
-document.getElementById("month").innerText="₹"+month;
-document.getElementById("year").innerText="₹"+year;
-document.getElementById("expense").innerText="₹"+exp;
-document.getElementById("balance").innerText="₹"+(year-exp);
+// EXPENSE
+expense.forEach(e=>{
+table.innerHTML+=`
+<tr>
+<td>Expense</td>
+<td>₹${e.amount}</td>
+<td>${e.note}</td>
+<td>${new Date(e.created_at).toLocaleDateString()}</td>
+<td>
+<button class="btn edit" onclick="editExpense(${e.id})">Edit</button>
+<button class="btn del" onclick="deleteExpense(${e.id})">Delete</button>
+</td>
+</tr>`;
+});
 
 // CHART
-let days=[...Array(7)].map((_,i)=>{
-let d=new Date();
-d.setDate(d.getDate()-(6-i));
-return d.toISOString().split('T')[0];
-});
-
-let income=days.map(day=>{
-return donations.filter(d=>(d.created_at||"").startsWith(day))
-.reduce((s,d)=>s+(Number(d.amount)||0),0);
-});
-
-let expData=days.map(day=>{
-return expenses.filter(e=>(e.created_at||"").startsWith(day))
-.reduce((s,e)=>s+(Number(e.amount)||0),0);
-});
+let data=[totalIncome,totalExpense];
 
 if(chart) chart.destroy();
 
-chart = new Chart(document.getElementById("chart"),{
+chart=new Chart(document.getElementById("chart"),{
 type:"bar",
 data:{
-labels:days.map(d=> new Date(d).toLocaleDateString()),
-datasets:[
-{label:"Income",data:income,backgroundColor:"#22c55e"},
-{label:"Expense",data:expData,backgroundColor:"#ef4444"}
-]
-},
-options:{responsive:true,maintainAspectRatio:false}
+labels:["Income","Expense"],
+datasets:[{data:data,backgroundColor:["green","red"]}]
+}
 });
 
+}
+
+// ADD INCOME
+async function addIncome(){
+let amt=inc_amt.value;
+let note=inc_note.value;
+if(!amt) return alert("Enter amount");
+
+await client.from("income").insert([{amount:amt,note:note}]);
+load();
 }
 
 // ADD EXPENSE
 async function addExpense(){
-let amt=document.getElementById("exp_amt").value;
-let note=document.getElementById("exp_note").value;
-
+let amt=exp_amt.value;
+let note=exp_note.value;
 if(!amt) return alert("Enter amount");
 
 await client.from("expenses").insert([{amount:amt,note:note}]);
-
-alert("Added ✅");
 load();
 }
 
-// CSV FIXED
-async function exportCSV(){
-const { data=[] } = await client.from("donations").select("*");
+// DELETE
+async function deleteIncome(id){
+await client.from("income").delete().eq("id",id);
+load();
+}
+async function deleteExpense(id){
+await client.from("expenses").delete().eq("id",id);
+load();
+}
 
-let csv="Name,Amount,Date\n";
-data.forEach(d=>{
-csv += `${d.name},${d.amount},${d.created_at}\n`;
+// EDIT
+async function editIncome(id){
+let amt=prompt("New Amount");
+await client.from("income").update({amount:amt}).eq("id",id);
+load();
+}
+async function editExpense(id){
+let amt=prompt("New Amount");
+await client.from("expenses").update({amount:amt}).eq("id",id);
+load();
+}
+
+// CSV
+function exportCSV(){
+let rows=document.querySelectorAll("table tr");
+let csv="";
+rows.forEach(r=>{
+let cols=r.querySelectorAll("td,th");
+let row=[];
+cols.forEach(c=>row.push(c.innerText));
+csv+=row.join(",")+"\\n";
 });
-
-let blob=new Blob([csv],{type:"text/csv"});
+let blob=new Blob([csv]);
 let a=document.createElement("a");
 a.href=URL.createObjectURL(blob);
 a.download="report.csv";
@@ -263,12 +316,13 @@ function printReport(){
 window.print();
 }
 
-// LOGOUT FIXED
+// LOGOUT
 function logout(){
   localStorage.clear();
   alert("Logged out successfully ✅");
   window.location.href = "index.html";
 }
+
 load();
 </script>
 
