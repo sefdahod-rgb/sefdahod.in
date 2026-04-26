@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Finance ERP Final</title>
+<title>Finance - SEF Dahod</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,7 +12,9 @@
 body{
   margin:0;
   font-family:Segoe UI;
-  background:#f0fdf4;
+  background: linear-gradient(rgba(240,253,244,0.9),rgba(240,253,244,0.9)),
+              url('bg.jpg') no-repeat center center fixed;
+  background-size:cover;
 }
 .header{text-align:center;background:#fff;padding:20px;}
 nav{text-align:center;padding:10px;}
@@ -44,7 +46,9 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 </script>
 
 <div class="header">
-<h2>Finance ERP</h2>
+<img src="logo.png">
+<h2>Shubhi Education Foundation</h2>
+<p>Finance ERP (AI + Audit Ready)</p>
 </div>
 
 <nav>
@@ -57,7 +61,11 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <div class="card"><h4>Expense</h4><p id="expense">₹0</p></div>
 <div class="card"><h4>Balance</h4><p id="balance">₹0</p></div>
 </div>
-
+<!-- AI -->
+<div class="box">
+<h3>🤖 AI Insight</h3>
+<p id="ai">Loading...</p>
+</div>
 <div class="box">
 <h3>Date Filter</h3>
 <input type="date" id="from">
