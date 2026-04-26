@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Finance ERP Ultra - SEF Dahod</title>
+<title>Finance  - SEF Dahod</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -17,15 +17,9 @@ body{
   background-size:cover;
 }
 
-/* HEADER */
-.header{
-  text-align:center;
-  background:#ffffff;
-  padding:20px;
-}
+.header{text-align:center;background:#fff;padding:20px;}
 .header img{width:70px}
 
-/* NAV */
 nav{text-align:center;padding:10px;}
 nav a{
   margin:5px;
@@ -36,7 +30,6 @@ nav a{
   border-radius:6px;
 }
 
-/* CARDS */
 .cards{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
@@ -51,7 +44,6 @@ nav a{
 }
 .card p{color:#16a34a;font-size:20px}
 
-/* BOX */
 .box{
   margin:15px;
   background:#fff;
@@ -59,7 +51,6 @@ nav a{
   border-radius:10px;
 }
 
-/* TABLE */
 table{
   width:100%;
   border-collapse:collapse;
@@ -70,7 +61,6 @@ th,td{
 }
 th{background:#16a34a;color:#fff}
 
-/* BUTTON */
 .btn{
   padding:6px 10px;
   border:none;
@@ -82,7 +72,6 @@ th{background:#16a34a;color:#fff}
 .del{background:red}
 .edit{background:#2563eb}
 
-/* CHART */
 .chart-box{height:250px}
 
 @media print{
@@ -104,7 +93,7 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <img src="logo.png">
 <h2>Shubhi Education Foundation</h2>
   <p>Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD</p>
-<p>Finance ERP (Audit Ready)</p>
+<p>Finance ERP (AI + Audit Ready)</p>
 </div>
 
 <nav>
@@ -114,22 +103,33 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <a href="#" onclick="logout()">Logout</a>
 </nav>
 
+<!-- FILTER -->
+<div class="box">
+<h3>📅 Date Filter</h3>
+<input type="date" id="from">
+<input type="date" id="to">
+<button class="btn" onclick="load()">Apply</button>
+</div>
+
 <!-- CARDS -->
 <div class="cards">
 <div class="card"><h4>Total Income</h4><p id="income">₹0</p></div>
 <div class="card"><h4>Expense</h4><p id="expense">₹0</p></div>
 <div class="card"><h4>Balance</h4><p id="balance">₹0</p></div>
 </div>
+
 <!-- AI -->
 <div class="box">
 <h3>🤖 AI Insight</h3>
 <p id="ai">Loading...</p>
 </div>
+
 <!-- ADD INCOME -->
 <div class="box">
 <h3>➕ Add Income</h3>
 <input id="inc_amt" placeholder="Amount ₹">
 <input id="inc_note" placeholder="Note">
+<input type="date" id="inc_date">
 <button class="btn" onclick="addIncome()">Add</button>
 </div>
 
@@ -138,20 +138,17 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <h3>➖ Add Expense</h3>
 <input id="exp_amt" placeholder="Amount ₹">
 <input id="exp_note" placeholder="Note">
+<input type="date" id="exp_date">
 <button class="btn" onclick="addExpense()">Add</button>
 </div>
 
 <!-- REPORT -->
 <div class="box">
-<h3>📊 Income + Expense Report</h3>
+<h3>📊 Full Report</h3>
 <button class="btn" onclick="printReport()">Print</button>
 <button class="btn" onclick="exportCSV()">CSV</button>
 
-<table id="table">
-<tr>
-<th>Type</th><th>Amount</th><th>Note</th><th>Date</th><th>Action</th>
-</tr>
-</table>
+<table id="table"></table>
 </div>
 
 <!-- CHART -->
@@ -160,61 +157,69 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <div class="chart-box"><canvas id="chart"></canvas></div>
 </div>
 
-<script>
-const client = supabase.createClient(
-"https://kqahcvaoxnmxfcgyyync.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
-);
+<script> const client = supabase.createClient( "https://kqahcvaoxnmxfcgyyync.supabase.co", 
+                                              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg" 
+                                             );
 
 let chart;
 
-// LOAD DATA
 async function load(){
 
+let from=document.getElementById("from").value;
+let to=document.getElementById("to").value;
+
 const { data:don=[] } = await client.from("donations").select("*");
-let income=[],expense=[];
+const { data:inc=[] } = await client.from("income").select("*");
+const { data:exp=[] } = await client.from("expenses").select("*");
 
-try{
-  income = (await client.from("income").select("*")).data || [];
-}catch{}
+// FILTER FUNCTION
+function filter(d){
+  if(!from || !to) return true;
+  let dt=new Date(d.created_at).toISOString().split("T")[0];
+  return dt>=from && dt<=to;
+}
 
-try{
-  expense = (await client.from("expenses").select("*")).data || [];
-}catch{}
+let donations=don.filter(filter);
+let income=inc.filter(filter);
+let expense=exp.filter(filter);
 
 // CALC
 let totalIncome=0,totalExpense=0;
 
-don.forEach(d=> totalIncome+=Number(d.amount)||0);
+donations.forEach(d=> totalIncome+=Number(d.amount)||0);
 income.forEach(i=> totalIncome+=Number(i.amount)||0);
 expense.forEach(e=> totalExpense+=Number(e.amount)||0);
 
-document.getElementById("income").innerText="₹"+totalIncome;
-document.getElementById("expense").innerText="₹"+totalExpense;
-document.getElementById("balance").innerText="₹"+(totalIncome-totalExpense);
+let balance=totalIncome-totalExpense;
+
+// UI
+incomeEl.innerText="₹"+totalIncome;
+expenseEl.innerText="₹"+totalExpense;
+balanceEl.innerText="₹"+balance;
+
+// AI
+let aiText = balance>=0 
+  ? "📈 Profit  ✅"
+  : "⚠️ Loss ";
+
+ai.innerText = aiText + " | Income: ₹"+totalIncome+" Expense: ₹"+totalExpense;
 
 // TABLE
-let table=document.getElementById("table");
 table.innerHTML=`<tr>
 <th>Type</th><th>Amount</th><th>Note</th><th>Date</th><th>Action</th>
 </tr>`;
 
-// DONATION
-don.forEach(d=>{
-table.innerHTML+=`
-<tr>
+donations.forEach(d=>{
+table.innerHTML+=`<tr>
 <td>Donation</td>
 <td>₹${d.amount}</td>
 <td>${d.name}</td>
 <td>${new Date(d.created_at).toLocaleDateString()}</td>
-<td>-</td>
-</tr>`;
+<td>-</td></tr>`;
 });
 
-// INCOME
 income.forEach(i=>{
-table.innerHTML+=`
-<tr>
+table.innerHTML+=`<tr>
 <td>Income</td>
 <td>₹${i.amount}</td>
 <td>${i.note}</td>
@@ -222,14 +227,11 @@ table.innerHTML+=`
 <td>
 <button class="btn edit" onclick="editIncome(${i.id})">Edit</button>
 <button class="btn del" onclick="deleteIncome(${i.id})">Delete</button>
-</td>
-</tr>`;
+</td></tr>`;
 });
 
-// EXPENSE
 expense.forEach(e=>{
-table.innerHTML+=`
-<tr>
+table.innerHTML+=`<tr>
 <td>Expense</td>
 <td>₹${e.amount}</td>
 <td>${e.note}</td>
@@ -237,20 +239,20 @@ table.innerHTML+=`
 <td>
 <button class="btn edit" onclick="editExpense(${e.id})">Edit</button>
 <button class="btn del" onclick="deleteExpense(${e.id})">Delete</button>
-</td>
-</tr>`;
+</td></tr>`;
 });
 
 // CHART
-let data=[totalIncome,totalExpense];
-
 if(chart) chart.destroy();
 
 chart=new Chart(document.getElementById("chart"),{
 type:"bar",
 data:{
 labels:["Income","Expense"],
-datasets:[{data:data,backgroundColor:["green","red"]}]
+datasets:[{
+data:[totalIncome,totalExpense],
+backgroundColor:["green","red"]
+}]
 }
 });
 
@@ -258,43 +260,37 @@ datasets:[{data:data,backgroundColor:["green","red"]}]
 
 // ADD INCOME
 async function addIncome(){
-let amt=inc_amt.value;
-let note=inc_note.value;
-if(!amt) return alert("Enter amount");
-
-await client.from("income").insert([{amount:amt,note:note}]);
+await client.from("income").insert([{
+amount:inc_amt.value,
+note:inc_note.value,
+created_at:inc_date.value || new Date()
+}]);
 load();
 }
 
 // ADD EXPENSE
 async function addExpense(){
-let amt=exp_amt.value;
-let note=exp_note.value;
-if(!amt) return alert("Enter amount");
-
-await client.from("expenses").insert([{amount:amt,note:note}]);
+await client.from("expenses").insert([{
+amount:exp_amt.value,
+note:exp_note.value,
+created_at:exp_date.value || new Date()
+}]);
 load();
 }
 
-// DELETE
-async function deleteIncome(id){
-await client.from("income").delete().eq("id",id);
-load();
-}
-async function deleteExpense(id){
-await client.from("expenses").delete().eq("id",id);
-load();
-}
+// DELETE / EDIT
+async function deleteIncome(id){ await client.from("income").delete().eq("id",id); load(); }
+async function deleteExpense(id){ await client.from("expenses").delete().eq("id",id); load(); }
 
-// EDIT
 async function editIncome(id){
-let amt=prompt("New Amount");
-await client.from("income").update({amount:amt}).eq("id",id);
+let val=prompt("New Amount");
+await client.from("income").update({amount:val}).eq("id",id);
 load();
 }
+
 async function editExpense(id){
-let amt=prompt("New Amount");
-await client.from("expenses").update({amount:amt}).eq("id",id);
+let val=prompt("New Amount");
+await client.from("expenses").update({amount:val}).eq("id",id);
 load();
 }
 
@@ -316,17 +312,14 @@ a.click();
 }
 
 // PRINT
-function printReport(){
-window.print();
-}
+function printReport(){window.print();}
 
-// LOGOUT
+// LOGOUT FIX
 function logout(){
   localStorage.clear();
   alert("Logged out successfully ✅");
   window.location.href = "index.html";
 }
-
 load();
 </script>
 
