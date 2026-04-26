@@ -17,7 +17,6 @@ body{
   background-size:cover;
 }
 
-/* HEADER */
 .header{
   text-align:center;
   background:#fff;
@@ -25,7 +24,6 @@ body{
 }
 .header img{width:60px}
 
-/* NAV */
 nav{text-align:center;padding:10px;}
 nav a{
   margin:5px;
@@ -36,7 +34,6 @@ nav a{
   border-radius:6px;
 }
 
-/* CARDS */
 .cards{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
@@ -51,7 +48,6 @@ nav a{
 }
 .card p{font-size:20px;color:#16a34a}
 
-/* BOX */
 .box{
   margin:15px;
   background:#fff;
@@ -59,12 +55,10 @@ nav a{
   border-radius:10px;
 }
 
-/* TABLE */
 table{width:100%;border-collapse:collapse}
 th,td{padding:8px;border-bottom:1px solid #ddd}
 th{background:#16a34a;color:#fff}
 
-/* BUTTON */
 .btn{
   padding:6px 10px;
   border:none;
@@ -74,7 +68,6 @@ th{background:#16a34a;color:#fff}
   cursor:pointer;
 }
 
-/* CHART */
 .chart-box{height:260px}
 
 @media print{
@@ -104,7 +97,6 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <a href="#" onclick="logout()">Logout</a>
 </nav>
 
-<!-- FILTER -->
 <div class="box">
 <h3>📅 Date Filter</h3>
 <input type="date" id="from">
@@ -112,20 +104,17 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <button class="btn" onclick="load()">Apply</button>
 </div>
 
-<!-- CARDS -->
 <div class="cards">
 <div class="card"><h4>Total Income</h4><p id="income">₹0</p></div>
 <div class="card"><h4>Total Expense</h4><p id="expense">₹0</p></div>
 <div class="card"><h4>Balance</h4><p id="balance">₹0</p></div>
 </div>
 
-<!-- AI -->
 <div class="box">
 <h3>🤖 AI Insight</h3>
 <p id="ai">Calculating...</p>
 </div>
 
-<!-- ADD -->
 <div class="box">
 <h3>➕ Add Income</h3>
 <input id="inc_amt" placeholder="Amount">
@@ -142,7 +131,6 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <button class="btn" onclick="addExpense()">Add</button>
 </div>
 
-<!-- REPORT -->
 <div class="box">
 <h3>📊 Report</h3>
 <button class="btn" onclick="printReport()">Print</button>
@@ -151,7 +139,6 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <table id="table"></table>
 </div>
 
-<!-- CHART -->
 <div class="box">
 <h3>📈 Income vs Expense</h3>
 <div class="chart-box"><canvas id="chart"></canvas></div>
@@ -170,12 +157,10 @@ async function load(){
 let from=document.getElementById("from").value;
 let to=document.getElementById("to").value;
 
-// FETCH SAFE
 const { data:don=[] } = await client.from("donations").select("*");
 const { data:inc=[] } = await client.from("income").select("*");
 const { data:exp=[] } = await client.from("expenses").select("*");
 
-// FILTER
 function check(d){
   if(!from || !to) return true;
   let dt=new Date(d.created_at).toISOString().split("T")[0];
@@ -186,7 +171,6 @@ let donations=don.filter(check);
 let income=inc.filter(check);
 let expense=exp.filter(check);
 
-// CALC
 let totalIncome=0,totalExpense=0;
 
 donations.forEach(d=> totalIncome+=Number(d.amount)||0);
@@ -195,19 +179,18 @@ expense.forEach(e=> totalExpense+=Number(e.amount)||0);
 
 let balance=totalIncome-totalExpense;
 
-// UI
-income.innerText="₹"+totalIncome;
-expense.innerText="₹"+totalExpense;
-balance.innerText="₹"+balance;
+document.getElementById("income").innerText="₹"+totalIncome;
+document.getElementById("expense").innerText="₹"+totalExpense;
+document.getElementById("balance").innerText="₹"+balance;
 
-// AI FIX
-ai.innerText = balance>=0 
-? "📈 Profit ₹"+balance 
-: "⚠️ Loss ₹"+balance;
+document.getElementById("ai").innerText =
+balance >= 0 ? "📈 Profit ₹"+balance : "⚠️ Loss ₹"+balance;
 
-// TABLE
+// TABLE WITH EDIT DELETE
+let table = document.getElementById("table");
+
 table.innerHTML=`<tr>
-<th>Type</th><th>Amount</th><th>Note</th><th>Date</th>
+<th>Type</th><th>Amount</th><th>Note</th><th>Date</th><th>Action</th>
 </tr>`;
 
 donations.forEach(d=>{
@@ -216,6 +199,7 @@ table.innerHTML+=`<tr>
 <td>${d.amount}</td>
 <td>${d.name}</td>
 <td>${new Date(d.created_at).toLocaleDateString()}</td>
+<td>-</td>
 </tr>`;
 });
 
@@ -225,6 +209,10 @@ table.innerHTML+=`<tr>
 <td>${i.amount}</td>
 <td>${i.note}</td>
 <td>${new Date(i.created_at).toLocaleDateString()}</td>
+<td>
+<button class="btn" onclick="editIncome(${i.id})">Edit</button>
+<button class="btn" onclick="deleteIncome(${i.id})">Delete</button>
+</td>
 </tr>`;
 });
 
@@ -234,10 +222,13 @@ table.innerHTML+=`<tr>
 <td>${e.amount}</td>
 <td>${e.note}</td>
 <td>${new Date(e.created_at).toLocaleDateString()}</td>
+<td>
+<button class="btn" onclick="editExpense(${e.id})">Edit</button>
+<button class="btn" onclick="deleteExpense(${e.id})">Delete</button>
+</td>
 </tr>`;
 });
 
-// CHART
 if(chart) chart.destroy();
 
 chart=new Chart(document.getElementById("chart"),{
@@ -272,6 +263,34 @@ created_at:exp_date.value || new Date()
 load();
 }
 
+// DELETE
+async function deleteIncome(id){
+if(!confirm("Delete this income?")) return;
+await client.from("income").delete().eq("id", id);
+load();
+}
+
+async function deleteExpense(id){
+if(!confirm("Delete this expense?")) return;
+await client.from("expenses").delete().eq("id", id);
+load();
+}
+
+// EDIT
+async function editIncome(id){
+let amt=prompt("New Amount");
+let note=prompt("New Note");
+await client.from("income").update({amount:amt,note:note}).eq("id", id);
+load();
+}
+
+async function editExpense(id){
+let amt=prompt("New Amount");
+let note=prompt("New Note");
+await client.from("expenses").update({amount:amt,note:note}).eq("id", id);
+load();
+}
+
 // CSV
 function exportCSV(){
 let rows=document.querySelectorAll("table tr");
@@ -292,8 +311,8 @@ a.click();
 // PRINT
 function printReport(){window.print();}
 
+// LOGOUT
 
-// logout 
 function logout(){
   localStorage.clear();
   alert("Logged out successfully ✅");
