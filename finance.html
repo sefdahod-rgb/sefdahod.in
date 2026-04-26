@@ -271,7 +271,7 @@ const { data=[] } = await client.from("donations").select("*");
 let csv="Name,Amount,Date\n";
 data.forEach(d=>{
 csv+=${d.name},${d.amount},${d.created_at}\n;
-});
+})
 
 let blob=new Blob([csv]);
 let a=document.createElement("a");
