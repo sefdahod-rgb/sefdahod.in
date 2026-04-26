@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Finance ERP - SEF Dahod</title>
+<title>Finance - SEF Dahod</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -108,7 +108,8 @@ if(localStorage.getItem("isAdmin") !== "yes"){
 <div class="header">
 <img src="logo.png">
 <h1>Shubhi Education Foundation</h1>
-<p>Finance ERP (CA Audit Ready)</p>
+  <p>Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD</p>
+<p>Finance</p>
 </div>
 
 <nav>
@@ -264,11 +265,10 @@ window.print();
 
 // LOGOUT FIXED
 function logout(){
-localStorage.removeItem("isAdmin");
-alert("Logged out");
-window.location.href="login.html";
+  localStorage.clear();
+  alert("Logged out successfully ✅");
+  window.location.href = "index.html";
 }
-
 load();
 </script>
 
