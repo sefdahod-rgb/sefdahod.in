@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Finance ERP Ultra AI - SEF Dahod</title>
+<title>Finance ERP Ultra - SEF Dahod</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -17,9 +17,18 @@ body{
   background-size:cover;
 }
 
-.header{text-align:center;background:#fff;padding:20px;}
-.header img{width:70px}
+/* HEADER */
+.header{
+  text-align:center;
+  background:#fff;
+  padding:15px;
+}
+.header img{
+  width:60px;   /* ✅ FIXED LOGO SIZE */
+}
+.header h2{margin:5px}
 
+/* NAV */
 nav{text-align:center;padding:10px;}
 nav a{
   margin:5px;
@@ -30,6 +39,7 @@ nav a{
   border-radius:6px;
 }
 
+/* CARDS */
 .cards{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
@@ -44,6 +54,7 @@ nav a{
 }
 .card p{color:#16a34a;font-size:20px}
 
+/* BOX */
 .box{
   margin:15px;
   background:#fff;
@@ -51,6 +62,7 @@ nav a{
   border-radius:10px;
 }
 
+/* TABLE */
 table{
   width:100%;
   border-collapse:collapse;
@@ -61,6 +73,7 @@ th,td{
 }
 th{background:#16a34a;color:#fff}
 
+/* BUTTON */
 .btn{
   padding:6px 10px;
   border:none;
@@ -69,13 +82,14 @@ th{background:#16a34a;color:#fff}
   color:#fff;
   cursor:pointer;
 }
-.del{background:red}
-.edit{background:#2563eb}
 
+/* CHART */
 .chart-box{height:250px}
 
+/* PRINT */
 @media print{
-  nav,button{display:none}
+  nav,button,input{display:none}
+  body{background:#fff}
 }
 </style>
 </head>
@@ -89,64 +103,59 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 }
 </script>
 
+<!-- HEADER -->
 <div class="header">
 <img src="logo.png">
 <h2>Shubhi Education Foundation</h2>
-<p>Finance ERP (AI + Audit Ready)</p>
+<p>Reg: Guj/2249/DHD | 80G | 12A | CSR</p>
+<p><b>Finance ERP (Audit Ready)</b></p>
 </div>
-<body>
 
 <nav>
 <a href="index.html">Home</a>
 <a href="#" onclick="logout()">Logout</a>
 </nav>
 
-<div class="cards">
-<div class="card"><h4>Income</h4><p id="income">₹0</p></div>
-<div class="card"><h4>Expense</h4><p id="expense">₹0</p></div>
-<div class="card"><h4>Balance</h4><p id="balance">₹0</p></div>
-</div>
-<!-- AI -->
+<!-- FILTER -->
 <div class="box">
-<h3>🤖 AI Insight</h3>
-<p id="ai">Loading...</p>
-</div>
-<div class="box">
-<h3>Date Filter</h3>
+<h3>📅 Date Filter</h3>
 <input type="date" id="from">
 <input type="date" id="to">
 <button class="btn" onclick="load()">Apply</button>
+<button class="btn" onclick="printReport()">🧾 Print</button>
+<button class="btn" onclick="exportCSV()">📁 CSV</button>
 </div>
 
-<div class="box">
-<h3>Add Income</h3>
-<input id="inc_amt" placeholder="Amount">
-<input id="inc_note" placeholder="Note">
-<input type="date" id="inc_date">
-<button class="btn" onclick="addIncome()">Add</button>
+<!-- CARDS -->
+<div class="cards">
+<div class="card"><h4>Total Income</h4><p id="income">₹0</p></div>
+<div class="card"><h4>Total Expense</h4><p id="expense">₹0</p></div>
+<div class="card"><h4>Balance</h4><p id="balance">₹0</p></div>
 </div>
 
+<!-- AI -->
 <div class="box">
-<h3>Add Expense</h3>
-<input id="exp_amt" placeholder="Amount">
-<input id="exp_note" placeholder="Note">
-<input type="date" id="exp_date">
-<button class="btn" onclick="addExpense()">Add</button>
+<h3>🤖 AI Insight</h3>
+<p id="ai"></p>
 </div>
 
+<!-- REPORT -->
 <div class="box">
-<h3>Report</h3>
-<button class="btn" onclick="exportCSV()">CSV</button>
+<h3>📊 Full Report</h3>
 <table id="table"></table>
 </div>
 
+<!-- CHART -->
 <div class="box">
+<h3>📈 Income vs Expense</h3>
 <div class="chart-box"><canvas id="chart"></canvas></div>
 </div>
 
 <script>
-const client = supabase.createClient("https://kqahcvaoxnmxfcgyyync.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+
+const client = supabase.createClient(
+"https://kqahcvaoxnmxfcgyyync.supabase.co",
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
 let chart;
@@ -156,9 +165,18 @@ async function load(){
 let from=document.getElementById("from").value;
 let to=document.getElementById("to").value;
 
+// SAFE FETCH
 const { data:don=[] } = await client.from("donations").select("*");
-const { data:inc=[] } = await client.from("income").select("*");
-const { data:exp=[] } = await client.from("expenses").select("*");
+
+let inc=[],exp=[];
+
+try{
+  inc=(await client.from("income").select("*")).data||[];
+}catch{}
+
+try{
+  exp=(await client.from("expenses").select("*")).data||[];
+}catch{}
 
 // FILTER
 function filter(d){
@@ -180,10 +198,21 @@ expense.forEach(e=> totalExpense+=Number(e.amount)||0);
 
 let balance=totalIncome-totalExpense;
 
-// FIXED ELEMENTS
+// UI
 document.getElementById("income").innerText="₹"+totalIncome;
 document.getElementById("expense").innerText="₹"+totalExpense;
 document.getElementById("balance").innerText="₹"+balance;
+
+// ✅ AI FIXED
+let aiText="";
+if(balance>0){
+  aiText="📈 Profit ₹"+balance+" (Good financial health)";
+}else if(balance<0){
+  aiText="⚠️ Loss ₹"+Math.abs(balance)+" (Reduce expenses)";
+}else{
+  aiText="⚖️ Break Even";
+}
+document.getElementById("ai").innerText=aiText;
 
 // TABLE
 let table=document.getElementById("table");
@@ -194,7 +223,7 @@ table.innerHTML=`<tr>
 donations.forEach(d=>{
 table.innerHTML+=`<tr>
 <td>Donation</td>
-<td>${d.amount}</td>
+<td>₹${d.amount}</td>
 <td>${d.name}</td>
 <td>${new Date(d.created_at).toLocaleDateString()}</td>
 </tr>`;
@@ -203,7 +232,7 @@ table.innerHTML+=`<tr>
 income.forEach(i=>{
 table.innerHTML+=`<tr>
 <td>Income</td>
-<td>${i.amount}</td>
+<td>₹${i.amount}</td>
 <td>${i.note}</td>
 <td>${new Date(i.created_at).toLocaleDateString()}</td>
 </tr>`;
@@ -212,13 +241,13 @@ table.innerHTML+=`<tr>
 expense.forEach(e=>{
 table.innerHTML+=`<tr>
 <td>Expense</td>
-<td>${e.amount}</td>
+<td>₹${e.amount}</td>
 <td>${e.note}</td>
 <td>${new Date(e.created_at).toLocaleDateString()}</td>
 </tr>`;
 });
 
-// CHART
+// CHART (GREEN / RED)
 if(chart) chart.destroy();
 
 chart=new Chart(document.getElementById("chart"),{
@@ -226,30 +255,17 @@ type:"bar",
 data:{
 labels:["Income","Expense"],
 datasets:[{
-data:[totalIncome,totalExpense]
+data:[totalIncome,totalExpense],
+backgroundColor:["green","red"]
 }]
 }
 });
 
 }
 
-// ADD
-async function addIncome(){
-await client.from("income").insert([{
-amount:inc_amt.value,
-note:inc_note.value,
-created_at:inc_date.value || new Date()
-}]);
-load();
-}
-
-async function addExpense(){
-await client.from("expenses").insert([{
-amount:exp_amt.value,
-note:exp_note.value,
-created_at:exp_date.value || new Date()
-}]);
-load();
+// PRINT
+function printReport(){
+window.print();
 }
 
 // CSV
@@ -265,10 +281,9 @@ csv+=row.join(",")+"\\n";
 let blob=new Blob([csv]);
 let a=document.createElement("a");
 a.href=URL.createObjectURL(blob);
-a.download="report.csv";
+a.download="finance_report.csv";
 a.click();
 }
-
 // LOGOUT FIX
 function logout(){
   localStorage.clear();
@@ -277,6 +292,7 @@ function logout(){
 }
 load();
 </script>
-
+</body>
+</html>
 </body>
 </html>
