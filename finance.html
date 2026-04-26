@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Finance  - SEF Dahod</title>
+<title>Finance ERP Final</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,71 +12,25 @@
 body{
   margin:0;
   font-family:Segoe UI;
-  background: linear-gradient(rgba(240,253,244,0.9),rgba(240,253,244,0.9)),
-              url('bg.jpg') no-repeat center center fixed;
-  background-size:cover;
+  background:#f0fdf4;
 }
-
 .header{text-align:center;background:#fff;padding:20px;}
-.header img{width:70px}
-
 nav{text-align:center;padding:10px;}
-nav a{
-  margin:5px;
-  padding:8px 12px;
-  background:#16a34a;
-  color:#fff;
-  text-decoration:none;
-  border-radius:6px;
-}
+nav a{margin:5px;padding:8px 12px;background:#16a34a;color:#fff;text-decoration:none;border-radius:6px;}
 
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-  gap:10px;
-  padding:15px;
-}
-.card{
-  background:#fff;
-  padding:15px;
-  border-radius:10px;
-  text-align:center;
-}
-.card p{color:#16a34a;font-size:20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;padding:15px;}
+.card{background:#fff;padding:15px;border-radius:10px;text-align:center;}
+.box{margin:15px;background:#fff;padding:15px;border-radius:10px;}
 
-.box{
-  margin:15px;
-  background:#fff;
-  padding:15px;
-  border-radius:10px;
-}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:8px;border-bottom:1px solid #ddd;}
+th{background:#16a34a;color:#fff;}
 
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-th,td{
-  padding:8px;
-  border-bottom:1px solid #ddd;
-}
-th{background:#16a34a;color:#fff}
-
-.btn{
-  padding:6px 10px;
-  border:none;
-  border-radius:6px;
-  background:#16a34a;
-  color:#fff;
-  cursor:pointer;
-}
+.btn{padding:6px 10px;border:none;border-radius:6px;background:#16a34a;color:#fff;cursor:pointer;}
 .del{background:red}
 .edit{background:#2563eb}
 
 .chart-box{height:250px}
-
-@media print{
-  nav,button{display:none}
-}
 </style>
 </head>
 
@@ -90,97 +44,68 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 </script>
 
 <div class="header">
-<img src="logo.png">
-<h2>Shubhi Education Foundation</h2>
-  <p>Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD</p>
-<p>Finance ERP (AI + Audit Ready)</p>
+<h2>Finance ERP</h2>
 </div>
 
 <nav>
 <a href="index.html">Home</a>
-<a href="dashboard.html">Dashboard</a>
-<a href="admin.html">Admin</a>
 <a href="#" onclick="logout()">Logout</a>
 </nav>
 
-<!-- FILTER -->
+<div class="cards">
+<div class="card"><h4>Income</h4><p id="income">₹0</p></div>
+<div class="card"><h4>Expense</h4><p id="expense">₹0</p></div>
+<div class="card"><h4>Balance</h4><p id="balance">₹0</p></div>
+</div>
+
 <div class="box">
-<h3>📅 Date Filter</h3>
+<h3>Date Filter</h3>
 <input type="date" id="from">
 <input type="date" id="to">
 <button class="btn" onclick="load()">Apply</button>
 </div>
 
-<!-- CARDS -->
-<div class="cards">
-<div class="card"><h4>Total Income</h4><p id="income">₹0</p></div>
-<div class="card"><h4>Expense</h4><p id="expense">₹0</p></div>
-<div class="card"><h4>Balance</h4><p id="balance">₹0</p></div>
-</div>
-
-<!-- AI -->
 <div class="box">
-<h3>🤖 AI Insight</h3>
-<p id="ai">Loading...</p>
-</div>
-
-<!-- ADD INCOME -->
-<div class="box">
-<h3>➕ Add Income</h3>
-<input id="inc_amt" placeholder="Amount ₹">
+<h3>Add Income</h3>
+<input id="inc_amt" placeholder="Amount">
 <input id="inc_note" placeholder="Note">
 <input type="date" id="inc_date">
 <button class="btn" onclick="addIncome()">Add</button>
 </div>
 
-<!-- ADD EXPENSE -->
 <div class="box">
-<h3>➖ Add Expense</h3>
-<input id="exp_amt" placeholder="Amount ₹">
+<h3>Add Expense</h3>
+<input id="exp_amt" placeholder="Amount">
 <input id="exp_note" placeholder="Note">
 <input type="date" id="exp_date">
 <button class="btn" onclick="addExpense()">Add</button>
 </div>
 
-<!-- REPORT -->
 <div class="box">
-<h3>📊 Full Report</h3>
-<button class="btn" onclick="printReport()">Print</button>
+<h3>Report</h3>
 <button class="btn" onclick="exportCSV()">CSV</button>
-
 <table id="table"></table>
 </div>
 
-<!-- CHART -->
 <div class="box">
-<h3>📈 Graph</h3>
 <div class="chart-box"><canvas id="chart"></canvas></div>
 </div>
 
 <script>
-
-const client = supabase.createClient(
-"https://kqahcvaoxnmxfcgyyync.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+const client = supabase.createClient("https://kqahcvaoxnmxfcgyyync.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
 let chart;
 
 async function load(){
 
-try{
-
 let from=document.getElementById("from").value;
 let to=document.getElementById("to").value;
 
-// SAFE FETCH
-const { data:don=[], error:e1 } = await client.from("donations").select("*");
-const { data:inc=[], error:e2 } = await client.from("income").select("*");
-const { data:exp=[], error:e3 } = await client.from("expenses").select("*");
-
-if(e1) console.log("donation error",e1);
-if(e2) console.log("income error",e2);
-if(e3) console.log("expense error",e3);
+const { data:don=[] } = await client.from("donations").select("*");
+const { data:inc=[] } = await client.from("income").select("*");
+const { data:exp=[] } = await client.from("expenses").select("*");
 
 // FILTER
 function filter(d){
@@ -202,60 +127,42 @@ expense.forEach(e=> totalExpense+=Number(e.amount)||0);
 
 let balance=totalIncome-totalExpense;
 
-// ✅ FIXED ELEMENTS
+// FIXED ELEMENTS
 document.getElementById("income").innerText="₹"+totalIncome;
 document.getElementById("expense").innerText="₹"+totalExpense;
 document.getElementById("balance").innerText="₹"+balance;
 
-// AI
-let aiText = balance>=0 
-  ? "📈 Profit"
-  : "⚠️ Loss";
-
-document.getElementById("ai").innerText =
-aiText + " | Income ₹"+totalIncome+" Expense ₹"+totalExpense;
-
 // TABLE
 let table=document.getElementById("table");
-
 table.innerHTML=`<tr>
-<th>Type</th><th>Amount</th><th>Note</th><th>Date</th><th>Action</th>
+<th>Type</th><th>Amount</th><th>Note</th><th>Date</th>
 </tr>`;
 
-// DONATION
 donations.forEach(d=>{
 table.innerHTML+=`<tr>
 <td>Donation</td>
-<td>₹${d.amount}</td>
+<td>${d.amount}</td>
 <td>${d.name}</td>
 <td>${new Date(d.created_at).toLocaleDateString()}</td>
-<td>-</td></tr>`;
+</tr>`;
 });
 
-// INCOME
 income.forEach(i=>{
 table.innerHTML+=`<tr>
 <td>Income</td>
-<td>₹${i.amount}</td>
+<td>${i.amount}</td>
 <td>${i.note}</td>
 <td>${new Date(i.created_at).toLocaleDateString()}</td>
-<td>
-<button onclick="editIncome(${i.id})">Edit</button>
-<button onclick="deleteIncome(${i.id})">Delete</button>
-</td></tr>`;
+</tr>`;
 });
 
-// EXPENSE
 expense.forEach(e=>{
 table.innerHTML+=`<tr>
 <td>Expense</td>
-<td>₹${e.amount}</td>
+<td>${e.amount}</td>
 <td>${e.note}</td>
 <td>${new Date(e.created_at).toLocaleDateString()}</td>
-<td>
-<button onclick="editExpense(${e.id})">Edit</button>
-<button onclick="deleteExpense(${e.id})">Delete</button>
-</td></tr>`;
+</tr>`;
 });
 
 // CHART
@@ -268,18 +175,12 @@ labels:["Income","Expense"],
 datasets:[{
 data:[totalIncome,totalExpense]
 }]
-},
-options:{responsive:true,maintainAspectRatio:false}
+}
 });
 
-}catch(err){
-console.log("ERROR:",err);
-alert("Data load error check console");
 }
 
-}
-
-// ADD INCOME
+// ADD
 async function addIncome(){
 await client.from("income").insert([{
 amount:inc_amt.value,
@@ -289,36 +190,12 @@ created_at:inc_date.value || new Date()
 load();
 }
 
-// ADD EXPENSE
 async function addExpense(){
 await client.from("expenses").insert([{
 amount:exp_amt.value,
 note:exp_note.value,
 created_at:exp_date.value || new Date()
 }]);
-load();
-}
-
-// DELETE / EDIT
-async function deleteIncome(id){
-await client.from("income").delete().eq("id",id);
-load();
-}
-
-async function deleteExpense(id){
-await client.from("expenses").delete().eq("id",id);
-load();
-}
-
-async function editIncome(id){
-let val=prompt("New Amount");
-if(val) await client.from("income").update({amount:val}).eq("id",id);
-load();
-}
-
-async function editExpense(id){
-let val=prompt("New Amount");
-if(val) await client.from("expenses").update({amount:val}).eq("id",id);
 load();
 }
 
@@ -330,7 +207,7 @@ rows.forEach(r=>{
 let cols=r.querySelectorAll("td,th");
 let row=[];
 cols.forEach(c=>row.push(c.innerText));
-csv+=row.join(",")+"\n";
+csv+=row.join(",")+"\\n";
 });
 let blob=new Blob([csv]);
 let a=document.createElement("a");
@@ -338,9 +215,6 @@ a.href=URL.createObjectURL(blob);
 a.download="report.csv";
 a.click();
 }
-
-// PRINT
-function printReport(){window.print();}
 
 // LOGOUT FIX
 function logout(){
