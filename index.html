@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Home - Shubhi Education Foundation</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+/* HEADER */
+.top-header{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  background:#1e293b;
+  color:#fff;
+  padding:10px;
+  border-radius:10px;
+}
+
+.logo-box img{
+  height:60px;
+}
+
+.title-box{
+  flex:1;
+  padding:10px;
+}
+
+.info-box{
+  font-size:12px;
+}
+
+/* NAV */
+nav{
+  margin-top:10px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+nav a{
+  text-decoration:none;
+  padding:8px 12px;
+  background:#0F9D58;
+  color:#fff;
+  border-radius:6px;
+}
+
+nav a.active{
+  background:#004080;
+}
+
+/* CARD */
+.card{
+  background:#1e293b;
+  color:#fff;
+  padding:20px;
+  margin-top:20px;
+  border-radius:10px;
+}
+
+/* ✅ SLIDER FIX */
+.slider{
+  position:relative;
+  width:100%;
+  max-width:900px;
+  margin:auto;
+  overflow:hidden;
+  border-radius:12px;
+  background:#000;
+}
+
+.slide{
+  width:100%;
+  height:auto;            /* 🔥 NO CUT */
+  object-fit:contain;     /* 🔥 FULL IMAGE */
+  display:none;
+}
+
+.slide.active{
+  display:block;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="overlay">
+
+<header class="top-header">
+
+  <div class="logo-box">
+    <img src="logo.png" alt="Logo">
+  </div>
+
+  <div class="title-box">
+    <h1>Shubhi Education Foundation, Dahod</h1>
+    <p>Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD</p>
+  </div>
+
+  <div class="info-box">
+    <p>80G: AAOTS1413MF20251</p>
+    <p>12A: AAOTS1413ME20241</p>
+    <p>CSR: CSR00096110</p>
+  </div>
+
+</header>
+
+<div class="info-box" style="margin-top:10px;">
+  <p>
+  Address: Rainbow Public School, Muvaliya Road, Rabdal, Dahod Gujarat - 389151<br>
+  Email: sefdahod@gmail.com | Mobile: 9408695001 | Ph: 02673-450037
+  </p>
+</div>
+
+<nav>
+  <a href="/" class="active">Home</a>
+  <a href="/dashboard">Dashboard</a>
+  <a href="/donate">Donate</a>
+  <a href="/donors">Donors</a>
+  <a href="/receipt">Receipt</a>
+  <a href="/finance">Finance</a>
+  <a href="/admin">Admin</a>
+</nav>
+
+<section>
+
+<div class="card">
+
+<h2>About Us</h2>
+
+<p>
+Shubhi Education Foundation is committed to supporting education and social welfare in Dahod.
+</p>
+
+<p><strong>Our Mission:</strong> Quality education for every child.</p>
+
+<!-- ✅ SLIDER -->
+<div class="slider">
+
+  <img src="poster.png" class="slide active">
+  <img src="qr.jpeg" class="slide">
+  <img src="poster2.png" class="slide">
+  <img src="img1.jpg" class="slide">
+  <img src="img2.jpg" class="slide">
+  <img src="img3.jpg" class="slide">
+  <img src="img4.jpg" class="slide">
+  <img src="img5.jpg" class="slide">
+  <img src="img6.jpg" class="slide">
+
+</div>
+
+</div>
+
+</section>
+
+<footer style="background:#002f60;color:#fff;text-align:center;padding:15px;margin-top:20px">
+© 2026 Shubhi Education Foundation, Dahod
+</footer>
+
+</div>
+
+<script>
+let index = 0;
+const slides = document.querySelectorAll(".slide");
+
+function showSlide(){
+  slides.forEach(s => s.classList.remove("active"));
+  slides[index].classList.add("active");
+  index = (index + 1) % slides.length;
+}
+
+setInterval(showSlide, 2500);
+</script>
+
+</body>
+</html>
