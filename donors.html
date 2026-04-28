@@ -13,12 +13,12 @@ CSR no.:- CSR00096110</p>
   <p class="info">Address: Rainbow Public School, Shalimar co-operative society, Muvaliya Road, Rabdal, Dahod Gujarat - 389151<br>
   Email: sefdahod@gmail.com | Mobile: 9408695001 | Landline: 02673-450037</p>
 <nav>
-  <a href="index.html">Home</a>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="donate.html">Donate</a>
-  <a href="donors.html" class="active">Donors</a>
-  <a href="finance.html">Finance</a>
-  <a href="admin.html">Admin</a>
+  <a href="/">Home</a>
+  <a href="/dashboard">Dashboard</a>
+  <a href="/donate">Donate</a>
+  <a href="/donors" class="active">Donors</a>
+  <a href="/finance">Finance</a>
+  <a href="/admin">Admin</a>
 </nav>
 <section>
   <div class="card">
@@ -32,26 +32,49 @@ const client = window.supabase.createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
+// ─── Logger ──────────────────────────────────────────────────────────────────
+function log(level, msg, data) {
+  const ts = new Date().toISOString();
+  const prefix = `[SEF][donors.html][${ts}]`;
+  if (data !== undefined) {
+    console[level](`${prefix} ${msg}`, data);
+  } else {
+    console[level](`${prefix} ${msg}`);
+  }
+}
+
+// ─── XSS Sanitizer ───────────────────────────────────────────────────────────
+function sanitize(str) {
+  const div = document.createElement("div");
+  div.appendChild(document.createTextNode(String(str ?? "")));
+  return div.innerHTML;
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+log("info", "Donors page loaded");
+
 // 🔗 Receipt Open
 function openReceipt(name, email, amount, date, receipt){
-  const url = "receipt.html?name=" + encodeURIComponent(name)
-    + "&email=" + encodeURIComponent(email)
-    + "&amount=" + amount
-    + "&date=" + encodeURIComponent(date)
-    + "&receipt=" + receipt;
+  log("info", "openReceipt called", { name, receipt });
+  const url = "/receipt?name=" + encodeURIComponent(name)
+    + "&email="   + encodeURIComponent(email)
+    + "&amount="  + encodeURIComponent(amount)
+    + "&date="    + encodeURIComponent(date)
+    + "&receipt=" + encodeURIComponent(receipt);
 
   window.open(url, "_blank");
 }
 
 // 📥 Load Donors
 async function load(){
+  log("info", "load: fetching donors from Supabase");
+
   const { data, error } = await client
     .from("donations")
     .select("*")
     .order("id", { ascending: false });
 
-  console.log("DATA:", data);
-  console.log("ERROR:", error);
+  log("info", "load: response received", { count: data ? data.length : 0, hasError: !!error });
 
   const t = document.getElementById("donorTable");
 
@@ -66,36 +89,42 @@ async function load(){
   `;
 
   if(error){
-    t.innerHTML += `<tr><td colspan="5">Error loading data</td></tr>`;
+    log("error", "load: Supabase error", { message: error.message, code: error.code });
+    t.innerHTML += `<tr><td colspan="5">Error loading data: ${sanitize(error.message)}</td></tr>`;
     return;
   }
 
   if(!data || data.length === 0){
+    log("info", "load: no donors found");
     t.innerHTML += `<tr><td colspan="5">No donors yet</td></tr>`;
     return;
   }
 
+  // FIX: sanitize all user data before injecting into innerHTML
+  // FIX: removed broken nested <td> inside <button> structure
   data.forEach(d => {
     t.innerHTML += `
       <tr>
-        <td>${d.name || "-"}</td>
-        <td>${d.email || "-"}</td>
-        <td>₹${d.amount || 0}</td>
+        <td>${sanitize(d.name || "-")}</td>
+        <td>${sanitize(d.email || "-")}</td>
+        <td>₹${sanitize(d.amount || 0)}</td>
         <td>${d.created_at ? new Date(d.created_at).toLocaleDateString() : "-"}</td>
         <td>
-          <button onclick="openReceipt(
-            \`${d.name}\`,
-            \`${d.email}\`,
-            \`${d.amount}\`,
-            \`${d.created_at}\`,
-            \`${d.receipt_no}\`
-          )"><td>
-  <button class="view-btn">View</button>
-</td>
+          <button
+            data-name="${sanitize(d.name)}"
+            data-email="${sanitize(d.email)}"
+            data-amount="${sanitize(d.amount)}"
+            data-date="${sanitize(d.created_at)}"
+            data-receipt="${sanitize(d.receipt_no)}"
+            onclick="openReceipt(this.dataset.name, this.dataset.email, this.dataset.amount, this.dataset.date, this.dataset.receipt)">
+            View Receipt
+          </button>
         </td>
       </tr>
     `;
   });
+
+  log("info", "load: table rendered", { rows: data.length });
 }
 
 // 🚀 Start

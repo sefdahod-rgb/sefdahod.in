@@ -117,8 +117,10 @@ tr:hover{
 
 <script>
 if(localStorage.getItem("isAdmin") !== "yes"){
-  localStorage.setItem("redirectAfterLogin","admin.html");
-  location.href="login.html";
+  // ⚠️ NOTE: localStorage auth is client-side only and can be bypassed.
+  // For real protection add Supabase Auth or a serverless function login.
+  localStorage.setItem("redirectAfterLogin","admin");
+  location.href="/login";
 }
 </script>
 
@@ -163,16 +165,40 @@ const client = window.supabase.createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
+// ─── Logger ──────────────────────────────────────────────────────────────────
+function log(level, msg, data) {
+  const ts = new Date().toISOString();
+  const prefix = `[SEF][admin.html][${ts}]`;
+  if (data !== undefined) {
+    console[level](`${prefix} ${msg}`, data);
+  } else {
+    console[level](`${prefix} ${msg}`);
+  }
+}
+
+// ─── XSS Sanitizer ───────────────────────────────────────────────────────────
+// Encodes user-supplied text before injecting into innerHTML
+function sanitize(str) {
+  const div = document.createElement("div");
+  div.appendChild(document.createTextNode(String(str ?? "")));
+  return div.innerHTML;
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+log("info", "Admin page loaded");
+
 let allData=[];
 
 async function load(){
+  log("info", "load: fetching donations from Supabase");
   const {data,error}=await client.from("donations").select("*").order("id",{ascending:false});
 
   if(error){
-    console.log(error);
+    log("error", "load: Supabase error", { message: error.message, code: error.code });
     return;
   }
 
+  log("info", "load: data received", { count: data ? data.length : 0 });
   allData=data || [];
 
   render(allData);
@@ -184,9 +210,12 @@ function render(data){
 
   if(data.length===0){
     t.innerHTML="<tr><td>No Data</td></tr>";
+    log("info", "render: no data to display");
     return;
   }
 
+  // FIX: use sanitize() on all user data to prevent XSS
+  // FIX: use data-* attributes for onclick instead of inline string interpolation
   t.innerHTML=`<tr>
 <th>Name</th><th>Email</th><th>Amount</th><th>Date</th><th>Action</th>
 </tr>`;
@@ -194,16 +223,24 @@ function render(data){
   data.forEach(d=>{
     t.innerHTML+=`
     <tr>
-      <td>${d.name}</td>
-      <td>${d.email||"-"}</td>
-      <td>₹${d.amount}</td>
+      <td>${sanitize(d.name)}</td>
+      <td>${sanitize(d.email||"-")}</td>
+      <td>₹${sanitize(d.amount)}</td>
       <td>${new Date(d.created_at).toLocaleDateString()}</td>
       <td>
-        <button class="btn edit" onclick="edit(${d.id},'${d.name}',${d.amount})">Edit</button>
-        <button class="btn delete" onclick="del(${d.id})">Delete</button>
+        <button class="btn edit"
+          data-id="${d.id}"
+          data-name="${sanitize(d.name)}"
+          data-amount="${sanitize(d.amount)}"
+          onclick="edit(this.dataset.id, this.dataset.name, this.dataset.amount)">Edit</button>
+        <button class="btn delete"
+          data-id="${d.id}"
+          onclick="del(this.dataset.id)">Delete</button>
       </td>
     </tr>`;
   });
+
+  log("info", "render: table rendered", { rows: data.length });
 }
 
 function stats(data){
@@ -224,18 +261,27 @@ function stats(data){
   document.getElementById("today").innerText="₹"+today;
   document.getElementById("month").innerText="₹"+month;
   document.getElementById("count").innerText=data.length;
+
+  log("info", "stats: updated", { total, today, month, count: data.length });
 }
 
 // SEARCH
 document.getElementById("search").addEventListener("input",function(){
   const val=this.value.toLowerCase();
+  log("info", "search: filtering by", { query: val });
   render(allData.filter(d=>d.name.toLowerCase().includes(val)));
 });
 
 // DELETE
 async function del(id){
   if(confirm("Delete this donation?")){
-    await client.from("donations").delete().eq("id",id);
+    log("warn", "del: deleting donation", { id });
+    const { error } = await client.from("donations").delete().eq("id",id);
+    if(error){
+      log("error", "del: delete failed", { id, message: error.message });
+    } else {
+      log("info", "del: deleted successfully", { id });
+    }
     load();
   }
 }
@@ -245,18 +291,28 @@ async function edit(id,name,amount){
   let newName=prompt("Edit Name",name);
   let newAmount=prompt("Edit Amount",amount);
 
-  if(!newName || !newAmount) return;
+  if(!newName || !newAmount){
+    log("info", "edit: cancelled by user");
+    return;
+  }
 
-  await client.from("donations").update({
+  log("info", "edit: updating donation", { id, newName, newAmount });
+  const { error } = await client.from("donations").update({
     name:newName,
     amount:newAmount
   }).eq("id",id);
 
+  if(error){
+    log("error", "edit: update failed", { id, message: error.message });
+  } else {
+    log("info", "edit: updated successfully", { id });
+  }
   load();
 }
 
 // EXPORT CSV
 function exportCSV(){
+  log("info", "exportCSV: exporting", { rows: allData.length });
   let csv="Name,Email,Amount\n";
   allData.forEach(d=>{
     csv+=`${d.name},${d.email||""},${d.amount}\n`;
@@ -274,20 +330,24 @@ function toggleMode(){
   if(document.body.style.background=="white"){
     document.body.style.background="#0f172a";
     document.body.style.color="#fff";
+    log("info", "toggleMode: dark mode");
   }else{
     document.body.style.background="white";
     document.body.style.color="#000";
+    log("info", "toggleMode: light mode");
   }
 }
 
 // LOGOUT
 function logout(){
+  log("info", "logout: clearing session");
   localStorage.clear();
-  location.href="index.html";
+  location.href="/";
 }
 
 // AUTO REFRESH
 setInterval(load,10000);
+log("info", "Auto-refresh set every 10s");
 
 load();
 </script>
