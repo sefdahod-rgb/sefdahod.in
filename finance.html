@@ -80,8 +80,8 @@ th{background:#16a34a;color:#fff}
 
 <script>
 if(localStorage.getItem("isAdmin")!=="yes"){
-  localStorage.setItem("redirectAfterLogin","finance.html");
-  location.href="login.html";
+  localStorage.setItem("redirectAfterLogin","finance");
+  location.href="/login";
 }
 </script>
 
@@ -93,7 +93,7 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 </div>
 
 <nav>
-<a href="index.html">Home</a>
+<a href="/">Home</a>
 <a href="#" onclick="logout()">Logout</a>
 </nav>
 
@@ -150,16 +150,44 @@ const client = supabase.createClient(
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
+// ─── Logger ──────────────────────────────────────────────────────────────────
+function log(level, msg, data) {
+  const ts = new Date().toISOString();
+  const prefix = `[SEF][finance.html][${ts}]`;
+  if (data !== undefined) {
+    console[level](`${prefix} ${msg}`, data);
+  } else {
+    console[level](`${prefix} ${msg}`);
+  }
+}
+
+// ─── XSS Sanitizer ───────────────────────────────────────────────────────────
+function sanitize(str) {
+  const div = document.createElement("div");
+  div.appendChild(document.createTextNode(String(str ?? "")));
+  return div.innerHTML;
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+log("info", "Finance page loaded");
+
 let chart;
 
 async function load(){
+log("info", "load: fetching finance data");
 
 let from=document.getElementById("from").value;
 let to=document.getElementById("to").value;
 
-const { data:don=[] } = await client.from("donations").select("*");
-const { data:inc=[] } = await client.from("income").select("*");
-const { data:exp=[] } = await client.from("expenses").select("*");
+const { data:don=[], error:e1 } = await client.from("donations").select("*");
+const { data:inc=[], error:e2 } = await client.from("income").select("*");
+const { data:exp=[], error:e3 } = await client.from("expenses").select("*");
+
+if(e1) log("error", "load: donations fetch error", { message: e1.message });
+if(e2) log("error", "load: income fetch error", { message: e2.message });
+if(e3) log("error", "load: expenses fetch error", { message: e3.message });
+
+log("info", "load: data received", { donations: don.length, income: inc.length, expenses: exp.length });
 
 function check(d){
   if(!from || !to) return true;
@@ -186,7 +214,9 @@ document.getElementById("balance").innerText="₹"+balance;
 document.getElementById("ai").innerText =
 balance >= 0 ? "📈 Profit ₹"+balance : "⚠️ Loss ₹"+balance;
 
-// TABLE WITH EDIT DELETE
+log("info", "load: stats updated", { totalIncome, totalExpense, balance });
+
+// FIX: use sanitize() on all user data to prevent XSS
 let table = document.getElementById("table");
 
 table.innerHTML=`<tr>
@@ -196,8 +226,8 @@ table.innerHTML=`<tr>
 donations.forEach(d=>{
 table.innerHTML+=`<tr>
 <td>Donation</td>
-<td>${d.amount}</td>
-<td>${d.name}</td>
+<td>${sanitize(d.amount)}</td>
+<td>${sanitize(d.name)}</td>
 <td>${new Date(d.created_at).toLocaleDateString()}</td>
 <td>-</td>
 </tr>`;
@@ -206,12 +236,12 @@ table.innerHTML+=`<tr>
 income.forEach(i=>{
 table.innerHTML+=`<tr>
 <td>Income</td>
-<td>${i.amount}</td>
-<td>${i.note}</td>
+<td>${sanitize(i.amount)}</td>
+<td>${sanitize(i.note)}</td>
 <td>${new Date(i.created_at).toLocaleDateString()}</td>
 <td>
-<button class="btn" onclick="editIncome(${i.id})">Edit</button>
-<button class="btn" onclick="deleteIncome(${i.id})">Delete</button>
+<button class="btn" data-id="${i.id}" onclick="editIncome(this.dataset.id)">Edit</button>
+<button class="btn" data-id="${i.id}" onclick="deleteIncome(this.dataset.id)">Delete</button>
 </td>
 </tr>`;
 });
@@ -219,15 +249,17 @@ table.innerHTML+=`<tr>
 expense.forEach(e=>{
 table.innerHTML+=`<tr>
 <td>Expense</td>
-<td>${e.amount}</td>
-<td>${e.note}</td>
+<td>${sanitize(e.amount)}</td>
+<td>${sanitize(e.note)}</td>
 <td>${new Date(e.created_at).toLocaleDateString()}</td>
 <td>
-<button class="btn" onclick="editExpense(${e.id})">Edit</button>
-<button class="btn" onclick="deleteExpense(${e.id})">Delete</button>
+<button class="btn" data-id="${e.id}" onclick="editExpense(this.dataset.id)">Edit</button>
+<button class="btn" data-id="${e.id}" onclick="deleteExpense(this.dataset.id)">Delete</button>
 </td>
 </tr>`;
 });
+
+log("info", "load: table rendered");
 
 if(chart) chart.destroy();
 
@@ -246,81 +278,98 @@ backgroundColor:["green","red"]
 
 // ADD
 async function addIncome(){
-await client.from("income").insert([{
-amount:inc_amt.value,
-note:inc_note.value,
-created_at:inc_date.value || new Date()
-}]);
-load();
+  const amt  = document.getElementById("inc_amt").value;
+  const note = document.getElementById("inc_note").value;
+  const date = document.getElementById("inc_date").value;
+  log("info", "addIncome", { amt, note });
+  const { error } = await client.from("income").insert([{
+    amount: amt, note: note, created_at: date || new Date()
+  }]);
+  if(error) log("error", "addIncome failed", { message: error.message });
+  else log("info", "addIncome: saved successfully");
+  load();
 }
 
 async function addExpense(){
-await client.from("expenses").insert([{
-amount:exp_amt.value,
-note:exp_note.value,
-created_at:exp_date.value || new Date()
-}]);
-load();
+  const amt  = document.getElementById("exp_amt").value;
+  const note = document.getElementById("exp_note").value;
+  const date = document.getElementById("exp_date").value;
+  log("info", "addExpense", { amt, note });
+  const { error } = await client.from("expenses").insert([{
+    amount: amt, note: note, created_at: date || new Date()
+  }]);
+  if(error) log("error", "addExpense failed", { message: error.message });
+  else log("info", "addExpense: saved successfully");
+  load();
 }
 
 // DELETE
 async function deleteIncome(id){
-if(!confirm("Delete this income?")) return;
-await client.from("income").delete().eq("id", id);
-load();
+  if(!confirm("Delete this income?")) return;
+  log("warn", "deleteIncome", { id });
+  await client.from("income").delete().eq("id", id);
+  load();
 }
 
 async function deleteExpense(id){
-if(!confirm("Delete this expense?")) return;
-await client.from("expenses").delete().eq("id", id);
-load();
+  if(!confirm("Delete this expense?")) return;
+  log("warn", "deleteExpense", { id });
+  await client.from("expenses").delete().eq("id", id);
+  load();
 }
 
 // EDIT
 async function editIncome(id){
-let amt=prompt("New Amount");
-let note=prompt("New Note");
-await client.from("income").update({amount:amt,note:note}).eq("id", id);
-load();
+  let amt=prompt("New Amount");
+  let note=prompt("New Note");
+  if(!amt) return;
+  log("info", "editIncome", { id, amt, note });
+  await client.from("income").update({amount:amt,note:note}).eq("id", id);
+  load();
 }
 
 async function editExpense(id){
-let amt=prompt("New Amount");
-let note=prompt("New Note");
-await client.from("expenses").update({amount:amt,note:note}).eq("id", id);
-load();
+  let amt=prompt("New Amount");
+  let note=prompt("New Note");
+  if(!amt) return;
+  log("info", "editExpense", { id, amt, note });
+  await client.from("expenses").update({amount:amt,note:note}).eq("id", id);
+  load();
 }
 
 // CSV
 function exportCSV(){
-let rows=document.querySelectorAll("table tr");
-let csv="";
-rows.forEach(r=>{
-let cols=r.querySelectorAll("td,th");
-let row=[];
-cols.forEach(c=>row.push(c.innerText));
-csv+=row.join(",")+"\\n";
-});
-let blob=new Blob([csv]);
-let a=document.createElement("a");
-a.href=URL.createObjectURL(blob);
-a.download="report.csv";
-a.click();
+  log("info", "exportCSV: generating report");
+  let rows=document.querySelectorAll("table tr");
+  let csv="";
+  rows.forEach(r=>{
+    let cols=r.querySelectorAll("td,th");
+    let row=[];
+    cols.forEach(c=>row.push(c.innerText));
+    csv+=row.join(",")+"\\n";
+  });
+  let blob=new Blob([csv]);
+  let a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="report.csv";
+  a.click();
 }
 
 // PRINT
-function printReport(){window.print();}
+function printReport(){
+  log("info", "printReport: printing");
+  window.print();
+}
 
 // LOGOUT
-
 function logout(){
+  log("info", "logout: clearing session");
   localStorage.clear();
   alert("Logged out successfully ✅");
-  window.location.href = "index.html";
+  window.location.href = "/";
 }
+
 load();
 </script>
-</body>
-</html>
 </body>
 </html>

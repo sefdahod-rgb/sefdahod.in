@@ -101,6 +101,14 @@ td {
 /* QR */
 #qrcode {
   margin-top: 10px;
+  display: inline-block;
+}
+
+#qrcode img,
+#qrcode canvas {
+  width: 150px !important;
+  height: 150px !important;
+  image-rendering: pixelated;
 }
 
 /* Buttons */
@@ -179,7 +187,7 @@ button {
 
 <!-- BUTTONS -->
 <div class="buttons">
-  <a href="index.html">
+  <a href="/">
     <button class="home">⬅ Back to Home</button>
   </a>
 
@@ -188,16 +196,36 @@ button {
 
 <script>
 window.onload = function () {
+  // ─── Logger ────────────────────────────────────────────────────────────────
+  function log(level, msg, data) {
+    const ts = new Date().toISOString();
+    const prefix = `[SEF][receipt.html][${ts}]`;
+    if (data !== undefined) {
+      console[level](`${prefix} ${msg}`, data);
+    } else {
+      console[level](`${prefix} ${msg}`);
+    }
+  }
+  // ───────────────────────────────────────────────────────────────────────────
+
+  log("info", "Receipt page loaded");
+
   try {
     const params = new URLSearchParams(window.location.search);
 
-    const receipt = params.get("receipt");
-    const name = params.get("name");
-    const email = params.get("email");
-    const amount = params.get("amount");
+    const receipt   = params.get("receipt");
+    const name      = params.get("name");
+    const email     = params.get("email");
+    const amount    = params.get("amount");
     const dateParam = params.get("date");
 
-    console.log("DATA:", receipt, name, email, amount, dateParam);
+    log("info", "Receipt params parsed", {
+      receipt,
+      name,
+      email,
+      amount,
+      dateParam
+    });
 
     if (!receipt || !name || !amount) {
       document.body.innerHTML = "<h2 style='text-align:center;color:red'>No receipt data found</h2>";
@@ -217,8 +245,8 @@ window.onload = function () {
     if (qrBox) {
       new QRCode(qrBox, {
         text: "SEF-RECEIPT-" + receipt,
-        width: 120,
-        height: 120
+        width: 256,
+        height: 256
       });
     }
 

@@ -120,12 +120,12 @@ nav a.active{
 </div>
 
 <nav>
-  <a href="index.html" class="active">Home</a>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="donate.html">Donate</a>
-  <a href="donors.html">Donors</a>
-   <a href="finance.html">Finance</a>
-  <a href="admin.html">Admin</a>
+  <a href="/" class="active">Home</a>
+  <a href="/dashboard">Dashboard</a>
+  <a href="/donate">Donate</a>
+  <a href="/donors">Donors</a>
+  <a href="/finance">Finance</a>
+  <a href="/admin">Admin</a>
 </nav>
 
 <section>
@@ -169,6 +169,20 @@ Shubhi Education Foundation is committed to supporting education and social welf
 let index = 0;
 const slides = document.querySelectorAll(".slide");
 
+// ─── Logger ──────────────────────────────────────────────────────────────────
+function log(level, msg, data) {
+  const ts = new Date().toISOString();
+  const prefix = `[SEF][index.html][${ts}]`;
+  if (data !== undefined) {
+    console[level](`${prefix} ${msg}`, data);
+  } else {
+    console[level](`${prefix} ${msg}`);
+  }
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+log("info", "Home page loaded", { totalSlides: slides.length });
+
 function showSlide(){
   slides.forEach(s => s.classList.remove("active"));
   slides[index].classList.add("active");
@@ -176,6 +190,7 @@ function showSlide(){
 }
 
 setInterval(showSlide, 2500);
+log("info", "Slider started");
 </script>
 
 </body>

@@ -130,10 +130,10 @@ li{
 
 <div class="menu">
 <a href="#">🏠 Dashboard</a>
-<a href="index.html">🏡 Home</a>
-<a href="donors.html">👥 Donors</a>
-<a href="donate.html">💳 Donate</a>
-<a href="admin.html">⚙️ Admin</a>
+<a href="/">🏡 Home</a>
+<a href="/donors">👥 Donors</a>
+<a href="/donate">💳 Donate</a>
+<a href="/admin">⚙️ Admin</a>
 </div>
 
 </div>
@@ -188,6 +188,27 @@ const client = supabase.createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
+// ─── Logger ──────────────────────────────────────────────────────────────────
+function log(level, msg, data) {
+  const ts = new Date().toISOString();
+  const prefix = `[SEF][dashboard.html][${ts}]`;
+  if (data !== undefined) {
+    console[level](`${prefix} ${msg}`, data);
+  } else {
+    console[level](`${prefix} ${msg}`);
+  }
+}
+
+// ─── XSS Sanitizer ───────────────────────────────────────────────────────────
+function sanitize(str) {
+  const div = document.createElement("div");
+  div.appendChild(document.createTextNode(String(str ?? "")));
+  return div.innerHTML;
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+log("info", "Dashboard loaded");
+
 let chart;
 let lastCount = 0;
 
@@ -198,94 +219,114 @@ function speak(text){
 }
 
 async function load(){
+  log("info", "load: fetching donations");
 
-const { data } = await client
-  .from("donations")
-  .select("*")
-  .order("created_at",{ascending:true});
+  const { data, error } = await client
+    .from("donations")
+    .select("*")
+    .order("created_at",{ascending:true});
 
-if(!data) return;
+  if(error){
+    log("error", "load: Supabase error", { message: error.message });
+    return;
+  }
 
-// SOUND + VOICE
-if(lastCount && data.length > lastCount){
-  document.getElementById("sound").play();
-  speak("New donation Recieved");
-}
-lastCount = data.length;
+  if(!data){
+    log("warn", "load: no data returned");
+    return;
+  }
 
-// TOTAL
-let total=0;
-data.forEach(d=> total+=Number(d.amount)||0);
+  log("info", "load: data received", { count: data.length });
 
-document.getElementById("total").innerText="₹"+total;
-document.getElementById("donors").innerText=data.length;
+  // SOUND + VOICE
+  if(lastCount && data.length > lastCount){
+    log("info", "load: new donation detected — playing sound");
+    document.getElementById("sound").play();
+    speak("New donation Recieved");
+  }
+  lastCount = data.length;
 
-// TODAY / MONTH
-let today=0,month=0;
-let now=new Date();
+  // TOTAL
+  let total=0;
+  data.forEach(d=> total+=Number(d.amount)||0);
 
-data.forEach(d=>{
-let dt=new Date(d.created_at);
-if(dt.toDateString()===now.toDateString()) today+=Number(d.amount)||0;
-if(dt.getMonth()===now.getMonth()) month+=Number(d.amount)||0;
-});
+  document.getElementById("total").innerText="₹"+total;
+  document.getElementById("donors").innerText=data.length;
 
-document.getElementById("today").innerText="₹"+today;
-document.getElementById("month").innerText="₹"+month;
+  // TODAY / MONTH
+  let today=0,month=0;
+  let now=new Date();
 
-// CHART
-let days=[...Array(7)].map((_,i)=>{
-let d=new Date();
-d.setDate(d.getDate()-(6-i));
-return d.toISOString().split('T')[0];
-});
+  data.forEach(d=>{
+    let dt=new Date(d.created_at);
+    if(dt.toDateString()===now.toDateString()) today+=Number(d.amount)||0;
+    if(dt.getMonth()===now.getMonth()) month+=Number(d.amount)||0;
+  });
 
-let totals=days.map(day=>{
-return data.filter(d=>(d.created_at||"").startsWith(day))
-.reduce((s,d)=>s+(Number(d.amount)||0),0);
-});
+  document.getElementById("today").innerText="₹"+today;
+  document.getElementById("month").innerText="₹"+month;
 
-if(chart) chart.destroy();
+  log("info", "load: stats updated", { total, today, month, donors: data.length });
 
-chart = new Chart(document.getElementById("chart"),{
-type:"line",
-data:{
-labels:days.map(d=> new Date(d).toLocaleDateString()),
-datasets:[{
-label:"Donations",
-data:totals,
-borderColor:"#16a34a",
-backgroundColor:"rgba(34,197,94,0.2)",
-fill:true,
-tension:0.4
-}]
-},
-options:{responsive:true,maintainAspectRatio:false}
-});
+  // CHART
+  let days=[...Array(7)].map((_,i)=>{
+    let d=new Date();
+    d.setDate(d.getDate()-(6-i));
+    return d.toISOString().split('T')[0];
+  });
 
-// AI
-let avg = Math.round(total / data.length || 0);
-document.getElementById("ai").innerText =
-"Average ₹"+avg+" | Growth is progressing well 🚀";
+  let totals=days.map(day=>{
+    return data.filter(d=>(d.created_at||"").startsWith(day))
+      .reduce((s,d)=>s+(Number(d.amount)||0),0);
+  });
 
-// TOP
-let top=document.getElementById("top");
-top.innerHTML="";
-[...data].sort((a,b)=>b.amount-a.amount).slice(0,5)
-.forEach(d=>{
-top.innerHTML+=`<li>${d.name} - ₹${d.amount}</li>`;
-});
+  if(chart) chart.destroy();
 
-// RECENT
-let recent=document.getElementById("recent");
-recent.innerHTML="";
-data.slice(-5).reverse().forEach(d=>{
-recent.innerHTML+=`<li>${d.name} donated ₹${d.amount}</li>`;
-});
+  chart = new Chart(document.getElementById("chart"),{
+    type:"line",
+    data:{
+      labels:days.map(d=> new Date(d).toLocaleDateString()),
+      datasets:[{
+        label:"Donations",
+        data:totals,
+        borderColor:"#16a34a",
+        backgroundColor:"rgba(34,197,94,0.2)",
+        fill:true,
+        tension:0.4
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false}
+  });
 
+  // AI
+  let avg = Math.round(total / (data.length || 1));
+  document.getElementById("ai").innerText =
+    "Average ₹"+avg+" | Growth is progressing well 🚀";
+
+  // TOP — FIX: use sanitize() to prevent XSS
+  let top=document.getElementById("top");
+  top.innerHTML="";
+  [...data].sort((a,b)=>b.amount-a.amount).slice(0,5)
+    .forEach(d=>{
+      const li = document.createElement("li");
+      li.textContent = `${d.name} - ₹${d.amount}`;
+      top.appendChild(li);
+    });
+
+  // RECENT — FIX: use textContent to prevent XSS
+  let recent=document.getElementById("recent");
+  recent.innerHTML="";
+  data.slice(-5).reverse().forEach(d=>{
+    const li = document.createElement("li");
+    li.textContent = `${d.name} donated ₹${d.amount}`;
+    recent.appendChild(li);
+  });
+
+  log("info", "load: top donors and recent list rendered");
 }
 
 setInterval(load,5000);
+log("info", "Auto-refresh set every 5s");
 load();
 </script>
 
