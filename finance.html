@@ -1,101 +1,70 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Finance ERP Ultimate - SEF Dahod</title>
+<title>Shubhi Education Foundation</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{
-  margin:0;
-  font-family:Segoe UI;
-  background:linear-gradient(rgba(240,253,244,0.95),rgba(240,253,244,0.95)),
-             url('bg.jpg') no-repeat center fixed;
-  background-size:cover;
-}
+body{font-family:Segoe UI;margin:0;background:#f0fdf4}
 .header{text-align:center;background:#fff;padding:15px}
-.header img{width:55px}
-nav{text-align:center;padding:10px}
-nav a{margin:5px;padding:8px 12px;background:#16a34a;color:#fff;border-radius:6px;text-decoration:none}
-
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;padding:10px}
-.card{background:#fff;padding:12px;border-radius:8px;text-align:center}
-
-.box{margin:10px;background:#fff;padding:12px;border-radius:8px}
+.box{background:#fff;margin:10px;padding:10px;border-radius:8px}
+.btn{background:#16a34a;color:#fff;padding:6px;border:none;border-radius:5px}
 table{width:100%;border-collapse:collapse}
 th,td{padding:6px;border-bottom:1px solid #ddd}
-th{background:#16a34a;color:#fff}
+</style>
+</head>
+.chart-box{height:260px}
 
-.btn{padding:6px 10px;background:#16a34a;color:#fff;border:none;border-radius:6px;cursor:pointer}
-.chart-box{height:220px}
-
-@media print{nav,button,input{display:none}}
+@media print{
+  nav,button,input{display:none}
+}
 </style>
 </head>
 
-<body>
 
+<body>
 <script>
 if(localStorage.getItem("isAdmin")!=="yes"){
   localStorage.setItem("redirectAfterLogin","finance.html");
   location.href="login.html";
-
 }
 </script>
 
 <div class="header">
 <img src="logo.png">
-<h3>Shubhi Education Foundation</h3>
-<p>Ultimate Accounting ERP</p>
+<h2>Shubhi Education Foundation</h2>
+<p>Reg: Guj/2249/DHD | 80G | 12A | CSR</p>
+<p>Finance ERP (Audit Ready)</p>
 </div>
-
 <nav>
 <a href="index.html">Home</a>
 <a href="#" onclick="logout()">Logout</a>
 </nav>
 
-<!-- FILTER -->
 <div class="box">
-<input type="date" id="from">
-<input type="date" id="to">
-<button class="btn" onclick="load()">Filter</button>
+<input type="date" id="date">
+<input id="debit" placeholder="Debit Account">
+<input id="credit" placeholder="Credit Account">
+<input id="amount" placeholder="Amount">
+<input id="note" placeholder="Note">
+<button class="btn" onclick="saveVoucher()">Save Voucher</button>
 </div>
 
-<!-- CARDS -->
-<div class="cards">
-<div class="card">Income <br><b id="income">₹0</b></div>
-<div class="card">Expense <br><b id="expense">₹0</b></div>
-<div class="card">Profit/Loss <br><b id="balance">₹0</b></div>
-<div class="card">Cash <br><b id="cash">₹0</b></div>
-<div class="card">Bank <br><b id="bank">₹0</b></div>
+<div class="box">
+<h3>Balances</h3>
+<p>Cash: ₹<span id="cash">0</span></p>
+<p>Bank: ₹<span id="bank">0</span></p>
+<p>Income: ₹<span id="income">0</span></p>
+<p>Expense: ₹<span id="expense">0</span></p>
+<p><b>Profit/Loss: ₹<span id="pl">0</span></b></p>
 </div>
 
-<!-- AI -->
 <div class="box">
-<b id="ai">Loading...</b>
-</div>
-
-<!-- DOUBLE ENTRY -->
-<div class="box">
-<h4>Double Entry Voucher</h4>
-<input id="d_acc" placeholder="Debit Account (Cash/Expense)">
-<input id="c_acc" placeholder="Credit Account (Donor/Income)">
-<input id="amt" placeholder="Amount">
-<button class="btn" onclick="addEntry()">Save</button>
-</div>
-
-<!-- REPORT -->
-<div class="box">
-<button class="btn" onclick="print()">Print</button>
-<table id="table"></table>
-</div>
-
-<!-- CHART -->
-<div class="box">
-<div class="chart-box"><canvas id="chart"></canvas></div>
+<h3>Voucher Report</h3>
+<table id="tbl"></table>
 </div>
 
 <script>
@@ -104,108 +73,97 @@ const client = supabase.createClient(
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
-let chart;
+
+async function saveVoucher(){
+
+let date=document.getElementById("date").value;
+let d=document.getElementById("debit").value;
+let c=document.getElementById("credit").value;
+let amt=document.getElementById("amount").value;
+let note=document.getElementById("note").value;
+
+// AUTO VOUCHER NO
+let { data:all=[] } = await client.from("vouchers").select("*");
+let vNo="V"+(all.length+1);
+let rNo="R"+(all.length+1);
+
+// SAVE VOUCHER
+let { data:voucher } = await client.from("vouchers").insert([{
+voucher_no:vNo,
+receipt_no:rNo,
+date:date,
+note:note
+}]).select().single();
+
+// DOUBLE ENTRY
+await client.from("entries").insert([
+{voucher_id:voucher.id,account:d,type:"DEBIT",amount:amt},
+{voucher_id:voucher.id,account:c,type:"CREDIT",amount:amt}
+]);
+
+alert("Saved ✅ Voucher No: "+vNo);
+load();
+}
 
 async function load(){
 
-const { data:entries=[] } = await client.from("entries").select("*");
+let { data:entries=[] } = await client.from("entries").select("*");
+let { data:vouchers=[] } = await client.from("vouchers").select("*");
 
-let income=0, expense=0, cash=0, bank=0;
+let cash=0,bank=0,income=0,expense=0;
 
+// CALCULATION
 entries.forEach(e=>{
 let amt=Number(e.amount)||0;
 
-// income
-if(e.account.toLowerCase().includes("income") && e.type=="CREDIT"){
-income+=amt;
-}
-
-// expense
-if(e.account.toLowerCase().includes("expense") && e.type=="DEBIT"){
-expense+=amt;
-}
-
-// cash
-if(e.account.toLowerCase()=="cash"){
+if(e.account=="Cash"){
 cash += e.type=="DEBIT"?amt:-amt;
 }
 
-// bank
-if(e.account.toLowerCase()=="bank"){
+if(e.account=="Bank"){
 bank += e.type=="DEBIT"?amt:-amt;
 }
+
+if(e.account=="Income" && e.type=="CREDIT"){
+income+=amt;
+}
+
+if(e.account=="Expense" && e.type=="DEBIT"){
+expense+=amt;
+}
 });
 
-let balance = income-expense;
-
-document.getElementById("income").innerText="₹"+income;
-document.getElementById("expense").innerText="₹"+expense;
-document.getElementById("balance").innerText="₹"+balance;
-document.getElementById("cash").innerText="₹"+cash;
-document.getElementById("bank").innerText="₹"+bank;
-
-document.getElementById("ai").innerText =
-balance>=0 ? "📈 Profit ₹"+balance : "⚠️ Loss ₹"+balance;
+document.getElementById("cash").innerText=cash;
+document.getElementById("bank").innerText=bank;
+document.getElementById("income").innerText=income;
+document.getElementById("expense").innerText=expense;
+document.getElementById("pl").innerText=(income-expense);
 
 // TABLE
-let table=document.getElementById("table");
-table.innerHTML=`<tr>
-<th>Account</th><th>Type</th><th>Amount</th>
-</tr>`;
+let tbl=document.getElementById("tbl");
+tbl.innerHTML="<tr><th>Voucher</th><th>Date</th><th>Note</th></tr>";
 
-entries.forEach(e=>{
-table.innerHTML+=`
+vouchers.forEach(v=>{
+tbl.innerHTML+=`
 <tr>
-<td>${e.account}</td>
-<td>${e.type}</td>
-<td>${e.amount}</td>
+<td>${v.voucher_no}</td>
+<td>${v.date}</td>
+<td>${v.note}</td>
 </tr>`;
 });
 
-// CHART
-if(chart) chart.destroy();
-
-chart=new Chart(document.getElementById("chart"),{
-type:"bar",
-data:{
-labels:["Income","Expense"],
-datasets:[{data:[income,expense],backgroundColor:["green","red"]}]
 }
-});
+// PRINT
+function printReport(){window.print();}
 
-}
-
-// ADD ENTRY
-async function addEntry(){
-
-let d=d_acc.value;
-let c=c_acc.value;
-let a=amt.value;
-
-if(!d||!c||!a) return alert("Fill all");
-
-// debit
-await client.from("entries").insert([{
-account:d,type:"DEBIT",amount:a
-}]);
-
-// credit
-await client.from("entries").insert([{
-account:c,type:"CREDIT",amount:a
-}]);
-
-load();
-}
+// LOGOUT
 
 function logout(){
   localStorage.clear();
   alert("Logged out successfully ✅");
   window.location.href = "index.html";
-
 }
-
 load();
 </script>
-
 </body>
 </html>
