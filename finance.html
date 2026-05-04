@@ -154,16 +154,17 @@ bank = totalIncome - cash;
 let balance=totalIncome-totalExpense;
 
 // UI
-incomeEl.innerText="₹"+totalIncome;
-expenseEl.innerText="₹"+totalExpense;
-balanceEl.innerText="₹"+balance;
-cashEl.innerText="₹"+cash;
-bankEl.innerText="₹"+bank;
+document.getElementById("income").innerText = "₹" + totalIncome;
+document.getElementById("expense").innerText = "₹" + totalExpense;
+document.getElementById("balance").innerText = "₹" + balance;
+document.getElementById("cash").innerText = "₹" + cash;
+document.getElementById("bank").innerText = "₹" + bank;
 
 // AI
-ai.innerText = balance>=0 
-? "📈 Profit ₹"+balance 
-: "⚠️ Loss ₹"+balance;
+document.getElementById("ai").innerText =
+balance >= 0 
+? "📈 Profit ₹" + balance 
+: "⚠️ Loss ₹" + balance;
 
 // TABLE
 table.innerHTML=`<tr>
