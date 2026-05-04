@@ -40,6 +40,12 @@ th{background:#16a34a;color:#fff}
 </head>
 
 <body>
+<script>
+if(localStorage.getItem("isAdmin")!=="yes"){
+  localStorage.setItem("redirectAfterLogin","finance.html");
+  location.href="login.html";
+}
+</script>
 
 <div class="header">
 <img src="logo.png">
