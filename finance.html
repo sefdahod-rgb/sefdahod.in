@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Finance ERP Ultra - SEF Dahod</title>
+<title>Finance ERP Ultimate - SEF Dahod</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -13,66 +13,26 @@ body{
   margin:0;
   font-family:Segoe UI;
   background:linear-gradient(rgba(240,253,244,0.95),rgba(240,253,244,0.95)),
-             url('bg.jpg') no-repeat center center fixed;
+             url('bg.jpg') no-repeat center fixed;
   background-size:cover;
 }
+.header{text-align:center;background:#fff;padding:15px}
+.header img{width:55px}
+nav{text-align:center;padding:10px}
+nav a{margin:5px;padding:8px 12px;background:#16a34a;color:#fff;border-radius:6px;text-decoration:none}
 
-.header{
-  text-align:center;
-  background:#fff;
-  padding:20px;
-}
-.header img{width:60px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;padding:10px}
+.card{background:#fff;padding:12px;border-radius:8px;text-align:center}
 
-nav{text-align:center;padding:10px;}
-nav a{
-  margin:5px;
-  padding:8px 12px;
-  background:#16a34a;
-  color:#fff;
-  text-decoration:none;
-  border-radius:6px;
-}
-
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-  gap:10px;
-  padding:15px;
-}
-.card{
-  background:#fff;
-  padding:15px;
-  border-radius:10px;
-  text-align:center;
-}
-.card p{font-size:20px;color:#16a34a}
-
-.box{
-  margin:15px;
-  background:#fff;
-  padding:15px;
-  border-radius:10px;
-}
-
+.box{margin:10px;background:#fff;padding:12px;border-radius:8px}
 table{width:100%;border-collapse:collapse}
-th,td{padding:8px;border-bottom:1px solid #ddd}
+th,td{padding:6px;border-bottom:1px solid #ddd}
 th{background:#16a34a;color:#fff}
 
-.btn{
-  padding:6px 10px;
-  border:none;
-  border-radius:6px;
-  background:#16a34a;
-  color:#fff;
-  cursor:pointer;
-}
+.btn{padding:6px 10px;background:#16a34a;color:#fff;border:none;border-radius:6px;cursor:pointer}
+.chart-box{height:220px}
 
-.chart-box{height:260px}
-
-@media print{
-  nav,button,input{display:none}
-}
+@media print{nav,button,input{display:none}}
 </style>
 </head>
 
@@ -80,16 +40,14 @@ th{background:#16a34a;color:#fff}
 
 <script>
 if(localStorage.getItem("isAdmin")!=="yes"){
-  localStorage.setItem("redirectAfterLogin","finance.html");
   location.href="login.html";
 }
 </script>
 
 <div class="header">
 <img src="logo.png">
-<h2>Shubhi Education Foundation</h2>
-<p>Reg: Guj/2249/DHD | 80G | 12A | CSR</p>
-<p>Finance ERP (Audit Ready)</p>
+<h3>Shubhi Education Foundation</h3>
+<p>Ultimate Accounting ERP</p>
 </div>
 
 <nav>
@@ -97,230 +55,153 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <a href="#" onclick="logout()">Logout</a>
 </nav>
 
+<!-- FILTER -->
 <div class="box">
-<h3>📅 Date Filter</h3>
 <input type="date" id="from">
 <input type="date" id="to">
-<button class="btn" onclick="load()">Apply</button>
+<button class="btn" onclick="load()">Filter</button>
 </div>
 
+<!-- CARDS -->
 <div class="cards">
-<div class="card"><h4>Total Income</h4><p id="income">₹0</p></div>
-<div class="card"><h4>Total Expense</h4><p id="expense">₹0</p></div>
-<div class="card"><h4>Balance</h4><p id="balance">₹0</p></div>
+<div class="card">Income <br><b id="income">₹0</b></div>
+<div class="card">Expense <br><b id="expense">₹0</b></div>
+<div class="card">Profit/Loss <br><b id="balance">₹0</b></div>
+<div class="card">Cash <br><b id="cash">₹0</b></div>
+<div class="card">Bank <br><b id="bank">₹0</b></div>
 </div>
 
+<!-- AI -->
 <div class="box">
-<h3>🤖 AI Insight</h3>
-<p id="ai">Calculating...</p>
+<b id="ai">Loading...</b>
 </div>
 
+<!-- DOUBLE ENTRY -->
 <div class="box">
-<h3>➕ Add Income</h3>
-<input id="inc_amt" placeholder="Amount">
-<input id="inc_note" placeholder="Note">
-<input type="date" id="inc_date">
-<button class="btn" onclick="addIncome()">Add</button>
+<h4>Double Entry Voucher</h4>
+<input id="d_acc" placeholder="Debit Account (Cash/Expense)">
+<input id="c_acc" placeholder="Credit Account (Donor/Income)">
+<input id="amt" placeholder="Amount">
+<button class="btn" onclick="addEntry()">Save</button>
 </div>
 
+<!-- REPORT -->
 <div class="box">
-<h3>➖ Add Expense</h3>
-<input id="exp_amt" placeholder="Amount">
-<input id="exp_note" placeholder="Note">
-<input type="date" id="exp_date">
-<button class="btn" onclick="addExpense()">Add</button>
-</div>
-
-<div class="box">
-<h3>📊 Report</h3>
-<button class="btn" onclick="printReport()">Print</button>
-<button class="btn" onclick="exportCSV()">CSV</button>
-
+<button class="btn" onclick="print()">Print</button>
 <table id="table"></table>
 </div>
 
+<!-- CHART -->
 <div class="box">
-<h3>📈 Income vs Expense</h3>
 <div class="chart-box"><canvas id="chart"></canvas></div>
 </div>
 
 <script>
 const client = supabase.createClient(
 "https://kqahcvaoxnmxfcgyyync.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+"YOUR-KEY"
 );
 
 let chart;
 
 async function load(){
 
-let from=document.getElementById("from").value;
-let to=document.getElementById("to").value;
+const { data:entries=[] } = await client.from("entries").select("*");
 
-const { data:don=[] } = await client.from("donations").select("*");
-const { data:inc=[] } = await client.from("income").select("*");
-const { data:exp=[] } = await client.from("expenses").select("*");
+let income=0, expense=0, cash=0, bank=0;
 
-function check(d){
-  if(!from || !to) return true;
-  let dt=new Date(d.created_at).toISOString().split("T")[0];
-  return dt>=from && dt<=to;
+entries.forEach(e=>{
+let amt=Number(e.amount)||0;
+
+// income
+if(e.account.toLowerCase().includes("income") && e.type=="CREDIT"){
+income+=amt;
 }
 
-let donations=don.filter(check);
-let income=inc.filter(check);
-let expense=exp.filter(check);
+// expense
+if(e.account.toLowerCase().includes("expense") && e.type=="DEBIT"){
+expense+=amt;
+}
 
-let totalIncome=0,totalExpense=0;
+// cash
+if(e.account.toLowerCase()=="cash"){
+cash += e.type=="DEBIT"?amt:-amt;
+}
 
-donations.forEach(d=> totalIncome+=Number(d.amount)||0);
-income.forEach(i=> totalIncome+=Number(i.amount)||0);
-expense.forEach(e=> totalExpense+=Number(e.amount)||0);
+// bank
+if(e.account.toLowerCase()=="bank"){
+bank += e.type=="DEBIT"?amt:-amt;
+}
+});
 
-let balance=totalIncome-totalExpense;
+let balance = income-expense;
 
-document.getElementById("income").innerText="₹"+totalIncome;
-document.getElementById("expense").innerText="₹"+totalExpense;
+document.getElementById("income").innerText="₹"+income;
+document.getElementById("expense").innerText="₹"+expense;
 document.getElementById("balance").innerText="₹"+balance;
+document.getElementById("cash").innerText="₹"+cash;
+document.getElementById("bank").innerText="₹"+bank;
 
 document.getElementById("ai").innerText =
-balance >= 0 ? "📈 Profit ₹"+balance : "⚠️ Loss ₹"+balance;
+balance>=0 ? "📈 Profit ₹"+balance : "⚠️ Loss ₹"+balance;
 
-// TABLE WITH EDIT DELETE
-let table = document.getElementById("table");
-
+// TABLE
+let table=document.getElementById("table");
 table.innerHTML=`<tr>
-<th>Type</th><th>Amount</th><th>Note</th><th>Date</th><th>Action</th>
+<th>Account</th><th>Type</th><th>Amount</th>
 </tr>`;
 
-donations.forEach(d=>{
-table.innerHTML+=`<tr>
-<td>Donation</td>
-<td>${d.amount}</td>
-<td>${d.name}</td>
-<td>${new Date(d.created_at).toLocaleDateString()}</td>
-<td>-</td>
-</tr>`;
-});
-
-income.forEach(i=>{
-table.innerHTML+=`<tr>
-<td>Income</td>
-<td>${i.amount}</td>
-<td>${i.note}</td>
-<td>${new Date(i.created_at).toLocaleDateString()}</td>
-<td>
-<button class="btn" onclick="editIncome(${i.id})">Edit</button>
-<button class="btn" onclick="deleteIncome(${i.id})">Delete</button>
-</td>
-</tr>`;
-});
-
-expense.forEach(e=>{
-table.innerHTML+=`<tr>
-<td>Expense</td>
+entries.forEach(e=>{
+table.innerHTML+=`
+<tr>
+<td>${e.account}</td>
+<td>${e.type}</td>
 <td>${e.amount}</td>
-<td>${e.note}</td>
-<td>${new Date(e.created_at).toLocaleDateString()}</td>
-<td>
-<button class="btn" onclick="editExpense(${e.id})">Edit</button>
-<button class="btn" onclick="deleteExpense(${e.id})">Delete</button>
-</td>
 </tr>`;
 });
 
+// CHART
 if(chart) chart.destroy();
 
 chart=new Chart(document.getElementById("chart"),{
 type:"bar",
 data:{
 labels:["Income","Expense"],
-datasets:[{
-data:[totalIncome,totalExpense],
-backgroundColor:["green","red"]
-}]
+datasets:[{data:[income,expense],backgroundColor:["green","red"]}]
 }
 });
 
 }
 
-// ADD
-async function addIncome(){
-await client.from("income").insert([{
-amount:inc_amt.value,
-note:inc_note.value,
-created_at:inc_date.value || new Date()
+// ADD ENTRY
+async function addEntry(){
+
+let d=d_acc.value;
+let c=c_acc.value;
+let a=amt.value;
+
+if(!d||!c||!a) return alert("Fill all");
+
+// debit
+await client.from("entries").insert([{
+account:d,type:"DEBIT",amount:a
 }]);
-load();
-}
 
-async function addExpense(){
-await client.from("expenses").insert([{
-amount:exp_amt.value,
-note:exp_note.value,
-created_at:exp_date.value || new Date()
+// credit
+await client.from("entries").insert([{
+account:c,type:"CREDIT",amount:a
 }]);
+
 load();
 }
-
-// DELETE
-async function deleteIncome(id){
-if(!confirm("Delete this income?")) return;
-await client.from("income").delete().eq("id", id);
-load();
-}
-
-async function deleteExpense(id){
-if(!confirm("Delete this expense?")) return;
-await client.from("expenses").delete().eq("id", id);
-load();
-}
-
-// EDIT
-async function editIncome(id){
-let amt=prompt("New Amount");
-let note=prompt("New Note");
-await client.from("income").update({amount:amt,note:note}).eq("id", id);
-load();
-}
-
-async function editExpense(id){
-let amt=prompt("New Amount");
-let note=prompt("New Note");
-await client.from("expenses").update({amount:amt,note:note}).eq("id", id);
-load();
-}
-
-// CSV
-function exportCSV(){
-let rows=document.querySelectorAll("table tr");
-let csv="";
-rows.forEach(r=>{
-let cols=r.querySelectorAll("td,th");
-let row=[];
-cols.forEach(c=>row.push(c.innerText));
-csv+=row.join(",")+"\\n";
-});
-let blob=new Blob([csv]);
-let a=document.createElement("a");
-a.href=URL.createObjectURL(blob);
-a.download="report.csv";
-a.click();
-}
-
-// PRINT
-function printReport(){window.print();}
-
-// LOGOUT
 
 function logout(){
-  localStorage.clear();
-  alert("Logged out successfully ✅");
-  window.location.href = "index.html";
+localStorage.clear();
+location.href="index.html";
 }
+
 load();
 </script>
-</body>
-</html>
+
 </body>
 </html>
