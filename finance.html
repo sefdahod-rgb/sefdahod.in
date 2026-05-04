@@ -1,21 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Shubhi Education Foundation</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Finance ERP Ultra - SEF Dahod</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{font-family:Segoe UI;margin:0;background:#f0fdf4}
-.header{text-align:center;background:#fff;padding:15px}
-.box{background:#fff;margin:10px;padding:10px;border-radius:8px}
-.btn{background:#16a34a;color:#fff;padding:6px;border:none;border-radius:5px}
+body{
+  margin:0;
+  font-family:Segoe UI;
+  background:linear-gradient(rgba(240,253,244,0.95),rgba(240,253,244,0.95)),
+             url('bg.jpg') no-repeat center center fixed;
+  background-size:cover;
+}
+
+.header{
+  text-align:center;
+  background:#fff;
+  padding:20px;
+}
+.header img{width:60px}
+
+nav{text-align:center;padding:10px;}
+nav a{
+  margin:5px;
+  padding:8px 12px;
+  background:#16a34a;
+  color:#fff;
+  text-decoration:none;
+  border-radius:6px;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:10px;
+  padding:15px;
+}
+.card{
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+  text-align:center;
+}
+.card p{font-size:20px;color:#16a34a}
+
+.box{
+  margin:15px;
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+}
+
 table{width:100%;border-collapse:collapse}
-th,td{padding:6px;border-bottom:1px solid #ddd}
-</style>
-</head>
+th,td{padding:8px;border-bottom:1px solid #ddd}
+th{background:#16a34a;color:#fff}
+
+.btn{
+  padding:6px 10px;
+  border:none;
+  border-radius:6px;
+  background:#16a34a;
+  color:#fff;
+  cursor:pointer;
+}
+
 .chart-box{height:260px}
 
 @media print{
@@ -24,8 +76,8 @@ th,td{padding:6px;border-bottom:1px solid #ddd}
 </style>
 </head>
 
-
 <body>
+
 <script>
 if(localStorage.getItem("isAdmin")!=="yes"){
   localStorage.setItem("redirectAfterLogin","finance.html");
@@ -39,6 +91,7 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <p>Reg: Guj/2249/DHD | 80G | 12A | CSR</p>
 <p>Finance ERP (Audit Ready)</p>
 </div>
+
 <nav>
 <a href="index.html">Home</a>
 <a href="#" onclick="logout()">Logout</a>
