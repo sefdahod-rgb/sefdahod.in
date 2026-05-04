@@ -99,7 +99,7 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <script>
 const client = supabase.createClient(
 "https://kqahcvaoxnmxfcgyyync.supabase.co",
-"YOUR-KEY"
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
 let chart;
@@ -196,8 +196,10 @@ load();
 }
 
 function logout(){
-localStorage.clear();
-location.href="index.html";
+  localStorage.clear();
+  alert("Logged out successfully ✅");
+  window.location.href = "index.html";
+
 }
 
 load();
