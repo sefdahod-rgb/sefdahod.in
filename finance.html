@@ -138,10 +138,11 @@ const { data:inc=[] } = await client.from("income").select("*");
 const { data:exp=[] } = await client.from("expenses").select("*");
 
 function saveOpening(){
-localStorage.setItem("open_cash",open_cash.value);
-localStorage.setItem("open_bank",open_bank.value);
-alert("Saved");
-load();}
+  localStorage.setItem("open_cash", document.getElementById("open_cash").value);
+  localStorage.setItem("open_bank", document.getElementById("open_bank").value);
+  alert("Saved ✅");
+  load();
+}
 
 function check(d){
   if(!from || !to) return true;
@@ -232,7 +233,7 @@ months[m]=(months[m]||0)+Number(x.amount||0);
 if(chart) chart.destroy();
 
 let ctx=document.getElementById("chart");
-chart = new Chart(ctx, {type:"bar",data:{labels: ["Income",Expense"],
+chart = new Chart(ctx, {type:"bar",data:{labels: ["Income","Expense"],
 datasets:[{data:[totalIncome,totalExpense],
            backgroundColor:["green","red"]}]}});
 
