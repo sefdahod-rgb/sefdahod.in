@@ -163,10 +163,14 @@ expense.forEach(e=> totalExpense+=Number(e.amount)||0);
 
 // CASH/BANK LOGIC (simple split)
 cash = totalIncome * 0.6 - totalExpense * 0.5;
-bank = totalIncome - cash;
+bank = totalIncome - cash; 
 
 let balance=totalIncome-totalExpense;
 
+let openCash=Number(localStorage.getItem("open_cash"))||0;
+let openBank=Number(localStorage.getItem("open_bank"))||0;  
+cash = openCash + totalIncome - totalExpense;
+bank = openBank;
 // UI
 document.getElementById("income").innerText = "₹" + totalIncome;
 document.getElementById("expense").innerText = "₹" + totalExpense;
