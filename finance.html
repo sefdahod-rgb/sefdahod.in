@@ -80,6 +80,14 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <p id="ai">Calculating...</p>
 </div>
 
+  <!-- OPEN BALANCE -->
+<div class="box">
+<h3>Opening Balance</h3>
+<input id="open_cash" placeholder="Opening_Cash">
+<input id="open_bank" placeholder="Opening Bank">
+<button class="btn" onclick="saveopening()">Save</button>
+</div>
+  
 <!-- ADD -->
 <div class="box">
 <h3>➕ Add Income</h3>
@@ -128,6 +136,12 @@ let to=document.getElementById("to").value;
 const { data:don=[] } = await client.from("donations").select("*");
 const { data:inc=[] } = await client.from("income").select("*");
 const { data:exp=[] } = await client.from("expenses").select("*");
+
+function saveOpening(){
+localStorage.setItem("open_cash",open_cash.value);
+localStorage.setItem("open_bank",open_bank.value);
+alert("Saved");
+load();}
 
 function check(d){
   if(!from || !to) return true;
