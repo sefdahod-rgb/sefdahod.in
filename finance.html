@@ -231,13 +231,10 @@ months[m]=(months[m]||0)+Number(x.amount||0);
 
 if(chart) chart.destroy();
 
-chart=new Chart(chartEl,{
-type:"line",
-data:{
-labels:Object.keys(months),
-datasets:[{data:Object.values(months)}]
-}
-});
+let ctx=document.getElementById("chart");
+chart = new Chart(ctx, {type:"bar",data:{labels: ["Income",Expense"],
+datasets:[{data:[totalIncome,totalExpense],
+           backgroundColor:["green","red"]}]}});
 
 }
 
