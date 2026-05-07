@@ -68,6 +68,7 @@ const client = window.supabase.createClient(
 
 // ✅ FORM SUBMIT
 document.getElementById("donationForm").addEventListener("submit", function(e){
+
   e.preventDefault();
 
   const name = document.getElementById("dname").value.trim();
@@ -79,64 +80,130 @@ document.getElementById("donationForm").addEventListener("submit", function(e){
     return;
   }
 
+  // ✅ RECEIPT NUMBER
   const receiptNo = "SEF-" + Date.now();
 
+  // ✅ RAZORPAY OPTIONS
   const options = {
+
     key: "rzp_live_SeDR91zuvNa9fG",
+
     amount: amount * 100,
+
     currency: "INR",
+
     name: "Shubhi Education Foundation",
+
     description: "Donation",
 
+    image: "logo.png",
+
     handler: async function (response) {
-  // ✅ FEES CALCULATE
-  const gatewayFee = parseFloat((amount * 0.02).toFixed(2));    // 2%
-  const serviceFee = parseFloat((amount * 0.01).toFixed(2));    // 1%
-  const gst        = parseFloat(((gatewayFee + serviceFee) * 0.18).toFixed(2)); // 18% on fees
-  const totalFees  = parseFloat((gatewayFee + serviceFee + gst).toFixed(2));
-  const netAmount  = parseFloat((amount - totalFees).toFixed(2));
 
-  // ✅ SAVE TO DATABASE (existing code)
-  const { error } = await client.from("donations").insert([{
-    name, email, amount,
-    receipt_no: receiptNo,
-    payment_id: response.razorpay_payment_id || "",
-    status: "success",
-    message: document.getElementById("dmsg").value || "Donation"
-  }]);
+      try{
 
-  if (error) { alert(error.message); return; }
+        // ✅ FEES CALCULATION
+        const gatewayFee = parseFloat((amount * 0.02).toFixed(2));
 
-  // ✅ REDIRECT with fees in URL
-  window.location.href =
-    "receipt.html?name="    + encodeURIComponent(name) +
-    "&email="               + encodeURIComponent(email) +
-    "&amount="              + amount +
-    "&receipt="             + receiptNo +
-    "&date="                + encodeURIComponent(new Date().toISOString()) +
-    "&gateway="             + gatewayFee +
-    "&service="             + serviceFee +
-    "&gst="                 + gst +
-    "&totalFees="           + totalFees +
-    "&netAmount="           + netAmount;
-}
-      } catch(err){
-        console.log("CATCH ERROR:", err);
-        alert("Unexpected error");
+        const serviceFee = parseFloat((amount * 0.001).toFixed(2));
+
+        const gst = parseFloat(((gatewayFee + serviceFee) * 0.18).toFixed(2));
+
+        const totalFees = parseFloat(
+          (gatewayFee + serviceFee + gst).toFixed(2)
+        );
+
+        const netAmount = parseFloat(
+          (amount - totalFees).toFixed(2)
+        );
+
+        // ✅ SAVE DONATION
+        const { error } = await client
+        .from("donations")
+        .insert([{
+
+          name: name,
+
+          email: email,
+
+          amount: amount,
+
+          receipt_no: receiptNo,
+
+          payment_id: response.razorpay_payment_id || "",
+
+          status: "success",
+
+          gateway_fee: gatewayFee,
+
+          service_fee: serviceFee,
+
+          gst: gst,
+
+          total_fees: totalFees,
+
+          net_amount: netAmount,
+
+          message: document.getElementById("dmsg").value || "Donation"
+
+        }]);
+
+        if(error){
+          alert(error.message);
+          return;
+        }
+
+        // ✅ REDIRECT RECEIPT
+        window.location.href =
+        "receipt.html?name=" + encodeURIComponent(name) +
+        "&email=" + encodeURIComponent(email) +
+        "&amount=" + amount +
+        "&receipt=" + receiptNo +
+        "&gateway=" + gatewayFee +
+        "&service=" + serviceFee +
+        "&gst=" + gst +
+        "&totalFees=" + totalFees +
+        "&netAmount=" + netAmount +
+        "&date=" + encodeURIComponent(new Date().toLocaleString());
+
       }
+
+      catch(err){
+
+        console.log(err);
+
+        alert("Payment Save Error");
+
+      }
+
     },
 
     prefill: {
+
       name: name,
+
       email: email
+
+    },
+
+    notes: {
+
+      NGO: "Shubhi Education Foundation"
+
     },
 
     theme: {
-      color: "#0F9D58"
+
+      color: "#16a34a"
+
     }
+
   };
 
+  // ✅ OPEN PAYMENT WINDOW
   const rzp = new Razorpay(options);
+
   rzp.open();
+
 });
 </script>
