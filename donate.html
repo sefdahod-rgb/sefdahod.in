@@ -100,17 +100,16 @@ document.getElementById("donationForm").addEventListener("submit", function(e){
 
     image: "logo.png",
 
-    handler: async function(response){
+handler: async function (response) {
 
   const gatewayFee = parseFloat((amount * 0.02).toFixed(2));
   const serviceFee = parseFloat((amount * 0.01).toFixed(2));
   const gst = parseFloat(((gatewayFee + serviceFee) * 0.18).toFixed(2));
 
-  const totalFees = gatewayFee + serviceFee + gst;
-  const netAmount = amount - totalFees;
+  const totalFees = parseFloat((gatewayFee + serviceFee + gst).toFixed(2));
+  const netAmount = parseFloat((amount - totalFees).toFixed(2));
 
   const { error } = await client.from("donations").insert([{
-
     name: name,
     email: email,
     amount: amount,
@@ -128,7 +127,6 @@ document.getElementById("donationForm").addEventListener("submit", function(e){
     payment_id: response.razorpay_payment_id,
     status: "success",
     message: document.getElementById("dmsg").value || ""
-
   }]);
 
   if(error){
@@ -138,25 +136,20 @@ document.getElementById("donationForm").addEventListener("submit", function(e){
   }
 
   window.location.href =
-  "receipt.html?name=" + encodeURIComponent(name) +
-  "&email=" + encodeURIComponent(email) +
-  "&amount=" + amount +
-  "&receipt=" + receiptNo +
-  "&gateway=" + gatewayFee +
-  "&service=" + serviceFee +
-  "&gst=" + gst +
-  "&totalFees=" + totalFees +
-  "&netAmount=" + netAmount;
-
-},
-        
-
+    "receipt.html?name=" + encodeURIComponent(name) +
+    "&email=" + encodeURIComponent(email) +
+    "&amount=" + amount +
+    "&receipt=" + receiptNo +
+    "&gateway=" + gatewayFee +
+    "&service=" + serviceFee +
+    "&gst=" + gst +
+    "&totalFees=" + totalFees +
+    "&netAmount=" + netAmount +
+    "&date=" + encodeURIComponent(new Date().toLocaleString());
+    },
     prefill: {
-
       name: name,
-
       email: email
-
     },
 
     notes: {
