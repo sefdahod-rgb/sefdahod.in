@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Donate - Shubhi Education Foundation</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- ✅ SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- ✅ RAZORPAY -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 
@@ -62,15 +58,12 @@ Email: sefdahod@gmail.com | Mobile: 9408695001
 </footer>
 
 <script>
-// ✅ SUPABASE CLIENT
 const client = window.supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
-// ✅ FORM SUBMIT
 document.getElementById("donationForm").addEventListener("submit", function(e){
-
   e.preventDefault();
 
   const name = document.getElementById("dname").value.trim();
@@ -82,91 +75,70 @@ document.getElementById("donationForm").addEventListener("submit", function(e){
     return;
   }
 
-  // ✅ RECEIPT NUMBER
   const receiptNo = "SEF-" + Date.now();
 
-  // ✅ RAZORPAY OPTIONS
   const options = {
-
     key: "rzp_live_SeDR91zuvNa9fG",
-
     amount: amount * 100,
-
     currency: "INR",
-
     name: "Shubhi Education Foundation",
-
     description: "Donation",
-
     image: "logo.png",
 
-handler: async function (response) {
+    handler: async function (response) {
+      const gatewayFee = parseFloat((amount * 0.02).toFixed(2));
+      const serviceFee = parseFloat((amount * 0.01).toFixed(2));
+      const gst = parseFloat(((gatewayFee + serviceFee) * 0.18).toFixed(2));
+      const totalFees = parseFloat((gatewayFee + serviceFee + gst).toFixed(2));
+      const netAmount = parseFloat((amount - totalFees).toFixed(2));
 
-  const gatewayFee = parseFloat((amount * 0.02).toFixed(2));
-  const serviceFee = parseFloat((amount * 0.01).toFixed(2));
-  const gst = parseFloat(((gatewayFee + serviceFee) * 0.18).toFixed(2));
+      const { error } = await client.from("donations").insert([{
+        name: name,
+        email: email,
+        amount: amount,
+        pan: document.getElementById("dpan").value,
+        adhar: document.getElementById("dadhar").value,
+        gateway_fee: gatewayFee,
+        service_fee: serviceFee,
+        gst: gst,
+        total_fees: totalFees,
+        net_amount: netAmount,
+        receipt_no: receiptNo,
+        payment_id: response.razorpay_payment_id,
+        status: "success",
+        message: document.getElementById("dmsg").value || ""
+      }]);
 
-  const totalFees = parseFloat((gatewayFee + serviceFee + gst).toFixed(2));
-  const netAmount = parseFloat((amount - totalFees).toFixed(2));
+      if(error){
+        console.log(error);
+        alert(error.message);
+        return;
+      }
 
-  const { error } = await client.from("donations").insert([{
-    name: name,
-    email: email,
-    amount: amount,
-
-    pan: document.getElementById("dpan").value,
-    adhar: document.getElementById("dadhar").value,
-
-    gateway_fee: gatewayFee,
-    service_fee: serviceFee,
-    gst: gst,
-    total_fees: totalFees,
-    net_amount: netAmount,
-
-    receipt_no: receiptNo,
-    payment_id: response.razorpay_payment_id,
-    status: "success",
-    message: document.getElementById("dmsg").value || ""
-  }]);
-
-  if(error){
-    console.log(error);
-    alert(error.message);
-    return;
-  }
-
-  window.location.href =
-    "receipt.html?name=" + encodeURIComponent(name) +
-    "&email=" + encodeURIComponent(email) +
-    "&amount=" + amount +
-    "&receipt=" + receiptNo +
-    "&gateway=" + gatewayFee +
-    "&service=" + serviceFee +
-    "&gst=" + gst +
-    "&totalFees=" + totalFees +
-    "&netAmount=" + netAmount +
-    "&date=" + encodeURIComponent(new Date().toLocaleString());
-    },
-    prefill: {
-      name: name,
-      email: email
+      window.location.href =
+        "receipt.html?name=" + encodeURIComponent(name) +
+        "&email=" + encodeURIComponent(email) +
+        "&amount=" + amount +
+        "&receipt=" + receiptNo +
+        "&gateway=" + gatewayFee +
+        "&service=" + serviceFee +
+        "&gst=" + gst +
+        "&totalFees=" + totalFees +
+        "&netAmount=" + netAmount +
+        "&date=" + encodeURIComponent(new Date().toLocaleString());
     },
 
-    notes: {
+    prefill: { name: name, email: email },
+    notes: { NGO: "Shubhi Education Foundation" },
+    theme: { color: "#16a34a" }
 
-      NGO: "Shubhi Education Foundation"
+  }; // ✅ options close
 
-    },
-
-    theme: {
-
-      color: "#16a34a"
-
-    }
-
-  // ✅ OPEN PAYMENT WINDOW
   const rzp = new Razorpay(options);
-
   rzp.open();
 
+});
 </script>
+
+</body>
+</html>
