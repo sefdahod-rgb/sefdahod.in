@@ -162,6 +162,8 @@ button {
     <tr><td><b>Receipt No</b></td><td id="rno"></td></tr>
     <tr><td><b>Date</b></td><td id="date"></td></tr>
     <tr><td><b>Name</b></td><td id="name"></td></tr>
+    <tr><td><b>Aadhaar</b></td><td id="aadhaar"></td></tr>
+    <tr><td><b>PAN</b></td><td id="pan"></td></tr>
     <tr><td><b>Email</b></td><td id="email"></td></tr>
     <tr><td><b>Amount</b></td><td class="amount">₹ <span id="amount"></span></td></tr>
     <tr><td><b>Payment Mode</b></td><td>UPI / Online</td></tr>
@@ -193,11 +195,13 @@ window.onload = function () {
 
     const receipt = params.get("receipt");
     const name = params.get("name");
+    const aadhaar_no = params.get("aadhaar");
+    const Pan_no = params.get("pan");
     const email = params.get("email");
     const amount = params.get("amount");
     const dateParam = params.get("date");
 
-    console.log("DATA:", receipt, name, email, amount, dateParam);
+    console.log("DATA:", receipt, name, aadhar_no, pan_no, email, amount, dateParam);
 
     if (!receipt || !name || !amount) {
       document.body.innerHTML = "<h2 style='text-align:center;color:red'>No receipt data found</h2>";
