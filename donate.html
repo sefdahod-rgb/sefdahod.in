@@ -181,17 +181,7 @@ document.getElementById("donationForm").addEventListener("submit", function(e){
         "&totalFees=" + totalFees +
         "&netAmount=" + netAmount +
         "&date=" + encodeURIComponent(new Date().toLocaleString());
-
-      }
-
-      catch(err)
-
-        console.log(err);
-
-        alert("Payment Save Error");
-
-      }
-
+     
     },
 
     prefill: {
