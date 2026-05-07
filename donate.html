@@ -100,59 +100,73 @@ document.getElementById("donationForm").addEventListener("submit", function(e){
 
     handler: async function (response) {
 
-      try{
+  const gatewayFee = Number((amount * 0.02).toFixed(2));
+  const serviceFee = Number((amount * 0.01).toFixed(2));
+  const gst = Number(((gatewayFee + serviceFee) * 0.18).toFixed(2));
+  const totalFees = Number((gatewayFee + serviceFee + gst).toFixed(2));
+  const netAmount = Number((amount - totalFees).toFixed(2));
 
-        // ✅ FEES CALCULATION
-        const gatewayFee = parseFloat((amount * 0.02).toFixed(2));
+  const donationData = {
 
-        const serviceFee = parseFloat((amount * 0.001).toFixed(2));
+    name: name,
 
-        const gst = parseFloat(((gatewayFee + serviceFee) * 0.18).toFixed(2));
+    email: email,
 
-        const totalFees = parseFloat(
-          (gatewayFee + serviceFee + gst).toFixed(2)
-        );
+    amount: amount,
 
-        const netAmount = parseFloat(
-          (amount - totalFees).toFixed(2)
-        );
+    message: document.getElementById("dmsg").value || "Donation",
 
-        // ✅ SAVE DONATION
-        const { error } = await client
-        .from("donations")
-        .insert([{
+    receipt_no: receiptNo,
 
-          name: name,
+    payment_id: response.razorpay_payment_id || "",
 
-          email: email,
+    status: "success",
 
-          amount: amount,
+    gateway_fee: gatewayFee,
 
-          receipt_no: receiptNo,
+    service_fee: serviceFee,
 
-          payment_id: response.razorpay_payment_id || "",
+    gst: gst,
 
-          status: "success",
+    total_fees: totalFees,
 
-          gateway_fee: gatewayFee,
+    net_amount: netAmount,
 
-          service_fee: serviceFee,
+    pan_no: document.getElementById("dpan")?.value || "",
 
-          gst: gst,
+    aadhaar_no: document.getElementById("dadhar")?.value || ""
 
-          total_fees: totalFees,
+  };
 
-          net_amount: netAmount,
+  console.log("INSERTING:", donationData);
 
-          message: document.getElementById("dmsg").value || "Donation"
+  const { data, error } = await client
+    .from("donations")
+    .insert([donationData])
+    .select();
 
-        }]);
+  console.log("SUPABASE:", data, error);
 
-        if(error){
-          alert(error.message);
-          return;
-        }
+  if(error){
 
+    alert(error.message);
+
+    return;
+
+  }
+
+  alert("Donation Successful ✅");
+
+  window.location.href =
+    "receipt.html?name=" + encodeURIComponent(name) +
+    "&amount=" + amount +
+    "&receipt=" + receiptNo +
+    "&gateway=" + gatewayFee +
+    "&service=" + serviceFee +
+    "&gst=" + gst +
+    "&net=" + netAmount;
+
+}
         // ✅ REDIRECT RECEIPT
         window.location.href =
         "receipt.html?name=" + encodeURIComponent(name) +
