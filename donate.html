@@ -89,32 +89,37 @@ document.getElementById("donationForm").addEventListener("submit", function(e){
     description: "Donation",
 
     handler: async function (response) {
-      try {
-        // ✅ SAVE TO DATABASE
-        const { error } = await client.from("donations").insert([{
-  name: name,
-  email: email,
-  amount: amount,
-  receipt_no: receiptNo,
-  payment_id: response.razorpay_payment_id || "",
-  status: "success",
-  message: document.getElementById("dmsg").value || "Donation"   // ✅ FIX
-}]);
+  // ✅ FEES CALCULATE
+  const gatewayFee = parseFloat((amount * 0.02).toFixed(2));    // 2%
+  const serviceFee = parseFloat((amount * 0.01).toFixed(2));    // 1%
+  const gst        = parseFloat(((gatewayFee + serviceFee) * 0.18).toFixed(2)); // 18% on fees
+  const totalFees  = parseFloat((gatewayFee + serviceFee + gst).toFixed(2));
+  const netAmount  = parseFloat((amount - totalFees).toFixed(2));
 
-        if(error){
-          console.log("DB ERROR:", error);
-          alert(error.message);
-          return;
-        }
+  // ✅ SAVE TO DATABASE (existing code)
+  const { error } = await client.from("donations").insert([{
+    name, email, amount,
+    receipt_no: receiptNo,
+    payment_id: response.razorpay_payment_id || "",
+    status: "success",
+    message: document.getElementById("dmsg").value || "Donation"
+  }]);
 
-        // ✅ SUCCESS REDIRECT
-        window.location.href =
-          "receipt.html?name=" + encodeURIComponent(name) +
-          "&email=" + encodeURIComponent(email) +
-          "&amount=" + amount +
-          "&receipt=" + receiptNo +
-          "&date=" + encodeURIComponent(new Date().toISOString());
+  if (error) { alert(error.message); return; }
 
+  // ✅ REDIRECT with fees in URL
+  window.location.href =
+    "receipt.html?name="    + encodeURIComponent(name) +
+    "&email="               + encodeURIComponent(email) +
+    "&amount="              + amount +
+    "&receipt="             + receiptNo +
+    "&date="                + encodeURIComponent(new Date().toISOString()) +
+    "&gateway="             + gatewayFee +
+    "&service="             + serviceFee +
+    "&gst="                 + gst +
+    "&totalFees="           + totalFees +
+    "&netAmount="           + netAmount;
+}
       } catch(err){
         console.log("CATCH ERROR:", err);
         alert("Unexpected error");
