@@ -199,10 +199,10 @@ function speak(text){
 
 async function load(){
 
-const { data = }, error} = await client
+const { data = [], error} = await client
   .from("donations")
   .select("*")
-  .order("created_at",{ascending:false});
+  .order("id",{ascending:false});
   console.log(data);
 
 if(!data) return;
