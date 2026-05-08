@@ -111,13 +111,20 @@
       color:white;
     }
 
+    .back-btn{
+      background:#059669;
+      color:white;
+    }
+
     @media print{
       .buttons{
         display:none;
       }
+
       body{
         background:white;
       }
+
       .container{
         box-shadow:none;
         margin:0;
@@ -142,19 +149,7 @@
   <div class="section-title">
     Official Donation Receipt
   </div>
-<button onclick="window.location.href='index.html'" 
-style="
-margin-top:20px;
-padding:12px 25px;
-background:#16a34a;
-color:white;
-border:none;
-border-radius:8px;
-font-size:16px;
-cursor:pointer;
-">
-⬅ Back to Home
-</button>
+
   <table>
     <tr>
       <td>Receipt Number</td>
@@ -224,6 +219,7 @@ cursor:pointer;
   </div>
 
   <div class="buttons">
+
     <button class="print-btn" onclick="window.print()">
       Print Receipt
     </button>
@@ -231,6 +227,11 @@ cursor:pointer;
     <button class="download-btn" onclick="downloadPDF()">
       Download PDF
     </button>
+
+    <button class="back-btn" onclick="window.location.href='index.html'">
+      ⬅ Back to Home
+    </button>
+
   </div>
 
 </div>
@@ -241,8 +242,11 @@ cursor:pointer;
   );
 
   if(!data){
+
     alert("Receipt data not found.");
+
     window.location.href = "donate.html";
+
   } else {
 
     document.getElementById("receiptNo").innerText =
