@@ -123,7 +123,7 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <script>
 const client = supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+  "YOUR_SUPABASE_ANON_KEY"
 );
 
 let chart;
@@ -191,12 +191,16 @@ async function load(){
   let serviceFees = 0;
   let gstFees = 0;
   let totalDonationFees = 0;
-  let donationAfterFees = 0;
+  let netDonation = 0;
 
   let manualIncome = 0;
   let totalExpense = 0;
 
-  /* DONATIONS */
+  /* BALANCES */
+  let cashIncome = 0;
+  let bankIncome = 0;
+
+  /* DONATIONS (ONLINE → BANK ONLY) */
   donations.forEach(d => {
 
     const gross =
@@ -222,15 +226,22 @@ async function load(){
     serviceFees += service;
     gstFees += gst;
     totalDonationFees += fees;
-    donationAfterFees += net;
+    netDonation += net;
+
+    /* ONLINE DONATION directly BANK */
+    bankIncome += net;
 
   });
 
-  /* MANUAL INCOME */
+  /* MANUAL INCOME (ASSUME CASH) */
   income.forEach(i => {
 
-    manualIncome +=
+    const amt =
       Number(i.amount) || 0;
+
+    manualIncome += amt;
+
+    cashIncome += amt;
 
   });
 
@@ -242,9 +253,9 @@ async function load(){
 
   });
 
-  /* FINAL BUSINESS LOGIC */
+  /* FINAL */
   const totalIncome =
-    donationAfterFees + manualIncome;
+    netDonation + manualIncome;
 
   const balance =
     totalIncome - totalExpense;
@@ -260,11 +271,12 @@ async function load(){
       localStorage.getItem("open_bank")
     ) || 0;
 
+  /* FINAL CASH/BANK */
   let cash =
-    openCash + balance;
+    openCash + cashIncome - totalExpense;
 
   let bank =
-    openBank;
+    openBank + bankIncome;
 
   /* UI */
   document.getElementById("income").innerText =
@@ -284,17 +296,17 @@ async function load(){
 
   /* AI INSIGHT */
   document.getElementById("ai").innerHTML = `
-    Gross Donation: ₹${grossDonation.toFixed(2)} <br>
+    Gross Donation Received Online: ₹${grossDonation.toFixed(2)} <br>
     Gateway Fee Deducted: ₹${gatewayFees.toFixed(2)} <br>
     Service Fee Deducted: ₹${serviceFees.toFixed(2)} <br>
     GST Deducted: ₹${gstFees.toFixed(2)} <br>
-    Total Payment Charges: ₹${totalDonationFees.toFixed(2)} <br>
-    Net Donation Available: ₹${donationAfterFees.toFixed(2)} <br>
-    Other Income: ₹${manualIncome.toFixed(2)} <br>
-    Total Expense: ₹${totalExpense.toFixed(2)} <br><br>
+    Total Online Payment Charges: ₹${totalDonationFees.toFixed(2)} <br>
+    Net Online Donation Deposited in Bank: ₹${netDonation.toFixed(2)} <br>
+    Manual Cash Income: ₹${manualIncome.toFixed(2)} <br>
+    Total Expenses: ₹${totalExpense.toFixed(2)} <br><br>
 
-    Final Formula:<br>
-    (Net Donation + Other Income - Expense)<br><br>
+    Bank Balance = Opening Bank + Net Online Donations <br>
+    Cash Balance = Opening Cash + Manual Income - Expenses <br><br>
 
     ${
       balance >= 0
@@ -313,6 +325,7 @@ async function load(){
       <th>Gross</th>
       <th>Fees</th>
       <th>Net</th>
+      <th>Mode</th>
       <th>Note</th>
       <th>Date</th>
       <th>Action</th>
@@ -346,6 +359,7 @@ async function load(){
         <td>₹${gross.toFixed(2)}</td>
         <td>₹${fees.toFixed(2)}</td>
         <td>₹${net.toFixed(2)}</td>
+        <td>Bank</td>
         <td>${d.name || "-"}</td>
         <td>${new Date(d.created_at).toLocaleDateString()}</td>
         <td>-</td>
@@ -354,7 +368,7 @@ async function load(){
 
   });
 
-  /* OTHER INCOME */
+  /* MANUAL INCOME */
   income.forEach(i => {
 
     table.innerHTML += `
@@ -363,6 +377,7 @@ async function load(){
         <td>₹${Number(i.amount).toFixed(2)}</td>
         <td>₹0.00</td>
         <td>₹${Number(i.amount).toFixed(2)}</td>
+        <td>Cash</td>
         <td>${i.note || "-"}</td>
         <td>${new Date(i.created_at).toLocaleDateString()}</td>
         <td>
@@ -383,6 +398,7 @@ async function load(){
         <td>₹${Number(e.amount).toFixed(2)}</td>
         <td>₹0.00</td>
         <td>₹${Number(e.amount).toFixed(2)}</td>
+        <td>Cash</td>
         <td>${e.note || "-"}</td>
         <td>${new Date(e.created_at).toLocaleDateString()}</td>
         <td>
@@ -405,28 +421,22 @@ async function load(){
     data: {
       labels: [
         "Gross Donation",
-        "Gateway Fee",
-        "Service Fee",
-        "GST",
-        "Net Donation",
-        "Other Income",
+        "Payment Fees",
+        "Net Bank Deposit",
+        "Cash Income",
         "Expense"
       ],
       datasets: [{
         data: [
           grossDonation,
-          gatewayFees,
-          serviceFees,
-          gstFees,
-          donationAfterFees,
+          totalDonationFees,
+          netDonation,
           manualIncome,
           totalExpense
         ],
         backgroundColor: [
           "green",
           "orange",
-          "gold",
-          "yellow",
           "blue",
           "purple",
           "red"
