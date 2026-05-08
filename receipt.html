@@ -1,398 +1,278 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>NGO Donation Receipt</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Donation Receipt - Shubhi Education Foundation</title>
 
-<!-- WORKING QR CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:#f3f4f6;
+      color:#111827;
+    }
 
-<style>
-body{
-  font-family:Arial,sans-serif;
-  background:#ddd;
-  padding:20px;
-  margin:0;
-}
+    .container{
+      max-width:900px;
+      margin:30px auto;
+      background:#ffffff;
+      padding:30px;
+      border-radius:12px;
+      box-shadow:0 4px 15px rgba(0,0,0,0.15);
+    }
 
-/* A4 PAGE */
-.page{
-  width:210mm;
-  min-height:297mm;
-  margin:auto;
-  background:#fff;
-  padding:20mm;
-  position:relative;
-  box-shadow:0 0 10px rgba(0,0,0,0.2);
-  box-sizing:border-box;
-}
+    .header{
+      text-align:center;
+      border-bottom:3px solid #16a34a;
+      padding-bottom:20px;
+      margin-bottom:25px;
+    }
 
-/* WATERMARK */
-.page::before{
-  content:"DONATION";
-  position:absolute;
-  font-size:80px;
-  color:rgba(0,0,0,0.05);
-  top:40%;
-  left:18%;
-  transform:rotate(-30deg);
-  z-index:0;
-}
+    .header img{
+      width:100px;
+      height:auto;
+      margin-bottom:10px;
+    }
 
-/* HEADER */
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  border-bottom:2px solid #000;
-  padding-bottom:10px;
-  position:relative;
-  z-index:1;
-}
+    .header h1{
+      margin:0;
+      color:#16a34a;
+      font-size:30px;
+    }
 
-.header img{
-  height:70px;
-}
+    .header p{
+      margin:5px 0;
+      font-size:14px;
+    }
 
-.header-right{
-  text-align:right;
-}
+    .section-title{
+      background:#16a34a;
+      color:white;
+      padding:10px;
+      border-radius:6px;
+      margin-top:20px;
+      margin-bottom:15px;
+      font-size:18px;
+    }
 
-.header-right h1{
-  margin:0;
-  font-size:24px;
-}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-bottom:20px;
+    }
 
-/* TITLE */
-.title{
-  text-align:center;
-  font-size:22px;
-  font-weight:bold;
-  margin:20px 0;
-  border-bottom:1px solid #000;
-  padding-bottom:5px;
-  position:relative;
-  z-index:1;
-}
+    table td{
+      padding:12px;
+      border:1px solid #d1d5db;
+    }
 
-/* TABLE */
-table{
-  width:100%;
-  border-collapse:collapse;
-  position:relative;
-  z-index:1;
-}
+    table td:first-child{
+      font-weight:bold;
+      background:#f9fafb;
+      width:35%;
+    }
 
-td{
-  padding:10px;
-  border-bottom:1px solid #eee;
-  font-size:15px;
-}
+    .highlight{
+      color:#16a34a;
+      font-weight:bold;
+    }
 
-.amount{
-  color:green;
-  font-weight:bold;
-  font-size:18px;
-}
+    .footer{
+      text-align:center;
+      margin-top:30px;
+      border-top:2px solid #e5e7eb;
+      padding-top:20px;
+      font-size:14px;
+    }
 
-/* QR */
-#qrcode{
-  margin-top:10px;
-  position:relative;
-  z-index:1;
-}
+    .buttons{
+      text-align:center;
+      margin-top:25px;
+    }
 
-/* FOOTER */
-.footer{
-  display:flex;
-  justify-content:space-between;
-  margin-top:50px;
-  position:relative;
-  z-index:1;
-}
+    button{
+      padding:12px 22px;
+      margin:10px;
+      border:none;
+      border-radius:8px;
+      font-size:16px;
+      cursor:pointer;
+      font-weight:bold;
+    }
 
-.signature{
-  border-top:1px solid #000;
-  width:220px;
-  text-align:center;
-  padding-top:5px;
-}
+    .print-btn{
+      background:#2563eb;
+      color:white;
+    }
 
-/* BUTTONS */
-.buttons{
-  margin-top:20px;
-  text-align:center;
-}
+    .download-btn{
+      background:#16a34a;
+      color:white;
+    }
 
-button{
-  padding:10px 15px;
-  border:none;
-  color:white;
-  cursor:pointer;
-  border-radius:5px;
-  font-size:15px;
-}
-
-.print{
-  background:green;
-}
-
-.home{
-  background:blue;
-  margin-right:10px;
-}
-
-@media print{
-  .buttons{
-    display:none;
-  }
-
-  body{
-    background:white;
-    padding:0;
-  }
-
-  .page{
-    box-shadow:none;
-    margin:0;
-    width:100%;
-  }
-}
-</style>
+    @media print{
+      .buttons{
+        display:none;
+      }
+      body{
+        background:white;
+      }
+      .container{
+        box-shadow:none;
+        margin:0;
+      }
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="page">
+<div class="container">
 
-  <!-- HEADER -->
   <div class="header">
-
-    <img src="logo.png" alt="Logo">
-
-    <div class="header-right">
-      <h1>Shubhi Education Foundation</h1>
-
-      <p style="font-size:12px;">
-        Reg: Indian Society Act 1860 & Mumbai Public Trust Act 1950
-      </p>
-
-      <p style="font-size:12px;">
-        80G: AAOTS1413MF20251 |
-        12A: AAOTS1413ME20241 |
-        CSR: CSR00096110
-      </p>
-
-      <p style="font-size:12px;">
-        Dahod, Gujarat - 389151
-      </p>
-    </div>
+    <img src="logo.png" alt="Foundation Logo">
+    <h1>Shubhi Education Foundation, Dahod</h1>
+    <p>Under Indian Society Act 1860 | Guj./2249/DHD</p>
+    <p>80G Reg No: AAOTS1413MF20251 | 12A Reg No: AAOTS1413ME20241</p>
+    <p>CSR No: CSR00096110</p>
+    <p>Rainbow Public School, Muvaliya Road, Rabdal, Dahod Gujarat - 389151</p>
+    <p>Email: sefdahod@gmail.com | Mobile: 9408695001</p>
   </div>
 
-  <!-- TITLE -->
-  <div class="title">
-    DONATION RECEIPT
+  <div class="section-title">
+    Official Donation Receipt
   </div>
 
-  <!-- DETAILS -->
   <table>
-
     <tr>
-      <td><b>Receipt No</b></td>
-      <td id="rno"></td>
+      <td>Receipt Number</td>
+      <td id="receiptNo"></td>
     </tr>
-
     <tr>
-      <td><b>Date</b></td>
+      <td>Date & Time</td>
       <td id="date"></td>
     </tr>
-
     <tr>
-      <td><b>Name</b></td>
+      <td>Donor Name</td>
       <td id="name"></td>
     </tr>
-
     <tr>
-      <td><b>Aadhaar</b></td>
-      <td id="aadhaar"></td>
-    </tr>
-
-    <tr>
-      <td><b>PAN</b></td>
-      <td id="pan"></td>
-    </tr>
-
-    <tr>
-      <td><b>Email</b></td>
+      <td>Email</td>
       <td id="email"></td>
     </tr>
-
     <tr>
-      <td><b>Donation Amount</b></td>
-      <td class="amount">
-        ₹ <span id="amount"></span>
-      </td>
+      <td>PAN Number</td>
+      <td id="pan"></td>
     </tr>
-
     <tr>
-      <td><b>Gateway Fee</b></td>
-      <td>₹ <span id="gateway"></span></td>
+      <td>Aadhaar Number</td>
+      <td id="aadhaar"></td>
     </tr>
-
-    <tr>
-      <td><b>Service Fee</b></td>
-      <td>₹ <span id="service"></span></td>
-    </tr>
-
-    <tr>
-      <td><b>GST</b></td>
-      <td>₹ <span id="gst"></span></td>
-    </tr>
-
-    <tr>
-      <td><b>Total Charges</b></td>
-      <td>₹ <span id="totalFees"></span></td>
-    </tr>
-
-    <tr>
-      <td><b>Net Amount Received</b></td>
-      <td style="color:green;font-weight:bold;">
-        ₹ <span id="netAmount"></span>
-      </td>
-    </tr>
-
-    <tr>
-      <td><b>Payment Mode</b></td>
-      <td>UPI / Online</td>
-    </tr>
-
   </table>
 
-  <!-- QR -->
-  <h4>Scan for Verification</h4>
-  <div id="qrcode"></div>
-
-  <!-- FOOTER -->
-  <div class="footer">
-
-    <div>
-      Thank you for your support 🙏
-    </div>
-
-    <div class="signature">
-      Authorized Signature
-    </div>
-
+  <div class="section-title">
+    Donation Breakdown
   </div>
 
-</div>
+  <table>
+    <tr>
+      <td>Donation Amount</td>
+      <td class="highlight">₹ <span id="amount"></span></td>
+    </tr>
+    <tr>
+      <td>Gateway Fee</td>
+      <td>₹ <span id="gateway"></span></td>
+    </tr>
+    <tr>
+      <td>Service Fee</td>
+      <td>₹ <span id="service"></span></td>
+    </tr>
+    <tr>
+      <td>GST</td>
+      <td>₹ <span id="gst"></span></td>
+    </tr>
+    <tr>
+      <td>Total Fees</td>
+      <td>₹ <span id="totalFees"></span></td>
+    </tr>
+    <tr>
+      <td>Net Amount for Charity</td>
+      <td class="highlight">₹ <span id="netAmount"></span></td>
+    </tr>
+  </table>
 
-<!-- BUTTONS -->
-<div class="buttons">
+  <div class="footer">
+    <p>
+      Thank you for supporting education and social welfare through
+      Shubhi Education Foundation.
+    </p>
+    <p>
+      This receipt can be used for Income Tax exemption under Section 80G.
+    </p>
+  </div>
 
-  <a href="index.html">
-    <button class="home">
-      ⬅ Back to Home
+  <div class="buttons">
+    <button class="print-btn" onclick="window.print()">
+      Print Receipt
     </button>
-  </a>
 
-  <button class="print" onclick="window.print()">
-    Print / PDF
-  </button>
+    <button class="download-btn" onclick="downloadPDF()">
+      Download PDF
+    </button>
+  </div>
 
 </div>
 
 <script>
-window.onload = function(){
+  const data = JSON.parse(
+    localStorage.getItem("receiptData")
+  );
 
-  try{
+  if(!data){
+    alert("Receipt data not found.");
+    window.location.href = "donate.html";
+  } else {
 
-    const params = new URLSearchParams(window.location.search);
-
-    // GET VALUES
-    const receipt = params.get("receipt") || "R1001";
-    const name = params.get("name") || "Demo User";
-    const aadhaar = params.get("aadhaar") || "XXXX-XXXX-1234";
-    const pan = params.get("pan") || "ABCDE1234F";
-    const email = params.get("email") || "demo@gmail.com";
-
-    // ORIGINAL DONATION
-    const amount = parseFloat(params.get("amount")) || 1000;
-
-    // AUTO CHARGES CALCULATION
-    const gateway = (amount * 0.02).toFixed(2); // 2%
-    const service = (amount * 0.01).toFixed(2); // 1%
-    const gst = ((parseFloat(gateway) + parseFloat(service)) * 0.18).toFixed(2);
-
-    const totalFees = (
-      parseFloat(gateway) +
-      parseFloat(service) +
-      parseFloat(gst)
-    ).toFixed(2);
-
-    // PAYMENT CUT HOKAR AAYEGA
-    const netAmount = (
-      amount - totalFees
-    ).toFixed(2);
-
-    const dateParam = params.get("date");
-
-    // SET VALUES
-    document.getElementById("rno").innerText = receipt;
-    document.getElementById("name").innerText = name;
-    document.getElementById("aadhaar").innerText = aadhaar;
-    document.getElementById("pan").innerText = pan;
-    document.getElementById("email").innerText = email;
-
-    document.getElementById("amount").innerText = amount;
-    document.getElementById("gateway").innerText = gateway;
-    document.getElementById("service").innerText = service;
-    document.getElementById("gst").innerText = gst;
-    document.getElementById("totalFees").innerText = totalFees;
-    document.getElementById("netAmount").innerText = netAmount;
+    document.getElementById("receiptNo").innerText =
+      data.receipt;
 
     document.getElementById("date").innerText =
-      dateParam
-      ? new Date(dateParam).toLocaleString()
-      : new Date().toLocaleString();
+      data.date;
 
-    // QR CODE SAFE
-    const qrBox = document.getElementById("qrcode");
+    document.getElementById("name").innerText =
+      data.name;
 
-    if(typeof QRCode !== "undefined"){
+    document.getElementById("email").innerText =
+      data.email;
 
-      new QRCode(qrBox,{
-        text:
-          "Receipt No: " + receipt +
-          "\nName: " + name +
-          "\nDonation: ₹" + amount +
-          "\nNet Received: ₹" + netAmount,
+    document.getElementById("pan").innerText =
+      data.pan;
 
-        width:120,
-        height:120
-      });
+    document.getElementById("aadhaar").innerText =
+      data.aadhaar;
 
-    }else{
+    document.getElementById("amount").innerText =
+      parseFloat(data.amount).toFixed(2);
 
-      qrBox.innerHTML =
-        "<p style='color:red;'>QR Library Failed</p>";
+    document.getElementById("gateway").innerText =
+      parseFloat(data.gateway).toFixed(2);
 
-    }
+    document.getElementById("service").innerText =
+      parseFloat(data.service).toFixed(2);
 
-  }catch(err){
+    document.getElementById("gst").innerText =
+      parseFloat(data.gst).toFixed(2);
 
-    console.log(err);
+    document.getElementById("totalFees").innerText =
+      parseFloat(data.totalFees).toFixed(2);
 
-    document.body.innerHTML = `
-      <h2 style="text-align:center;color:red;margin-top:100px;">
-        Receipt Error<br><br>
-        ${err.message}
-      </h2>
-    `;
+    document.getElementById("netAmount").innerText =
+      parseFloat(data.netAmount).toFixed(2);
   }
 
-};
+  function downloadPDF(){
+    window.print();
+  }
 </script>
 
 </body>
