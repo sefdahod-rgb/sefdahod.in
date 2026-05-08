@@ -191,6 +191,16 @@ const client = supabase.createClient(
 let chart;
 let lastCount = 0;
 
+// Calculate fees and net amount
+function calculateNet(amount){
+  const gateway = amount * 0.02; // 2%
+  const service = amount * 0.01; // 1%
+  const gst = (gateway + service) * 0.18; // 18% GST on fees
+  const totalFees = gateway + service + gst;
+  const netAmount = amount - totalFees;
+  return {gateway, service, gst, totalFees, netAmount};
+}
+
 function speak(text){
   let speech = new SpeechSynthesisUtterance(text);
   speech.lang="hi-IN";
@@ -198,92 +208,92 @@ function speak(text){
 }
 
 async function load(){
+  const { data = [], error } = await client
+    .from("donations")
+    .select("*")
+    .order("id",{ascending:false});
 
-const { data = [], error} = await client
-  .from("donations")
-  .select("*")
-  .order("id",{ascending:false});
-  console.log(data);
+  if(error){
+    console.error("Supabase error:", error);
+    return;
+  }
 
-if(!data) return;
+  // SOUND + VOICE
+  if(lastCount && data.length > lastCount){
+    document.getElementById("sound").play();
+    speak("नया दान प्राप्त हुआ");
+  }
+  lastCount = data.length;
 
-// SOUND + VOICE
-if(lastCount && data.length > lastCount){
-  document.getElementById("sound").play();
-  speak("New donation Recieved");
-}
-lastCount = data.length;
+  // TOTALS
+  let totalNet = 0;
+  data.forEach(d=>{
+    totalNet += calculateNet(Number(d.amount)||0).netAmount;
+  });
+  document.getElementById("total").innerText="₹"+totalNet.toFixed(2);
+  document.getElementById("donors").innerText=data.length;
 
-// TOTAL
-let total=0;
-data.forEach(d=> total+=Number(d.amount)||0);
+  // TODAY / MONTH
+  let today=0, month=0;
+  let now=new Date();
+  data.forEach(d=>{
+    let dt=new Date(d.created_at);
+    const { netAmount } = calculateNet(Number(d.amount)||0);
+    if(dt.toDateString()===now.toDateString()) today+=netAmount;
+    if(dt.getMonth()===now.getMonth() && dt.getFullYear()===now.getFullYear()) month+=netAmount;
+  });
+  document.getElementById("today").innerText="₹"+today.toFixed(2);
+  document.getElementById("month").innerText="₹"+month.toFixed(2);
 
-document.getElementById("total").innerText="₹"+total;
-document.getElementById("donors").innerText=data.length;
+  // CHART LAST 7 DAYS
+  let days=[...Array(7)].map((_,i)=>{
+    let d=new Date();
+    d.setDate(d.getDate()-(6-i));
+    return d.toISOString().split('T')[0];
+  });
+  let totals=days.map(day=>{
+    return data.filter(d=>(d.created_at||"").startsWith(day))
+      .reduce((s,d)=>s+calculateNet(Number(d.amount)||0).netAmount,0);
+  });
 
-// TODAY / MONTH
-let today=0,month=0;
-let now=new Date();
+  if(chart) chart.destroy();
 
-data.forEach(d=>{
-let dt=new Date(d.created_at);
-if(dt.toDateString()===now.toDateString()) today+=Number(d.amount)||0;
-if(dt.getMonth()===now.getMonth()) month+=Number(d.amount)||0;
-});
+  chart = new Chart(document.getElementById("chart"),{
+    type:"line",
+    data:{
+      labels:days.map(d=> new Date(d).toLocaleDateString()),
+      datasets:[{
+        label:"Net Donations",
+        data:totals,
+        borderColor:"#16a34a",
+        backgroundColor:"rgba(34,197,94,0.2)",
+        fill:true,
+        tension:0.4
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false}
+  });
 
-document.getElementById("today").innerText="₹"+today;
-document.getElementById("month").innerText="₹"+month;
+  // AI Insight
+  let avg = Math.round(totalNet / data.length || 0);
+  document.getElementById("ai").innerText =
+    "Average ₹"+avg+" | Growth is progressing well 🚀";
 
-// CHART
-let days=[...Array(7)].map((_,i)=>{
-let d=new Date();
-d.setDate(d.getDate()-(6-i));
-return d.toISOString().split('T')[0];
-});
+  // TOP DONORS
+  let top=document.getElementById("top");
+  top.innerHTML="";
+  [...data].sort((a,b)=>calculateNet(b.amount).netAmount - calculateNet(a.amount).netAmount)
+    .slice(0,5)
+    .forEach(d=>{
+      top.innerHTML+=`<li>${d.name} - ₹${calculateNet(d.amount).netAmount.toFixed(2)}</li>`;
+    });
 
-let totals=days.map(day=>{
-return data.filter(d=>(d.created_at||"").startsWith(day))
-.reduce((s,d)=>s+(Number(d.amount)||0),0);
-});
-
-if(chart) chart.destroy();
-
-chart = new Chart(document.getElementById("chart"),{
-type:"line",
-data:{
-labels:days.map(d=> new Date(d).toLocaleDateString()),
-datasets:[{
-label:"Donations",
-data:totals,
-borderColor:"#16a34a",
-backgroundColor:"rgba(34,197,94,0.2)",
-fill:true,
-tension:0.4
-}]
-},
-options:{responsive:true,maintainAspectRatio:false}
-});
-
-// AI
-let avg = Math.round(total / data.length || 0);
-document.getElementById("ai").innerText =
-"Average ₹"+avg+" | Growth is progressing well 🚀";
-
-// TOP
-let top=document.getElementById("top");
-top.innerHTML="";
-[...data].sort((a,b)=>b.amount-a.amount).slice(0,5)
-.forEach(d=>{
-top.innerHTML+=`<li>${d.name} - ₹${d.amount}</li>`;
-});
-
-// RECENT
-let recent=document.getElementById("recent");
-recent.innerHTML="";
-data.slice(-5).reverse().forEach(d=>{
-recent.innerHTML+=`<li>${d.name} donated ₹${d.amount}</li>`;
-});
-
+  // RECENT DONATIONS
+  let recent=document.getElementById("recent");
+  recent.innerHTML="";
+  data.slice(-5).reverse().forEach(d=>{
+    recent.innerHTML+=`<li>${d.name} donated ₹${calculateNet(d.amount).netAmount.toFixed(2)}</li>`;
+  });
 }
 
 setInterval(load,5000);
