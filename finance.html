@@ -128,183 +128,415 @@ const client = supabase.createClient(
 
 let chart;
 
-async function load(){
-
-let from=document.getElementById("from").value;
-let to=document.getElementById("to").value;
-
-const { data:don=[] } = await client.from("donations").select("*");
-const { data:inc=[] } = await client.from("income").select("*");
-const { data:exp=[] } = await client.from("expenses").select("*");
-
+/* SAVE OPENING BALANCE */
 function saveOpening(){
-  localStorage.setItem("open_cash", document.getElementById("open_cash").value);
-  localStorage.setItem("open_bank", document.getElementById("open_bank").value);
-  alert("Saved ✅");
+
+  localStorage.setItem(
+    "open_cash",
+    document.getElementById("open_cash").value || 0
+  );
+
+  localStorage.setItem(
+    "open_bank",
+    document.getElementById("open_bank").value || 0
+  );
+
+  alert("Opening balance saved successfully ✅");
+
   load();
 }
 
-function check(d){
-  if(!from || !to) return true;
-  let dt=new Date(d.created_at).toISOString().split("T")[0];
-  return dt>=from && dt<=to;
+/* LOAD DATA */
+async function load(){
+
+  let from =
+    document.getElementById("from").value;
+
+  let to =
+    document.getElementById("to").value;
+
+  const { data: don = [] } =
+    await client.from("donations").select("*");
+
+  const { data: inc = [] } =
+    await client.from("income").select("*");
+
+  const { data: exp = [] } =
+    await client.from("expenses").select("*");
+
+  function check(d){
+
+    if(!from || !to) return true;
+
+    let dt =
+      new Date(d.created_at)
+      .toISOString()
+      .split("T")[0];
+
+    return dt >= from && dt <= to;
+  }
+
+  let donations =
+    don.filter(check);
+
+  let income =
+    inc.filter(check);
+
+  let expense =
+    exp.filter(check);
+
+  let grossDonation = 0;
+  let gatewayFees = 0;
+  let serviceFees = 0;
+  let gstFees = 0;
+  let totalDonationFees = 0;
+  let netDonation = 0;
+
+  let manualIncome = 0;
+  let totalExpense = 0;
+
+  /* DONATION CALCULATION */
+  donations.forEach(d => {
+
+    grossDonation +=
+      Number(d.amount) || 0;
+
+    gatewayFees +=
+      Number(d.gateway_fee) || 0;
+
+    serviceFees +=
+      Number(d.service_fee) || 0;
+
+    gstFees +=
+      Number(d.gst) || 0;
+
+    totalDonationFees +=
+      Number(d.total_fees) || 0;
+
+    netDonation +=
+      Number(d.net_amount) || 0;
+
+  });
+
+  /* MANUAL INCOME */
+  income.forEach(i => {
+
+    manualIncome +=
+      Number(i.amount) || 0;
+
+  });
+
+  /* EXPENSE */
+  expense.forEach(e => {
+
+    totalExpense +=
+      Number(e.amount) || 0;
+
+  });
+
+  /* FINAL TOTAL */
+  let totalIncome =
+    netDonation + manualIncome;
+
+  let balance =
+    totalIncome - totalExpense;
+
+  let openCash =
+    Number(
+      localStorage.getItem("open_cash")
+    ) || 0;
+
+  let openBank =
+    Number(
+      localStorage.getItem("open_bank")
+    ) || 0;
+
+  let cash =
+    openCash + totalIncome - totalExpense;
+
+  let bank =
+    openBank;
+
+  /* UI UPDATE */
+  document.getElementById("income").innerText =
+    "₹" + totalIncome.toFixed(2);
+
+  document.getElementById("expense").innerText =
+    "₹" + totalExpense.toFixed(2);
+
+  document.getElementById("balance").innerText =
+    "₹" + balance.toFixed(2);
+
+  document.getElementById("cash").innerText =
+    "₹" + cash.toFixed(2);
+
+  document.getElementById("bank").innerText =
+    "₹" + bank.toFixed(2);
+
+  /* AI */
+  document.getElementById("ai").innerHTML = `
+    Gross Donation: ₹${grossDonation.toFixed(2)} <br>
+    Gateway Fee: ₹${gatewayFees.toFixed(2)} <br>
+    Service Fee: ₹${serviceFees.toFixed(2)} <br>
+    GST: ₹${gstFees.toFixed(2)} <br>
+    Total Fees Deducted: ₹${totalDonationFees.toFixed(2)} <br>
+    Net Donation Received: ₹${netDonation.toFixed(2)} <br><br>
+    ${
+      balance >= 0
+        ? "📈 Profit ₹" + balance.toFixed(2)
+        : "⚠️ Loss ₹" + balance.toFixed(2)
+    }
+  `;
+
+  /* TABLE */
+  table.innerHTML = `
+    <tr>
+      <th>Type</th>
+      <th>Gross Amount</th>
+      <th>Fees</th>
+      <th>Net Amount</th>
+      <th>Note</th>
+      <th>Date</th>
+      <th>Action</th>
+    </tr>
+  `;
+
+  donations.forEach(d => {
+
+    table.innerHTML += `
+      <tr>
+        <td>Donation</td>
+        <td>₹${Number(d.amount).toFixed(2)}</td>
+        <td>₹${Number(d.total_fees || 0).toFixed(2)}</td>
+        <td>₹${Number(d.net_amount || 0).toFixed(2)}</td>
+        <td>${d.name || "-"}</td>
+        <td>${new Date(d.created_at).toLocaleDateString()}</td>
+        <td>-</td>
+      </tr>
+    `;
+
+  });
+
+  income.forEach(i => {
+
+    table.innerHTML += `
+      <tr>
+        <td>Income</td>
+        <td>₹${Number(i.amount).toFixed(2)}</td>
+        <td>₹0</td>
+        <td>₹${Number(i.amount).toFixed(2)}</td>
+        <td>${i.note || "-"}</td>
+        <td>${new Date(i.created_at).toLocaleDateString()}</td>
+        <td>
+          <button onclick="editIncome(${i.id})">Edit</button>
+          <button onclick="deleteIncome(${i.id})">Delete</button>
+        </td>
+      </tr>
+    `;
+
+  });
+
+  expense.forEach(e => {
+
+    table.innerHTML += `
+      <tr>
+        <td>Expense</td>
+        <td>₹${Number(e.amount).toFixed(2)}</td>
+        <td>₹0</td>
+        <td>₹${Number(e.amount).toFixed(2)}</td>
+        <td>${e.note || "-"}</td>
+        <td>${new Date(e.created_at).toLocaleDateString()}</td>
+        <td>
+          <button onclick="editExpense(${e.id})">Edit</button>
+          <button onclick="deleteExpense(${e.id})">Delete</button>
+        </td>
+      </tr>
+    `;
+
+  });
+
+  /* CHART */
+  if(chart) chart.destroy();
+
+  let ctx =
+    document.getElementById("chart");
+
+  chart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: [
+        "Gross Donation",
+        "Fees Deducted",
+        "Net Donation",
+        "Manual Income",
+        "Expense"
+      ],
+      datasets: [{
+        data: [
+          grossDonation,
+          totalDonationFees,
+          netDonation,
+          manualIncome,
+          totalExpense
+        ],
+        backgroundColor: [
+          "green",
+          "orange",
+          "blue",
+          "purple",
+          "red"
+        ]
+      }]
+    }
+  });
+
 }
 
-let donations=don.filter(check);
-let income=inc.filter(check);
-let expense=exp.filter(check);
-
-let totalIncome=0,totalExpense=0;
-let cash=0,bank=0;
-
-// CALC
-donations.forEach(d=> totalIncome+=Number(d.amount)||0);
-income.forEach(i=> totalIncome+=Number(i.amount)||0);
-expense.forEach(e=> totalExpense+=Number(e.amount)||0);
-
-// CASH/BANK LOGIC (simple split)
-cash = totalIncome * 0.6 - totalExpense * 0.5;
-bank = totalIncome - cash; 
-
-let balance=totalIncome-totalExpense;
-
-let openCash=Number(localStorage.getItem("open_cash"))||0;
-let openBank=Number(localStorage.getItem("open_bank"))||0;  
-cash = openCash + totalIncome - totalExpense;
-bank = openBank;
-// UI
-document.getElementById("income").innerText = "₹" + totalIncome;
-document.getElementById("expense").innerText = "₹" + totalExpense;
-document.getElementById("balance").innerText = "₹" + balance;
-document.getElementById("cash").innerText = "₹" + cash;
-document.getElementById("bank").innerText = "₹" + bank;
-
-// AI
-document.getElementById("ai").innerText =
-balance >= 0 
-? "📈 Profit ₹" + balance 
-: "⚠️ Loss ₹" + balance;
-
-// TABLE
-table.innerHTML=`<tr>
-<th>Type</th><th>Amount</th><th>Note</th><th>Date</th><th>Action</th>
-</tr>`;
-
-donations.forEach(d=>{
-table.innerHTML+=`<tr>
-<td>Donation</td>
-<td>${d.amount}</td>
-<td>${d.name}</td>
-<td>${new Date(d.created_at).toLocaleDateString()}</td>
-<td>-</td></tr>`;
-});
-
-income.forEach(i=>{
-table.innerHTML+=`<tr>
-<td>Income</td>
-<td>${i.amount}</td>
-<td>${i.note}</td>
-<td>${new Date(i.created_at).toLocaleDateString()}</td>
-<td>
-<button onclick="editIncome(${i.id})">Edit</button>
-<button onclick="deleteIncome(${i.id})">Delete</button>
-</td></tr>`;
-});
-
-expense.forEach(e=>{
-table.innerHTML+=`<tr>
-<td>Expense</td>
-<td>${e.amount}</td>
-<td>${e.note}</td>
-<td>${new Date(e.created_at).toLocaleDateString()}</td>
-<td>
-<button onclick="editExpense(${e.id})">Edit</button>
-<button onclick="deleteExpense(${e.id})">Delete</button>
-</td></tr>`;
-});
-
-// GRAPH (Monthly)
-let months={};
-[...donations,...income,...expense].forEach(x=>{
-let m=new Date(x.created_at).getMonth();
-months[m]=(months[m]||0)+Number(x.amount||0);
-});
-
-if(chart) chart.destroy();
-
-let ctx=document.getElementById("chart");
-chart = new Chart(ctx, {type:"bar",data:{labels: ["Income","Expense"],
-datasets:[{data:[totalIncome,totalExpense],
-           backgroundColor:["green","red"]}]}});
-
-}
-
-// ADD
+/* ADD INCOME */
 async function addIncome(){
-await client.from("income").insert([{
-amount:inc_amt.value,
-note:inc_note.value,
-created_at:inc_date.value || new Date()
-}]);
-load();
+
+  await client.from("income").insert([{
+    amount:
+      inc_amt.value,
+    note:
+      inc_note.value,
+    created_at:
+      inc_date.value || new Date()
+  }]);
+
+  load();
 }
 
+/* ADD EXPENSE */
 async function addExpense(){
-await client.from("expenses").insert([{
-amount:exp_amt.value,
-note:exp_note.value,
-created_at:exp_date.value || new Date()
-}]);
-load();
+
+  await client.from("expenses").insert([{
+    amount:
+      exp_amt.value,
+    note:
+      exp_note.value,
+    created_at:
+      exp_date.value || new Date()
+  }]);
+
+  load();
 }
 
-// EDIT DELETE
+/* DELETE */
 async function deleteIncome(id){
-await client.from("income").delete().eq("id",id); load();
+
+  await client
+    .from("income")
+    .delete()
+    .eq("id", id);
+
+  load();
 }
+
 async function deleteExpense(id){
-await client.from("expenses").delete().eq("id",id); load();
+
+  await client
+    .from("expenses")
+    .delete()
+    .eq("id", id);
+
+  load();
 }
 
+/* EDIT */
 async function editIncome(id){
-let a=prompt("Amount");
-await client.from("income").update({amount:a}).eq("id",id); load();
+
+  let a =
+    prompt("Enter new income amount:");
+
+  if(a){
+
+    await client
+      .from("income")
+      .update({
+        amount: a
+      })
+      .eq("id", id);
+
+    load();
+  }
 }
+
 async function editExpense(id){
-let a=prompt("Amount");
-await client.from("expenses").update({amount:a}).eq("id",id); load();
+
+  let a =
+    prompt("Enter new expense amount:");
+
+  if(a){
+
+    await client
+      .from("expenses")
+      .update({
+        amount: a
+      })
+      .eq("id", id);
+
+    load();
+  }
 }
 
-// CSV
+/* CSV EXPORT */
 function exportCSV(){
-let rows=document.querySelectorAll("table tr");
-let csv="";
-rows.forEach(r=>{
-let cols=r.querySelectorAll("td,th");
-let row=[];
-cols.forEach(c=>row.push(c.innerText));
-csv+=row.join(",")+"\\n";
-});
-let blob=new Blob([csv]);
-let a=document.createElement("a");
-a.href=URL.createObjectURL(blob);
-a.download="report.csv";
-a.click();
+
+  let rows =
+    document.querySelectorAll("table tr");
+
+  let csv = "";
+
+  rows.forEach(r => {
+
+    let cols =
+      r.querySelectorAll("td,th");
+
+    let row = [];
+
+    cols.forEach(c =>
+      row.push(c.innerText)
+    );
+
+    csv +=
+      row.join(",") + "\n";
+
+  });
+
+  let blob =
+    new Blob([csv]);
+
+  let a =
+    document.createElement("a");
+
+  a.href =
+    URL.createObjectURL(blob);
+
+  a.download =
+    "finance_report.csv";
+
+  a.click();
 }
 
-// PRINT
-function printReport(){window.print();}
+/* PRINT */
+function printReport(){
+  window.print();
+}
 
-// LOGOUT
+/* LOGOUT */
 function logout(){
-  localStorage.clear();
-  alert("Logged out successfully ✅");
-  window.location.href = "index.html";
 
+  localStorage.clear();
+
+  alert(
+    "Logged out successfully ✅"
+  );
+
+  window.location.href =
+    "index.html";
 }
 
+/* START */
 load();
 </script>
-
-</body>
-</html>
