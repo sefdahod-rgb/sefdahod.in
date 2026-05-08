@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>NGO Donation Receipt</title>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<!-- WORKING QR CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
 body{
@@ -228,7 +229,7 @@ button{
     </tr>
 
     <tr>
-      <td><b>Amount</b></td>
+      <td><b>Donation Amount</b></td>
       <td class="amount">
         ₹ <span id="amount"></span>
       </td>
@@ -310,30 +311,32 @@ window.onload = function(){
     const params = new URLSearchParams(window.location.search);
 
     // GET VALUES
-    const receipt = params.get("receipt") || "";
-    const name = params.get("name") || "";
-    const aadhaar = params.get("aadhaar") || "";
-    const pan = params.get("pan") || "";
-    const email = params.get("email") || "";
-    const amount = params.get("amount") || "";
-    const gateway = params.get("gateway") || "0";
-    const service = params.get("service") || "0";
-    const gst = params.get("gst") || "0";
-    const totalFees = params.get("totalFees") || "0";
-    const netAmount = params.get("netAmount") || "0";
-    const dateParam = params.get("date") || "";
+    const receipt = params.get("receipt") || "R1001";
+    const name = params.get("name") || "Demo User";
+    const aadhaar = params.get("aadhaar") || "XXXX-XXXX-1234";
+    const pan = params.get("pan") || "ABCDE1234F";
+    const email = params.get("email") || "demo@gmail.com";
 
-    // VALIDATION
-    if(!receipt || !name || !amount){
+    // ORIGINAL DONATION
+    const amount = parseFloat(params.get("amount")) || 1000;
 
-      document.body.innerHTML = `
-        <h2 style="text-align:center;color:red;margin-top:100px;">
-          No receipt data found
-        </h2>
-      `;
+    // AUTO CHARGES CALCULATION
+    const gateway = (amount * 0.02).toFixed(2); // 2%
+    const service = (amount * 0.01).toFixed(2); // 1%
+    const gst = ((parseFloat(gateway) + parseFloat(service)) * 0.18).toFixed(2);
 
-      return;
-    }
+    const totalFees = (
+      parseFloat(gateway) +
+      parseFloat(service) +
+      parseFloat(gst)
+    ).toFixed(2);
+
+    // PAYMENT CUT HOKAR AAYEGA
+    const netAmount = (
+      amount - totalFees
+    ).toFixed(2);
+
+    const dateParam = params.get("date");
 
     // SET VALUES
     document.getElementById("rno").innerText = receipt;
@@ -341,8 +344,8 @@ window.onload = function(){
     document.getElementById("aadhaar").innerText = aadhaar;
     document.getElementById("pan").innerText = pan;
     document.getElementById("email").innerText = email;
-    document.getElementById("amount").innerText = amount;
 
+    document.getElementById("amount").innerText = amount;
     document.getElementById("gateway").innerText = gateway;
     document.getElementById("service").innerText = service;
     document.getElementById("gst").innerText = gst;
@@ -354,26 +357,37 @@ window.onload = function(){
       ? new Date(dateParam).toLocaleString()
       : new Date().toLocaleString();
 
-    // QR CODE
+    // QR CODE SAFE
     const qrBox = document.getElementById("qrcode");
 
-    new QRCode(qrBox,{
-      text:
-        "Receipt No: " + receipt +
-        "\nName: " + name +
-        "\nAmount: ₹" + amount,
+    if(typeof QRCode !== "undefined"){
 
-      width:120,
-      height:120
-    });
+      new QRCode(qrBox,{
+        text:
+          "Receipt No: " + receipt +
+          "\nName: " + name +
+          "\nDonation: ₹" + amount +
+          "\nNet Received: ₹" + netAmount,
+
+        width:120,
+        height:120
+      });
+
+    }else{
+
+      qrBox.innerHTML =
+        "<p style='color:red;'>QR Library Failed</p>";
+
+    }
 
   }catch(err){
 
-    console.log("Receipt Error:", err);
+    console.log(err);
 
     document.body.innerHTML = `
       <h2 style="text-align:center;color:red;margin-top:100px;">
-        Receipt Error
+        Receipt Error<br><br>
+        ${err.message}
       </h2>
     `;
   }
