@@ -1,28 +1,48 @@
 <!DOCTYPE html>
 <html lang="hi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
   <title>Donate - Shubhi Education Foundation</title>
+
   <link rel="stylesheet" href="style.css">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 
 <body>
+
 <div class="overlay">
 
 <header>
   <img src="logo.png">
+
   <h1>Shubhi Education Foundation, Dahod</h1>
 </header>
 
-<p>Registration no.:- Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD</p>
-<p>80G Registration No. :-AAOTS1413MF20251 12A Registration No. :- AAOTS1413ME20241 CSR no.:- CSR00096110</p>
+<p>
+Registration no.:- Under Indian Society Act 1860
+Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD
+</p>
+
+<p>
+80G Registration No. :-AAOTS1413MF20251
+12A Registration No. :- AAOTS1413ME20241
+CSR no.:- CSR00096110
+</p>
 
 <p class="info">
-Address: Rainbow Public School, Shalimar co-operative society, Muvaliya Road, Rabdal, Dahod Gujarat - 389151<br>
-Email: sefdahod@gmail.com | Mobile: 9408695001
+Address: Rainbow Public School,
+Shalimar co-operative society,
+Muvaliya Road, Rabdal,
+Dahod Gujarat - 389151
+<br>
+Email: sefdahod@gmail.com |
+Mobile: 9408695001
 </p>
 
 <nav>
@@ -34,110 +54,346 @@ Email: sefdahod@gmail.com | Mobile: 9408695001
 </nav>
 
 <section>
+
 <div class="card">
 
 <h2>Donate Now</h2>
 
 <form id="donationForm">
-  <input type="text" id="dname" placeholder="Your Full Name" required><br><br>
-  <input type="text" id="dpan" placeholder="PAN Card Number" required><br><br>
-  <input type="text" id="dadhar" placeholder="Aadhaar Number" required><br><br>
-  <input type="email" id="demail" placeholder="Your Email" required><br><br>
-  <input type="number" id="damt" placeholder="Donation Amount (₹)" required min="1"><br><br>
-  <textarea id="dmsg" placeholder="Message (Optional)"></textarea><br><br>
-  <button type="submit">Donate Securely</button>
+
+  <input
+    type="text"
+    id="dname"
+    placeholder="Your Full Name"
+    required
+  >
+
+  <br><br>
+
+  <input
+    type="text"
+    id="dpan"
+    placeholder="PAN Card Number"
+    required
+  >
+
+  <br><br>
+
+  <input
+    type="text"
+    id="dadhar"
+    placeholder="Aadhaar Number"
+    required
+  >
+
+  <br><br>
+
+  <input
+    type="email"
+    id="demail"
+    placeholder="Your Email"
+    required
+  >
+
+  <br><br>
+
+  <input
+    type="number"
+    id="damt"
+    placeholder="Donation Amount (₹)"
+    required
+    min="1"
+  >
+
+  <br><br>
+
+  <textarea
+    id="dmsg"
+    placeholder="Message (Optional)"
+  ></textarea>
+
+  <br><br>
+
+  <button type="submit">
+    Donate Securely
+  </button>
+
 </form>
 
 </div>
+
 </section>
 
 </div>
 
-<footer style="background:#002f60;color:#fff;text-align:center;padding:15px">
+<footer
+style="
+background:#002f60;
+color:#fff;
+text-align:center;
+padding:15px;
+"
+>
 © Shubhi Education Foundation
 </footer>
 
 <script>
+
+/* SUPABASE */
 const client = window.supabase.createClient(
+
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+
+  "YOUR_SUPABASE_ANON_KEY"
+
 );
 
-document.getElementById("donationForm").addEventListener("submit", function(e){
+/* FORM */
+document
+.getElementById("donationForm")
+.addEventListener("submit", function(e){
+
   e.preventDefault();
 
-  const name = document.getElementById("dname").value.trim();
-  const email = document.getElementById("demail").value.trim();
-  const amount = parseInt(document.getElementById("damt").value);
+  /* VALUES */
+  const name =
+    document.getElementById("dname").value.trim();
 
+  const pan =
+    document.getElementById("dpan").value.trim();
+
+  const aadhaar =
+    document.getElementById("dadhar").value.trim();
+
+  const email =
+    document.getElementById("demail").value.trim();
+
+  const amount =
+    parseFloat(
+      document.getElementById("damt").value
+    );
+
+  const message =
+    document.getElementById("dmsg").value.trim();
+
+  /* VALIDATION */
   if(!name || !email || !amount){
-    alert("Please fill all fields");
+
+    alert("Please fill all required fields");
+
     return;
   }
 
-  const receiptNo = "SEF-" + Date.now();
+  /* RECEIPT NO */
+  const receiptNo =
+    "SEF-" + Date.now();
 
+  /* FEES */
+  const gatewayFee =
+    parseFloat((amount * 0.02).toFixed(2));
+
+  const serviceFee =
+    parseFloat((amount * 0.01).toFixed(2));
+
+  const gst =
+    parseFloat(
+      ((gatewayFee + serviceFee) * 0.18)
+      .toFixed(2)
+    );
+
+  const totalFees =
+    parseFloat(
+      (gatewayFee + serviceFee + gst)
+      .toFixed(2)
+    );
+
+  const netAmount =
+    parseFloat(
+      (amount - totalFees)
+      .toFixed(2)
+    );
+
+  /* RAZORPAY */
   const options = {
+
     key: "rzp_live_SeDR91zuvNa9fG",
+
     amount: amount * 100,
+
     currency: "INR",
+
     name: "Shubhi Education Foundation",
+
     description: "Donation",
+
     image: "logo.png",
 
-    handler: async function (response) {
-      const gatewayFee = parseFloat((amount * 0.02).toFixed(2));
-      const serviceFee = parseFloat((amount * 0.01).toFixed(2));
-      const gst = parseFloat(((gatewayFee + serviceFee) * 0.18).toFixed(2));
-      const totalFees = parseFloat((gatewayFee + serviceFee + gst).toFixed(2));
-      const netAmount = parseFloat((amount - totalFees).toFixed(2));
+    prefill: {
 
-      const { error } = await client.from("donations").insert([{
-        name: name,
-        email: email,
-        amount: amount,
-        pan_no: document.getElementById("dpan").value,
-        aadhaar_no: document.getElementById("dadhar").value,
-        gateway_fee: gatewayFee,
-        service_fee: serviceFee,
-        gst: gst,
-        total_fees: totalFees,
-        net_amount: netAmount,
-        receipt_no: receiptNo,
-        payment_id: response.razorpay_payment_id,
-        status: "success",
-        message: document.getElementById("dmsg").value || ""
-      }]);
+      name: name,
 
-      if(error){
-        console.log(error);
-        alert(error.message);
-        return;
-      }
+      email: email
 
-      window.location.href =
-        "receipt.html?name=" + encodeURIComponent(name) +
-        "&email=" + encodeURIComponent(email) +
-        "&amount=" + amount +
-        "&receipt=" + receiptNo +
-        "&gateway=" + gatewayFee +
-        "&service=" + serviceFee +
-        "&gst=" + gst +
-        "&totalFees=" + totalFees +
-        "&netAmount=" + netAmount +
-        "&date=" + encodeURIComponent(new Date().toLocaleString());
     },
 
-    prefill: { name: name, email: email },
-    notes: { NGO: "Shubhi Education Foundation" },
-    theme: { color: "#16a34a" }
+    notes: {
 
-  }; // ✅ options close
+      NGO: "Shubhi Education Foundation",
 
-  const rzp = new Razorpay(options);
+      receipt_no: receiptNo
+
+    },
+
+    theme: {
+
+      color: "#16a34a"
+
+    },
+
+    /* SUCCESS */
+    handler: async function(response){
+
+      try{
+
+        /* SAVE DONATION */
+        const { error } =
+        await client
+        .from("donations")
+        .insert([{
+
+          name: name,
+
+          email: email,
+
+          amount: amount,
+
+          pan_no: pan,
+
+          aadhaar_no: aadhaar,
+
+          gateway_fee: gatewayFee,
+
+          service_fee: serviceFee,
+
+          gst: gst,
+
+          total_fees: totalFees,
+
+          net_amount: netAmount,
+
+          receipt_no: receiptNo,
+
+          payment_id:
+            response.razorpay_payment_id,
+
+          status: "success",
+
+          message: message
+
+        }]);
+
+        /* ERROR */
+        if(error){
+
+          console.log(error);
+
+          alert(
+            "Database Error: " +
+            error.message
+          );
+
+          return;
+        }
+
+        /* FINANCE ENTRY */
+        await client
+        .from("finance")
+        .insert([{
+
+          type: "donation",
+
+          receipt_no: receiptNo,
+
+          donor_name: name,
+
+          amount: amount,
+
+          gateway_fee: gatewayFee,
+
+          service_fee: serviceFee,
+
+          gst: gst,
+
+          total_charges: totalFees,
+
+          net_amount: netAmount,
+
+          payment_id:
+            response.razorpay_payment_id,
+
+          created_at:
+            new Date().toISOString()
+
+        }]);
+
+        /* RECEIPT URL */
+        const params =
+        new URLSearchParams({
+
+          receipt: receiptNo,
+
+          name: name,
+
+          aadhaar: aadhaar,
+
+          pan: pan,
+
+          email: email,
+
+          amount: amount,
+
+          gateway: gatewayFee,
+
+          service: serviceFee,
+
+          gst: gst,
+
+          totalFees: totalFees,
+
+          netAmount: netAmount,
+
+          date:
+            new Date().toLocaleString()
+
+        });
+
+        /* REDIRECT */
+        window.location.href =
+          "receipt.html?" +
+          params.toString();
+
+      }
+      catch(err){
+
+        console.log(err);
+
+        alert(
+          "Something went wrong"
+        );
+      }
+
+    }
+
+  };
+
+  /* OPEN PAYMENT */
+  const rzp =
+    new Razorpay(options);
+
   rzp.open();
 
 });
+
 </script>
 
 </body>
