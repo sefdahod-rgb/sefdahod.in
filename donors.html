@@ -32,72 +32,164 @@ const client = window.supabase.createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
-// 🔗 Receipt Open
-function openReceipt(name, email, amount, date, receipt){
-  const url = "receipt.html?name=" + encodeURIComponent(name)
-    + "&email=" + encodeURIComponent(email)
-    + "&amount=" + amount
-    + "&date=" + encodeURIComponent(date)
-    + "&receipt=" + receipt;
+/* RECEIPT OPEN */
+function openReceipt(donor){
 
-  window.open(url, "_blank");
+  const receiptData = {
+
+    receipt:
+      donor.receipt_no || "-",
+
+    name:
+      donor.name || "-",
+
+    aadhaar:
+      donor.aadhaar_no || "-",
+
+    pan:
+      donor.pan_no || "-",
+
+    email:
+      donor.email || "-",
+
+    amount:
+      donor.amount || 0,
+
+    gateway:
+      donor.gateway_fee || 0,
+
+    service:
+      donor.service_fee || 0,
+
+    gst:
+      donor.gst || 0,
+
+    totalFees:
+      donor.total_fees || 0,
+
+    netAmount:
+      donor.net_amount || 0,
+
+    date:
+      donor.created_at
+        ? new Date(donor.created_at)
+          .toLocaleString()
+        : "-"
+
+  };
+
+  localStorage.setItem(
+    "receiptData",
+    JSON.stringify(receiptData)
+  );
+
+  window.open(
+    "receipt.html",
+    "_blank"
+  );
+
 }
 
-// 📥 Load Donors
+/* LOAD DONORS */
 async function load(){
-  const { data, error } = await client
+
+  const { data, error } =
+    await client
     .from("donations")
     .select("*")
-    .order("id", { ascending: false });
+    .order("id", {
+      ascending: false
+    });
 
   console.log("DATA:", data);
   console.log("ERROR:", error);
 
-  const t = document.getElementById("donorTable");
+  const t =
+    document.getElementById(
+      "donorTable"
+    );
 
   t.innerHTML = `
     <tr>
       <th>Name</th>
       <th>Email</th>
       <th>Amount (₹)</th>
+      <th>Total Fees (₹)</th>
+      <th>Net Donation (₹)</th>
       <th>Date</th>
       <th>Receipt</th>
     </tr>
   `;
 
   if(error){
-    t.innerHTML += `<tr><td colspan="5">Error loading data</td></tr>`;
+
+    t.innerHTML += `
+      <tr>
+        <td colspan="7">
+          Error loading data
+        </td>
+      </tr>
+    `;
+
     return;
   }
 
   if(!data || data.length === 0){
-    t.innerHTML += `<tr><td colspan="5">No donors yet</td></tr>`;
+
+    t.innerHTML += `
+      <tr>
+        <td colspan="7">
+          No donors yet
+        </td>
+      </tr>
+    `;
+
     return;
   }
 
   data.forEach(d => {
+
     t.innerHTML += `
       <tr>
         <td>${d.name || "-"}</td>
+
         <td>${d.email || "-"}</td>
-        <td>₹${d.amount || 0}</td>
-        <td>${d.created_at ? new Date(d.created_at).toLocaleDateString() : "-"}</td>
+
+        <td>₹${parseFloat(
+          d.amount || 0
+        ).toFixed(2)}</td>
+
+        <td>₹${parseFloat(
+          d.total_fees || 0
+        ).toFixed(2)}</td>
+
+        <td>₹${parseFloat(
+          d.net_amount || 0
+        ).toFixed(2)}</td>
+
+        <td>${
+          d.created_at
+            ? new Date(
+                d.created_at
+              ).toLocaleDateString()
+            : "-"
+        }</td>
+
         <td>
-          <button onclick="openReceipt(
-            \`${d.name}\`,
-            \`${d.email}\`,
-            \`${d.amount}\`,
-            \`${d.created_at}\`,
-            \`${d.receipt_no}\`
-          )"><td>
-  <button class="view-btn">View</button>
-</td>
+          <button
+            class="view-btn"
+            onclick='openReceipt(${JSON.stringify(d)})'
+          >
+            View
+          </button>
         </td>
       </tr>
     `;
+
   });
+
 }
 
-// 🚀 Start
+/* START */
 load();
 </script>
