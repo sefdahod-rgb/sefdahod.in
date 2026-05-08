@@ -146,7 +146,7 @@ function saveOpening(){
   load();
 }
 
-/* LOAD ALL DATA */
+/* LOAD DATA */
 async function load(){
 
   let from =
@@ -156,29 +156,22 @@ async function load(){
     document.getElementById("to").value;
 
   const { data: don = [] } =
-    await client
-      .from("donations")
-      .select("*");
+    await client.from("donations").select("*");
 
   const { data: inc = [] } =
-    await client
-      .from("income")
-      .select("*");
+    await client.from("income").select("*");
 
   const { data: exp = [] } =
-    await client
-      .from("expenses")
-      .select("*");
+    await client.from("expenses").select("*");
 
-  /* DATE FILTER */
   function check(d){
 
     if(!from || !to) return true;
 
     let dt =
       new Date(d.created_at)
-        .toISOString()
-        .split("T")[0];
+      .toISOString()
+      .split("T")[0];
 
     return dt >= from && dt <= to;
   }
@@ -198,12 +191,12 @@ async function load(){
   let serviceFees = 0;
   let gstFees = 0;
   let totalDonationFees = 0;
-  let netDonation = 0;
+  let donationAfterFees = 0;
 
   let manualIncome = 0;
   let totalExpense = 0;
 
-  /* DONATION CALCULATION */
+  /* DONATIONS */
   donations.forEach(d => {
 
     const gross =
@@ -219,20 +212,17 @@ async function load(){
       Number(d.gst) || 0;
 
     const fees =
-      Number(d.total_fees) || 0;
+      gateway + service + gst;
 
     const net =
-      d.net_amount !== null &&
-      d.net_amount !== undefined
-        ? Number(d.net_amount)
-        : gross - fees;
+      gross - fees;
 
     grossDonation += gross;
     gatewayFees += gateway;
     serviceFees += service;
     gstFees += gst;
     totalDonationFees += fees;
-    netDonation += net;
+    donationAfterFees += net;
 
   });
 
@@ -252,11 +242,11 @@ async function load(){
 
   });
 
-  /* FINAL TOTAL INCOME */
-  let totalIncome =
-    netDonation + manualIncome;
+  /* FINAL BUSINESS LOGIC */
+  const totalIncome =
+    donationAfterFees + manualIncome;
 
-  let balance =
+  const balance =
     totalIncome - totalExpense;
 
   /* OPENING BALANCE */
@@ -276,7 +266,7 @@ async function load(){
   let bank =
     openBank;
 
-  /* UI UPDATE */
+  /* UI */
   document.getElementById("income").innerText =
     "₹" + totalIncome.toFixed(2);
 
@@ -295,13 +285,17 @@ async function load(){
   /* AI INSIGHT */
   document.getElementById("ai").innerHTML = `
     Gross Donation: ₹${grossDonation.toFixed(2)} <br>
-    Gateway Fee: ₹${gatewayFees.toFixed(2)} <br>
-    Service Fee: ₹${serviceFees.toFixed(2)} <br>
-    GST: ₹${gstFees.toFixed(2)} <br>
-    Total Fees Deducted: ₹${totalDonationFees.toFixed(2)} <br>
-    Net Donation Received: ₹${netDonation.toFixed(2)} <br>
-    Manual Income: ₹${manualIncome.toFixed(2)} <br>
+    Gateway Fee Deducted: ₹${gatewayFees.toFixed(2)} <br>
+    Service Fee Deducted: ₹${serviceFees.toFixed(2)} <br>
+    GST Deducted: ₹${gstFees.toFixed(2)} <br>
+    Total Payment Charges: ₹${totalDonationFees.toFixed(2)} <br>
+    Net Donation Available: ₹${donationAfterFees.toFixed(2)} <br>
+    Other Income: ₹${manualIncome.toFixed(2)} <br>
     Total Expense: ₹${totalExpense.toFixed(2)} <br><br>
+
+    Final Formula:<br>
+    (Net Donation + Other Income - Expense)<br><br>
+
     ${
       balance >= 0
         ? "📈 Profit ₹" + balance.toFixed(2)
@@ -316,9 +310,9 @@ async function load(){
   table.innerHTML = `
     <tr>
       <th>Type</th>
-      <th>Gross Amount</th>
+      <th>Gross</th>
       <th>Fees</th>
-      <th>Net Amount</th>
+      <th>Net</th>
       <th>Note</th>
       <th>Date</th>
       <th>Action</th>
@@ -331,14 +325,20 @@ async function load(){
     const gross =
       Number(d.amount) || 0;
 
+    const gateway =
+      Number(d.gateway_fee) || 0;
+
+    const service =
+      Number(d.service_fee) || 0;
+
+    const gst =
+      Number(d.gst) || 0;
+
     const fees =
-      Number(d.total_fees) || 0;
+      gateway + service + gst;
 
     const net =
-      d.net_amount !== null &&
-      d.net_amount !== undefined
-        ? Number(d.net_amount)
-        : gross - fees;
+      gross - fees;
 
     table.innerHTML += `
       <tr>
@@ -354,7 +354,7 @@ async function load(){
 
   });
 
-  /* INCOME */
+  /* OTHER INCOME */
   income.forEach(i => {
 
     table.innerHTML += `
@@ -405,22 +405,28 @@ async function load(){
     data: {
       labels: [
         "Gross Donation",
-        "Fees Deducted",
+        "Gateway Fee",
+        "Service Fee",
+        "GST",
         "Net Donation",
-        "Manual Income",
+        "Other Income",
         "Expense"
       ],
       datasets: [{
         data: [
           grossDonation,
-          totalDonationFees,
-          netDonation,
+          gatewayFees,
+          serviceFees,
+          gstFees,
+          donationAfterFees,
           manualIncome,
           totalExpense
         ],
         backgroundColor: [
           "green",
           "orange",
+          "gold",
+          "yellow",
           "blue",
           "purple",
           "red"
@@ -434,18 +440,16 @@ async function load(){
 /* ADD INCOME */
 async function addIncome(){
 
-  await client
-    .from("income")
-    .insert([{
-      amount:
-        Number(
-          document.getElementById("inc_amt").value
-        ),
-      note:
-        document.getElementById("inc_note").value,
-      created_at:
-        document.getElementById("inc_date").value || new Date()
-    }]);
+  await client.from("income").insert([{
+    amount:
+      Number(
+        document.getElementById("inc_amt").value
+      ),
+    note:
+      document.getElementById("inc_note").value,
+    created_at:
+      document.getElementById("inc_date").value || new Date()
+  }]);
 
   load();
 }
@@ -453,18 +457,16 @@ async function addIncome(){
 /* ADD EXPENSE */
 async function addExpense(){
 
-  await client
-    .from("expenses")
-    .insert([{
-      amount:
-        Number(
-          document.getElementById("exp_amt").value
-        ),
-      note:
-        document.getElementById("exp_note").value,
-      created_at:
-        document.getElementById("exp_date").value || new Date()
-    }]);
+  await client.from("expenses").insert([{
+    amount:
+      Number(
+        document.getElementById("exp_amt").value
+      ),
+    note:
+      document.getElementById("exp_note").value,
+    created_at:
+      document.getElementById("exp_date").value || new Date()
+  }]);
 
   load();
 }
@@ -527,7 +529,7 @@ async function editExpense(id){
   }
 }
 
-/* EXPORT CSV */
+/* CSV EXPORT */
 function exportCSV(){
 
   let rows =
