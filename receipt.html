@@ -2,133 +2,161 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>NGO Donation Receipt</title>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #ddd;
-  padding: 20px;
+body{
+  font-family:Arial,sans-serif;
+  background:#ddd;
+  padding:20px;
+  margin:0;
 }
 
-/* A4 */
-.page {
-  width: 210mm;
-  min-height: 297mm;
-  margin: auto;
-  background: white;
-  padding: 20mm;
-  position: relative;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+/* A4 PAGE */
+.page{
+  width:210mm;
+  min-height:297mm;
+  margin:auto;
+  background:#fff;
+  padding:20mm;
+  position:relative;
+  box-shadow:0 0 10px rgba(0,0,0,0.2);
+  box-sizing:border-box;
 }
 
-/* Watermark */
-.page::before {
-  content: "DONATION";
-  position: absolute;
-  font-size: 80px;
-  color: rgba(0,0,0,0.05);
-  top: 40%;
-  left: 20%;
-  transform: rotate(-30deg);
+/* WATERMARK */
+.page::before{
+  content:"DONATION";
+  position:absolute;
+  font-size:80px;
+  color:rgba(0,0,0,0.05);
+  top:40%;
+  left:18%;
+  transform:rotate(-30deg);
+  z-index:0;
 }
 
-/* Header */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  border-bottom: 2px solid #000;
-  padding-bottom: 10px;
+/* HEADER */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  border-bottom:2px solid #000;
+  padding-bottom:10px;
+  position:relative;
+  z-index:1;
 }
 
-.header img {
-  height: 70px;
+.header img{
+  height:70px;
 }
 
-.header-right {
-  text-align: right;
+.header-right{
+  text-align:right;
 }
 
-.header-right h1 {
-  margin: 0;
-  font-size: 24px;
+.header-right h1{
+  margin:0;
+  font-size:24px;
 }
 
-/* Title */
-.title {
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-  margin: 15px 0;
-  border-bottom: 1px solid #000;
-  padding-bottom: 5px;
+/* TITLE */
+.title{
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
+  margin:20px 0;
+  border-bottom:1px solid #000;
+  padding-bottom:5px;
+  position:relative;
+  z-index:1;
 }
 
-/* Table */
-table {
-  width: 100%;
-  border-collapse: collapse;
+/* TABLE */
+table{
+  width:100%;
+  border-collapse:collapse;
+  position:relative;
+  z-index:1;
 }
 
-td {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
+td{
+  padding:10px;
+  border-bottom:1px solid #eee;
+  font-size:15px;
 }
 
-.amount {
-  color: green;
-  font-weight: bold;
-  font-size: 18px;
-}
-
-/* Footer */
-.footer {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 40px;
-}
-
-.signature {
-  border-top: 1px solid #000;
-  width: 200px;
-  text-align: center;
-  padding-top: 5px;
+.amount{
+  color:green;
+  font-weight:bold;
+  font-size:18px;
 }
 
 /* QR */
-#qrcode {
-  margin-top: 10px;
+#qrcode{
+  margin-top:10px;
+  position:relative;
+  z-index:1;
 }
 
-/* Buttons */
-.buttons {
-  margin-top: 20px;
+/* FOOTER */
+.footer{
+  display:flex;
+  justify-content:space-between;
+  margin-top:50px;
+  position:relative;
+  z-index:1;
 }
 
-button {
-  padding: 10px 15px;
-  border: none;
-  color: white;
-  cursor: pointer;
-  border-radius: 5px;
+.signature{
+  border-top:1px solid #000;
+  width:220px;
+  text-align:center;
+  padding-top:5px;
 }
 
-.print {
-  background: green;
+/* BUTTONS */
+.buttons{
+  margin-top:20px;
+  text-align:center;
 }
 
-.home {
-  background: blue;
-  margin-right: 10px;
+button{
+  padding:10px 15px;
+  border:none;
+  color:white;
+  cursor:pointer;
+  border-radius:5px;
+  font-size:15px;
 }
 
-@media print {
-  .buttons { display: none; }
-  body { background: white; }
-  .page { box-shadow: none; }
+.print{
+  background:green;
+}
+
+.home{
+  background:blue;
+  margin-right:10px;
+}
+
+@media print{
+  .buttons{
+    display:none;
+  }
+
+  body{
+    background:white;
+    padding:0;
+  }
+
+  .page{
+    box-shadow:none;
+    margin:0;
+    width:100%;
+  }
 }
 </style>
 </head>
@@ -139,96 +167,219 @@ button {
 
   <!-- HEADER -->
   <div class="header">
-    <img src="logo.png">
+
+    <img src="logo.png" alt="Logo">
 
     <div class="header-right">
       <h1>Shubhi Education Foundation</h1>
+
       <p style="font-size:12px;">
         Reg: Indian Society Act 1860 & Mumbai Public Trust Act 1950
       </p>
+
       <p style="font-size:12px;">
-        80G: AAOTS1413MF20251 | 12A: AAOTS1413ME20241 | CSR: CSR00096110
+        80G: AAOTS1413MF20251 |
+        12A: AAOTS1413ME20241 |
+        CSR: CSR00096110
       </p>
+
       <p style="font-size:12px;">
         Dahod, Gujarat - 389151
       </p>
     </div>
   </div>
 
-  <div class="title">DONATION RECEIPT</div>
+  <!-- TITLE -->
+  <div class="title">
+    DONATION RECEIPT
+  </div>
 
   <!-- DETAILS -->
   <table>
-    <tr><td><b>Receipt No</b></td><td id="rno"></td></tr>
-    <tr><td><b>Date</b></td><td id="date"></td></tr>
-    <tr><td><b>Name</b></td><td id="name"></td></tr>
-    <tr><td><b>Aadhaar</b></td><td id="aadhaar"></td></tr>
-    <tr><td><b>PAN</b></td><td id="pan"></td></tr>
-    <tr><td><b>Email</b></td><td id="email"></td></tr>
-    <tr><td><b>Amount</b></td><td class="amount">₹ <span id="amount"></span></td></tr>
-    <tr><td><b>Payment Mode</b></td><td>UPI / Online</td></tr>
+
+    <tr>
+      <td><b>Receipt No</b></td>
+      <td id="rno"></td>
+    </tr>
+
+    <tr>
+      <td><b>Date</b></td>
+      <td id="date"></td>
+    </tr>
+
+    <tr>
+      <td><b>Name</b></td>
+      <td id="name"></td>
+    </tr>
+
+    <tr>
+      <td><b>Aadhaar</b></td>
+      <td id="aadhaar"></td>
+    </tr>
+
+    <tr>
+      <td><b>PAN</b></td>
+      <td id="pan"></td>
+    </tr>
+
+    <tr>
+      <td><b>Email</b></td>
+      <td id="email"></td>
+    </tr>
+
+    <tr>
+      <td><b>Amount</b></td>
+      <td class="amount">
+        ₹ <span id="amount"></span>
+      </td>
+    </tr>
+
+    <tr>
+      <td><b>Gateway Fee</b></td>
+      <td>₹ <span id="gateway"></span></td>
+    </tr>
+
+    <tr>
+      <td><b>Service Fee</b></td>
+      <td>₹ <span id="service"></span></td>
+    </tr>
+
+    <tr>
+      <td><b>GST</b></td>
+      <td>₹ <span id="gst"></span></td>
+    </tr>
+
+    <tr>
+      <td><b>Total Charges</b></td>
+      <td>₹ <span id="totalFees"></span></td>
+    </tr>
+
+    <tr>
+      <td><b>Net Amount Received</b></td>
+      <td style="color:green;font-weight:bold;">
+        ₹ <span id="netAmount"></span>
+      </td>
+    </tr>
+
+    <tr>
+      <td><b>Payment Mode</b></td>
+      <td>UPI / Online</td>
+    </tr>
+
   </table>
 
+  <!-- QR -->
   <h4>Scan for Verification</h4>
   <div id="qrcode"></div>
 
+  <!-- FOOTER -->
   <div class="footer">
-    <div>Thank you for your support 🙏</div>
-    <div class="signature">Authorized Signature</div>
+
+    <div>
+      Thank you for your support 🙏
+    </div>
+
+    <div class="signature">
+      Authorized Signature
+    </div>
+
   </div>
 
 </div>
 
 <!-- BUTTONS -->
 <div class="buttons">
+
   <a href="index.html">
-    <button class="home">⬅ Back to Home</button>
+    <button class="home">
+      ⬅ Back to Home
+    </button>
   </a>
 
-  <button class="print" onclick="window.print()">Print / PDF</button>
+  <button class="print" onclick="window.print()">
+    Print / PDF
+  </button>
+
 </div>
 
 <script>
-window.onload = function () {
-  try {
+window.onload = function(){
+
+  try{
+
     const params = new URLSearchParams(window.location.search);
 
-    const receipt = params.get("receipt");
-    const name = params.get("name");
-    const aadhaar_no = params.get("aadhaar");
-    const Pan_no = params.get("pan");
-    const email = params.get("email");
-    const amount = params.get("amount");
-    const dateParam = params.get("date");
+    // GET VALUES
+    const receipt = params.get("receipt") || "";
+    const name = params.get("name") || "";
+    const aadhaar = params.get("aadhaar") || "";
+    const pan = params.get("pan") || "";
+    const email = params.get("email") || "";
+    const amount = params.get("amount") || "";
+    const gateway = params.get("gateway") || "0";
+    const service = params.get("service") || "0";
+    const gst = params.get("gst") || "0";
+    const totalFees = params.get("totalFees") || "0";
+    const netAmount = params.get("netAmount") || "0";
+    const dateParam = params.get("date") || "";
 
-    console.log("DATA:", receipt, name, aadhar_no, pan_no, email, amount, dateParam);
+    // VALIDATION
+    if(!receipt || !name || !amount){
 
-    if (!receipt || !name || !amount) {
-      document.body.innerHTML = "<h2 style='text-align:center;color:red'>No receipt data found</h2>";
+      document.body.innerHTML = `
+        <h2 style="text-align:center;color:red;margin-top:100px;">
+          No receipt data found
+        </h2>
+      `;
+
       return;
     }
 
+    // SET VALUES
     document.getElementById("rno").innerText = receipt;
     document.getElementById("name").innerText = name;
+    document.getElementById("aadhaar").innerText = aadhaar;
+    document.getElementById("pan").innerText = pan;
     document.getElementById("email").innerText = email;
     document.getElementById("amount").innerText = amount;
-    document.getElementById("date").innerText =
-      dateParam ? new Date(dateParam).toLocaleDateString() : new Date().toLocaleDateString();
 
-    // QR
+    document.getElementById("gateway").innerText = gateway;
+    document.getElementById("service").innerText = service;
+    document.getElementById("gst").innerText = gst;
+    document.getElementById("totalFees").innerText = totalFees;
+    document.getElementById("netAmount").innerText = netAmount;
+
+    document.getElementById("date").innerText =
+      dateParam
+      ? new Date(dateParam).toLocaleString()
+      : new Date().toLocaleString();
+
+    // QR CODE
     const qrBox = document.getElementById("qrcode");
 
-    if (qrBox) {
-      new QRCode(qrBox, {
-        text: "SEF-RECEIPT-" + receipt,
-        width: 120,
-        height: 120
-      });
-    }
+    new QRCode(qrBox,{
+      text:
+        "Receipt No: " + receipt +
+        "\nName: " + name +
+        "\nAmount: ₹" + amount,
 
-  } catch (err) {
-    console.log("FINAL ERROR:", err);
-    document.body.innerHTML = "<h2 style='text-align:center;color:red'>Receipt Error</h2>";
+      width:120,
+      height:120
+    });
+
+  }catch(err){
+
+    console.log("Receipt Error:", err);
+
+    document.body.innerHTML = `
+      <h2 style="text-align:center;color:red;margin-top:100px;">
+        Receipt Error
+      </h2>
+    `;
   }
+
 };
 </script>
+
+</body>
+</html>
