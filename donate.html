@@ -155,7 +155,7 @@ document.getElementById("donationForm")
     document.getElementById("demail").value.trim();
 
   const pan =
-    document.getElementById("dpan").value.trim();
+    document.getElementById("dpan").value.trim().toUpperCase();
 
   const aadhaar =
     document.getElementById("dadhar").value.trim();
@@ -168,9 +168,37 @@ document.getElementById("donationForm")
   const message =
     document.getElementById("dmsg").value.trim();
 
-  if(!name || !email || !amount){
+  /* VALIDATION */
+  if(!name || !email || !pan || !aadhaar || !amount){
 
-    alert("Please fill all fields");
+    alert("Please fill all required fields.");
+
+    return;
+  }
+
+  const panRegex =
+    /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
+  if(!panRegex.test(pan)){
+
+    alert("Invalid PAN number.");
+
+    return;
+  }
+
+  const aadhaarRegex =
+    /^[0-9]{12}$/;
+
+  if(!aadhaarRegex.test(aadhaar)){
+
+    alert("Invalid Aadhaar number.");
+
+    return;
+  }
+
+  if(amount < 1){
+
+    alert("Minimum donation amount is ₹1.");
 
     return;
   }
@@ -178,12 +206,16 @@ document.getElementById("donationForm")
   const receiptNo =
     "SEF-" + Date.now();
 
-  /* FEES */
+  /* FEES CALCULATION */
   const gatewayFee =
-    parseFloat((amount * 0.02).toFixed(2));
+    parseFloat(
+      (amount * 0.02).toFixed(2)
+    );
 
   const serviceFee =
-    parseFloat((amount * 0.01).toFixed(2));
+    parseFloat(
+      (amount * 0.01).toFixed(2)
+    );
 
   const gst =
     parseFloat(
@@ -203,24 +235,31 @@ document.getElementById("donationForm")
       .toFixed(2)
     );
 
-  /* RAZORPAY */
+  /* RAZORPAY OPTIONS */
   const options = {
 
-    key: "rzp_live_SeDR91zuvNa9fG",
+    key: "rzp_live_SeDR91zuvNa9fG", // Replace with test key if needed
 
-    amount: amount * 100,
+    amount:
+      Math.round(amount * 100),
 
     currency: "INR",
 
-    name: "Shubhi Education Foundation",
+    name:
+      "Shubhi Education Foundation",
 
-    description: "Donation",
+    description:
+      "Secure Donation Payment",
 
     image: "logo.png",
 
     prefill: {
       name: name,
       email: email
+    },
+
+    notes: {
+      receipt_no: receiptNo
     },
 
     theme: {
@@ -231,53 +270,57 @@ document.getElementById("donationForm")
 
       try{
 
+        /* SAVE TO SUPABASE */
         const { error } =
-        await client
-        .from("donations")
-        .insert([{
+          await client
+          .from("donations")
+          .insert([{
 
-          name: name,
+            name: name,
 
-          email: email,
+            email: email,
 
-          amount: amount,
+            amount: amount,
 
-          pan_no: pan,
+            pan_no: pan,
 
-          aadhaar_no: aadhaar,
+            aadhaar_no: aadhaar,
 
-          gateway_fee: gatewayFee,
+            gateway_fee: gatewayFee,
 
-          service_fee: serviceFee,
+            service_fee: serviceFee,
 
-          gst: gst,
+            gst: gst,
 
-          total_fees: totalFees,
+            total_fees: totalFees,
 
-          net_amount: netAmount,
+            net_amount: netAmount,
 
-          receipt_no: receiptNo,
+            receipt_no: receiptNo,
 
-          payment_id:
-            response.razorpay_payment_id,
+            payment_id:
+              response.razorpay_payment_id,
 
-          status: "success",
+            status: "success",
 
-          message: message
+            message: message
 
-        }]);
+          }]);
 
         if(error){
 
           console.log(error);
 
-          alert(error.message);
+          alert(
+            "Database save failed: " +
+            error.message
+          );
 
           return;
         }
 
-        const params =
-        new URLSearchParams({
+        /* STORE RECEIPT DATA */
+        const receiptData = {
 
           receipt: receiptNo,
 
@@ -302,28 +345,52 @@ document.getElementById("donationForm")
           netAmount: netAmount,
 
           date:
-            new Date().toLocaleString()
+            new Date()
+            .toLocaleString()
 
-        });
+        };
 
+        localStorage.setItem(
+          "receiptData",
+          JSON.stringify(receiptData)
+        );
+
+        /* REDIRECT */
         window.location.href =
-          "receipt.html?" +
-          params.toString();
+          "receipt.html";
 
       }
       catch(err){
 
         console.log(err);
 
-        alert("Payment save failed");
+        alert(
+          "Payment saved but receipt failed."
+        );
 
       }
 
+    },
+
+    modal: {
+      ondismiss: function(){
+
+        alert(
+          "Payment cancelled."
+        );
+
+      }
     }
 
   };
 
-  const rzp = new Razorpay(options);
+  console.log(
+    "Opening Razorpay...",
+    options
+  );
+
+  const rzp =
+    new Razorpay(options);
 
   rzp.open();
 
