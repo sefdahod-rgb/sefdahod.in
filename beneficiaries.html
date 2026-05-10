@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Beneficiaries Management - Shubhi Education Foundation</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{
+  margin:0;
+  font-family:Segoe UI;
+  background:#f1f5f9;
+}
+
+.header{
+  background:#16a34a;
+  color:white;
+  padding:15px;
+  text-align:center;
+}
+
+.header img{
+  width:60px;
+}
+
+nav{
+  background:#15803d;
+  padding:10px;
+  text-align:center;
+}
+
+nav a{
+  color:white;
+  text-decoration:none;
+  margin:8px;
+  padding:8px 12px;
+  border-radius:6px;
+  background:rgba(255,255,255,0.15);
+}
+
+.container{
+  padding:20px;
+}
+
+.card{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  margin-bottom:20px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+input,select,textarea{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+
+button{
+  padding:10px 15px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.btn-add{
+  background:#16a34a;
+  color:white;
+}
+
+.btn-edit{
+  background:#f59e0b;
+  color:white;
+}
+
+.btn-delete{
+  background:#dc2626;
+  color:white;
+}
+
+.btn-print{
+  background:#2563eb;
+  color:white;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+
+th,td{
+  padding:10px;
+  border-bottom:1px solid #ddd;
+  text-align:left;
+}
+
+th{
+  background:#16a34a;
+  color:white;
+}
+
+.search{
+  margin-bottom:15px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:15px;
+}
+
+.stat-box{
+  background:#dcfce7;
+  padding:15px;
+  border-radius:10px;
+  text-align:center;
+}
+
+.stat-box h3{
+  margin:0;
+  color:#166534;
+}
+
+.stat-box p{
+  font-size:22px;
+  font-weight:bold;
+}
+
+@media print{
+  nav,.no-print,button,input,textarea,select{
+    display:none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<script>
+if(localStorage.getItem("isAdmin")!=="yes"){
+  localStorage.setItem("redirectAfterLogin","beneficiaries.html");
+  location.href="login.html";
+}
+</script>
+
+<div class="header">
+  <img src="logo.png">
+  <h2>Beneficiaries Management</h2>
+  <p>Shubhi Education Foundation</p>
+</div>
+
+<nav>
+  <a href="admin.html">Admin</a>
+  <a href="index.html">Home</a>
+  <a href="#" onclick="logout()">Logout</a>
+</nav>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-box">
+      <h3>Total Beneficiaries</h3>
+      <p id="totalBeneficiaries">0</p>
+    </div>
+
+    <div class="stat-box">
+      <h3>Students</h3>
+      <p id="studentCount">0</p>
+    </div>
+
+    <div class="stat-box">
+      <h3>Women Support</h3>
+      <p id="womenCount">0</p>
+    </div>
+
+    <div class="stat-box">
+      <h3>Senior Citizens</h3>
+      <p id="seniorCount">0</p>
+    </div>
+  </div>
+
+  <!-- ADD FORM -->
+  <div class="card no-print">
+    <h3>Add Beneficiary</h3>
+
+    <input type="text" id="name" placeholder="Full Name">
+
+    <input type="number" id="age" placeholder="Age">
+
+    <select id="gender">
+      <option value="">Select Gender</option>
+      <option>Male</option>
+      <option>Female</option>
+      <option>Other</option>
+    </select>
+
+    <input type="text" id="phone" placeholder="Phone Number">
+
+    <input type="text" id="address" placeholder="Address">
+
+    <select id="category">
+      <option value="">Select Category</option>
+      <option>Student</option>
+      <option>Women Support</option>
+      <option>Senior Citizen</option>
+      <option>Medical Aid</option>
+      <option>Skill Development</option>
+    </select>
+
+    <textarea id="support" placeholder="Support Details"></textarea>
+
+    <button class="btn-add" onclick="addBeneficiary()">Add Beneficiary</button>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="card no-print">
+    <input type="text" id="search" class="search" placeholder="Search beneficiary by name/category...">
+    <button class="btn-print" onclick="window.print()">Print Report</button>
+  </div>
+
+  <!-- TABLE -->
+  <div class="card">
+    <h3>Beneficiary Records</h3>
+
+    <table id="table">
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Gender</th>
+        <th>Phone</th>
+        <th>Category</th>
+        <th>Support</th>
+        <th>Date</th>
+        <th class="no-print">Action</th>
+      </tr>
+    </table>
+  </div>
+
+</div>
+
+<script>
+const client = supabase.createClient(
+  "https://kqahcvaoxnmxfcgyyync.supabase.co",
+  "YOUR_SUPABASE_ANON_KEY"
+);
+
+let allData = [];
+
+/* LOAD */
+async function loadBeneficiaries(){
+
+  const { data, error } = await client
+    .from("beneficiaries")
+    .select("*")
+    .order("id", { ascending:false });
+
+  if(error){
+    console.log(error);
+    return;
+  }
+
+  allData = data || [];
+
+  renderTable(allData);
+  updateStats(allData);
+}
+
+/* ADD */
+async function addBeneficiary(){
+
+  const name = document.getElementById("name").value.trim();
+  const age = document.getElementById("age").value;
+  const gender = document.getElementById("gender").value;
+  const phone = document.getElementById("phone").value.trim();
+  const address = document.getElementById("address").value.trim();
+  const category = document.getElementById("category").value;
+  const support = document.getElementById("support").value.trim();
+
+  if(!name || !category){
+    alert("Please fill required fields.");
+    return;
+  }
+
+  const { error } = await client
+    .from("beneficiaries")
+    .insert([{
+      name,
+      age,
+      gender,
+      phone,
+      address,
+      category,
+      support,
+      created_at:new Date()
+    }]);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  alert("Beneficiary added successfully ✅");
+
+  document.getElementById("name").value="";
+  document.getElementById("age").value="";
+  document.getElementById("gender").value="";
+  document.getElementById("phone").value="";
+  document.getElementById("address").value="";
+  document.getElementById("category").value="";
+  document.getElementById("support").value="";
+
+  loadBeneficiaries();
+}
+
+/* TABLE */
+function renderTable(data){
+
+  const table = document.getElementById("table");
+
+  table.innerHTML = `
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Age</th>
+      <th>Gender</th>
+      <th>Phone</th>
+      <th>Category</th>
+      <th>Support</th>
+      <th>Date</th>
+      <th class="no-print">Action</th>
+    </tr>
+  `;
+
+  if(data.length===0){
+    table.innerHTML += `
+      <tr>
+        <td colspan="9">No beneficiaries found.</td>
+      </tr>
+    `;
+    return;
+  }
+
+  data.forEach(b => {
+
+    table.innerHTML += `
+      <tr>
+        <td>${b.id}</td>
+        <td>${b.name || "-"}</td>
+        <td>${b.age || "-"}</td>
+        <td>${b.gender || "-"}</td>
+        <td>${b.phone || "-"}</td>
+        <td>${b.category || "-"}</td>
+        <td>${b.support || "-"}</td>
+        <td>${new Date(b.created_at).toLocaleDateString()}</td>
+        <td class="no-print">
+          <button class="btn-edit" onclick="editBeneficiary(${b.id}, '${b.name}', '${b.category}')">Edit</button>
+          <button class="btn-delete" onclick="deleteBeneficiary(${b.id})">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+/* EDIT */
+async function editBeneficiary(id, oldName, oldCategory){
+
+  const newName = prompt("Edit Name:", oldName);
+  const newCategory = prompt("Edit Category:", oldCategory);
+
+  if(!newName || !newCategory) return;
+
+  await client
+    .from("beneficiaries")
+    .update({
+      name:newName,
+      category:newCategory
+    })
+    .eq("id", id);
+
+  loadBeneficiaries();
+}
+
+/* DELETE */
+async function deleteBeneficiary(id){
+
+  if(!confirm("Delete this beneficiary?")) return;
+
+  await client
+    .from("beneficiaries")
+    .delete()
+    .eq("id", id);
+
+  loadBeneficiaries();
+}
+
+/* STATS */
+function updateStats(data){
+
+  document.getElementById("totalBeneficiaries").innerText = data.length;
+
+  document.getElementById("studentCount").innerText =
+    data.filter(x => x.category==="Student").length;
+
+  document.getElementById("womenCount").innerText =
+    data.filter(x => x.category==="Women Support").length;
+
+  document.getElementById("seniorCount").innerText =
+    data.filter(x => x.category==="Senior Citizen").length;
+}
+
+/* SEARCH */
+document.getElementById("search")
+.addEventListener("input", function(){
+
+  const val = this.value.toLowerCase();
+
+  const filtered = allData.filter(b =>
+    (b.name || "").toLowerCase().includes(val) ||
+    (b.category || "").toLowerCase().includes(val)
+  );
+
+  renderTable(filtered);
+});
+
+/* LOGOUT */
+function logout(){
+  localStorage.clear();
+  location.href="index.html";
+}
+
+/* START */
+loadBeneficiaries();
+</script>
+
+</body>
+</html>
