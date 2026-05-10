@@ -176,6 +176,9 @@ We aspire to build a future that is educated, self-reliant, and socially respons
 
 <div class="public-section">
 
+ 
+<div class="public-section">
+
   <!-- ENQUIRY FORM -->
   <div class="enquiry-box">
     <h2>📩 Contact / Enquiry Form</h2>
@@ -183,13 +186,9 @@ We aspire to build a future that is educated, self-reliant, and socially respons
     <form onsubmit="submitEnquiry(event)">
 
       <input type="text" id="enq_name" placeholder="Your Name" required>
-
       <input type="text" id="enq_phone" placeholder="Phone Number">
-
       <input type="email" id="enq_email" placeholder="Email Address">
-
       <input type="text" id="enq_subject" placeholder="Subject">
-
       <textarea id="enq_message" placeholder="Write your enquiry..."></textarea>
 
       <button type="submit">
@@ -199,7 +198,27 @@ We aspire to build a future that is educated, self-reliant, and socially respons
     </form>
   </div>
 
- <!-- ✅ INDEX.HTML ME FOOTER SE PEHLE YA SUPABASE CLIENT KE BAAD YE SCRIPT ZARUR HO -->
+  <!-- NEWS BOX -->
+  <div class="news-box">
+
+    <h2>📰 Latest News / Events</h2>
+
+    <marquee direction="up"
+      scrollamount="3"
+      height="350"
+      onmouseover="this.stop();"
+      onmouseout="this.start();">
+
+      <div id="newsTicker">
+        Loading latest updates...
+      </div>
+
+    </marquee>
+
+  </div>
+
+</div>
+
 
 <script>
 async function loadNewsTicker(){
