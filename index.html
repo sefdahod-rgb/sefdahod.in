@@ -215,6 +215,20 @@ We aspire to build a future that is educated, self-reliant, and socially respons
 
   </div>
 
+<!-- ✅ FINAL CORRECT ORDER (INDEX.HTML me exactly isi order me rakho) -->
+
+<!-- 1️⃣ SUPABASE LIBRARY -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- 2️⃣ CLIENT -->
+<script>
+const client = supabase.createClient(
+  "https://kqahcvaoxnmxfcgyyync.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+);
+</script>
+
+<!-- 3️⃣ NEWS SCRIPT -->
 <script>
 async function loadNewsTicker(){
 
@@ -252,17 +266,7 @@ async function loadNewsTicker(){
 }
 
 loadNewsTicker();
- 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-const client = supabase.createClient(
-  "https://kqahcvaoxnmxfcgyyync.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
-);
 </script>
-
-
   </div>
 
 <footer style="background:#002f60;color:#fff;text-align:center;padding:15px;margin-top:20px">
