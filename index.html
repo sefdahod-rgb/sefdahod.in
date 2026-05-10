@@ -176,7 +176,79 @@ We aspire to build a future that is educated, self-reliant, and socially respons
 </div>
 
 </section>
+<!-- ✅ PUBLIC ENQUIRY FORM SECTION (About Us ke niche ya footer se upar paste karo) -->
 
+<div class="card">
+
+<h2>📩 Contact / Enquiry Form</h2>
+
+<form onsubmit="submitEnquiry(event)">
+
+  <input type="text" id="enq_name" placeholder="Your Name" required
+    style="width:100%;padding:10px;margin:8px 0;">
+
+  <input type="text" id="enq_phone" placeholder="Phone Number"
+    style="width:100%;padding:10px;margin:8px 0;">
+
+  <input type="email" id="enq_email" placeholder="Email Address"
+    style="width:100%;padding:10px;margin:8px 0;">
+
+  <input type="text" id="enq_subject" placeholder="Subject"
+    style="width:100%;padding:10px;margin:8px 0;">
+
+  <textarea id="enq_message" placeholder="Write your enquiry..."
+    style="width:100%;padding:10px;margin:8px 0;height:120px;"></textarea>
+
+  <button type="submit"
+    style="background:#0F9D58;color:#fff;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;">
+    Submit Enquiry
+  </button>
+
+</form>
+
+</div>
+
+<!-- ✅ SUPABASE SCRIPT -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const client = supabase.createClient(
+  "https://kqahcvaoxnmxfcgyyync.supabase.co",
+  "YOUR_ANON_KEY"
+);
+
+async function submitEnquiry(e){
+  e.preventDefault();
+
+  const enquiry_no = "ENQ-" + Date.now();
+
+  const { error } = await client
+    .from("enquiries")
+    .insert([{
+      enquiry_no,
+      name: document.getElementById("enq_name").value,
+      phone: document.getElementById("enq_phone").value,
+      email: document.getElementById("enq_email").value,
+      subject: document.getElementById("enq_subject").value,
+      message: document.getElementById("enq_message").value,
+      source: "Website"
+    }]);
+
+  if(error){
+    console.log(error);
+    alert("Failed to send enquiry");
+    return;
+  }
+
+  alert("Enquiry submitted successfully ✅");
+
+  document.getElementById("enq_name").value="";
+  document.getElementById("enq_phone").value="";
+  document.getElementById("enq_email").value="";
+  document.getElementById("enq_subject").value="";
+  document.getElementById("enq_message").value="";
+}
+</script>
 <footer style="background:#002f60;color:#fff;text-align:center;padding:15px;margin-top:20px">
 © 2026 Shubhi Education Foundation, Dahod
 </footer>
