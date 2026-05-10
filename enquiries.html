@@ -13,24 +13,20 @@ body{
   font-family:Segoe UI;
   background:#f8fafc;
 }
-
 .header{
   background:#7c3aed;
   color:white;
   text-align:center;
   padding:15px;
 }
-
 .header img{
   width:60px;
 }
-
 nav{
   background:#6d28d9;
   text-align:center;
   padding:10px;
 }
-
 nav a{
   color:white;
   text-decoration:none;
@@ -39,11 +35,9 @@ nav a{
   border-radius:6px;
   background:rgba(255,255,255,0.15);
 }
-
 .container{
   padding:20px;
 }
-
 .card{
   background:white;
   padding:20px;
@@ -51,104 +45,66 @@ nav a{
   margin-bottom:20px;
   box-shadow:0 2px 10px rgba(0,0,0,0.1);
 }
-
-input,select,textarea{
-  width:100%;
-  padding:10px;
-  margin:8px 0;
-  border:1px solid #ccc;
-  border-radius:6px;
-}
-
 button{
-  padding:10px 15px;
+  padding:8px 12px;
   border:none;
   border-radius:6px;
   cursor:pointer;
-  font-weight:bold;
-}
-
-.btn-add{
-  background:#16a34a;
   color:white;
 }
-
-.btn-edit{
-  background:#f59e0b;
-  color:white;
+.btn-reply{
+  background:#2563eb;
 }
-
 .btn-delete{
   background:#dc2626;
-  color:white;
 }
-
-.btn-print{
-  background:#2563eb;
-  color:white;
-}
-
 table{
   width:100%;
   border-collapse:collapse;
   margin-top:15px;
 }
-
 th,td{
   padding:10px;
   border-bottom:1px solid #ddd;
   text-align:left;
 }
-
 th{
   background:#7c3aed;
   color:white;
 }
-
+.search{
+  width:100%;
+  padding:10px;
+  margin-bottom:15px;
+}
+.status-pending{
+  color:#dc2626;
+  font-weight:bold;
+}
+.status-replied{
+  color:#16a34a;
+  font-weight:bold;
+}
 .stats{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
   gap:15px;
 }
-
 .stat-box{
   background:#ede9fe;
   padding:15px;
   border-radius:10px;
   text-align:center;
 }
-
 .stat-box h3{
   margin:0;
-  color:#5b21b6;
 }
-
 .stat-box p{
   font-size:22px;
   font-weight:bold;
 }
-
-.search{
-  margin-bottom:15px;
-}
-
-.status-new{
-  color:#dc2626;
-  font-weight:bold;
-}
-
-.status-progress{
-  color:#f59e0b;
-  font-weight:bold;
-}
-
-.status-closed{
-  color:#16a34a;
-  font-weight:bold;
-}
-
 @media print{
-  nav,.no-print,button,input,textarea,select{
+  nav,.no-print,button,input{
     display:none;
   }
 }
@@ -186,60 +142,25 @@ if(localStorage.getItem("isAdmin")!=="yes"){
     </div>
 
     <div class="stat-box">
-      <h3>New</h3>
-      <p id="newCount">0</p>
+      <h3>Pending</h3>
+      <p id="pendingCount">0</p>
     </div>
 
     <div class="stat-box">
-      <h3>In Progress</h3>
-      <p id="progressCount">0</p>
+      <h3>Replied</h3>
+      <p id="repliedCount">0</p>
     </div>
-
-    <div class="stat-box">
-      <h3>Closed</h3>
-      <p id="closedCount">0</p>
-    </div>
-  </div>
-
-  <!-- ADD ENQUIRY -->
-  <div class="card no-print">
-    <h3>Add New Enquiry</h3>
-
-    <input type="text" id="name" placeholder="Full Name">
-
-    <input type="email" id="email" placeholder="Email">
-
-    <input type="text" id="phone" placeholder="Phone Number">
-
-    <select id="subject">
-      <option value="">Select Subject</option>
-      <option>Donation</option>
-      <option>Volunteer</option>
-      <option>Project Support</option>
-      <option>Membership</option>
-      <option>General Help</option>
-    </select>
-
-    <textarea id="message" placeholder="Enquiry Message"></textarea>
-
-    <select id="status">
-      <option>New</option>
-      <option>In Progress</option>
-      <option>Closed</option>
-    </select>
-
-    <button class="btn-add" onclick="addEnquiry()">Add Enquiry</button>
   </div>
 
   <!-- SEARCH -->
   <div class="card no-print">
     <input type="text" id="search" class="search" placeholder="Search enquiry...">
-    <button class="btn-print" onclick="window.print()">Print Report</button>
+    <button onclick="window.print()" style="background:#2563eb;">Print Report</button>
   </div>
 
   <!-- TABLE -->
   <div class="card">
-    <h3>Enquiry Records</h3>
+    <h3>Public Enquiry Records</h3>
 
     <table id="table">
       <tr>
@@ -247,9 +168,12 @@ if(localStorage.getItem("isAdmin")!=="yes"){
         <th>Name</th>
         <th>Subject</th>
         <th>Phone</th>
+        <th>Email</th>
+        <th>Message</th>
+        <th>Reply</th>
         <th>Status</th>
         <th>Date</th>
-        <th>Action</th>
+        <th class="no-print">Action</th>
       </tr>
     </table>
   </div>
@@ -283,50 +207,6 @@ async function loadEnquiries(){
   updateStats(allData);
 }
 
-/* ADD */
-async function addEnquiry(){
-
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const subject = document.getElementById("subject").value;
-  const message = document.getElementById("message").value.trim();
-  const status = document.getElementById("status").value;
-
-  if(!name || !subject){
-    alert("Please fill required fields.");
-    return;
-  }
-
-  const { error } = await client
-    .from("enquiries")
-    .insert([{
-      name,
-      email,
-      phone,
-      subject,
-      message,
-      status,
-      created_at:new Date()
-    }]);
-
-  if(error){
-    alert(error.message);
-    return;
-  }
-
-  alert("Enquiry added successfully ✅");
-
-  document.getElementById("name").value="";
-  document.getElementById("email").value="";
-  document.getElementById("phone").value="";
-  document.getElementById("subject").value="";
-  document.getElementById("message").value="";
-  document.getElementById("status").value="New";
-
-  loadEnquiries();
-}
-
 /* TABLE */
 function renderTable(data){
 
@@ -338,6 +218,9 @@ function renderTable(data){
       <th>Name</th>
       <th>Subject</th>
       <th>Phone</th>
+      <th>Email</th>
+      <th>Message</th>
+      <th>Reply</th>
       <th>Status</th>
       <th>Date</th>
       <th class="no-print">Action</th>
@@ -347,7 +230,7 @@ function renderTable(data){
   if(data.length===0){
     table.innerHTML += `
       <tr>
-        <td colspan="7">No enquiries found.</td>
+        <td colspan="10">No enquiries found.</td>
       </tr>
     `;
     return;
@@ -355,44 +238,65 @@ function renderTable(data){
 
   data.forEach(e=>{
 
-    let statusClass = "";
-
-    if(e.status==="New") statusClass="status-new";
-    else if(e.status==="In Progress") statusClass="status-progress";
-    else statusClass="status-closed";
+    let statusClass =
+      e.status==="Replied"
+      ? "status-replied"
+      : "status-pending";
 
     table.innerHTML += `
       <tr>
-        <td>${e.id}</td>
-        <td>${e.name}</td>
-        <td>${e.subject}</td>
+        <td>${e.enquiry_no || e.id}</td>
+        <td>${e.name || "-"}</td>
+        <td>${e.subject || "-"}</td>
         <td>${e.phone || "-"}</td>
-        <td class="${statusClass}">${e.status}</td>
+        <td>${e.email || "-"}</td>
+        <td>${e.message || "-"}</td>
+        <td>${e.reply || "-"}</td>
+        <td class="${statusClass}">${e.status || "Pending"}</td>
         <td>${new Date(e.created_at).toLocaleDateString()}</td>
         <td class="no-print">
-          <button class="btn-edit" onclick="editEnquiry(${e.id}, '${e.name}', '${e.status}')">Edit</button>
-          <button class="btn-delete" onclick="deleteEnquiry(${e.id})">Delete</button>
+
+          <button class="btn-reply"
+            onclick="replyEnquiry(${e.id}, '${e.email || ""}')">
+            Reply
+          </button>
+
+          <button class="btn-delete"
+            onclick="deleteEnquiry(${e.id})">
+            Delete
+          </button>
+
         </td>
       </tr>
     `;
   });
 }
 
-/* EDIT */
-async function editEnquiry(id, oldName, oldStatus){
+/* REPLY */
+async function replyEnquiry(id,email){
 
-  const newName = prompt("Edit Name:", oldName);
-  const newStatus = prompt("Edit Status (New / In Progress / Closed):", oldStatus);
+  const reply = prompt("Enter reply message:");
 
-  if(!newName || !newStatus) return;
+  if(!reply) return;
 
-  await client
+  const { error } = await client
     .from("enquiries")
     .update({
-      name:newName,
-      status:newStatus
+      reply: reply,
+      status: "Replied"
     })
     .eq("id",id);
+
+  if(error){
+    alert("Failed to save reply");
+    return;
+  }
+
+  if(email){
+    window.open(`mailto:${email}?subject=Reply from Shubhi Education Foundation&body=${encodeURIComponent(reply)}`);
+  }
+
+  alert("Reply saved successfully ✅");
 
   loadEnquiries();
 }
@@ -415,14 +319,11 @@ function updateStats(data){
 
   document.getElementById("totalEnquiries").innerText = data.length;
 
-  document.getElementById("newCount").innerText =
-    data.filter(x=>x.status==="New").length;
+  document.getElementById("pendingCount").innerText =
+    data.filter(x=>x.status==="Pending" || !x.status).length;
 
-  document.getElementById("progressCount").innerText =
-    data.filter(x=>x.status==="In Progress").length;
-
-  document.getElementById("closedCount").innerText =
-    data.filter(x=>x.status==="Closed").length;
+  document.getElementById("repliedCount").innerText =
+    data.filter(x=>x.status==="Replied").length;
 }
 
 /* SEARCH */
@@ -433,7 +334,8 @@ document.getElementById("search")
 
   const filtered = allData.filter(e =>
     (e.name || "").toLowerCase().includes(val) ||
-    (e.subject || "").toLowerCase().includes(val)
+    (e.subject || "").toLowerCase().includes(val) ||
+    (e.email || "").toLowerCase().includes(val)
   );
 
   renderTable(filtered);
