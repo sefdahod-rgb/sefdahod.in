@@ -236,7 +236,7 @@ async function addStaff(){
   }
 
   const { error } = await client
-    .from("staff")
+    .from("hr_staff")
     .insert([{
       name,
       designation,
@@ -265,7 +265,7 @@ async function addStaff(){
 async function loadStaff(){
 
   const { data, error } = await client
-    .from("staff")
+    .from("hr_staff")
     .select("*")
     .order("id", { ascending:false });
 
@@ -359,7 +359,7 @@ async function deleteStaff(id){
   if(!confirm("Delete this employee?")) return;
 
   await client
-    .from("staff")
+    .from("hr_staff")
     .delete()
     .eq("id", id);
 
@@ -381,7 +381,7 @@ async function editStaff(id, oldName, oldDesignation, oldSalary){
   if(!newName || !newDesignation || !newSalary) return;
 
   await client
-    .from("staff")
+    .from("hr_staff")
     .update({
       name:newName,
       designation:newDesignation,
