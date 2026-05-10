@@ -187,53 +187,49 @@ const client = supabase.createClient(
 let chart;
 
 /* SAVE OPENING BALANCE */
-function saveOpening(){
+function saveOpening() {
+  localStorage.setItem(
+    "open_cash",
+    document.getElementById("open_cash").value || 0
+  );
 
-  const cash =
-    Number(document.getElementById("open_cash").value) || 0;
-
-  const bank =
-    Number(document.getElementById("open_bank").value) || 0;
-
-  localStorage.setItem("open_cash", cash);
-  localStorage.setItem("open_bank", bank);
+  localStorage.setItem(
+    "open_bank",
+    document.getElementById("open_bank").value || 0
+  );
 
   alert("Opening balance saved successfully ✅");
-
   load();
 }
 
 /* ADD INCOME */
-async function addIncome(){
-
-  const amount =
-    Number(document.getElementById("inc_amt").value);
-
-  const note =
-    document.getElementById("inc_note").value.trim();
-
+async function addIncome() {
+  const amount = Number(document.getElementById("inc_amt").value);
+  const note = document.getElementById("inc_note").value;
   const created_at =
     document.getElementById("inc_date").value ||
     new Date().toISOString();
 
   const mode =
-    document.getElementById("inc_mode").value;
+    document.getElementById("inc_mode")?.value || "cash";
 
-  if(!amount || amount <= 0){
-    alert("Please enter valid income amount.");
+  if (!amount || amount <= 0) {
+    alert("Enter valid income amount");
     return;
   }
 
-  const { error } =
-    await client.from("income").insert([{
+  const { error } = await client
+    .from("income")
+    .insert([{
       amount,
       note,
       mode,
       created_at
     }]);
 
-  if(error){
+  if (error) {
     alert("Income add failed: " + error.message);
+    console.log(error);
     return;
   }
 
@@ -247,36 +243,33 @@ async function addIncome(){
 }
 
 /* ADD EXPENSE */
-async function addExpense(){
-
-  const amount =
-    Number(document.getElementById("exp_amt").value);
-
-  const note =
-    document.getElementById("exp_note").value.trim();
-
+async function addExpense() {
+  const amount = Number(document.getElementById("exp_amt").value);
+  const note = document.getElementById("exp_note").value;
   const created_at =
     document.getElementById("exp_date").value ||
     new Date().toISOString();
 
   const mode =
-    document.getElementById("exp_mode").value;
+    document.getElementById("exp_mode")?.value || "cash";
 
-  if(!amount || amount <= 0){
-    alert("Please enter valid expense amount.");
+  if (!amount || amount <= 0) {
+    alert("Enter valid expense amount");
     return;
   }
 
-  const { error } =
-    await client.from("expenses").insert([{
+  const { error } = await client
+    .from("expenses")
+    .insert([{
       amount,
       note,
       mode,
       created_at
     }]);
 
-  if(error){
+  if (error) {
     alert("Expense add failed: " + error.message);
+    console.log(error);
     return;
   }
 
@@ -290,7 +283,7 @@ async function addExpense(){
 }
 
 /* LOAD ERP */
-async function load(){
+async function load() {
 
   let from =
     document.getElementById("from").value;
@@ -298,23 +291,44 @@ async function load(){
   let to =
     document.getElementById("to").value;
 
-  const { data: don = [] } =
-    await client.from("donations").select("*");
+  /* DONATIONS */
+  const { data: don = [], error: donError } =
+    await client
+      .from("donations")
+      .select("*")
+      .order("id", { ascending: false });
 
-  const { data: inc = [] } =
-    await client.from("income").select("*");
+  /* INCOME */
+  const { data: inc = [], error: incError } =
+    await client
+      .from("income")
+      .select("*")
+      .order("id", { ascending: false });
 
-  const { data: exp = [] } =
-    await client.from("expenses").select("*");
+  /* EXPENSE */
+  const { data: exp = [], error: expError } =
+    await client
+      .from("expenses")
+      .select("*")
+      .order("id", { ascending: false });
 
-  function check(d){
+  console.log("Donations:", don);
+  console.log("Income:", inc);
+  console.log("Expenses:", exp);
 
-    if(!from || !to) return true;
+  if (donError || incError || expError) {
+    alert("Finance data loading error.");
+    console.log(donError, incError, expError);
+    return;
+  }
+
+  function check(d) {
+    if (!from || !to) return true;
 
     let dt =
       new Date(d.created_at)
-      .toISOString()
-      .split("T")[0];
+        .toISOString()
+        .split("T")[0];
 
     return dt >= from && dt <= to;
   }
@@ -324,10 +338,10 @@ async function load(){
   const expense = exp.filter(check);
 
   let grossDonation = 0;
-  let totalDonationFees = 0;
   let gatewayFees = 0;
   let serviceFees = 0;
   let gstFees = 0;
+  let totalDonationFees = 0;
   let netDonation = 0;
 
   let cashIncome = 0;
@@ -336,26 +350,15 @@ async function load(){
   let cashExpense = 0;
   let bankExpense = 0;
 
-  /* DONATIONS */
+  /* DONATION CALC */
   donations.forEach(d => {
+    const gross = Number(d.amount) || 0;
+    const gateway = Number(d.gateway_fee) || 0;
+    const service = Number(d.service_fee) || 0;
+    const gst = Number(d.gst) || 0;
 
-    const gross =
-      Number(d.amount) || 0;
-
-    const gateway =
-      Number(d.gateway_fee) || 0;
-
-    const service =
-      Number(d.service_fee) || 0;
-
-    const gst =
-      Number(d.gst) || 0;
-
-    const fees =
-      gateway + service + gst;
-
-    const net =
-      Number(d.net_amount) || (gross - fees);
+    const fees = gateway + service + gst;
+    const net = gross - fees;
 
     grossDonation += gross;
     gatewayFees += gateway;
@@ -369,11 +372,9 @@ async function load(){
 
   /* OTHER INCOME */
   income.forEach(i => {
+    const amt = Number(i.amount) || 0;
 
-    const amt =
-      Number(i.amount) || 0;
-
-    if((i.mode || "cash") === "bank"){
+    if ((i.mode || "cash") === "bank") {
       bankIncome += amt;
     } else {
       cashIncome += amt;
@@ -382,25 +383,18 @@ async function load(){
 
   /* EXPENSE */
   expense.forEach(e => {
+    const amt = Number(e.amount) || 0;
 
-    const amt =
-      Number(e.amount) || 0;
-
-    if((e.mode || "cash") === "bank"){
+    if ((e.mode || "cash") === "bank") {
       bankExpense += amt;
     } else {
       cashExpense += amt;
     }
   });
 
-  const totalIncome =
-    bankIncome + cashIncome;
-
-  const totalExpense =
-    bankExpense + cashExpense;
-
-  const balance =
-    totalIncome - totalExpense;
+  const totalIncome = bankIncome + cashIncome;
+  const totalExpense = bankExpense + cashExpense;
+  const balance = totalIncome - totalExpense;
 
   const openCash =
     Number(localStorage.getItem("open_cash")) || 0;
@@ -430,28 +424,28 @@ async function load(){
   document.getElementById("bank").innerText =
     "₹" + finalBank.toFixed(2);
 
-  /* AI REPORT */
+  /* AI */
   document.getElementById("ai").innerHTML = `
-    Gross Online Donation: ₹${grossDonation.toFixed(2)} <br>
-    Gateway Fee: ₹${gatewayFees.toFixed(2)} <br>
-    Service Fee: ₹${serviceFees.toFixed(2)} <br>
-    GST: ₹${gstFees.toFixed(2)} <br>
-    Total Fees: ₹${totalDonationFees.toFixed(2)} <br>
-    Net Online Donation: ₹${netDonation.toFixed(2)} <br><br>
+    Gross Donation: ₹${grossDonation.toFixed(2)}<br>
+    Gateway Fee: ₹${gatewayFees.toFixed(2)}<br>
+    Service Fee: ₹${serviceFees.toFixed(2)}<br>
+    GST: ₹${gstFees.toFixed(2)}<br>
+    Total Fees: ₹${totalDonationFees.toFixed(2)}<br>
+    Net Donation: ₹${netDonation.toFixed(2)}<br><br>
 
-    Cash Income: ₹${cashIncome.toFixed(2)} <br>
-    Bank Income: ₹${(bankIncome - netDonation).toFixed(2)} <br><br>
+    Other Bank Income: ₹${(bankIncome - netDonation).toFixed(2)}<br>
+    Cash Income: ₹${cashIncome.toFixed(2)}<br><br>
 
-    Cash Expense: ₹${cashExpense.toFixed(2)} <br>
-    Bank Expense: ₹${bankExpense.toFixed(2)} <br><br>
+    Bank Expense: ₹${bankExpense.toFixed(2)}<br>
+    Cash Expense: ₹${cashExpense.toFixed(2)}<br><br>
 
-    Final Cash: ₹${finalCash.toFixed(2)} <br>
-    Final Bank: ₹${finalBank.toFixed(2)} <br><br>
+    Final Bank Balance: ₹${finalBank.toFixed(2)}<br>
+    Final Cash Balance: ₹${finalCash.toFixed(2)}<br><br>
 
     ${
       balance >= 0
-      ? "📈 Profit ₹" + balance.toFixed(2)
-      : "⚠️ Loss ₹" + Math.abs(balance).toFixed(2)
+        ? "📈 Profit ₹" + balance.toFixed(2)
+        : "⚠️ Loss ₹" + Math.abs(balance).toFixed(2)
     }
   `;
 
@@ -473,17 +467,13 @@ async function load(){
   `;
 
   donations.forEach(d => {
-
-    const gross =
-      Number(d.amount) || 0;
-
+    const gross = Number(d.amount) || 0;
     const fees =
       Number(d.gateway_fee || 0) +
       Number(d.service_fee || 0) +
       Number(d.gst || 0);
 
-    const net =
-      Number(d.net_amount) || (gross - fees);
+    const net = gross - fees;
 
     table.innerHTML += `
       <tr>
@@ -536,9 +526,9 @@ async function load(){
   });
 
   /* CHART */
-  if(chart) chart.destroy();
+  if (chart) chart.destroy();
 
-  const ctx =
+  let ctx =
     document.getElementById("chart");
 
   chart = new Chart(ctx, {
@@ -569,45 +559,37 @@ async function load(){
 }
 
 /* DELETE */
-async function deleteIncome(id){
+async function deleteIncome(id) {
   await client.from("income").delete().eq("id", id);
   load();
 }
 
-async function deleteExpense(id){
+async function deleteExpense(id) {
   await client.from("expenses").delete().eq("id", id);
   load();
 }
 
 /* EDIT */
-async function editIncome(id){
+async function editIncome(id) {
+  let a = prompt("Enter new income amount:");
 
-  const a =
-    prompt("Enter new income amount:");
-
-  if(a){
+  if (a) {
     await client
       .from("income")
-      .update({
-        amount: Number(a)
-      })
+      .update({ amount: Number(a) })
       .eq("id", id);
 
     load();
   }
 }
 
-async function editExpense(id){
+async function editExpense(id) {
+  let a = prompt("Enter new expense amount:");
 
-  const a =
-    prompt("Enter new expense amount:");
-
-  if(a){
+  if (a) {
     await client
       .from("expenses")
-      .update({
-        amount: Number(a)
-      })
+      .update({ amount: Number(a) })
       .eq("id", id);
 
     load();
@@ -615,15 +597,13 @@ async function editExpense(id){
 }
 
 /* CSV */
-function exportCSV(){
-
+function exportCSV() {
   let rows =
     document.querySelectorAll("table tr");
 
   let csv = "";
 
   rows.forEach(r => {
-
     let cols =
       r.querySelectorAll("td,th");
 
@@ -636,11 +616,9 @@ function exportCSV(){
     csv += row.join(",") + "\n";
   });
 
-  let blob =
-    new Blob([csv]);
+  let blob = new Blob([csv]);
 
-  let a =
-    document.createElement("a");
+  let a = document.createElement("a");
 
   a.href =
     URL.createObjectURL(blob);
@@ -652,19 +630,15 @@ function exportCSV(){
 }
 
 /* PRINT */
-function printReport(){
+function printReport() {
   window.print();
 }
 
 /* LOGOUT */
-function logout(){
-
+function logout() {
   localStorage.clear();
-
   alert("Logged out successfully ✅");
-
-  window.location.href =
-    "index.html";
+  window.location.href = "index.html";
 }
 
 /* START */
