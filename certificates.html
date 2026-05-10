@@ -96,17 +96,30 @@ th{
 /* ✅ WATERMARK LOGO */
 <!-- ✅ printCertificate() function me pura certificate div ko is design se replace karo -->
 
+<!-- ✅ GUARANTEED WORKING METHOD:
+Popup me background-image use karo -->
+
+<!-- .certificate style me ye line add karo -->
+
+background:
+  linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
+  url('${window.location.origin}/logo.png') center center no-repeat;
+background-size:300px;
+
+
+<!-- FULL EXAMPLE -->
 <div class="certificate"
 style="
-position:relative;
 width:1000px;
 padding:60px;
 margin:auto;
 border:12px solid #0F9D58;
 text-align:center;
 font-family:'Times New Roman';
-background:#fff;
-overflow:hidden;
+background:
+linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
+url('${window.location.origin}/logo.png') center center no-repeat;
+background-size:300px;
 ">
 
 <!-- ✅ WATERMARK -->
