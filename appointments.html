@@ -140,7 +140,7 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <script>
 const client = supabase.createClient(
 "https://kqahcvaoxnmxfcgyyync.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+"YOUR_SUPABASE_ANON_KEY"
 );
 
 let allAppointments=[];
@@ -324,30 +324,177 @@ function exportCSV(){
   link.click();
 }
 
-/* PRINT LETTER */
+/* PRINT APPOINTMENT LETTER */
 function printAppointment(no,name,type,designation,date,salary,remarks){
 
-  const w = window.open("");
+  const w = window.open("", "_blank");
 
   w.document.write(`
-    <h1 style="text-align:center;">Shubhi Education Foundation</h1>
-    <h2 style="text-align:center;">Appointment Letter</h2>
+  <html>
+  <head>
+    <title>Appointment Letter</title>
+    <style>
+      body{
+        font-family:Arial,sans-serif;
+        background:#f3f4f6;
+        padding:30px;
+      }
 
-    <p><b>Appointment No:</b> ${no}</p>
-    <p><b>Name:</b> ${name}</p>
-    <p><b>Type:</b> ${type}</p>
-    <p><b>Designation:</b> ${designation}</p>
-    <p><b>Joining Date:</b> ${date}</p>
-    <p><b>Salary/Stipend:</b> ₹${salary}</p>
+      .letter{
+        max-width:900px;
+        margin:auto;
+        background:white;
+        padding:50px;
+        border:3px solid #7c3aed;
+        border-radius:15px;
+        box-shadow:0 0 20px rgba(0,0,0,0.15);
+        position:relative;
+      }
 
-    <p>We are pleased to appoint <b>${name}</b> as <b>${designation}</b> under the role of <b>${type}</b>.</p>
+      .watermark{
+        position:absolute;
+        top:45%;
+        left:50%;
+        transform:translate(-50%,-50%);
+        width:280px;
+        opacity:0.06;
+      }
 
-    <p>${remarks}</p>
+      .header{
+        text-align:center;
+        border-bottom:3px solid #7c3aed;
+        padding-bottom:15px;
+        margin-bottom:25px;
+      }
 
-    <br><br>
-    <p style="text-align:right;">Authorized Signature</p>
+      .header img{
+        width:80px;
+      }
 
-    <button onclick="window.print()">Print</button>
+      .header h1{
+        margin:10px 0 5px;
+        color:#6d28d9;
+      }
+
+      .header p{
+        margin:0;
+        color:#555;
+      }
+
+      .title{
+        text-align:center;
+        font-size:30px;
+        font-weight:bold;
+        color:#7c3aed;
+        margin:20px 0;
+        text-decoration:underline;
+      }
+
+      .content{
+        font-size:18px;
+        line-height:1.8;
+        color:#222;
+      }
+
+      .details{
+        margin:25px 0;
+      }
+
+      .details p{
+        margin:8px 0;
+      }
+
+      .signature{
+        margin-top:60px;
+        text-align:right;
+      }
+
+      button{
+        margin-top:25px;
+        padding:12px 20px;
+        background:#7c3aed;
+        color:white;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;
+      }
+
+      @media print{
+        button{
+          display:none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="letter">
+
+      <img src="logo.png" class="watermark">
+
+      <div class="header">
+        <img src="logo.png">
+        <h1>Shubhi Education Foundation</h1>
+        <p>Official Appointment Letter</p>
+      </div>
+
+      <div class="title">
+        Appointment Letter
+      </div>
+
+      <div class="content">
+
+        <p><strong>Appointment No:</strong> ${no}</p>
+
+        <p>Date: ${new Date().toLocaleDateString()}</p>
+
+        <p>To,</p>
+        <p><strong>${name}</strong></p>
+
+        <p>
+          We are pleased to appoint you as 
+          <strong>${designation}</strong> under the role of 
+          <strong>${type}</strong> at Shubhi Education Foundation.
+        </p>
+
+        <div class="details">
+          <p><strong>Joining Date:</strong> ${date}</p>
+          <p><strong>Salary / Stipend:</strong> ₹${salary}</p>
+          <p><strong>Position Type:</strong> ${type}</p>
+        </div>
+
+        <p>
+          Your contribution to our organization will be valuable in achieving
+          our mission of education, social welfare, and community development.
+        </p>
+
+        <p><strong>Terms / Notes:</strong></p>
+        <p>${remarks || "You are expected to follow all organizational rules and policies."}</p>
+
+        <p>
+          We welcome you to the Shubhi Education Foundation family
+          and wish you success in your role.
+        </p>
+
+        <div class="signature">
+          ___________________________<br>
+          Authorized Signature<br>
+          HR Department
+        </div>
+
+      </div>
+
+      <center>
+        <button onclick="window.print()">
+          Print / Download Appointment Letter
+        </button>
+      </center>
+
+    </div>
+
+  </body>
+  </html>
   `);
 }
 
@@ -357,6 +504,7 @@ function logout(){
   location.href="index.html";
 }
 
+/* INIT */
 load();
 </script>
 
