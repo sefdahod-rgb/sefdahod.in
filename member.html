@@ -1,0 +1,342 @@
+```html
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Members Management - SEF Dahod</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{
+  margin:0;
+  font-family:Segoe UI;
+  background:#f3f4f6;
+}
+.header{
+  background:#16a34a;
+  color:#fff;
+  text-align:center;
+  padding:15px;
+}
+.header img{
+  width:60px;
+}
+nav{
+  text-align:center;
+  padding:10px;
+  background:#14532d;
+}
+nav a{
+  color:#fff;
+  text-decoration:none;
+  margin:5px;
+  padding:8px 14px;
+  display:inline-block;
+  background:#16a34a;
+  border-radius:6px;
+}
+.card{
+  background:#fff;
+  margin:15px;
+  padding:15px;
+  border-radius:10px;
+}
+input,select{
+  padding:8px;
+  margin:5px;
+}
+button{
+  padding:8px 12px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  background:#16a34a;
+  color:#fff;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+th,td{
+  border:1px solid #ddd;
+  padding:8px;
+  text-align:center;
+}
+th{
+  background:#16a34a;
+  color:#fff;
+}
+.search{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+}
+@media print{
+  nav,.no-print,button,input,select{
+    display:none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<script>
+if(localStorage.getItem("isAdmin")!=="yes"){
+  localStorage.setItem("redirectAfterLogin","members.html");
+  location.href="login.html";
+}
+</script>
+
+<div class="header">
+<img src="logo.png">
+<h2>Shubhi Education Foundation</h2>
+<p>Member Management System</p>
+</div>
+
+<nav>
+<a href="admin.html">Admin</a>
+<a href="index.html">Home</a>
+<a href="#" onclick="logout()">Logout</a>
+</nav>
+
+<div class="card">
+<h3>Add New Member</h3>
+
+<input type="text" id="name" placeholder="Full Name">
+<input type="text" id="mobile" placeholder="Mobile Number">
+<input type="email" id="email" placeholder="Email">
+<input type="text" id="designation" placeholder="Designation">
+
+<select id="status">
+<option value="Active">Active</option>
+<option value="Inactive">Inactive</option>
+</select>
+
+<input type="date" id="join_date">
+
+<button onclick="addMember()">Add Member</button>
+</div>
+
+<div class="card">
+<h3>Members List</h3>
+
+<input type="text" id="search" class="search" placeholder="Search Member...">
+
+<button onclick="exportCSV()" class="no-print">Export CSV</button>
+<button onclick="window.print()" class="no-print">Print</button>
+
+<table id="table"></table>
+</div>
+
+<script>
+const client = supabase.createClient(
+"https://kqahcvaoxnmxfcgyyync.supabase.co",
+"YOUR_SUPABASE_ANON_KEY"
+);
+
+let allMembers=[];
+
+/* LOAD MEMBERS */
+async function load(){
+
+  const { data, error } = await client
+    .from("members")
+    .select("*")
+    .order("id",{ascending:false});
+
+  if(error){
+    console.log(error);
+    alert("Error loading members");
+    return;
+  }
+
+  allMembers = data || [];
+  render(allMembers);
+}
+
+/* RENDER TABLE */
+function render(data){
+
+  const table = document.getElementById("table");
+
+  table.innerHTML = `
+  <tr>
+    <th>Member ID</th>
+    <th>Name</th>
+    <th>Mobile</th>
+    <th>Email</th>
+    <th>Designation</th>
+    <th>Join Date</th>
+    <th>Status</th>
+    <th>Actions</th>
+  </tr>`;
+
+  if(data.length===0){
+    table.innerHTML += `<tr><td colspan="8">No members found</td></tr>`;
+    return;
+  }
+
+  data.forEach(m=>{
+
+    table.innerHTML += `
+    <tr>
+      <td>${m.member_id || "-"}</td>
+      <td>${m.name || "-"}</td>
+      <td>${m.mobile || "-"}</td>
+      <td>${m.email || "-"}</td>
+      <td>${m.designation || "-"}</td>
+      <td>${m.join_date || "-"}</td>
+      <td>${m.status || "-"}</td>
+      <td>
+        <button onclick="editMember(${m.id})">Edit</button>
+        <button onclick="deleteMember(${m.id})">Delete</button>
+        <button onclick="printID('${m.member_id}','${m.name}','${m.designation}')">ID Card</button>
+      </td>
+    </tr>`;
+  });
+}
+
+/* ADD MEMBER */
+async function addMember(){
+
+  const name = document.getElementById("name").value.trim();
+  const mobile = document.getElementById("mobile").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const designation = document.getElementById("designation").value.trim();
+  const status = document.getElementById("status").value;
+  const join_date = document.getElementById("join_date").value;
+
+  if(!name || !mobile){
+    alert("Name and mobile required");
+    return;
+  }
+
+  const member_id = "MEM-" + Date.now();
+
+  const { error } = await client
+    .from("members")
+    .insert([{
+      member_id,
+      name,
+      mobile,
+      email,
+      designation,
+      join_date,
+      status
+    }]);
+
+  if(error){
+    console.log(error);
+    alert("Failed to add member");
+    return;
+  }
+
+  alert("Member added successfully ✅");
+
+  document.getElementById("name").value="";
+  document.getElementById("mobile").value="";
+  document.getElementById("email").value="";
+  document.getElementById("designation").value="";
+  document.getElementById("join_date").value="";
+
+  load();
+}
+
+/* DELETE */
+async function deleteMember(id){
+
+  if(!confirm("Delete this member?")) return;
+
+  await client
+    .from("members")
+    .delete()
+    .eq("id",id);
+
+  load();
+}
+
+/* EDIT */
+async function editMember(id){
+
+  const member = allMembers.find(x=>x.id===id);
+
+  let newName = prompt("Name", member.name);
+  let newMobile = prompt("Mobile", member.mobile);
+  let newDesignation = prompt("Designation", member.designation);
+
+  if(!newName) return;
+
+  await client
+    .from("members")
+    .update({
+      name:newName,
+      mobile:newMobile,
+      designation:newDesignation
+    })
+    .eq("id",id);
+
+  load();
+}
+
+/* SEARCH */
+document.getElementById("search")
+.addEventListener("input", function(){
+
+  const val = this.value.toLowerCase();
+
+  render(
+    allMembers.filter(m =>
+      (m.name || "").toLowerCase().includes(val) ||
+      (m.member_id || "").toLowerCase().includes(val)
+    )
+  );
+});
+
+/* EXPORT CSV */
+function exportCSV(){
+
+  let csv = "Member ID,Name,Mobile,Email,Designation,Join Date,Status\n";
+
+  allMembers.forEach(m=>{
+    csv += `${m.member_id},${m.name},${m.mobile},${m.email},${m.designation},${m.join_date},${m.status}\n`;
+  });
+
+  const blob = new Blob([csv],{type:"text/csv"});
+  const a = document.createElement("a");
+
+  a.href = URL.createObjectURL(blob);
+  a.download = "members.csv";
+  a.click();
+}
+
+/* PRINT ID CARD */
+function printID(id,name,designation){
+
+  const w = window.open("");
+
+  w.document.write(`
+    <h2>Shubhi Education Foundation</h2>
+    <h3>Member ID Card</h3>
+    <p><b>ID:</b> ${id}</p>
+    <p><b>Name:</b> ${name}</p>
+    <p><b>Designation:</b> ${designation}</p>
+    <button onclick="window.print()">Print</button>
+  `);
+}
+
+/* LOGOUT */
+function logout(){
+  localStorage.clear();
+  location.href="index.html";
+}
+
+load();
+</script>
+
+</body>
+</html>
+```

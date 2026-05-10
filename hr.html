@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>HR Management - Shubhi Education Foundation</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{
+  margin:0;
+  font-family:Segoe UI,sans-serif;
+  background:#f1f5f9;
+}
+.header{
+  background:#16a34a;
+  color:white;
+  text-align:center;
+  padding:20px;
+}
+.header img{
+  width:70px;
+}
+nav{
+  background:#15803d;
+  padding:10px;
+  text-align:center;
+}
+nav a{
+  color:white;
+  text-decoration:none;
+  margin:8px;
+  padding:8px 14px;
+  display:inline-block;
+}
+.container{
+  max-width:1300px;
+  margin:auto;
+  padding:20px;
+}
+.card{
+  background:white;
+  padding:20px;
+  margin-bottom:20px;
+  border-radius:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+input, select{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+button{
+  padding:10px 15px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  background:#16a34a;
+  color:white;
+}
+button:hover{
+  background:#15803d;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+th,td{
+  padding:10px;
+  border-bottom:1px solid #ddd;
+  text-align:left;
+}
+th{
+  background:#16a34a;
+  color:white;
+}
+.delete-btn{
+  background:#dc2626;
+}
+.edit-btn{
+  background:#2563eb;
+}
+.salary-btn{
+  background:#7c3aed;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:15px;
+}
+.stat-box{
+  background:#dcfce7;
+  padding:15px;
+  border-radius:8px;
+  text-align:center;
+}
+.stat-box h3{
+  margin:0;
+  color:#166534;
+}
+.stat-box p{
+  font-size:22px;
+  font-weight:bold;
+}
+@media(max-width:768px){
+  table{
+    font-size:14px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<script>
+if(localStorage.getItem("isAdmin")!=="yes"){
+  localStorage.setItem("redirectAfterLogin","hr.html");
+  location.href="login.html";
+}
+</script>
+
+<div class="header">
+  <img src="logo.png">
+  <h1>Shubhi Education Foundation</h1>
+  <p>HR & Staff Management System</p>
+</div>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="admin.html">Admin</a>
+  <a href="finance.html">Finance</a>
+  <a href="hr.html">HR</a>
+</nav>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-box">
+      <h3>Total Staff</h3>
+      <p id="totalStaff">0</p>
+    </div>
+    <div class="stat-box">
+      <h3>Total Salary</h3>
+      <p id="totalSalary">₹0</p>
+    </div>
+    <div class="stat-box">
+      <h3>Teachers</h3>
+      <p id="teachers">0</p>
+    </div>
+    <div class="stat-box">
+      <h3>Volunteers</h3>
+      <p id="volunteers">0</p>
+    </div>
+  </div>
+
+  <!-- ADD STAFF -->
+  <div class="card">
+    <h2>➕ Add Employee / Volunteer</h2>
+
+    <input type="text" id="name" placeholder="Full Name">
+
+    <input type="text" id="designation" placeholder="Designation">
+
+    <select id="department">
+      <option value="Education">Education</option>
+      <option value="Admin">Admin</option>
+      <option value="Volunteer">Volunteer</option>
+      <option value="Finance">Finance</option>
+    </select>
+
+    <input type="number" id="salary" placeholder="Monthly Salary">
+
+    <input type="date" id="joining">
+
+    <select id="status">
+      <option value="Active">Active</option>
+      <option value="Inactive">Inactive</option>
+    </select>
+
+    <button onclick="addStaff()">Add Staff</button>
+  </div>
+
+  <!-- STAFF TABLE -->
+  <div class="card">
+    <h2>👥 Staff Records</h2>
+
+    <table id="staffTable">
+      <tr>
+        <th>Name</th>
+        <th>Designation</th>
+        <th>Department</th>
+        <th>Salary</th>
+        <th>Joining Date</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </table>
+  </div>
+
+</div>
+
+<script>
+const client = window.supabase.createClient(
+  "https://kqahcvaoxnmxfcgyyync.supabase.co",
+  "YOUR_SUPABASE_ANON_KEY"
+);
+
+/* ADD STAFF */
+async function addStaff(){
+
+  const name =
+    document.getElementById("name").value.trim();
+
+  const designation =
+    document.getElementById("designation").value.trim();
+
+  const department =
+    document.getElementById("department").value;
+
+  const salary =
+    Number(document.getElementById("salary").value);
+
+  const joining_date =
+    document.getElementById("joining").value;
+
+  const status =
+    document.getElementById("status").value;
+
+  if(!name || !designation || !salary || !joining_date){
+    alert("Please fill all required fields");
+    return;
+  }
+
+  const { error } = await client
+    .from("staff")
+    .insert([{
+      name,
+      designation,
+      department,
+      salary,
+      joining_date,
+      status
+    }]);
+
+  if(error){
+    alert("Failed to add staff");
+    return;
+  }
+
+  alert("Staff added successfully ✅");
+
+  document.getElementById("name").value="";
+  document.getElementById("designation").value="";
+  document.getElementById("salary").value="";
+  document.getElementById("joining").value="";
+
+  loadStaff();
+}
+
+/* LOAD STAFF */
+async function loadStaff(){
+
+  const { data, error } = await client
+    .from("staff")
+    .select("*")
+    .order("id", { ascending:false });
+
+  const table =
+    document.getElementById("staffTable");
+
+  if(error){
+    console.log(error);
+    return;
+  }
+
+  table.innerHTML = `
+    <tr>
+      <th>Name</th>
+      <th>Designation</th>
+      <th>Department</th>
+      <th>Salary</th>
+      <th>Joining Date</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  `;
+
+  let totalSalary = 0;
+  let teachers = 0;
+  let volunteers = 0;
+
+  data.forEach(s => {
+
+    totalSalary += Number(s.salary) || 0;
+
+    if(
+      s.designation.toLowerCase().includes("teacher")
+    ) teachers++;
+
+    if(
+      s.department.toLowerCase() === "volunteer"
+    ) volunteers++;
+
+    table.innerHTML += `
+      <tr>
+        <td>${s.name}</td>
+        <td>${s.designation}</td>
+        <td>${s.department}</td>
+        <td>₹${s.salary}</td>
+        <td>${new Date(s.joining_date).toLocaleDateString()}</td>
+        <td>${s.status}</td>
+        <td>
+          <button class="edit-btn"
+            onclick="editStaff(${s.id},
+            \`${s.name}\`,
+            \`${s.designation}\`,
+            ${s.salary})">
+            Edit
+          </button>
+
+          <button class="salary-btn"
+            onclick="generateSalarySlip(
+              '${s.name}',
+              '${s.designation}',
+              ${s.salary}
+            )">
+            Salary Slip
+          </button>
+
+          <button class="delete-btn"
+            onclick="deleteStaff(${s.id})">
+            Delete
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("totalStaff").innerText =
+    data.length;
+
+  document.getElementById("totalSalary").innerText =
+    "₹" + totalSalary;
+
+  document.getElementById("teachers").innerText =
+    teachers;
+
+  document.getElementById("volunteers").innerText =
+    volunteers;
+}
+
+/* DELETE */
+async function deleteStaff(id){
+
+  if(!confirm("Delete this employee?")) return;
+
+  await client
+    .from("staff")
+    .delete()
+    .eq("id", id);
+
+  loadStaff();
+}
+
+/* EDIT */
+async function editStaff(id, oldName, oldDesignation, oldSalary){
+
+  const newName =
+    prompt("Edit Name:", oldName);
+
+  const newDesignation =
+    prompt("Edit Designation:", oldDesignation);
+
+  const newSalary =
+    prompt("Edit Salary:", oldSalary);
+
+  if(!newName || !newDesignation || !newSalary) return;
+
+  await client
+    .from("staff")
+    .update({
+      name:newName,
+      designation:newDesignation,
+      salary:newSalary
+    })
+    .eq("id", id);
+
+  loadStaff();
+}
+
+/* SALARY SLIP */
+function generateSalarySlip(name, designation, salary){
+
+  const slip = `
+Shubhi Education Foundation
+-----------------------------
+Employee Name: ${name}
+Designation: ${designation}
+Monthly Salary: ₹${salary}
+Date: ${new Date().toLocaleDateString()}
+-----------------------------
+Authorized HR Department
+  `;
+
+  const win = window.open("", "_blank");
+
+  win.document.write(
+    "<pre>" + slip + "</pre>"
+  );
+
+  win.print();
+}
+
+/* INIT */
+loadStaff();
+</script>
+
+</body>
+</html>
