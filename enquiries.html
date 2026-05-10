@@ -273,30 +273,35 @@ function renderTable(data){
 }
 
 /* REPLY */
+<!-- 🔥 SIRF replyEnquiry FUNCTION KO IS UPDATED VERSION SE REPLACE KARO -->
+
 async function replyEnquiry(id,email){
 
   const reply = prompt("Enter reply message:");
 
   if(!reply) return;
 
-  const { error } = await client
+  const { data, error } = await client
     .from("enquiries")
     .update({
       reply: reply,
       status: "Replied"
     })
-    .eq("id",id);
+    .eq("id",id)
+    .select();
 
   if(error){
-    alert("Failed to save reply");
+    console.log(error);
+    alert(error.message);
     return;
   }
 
-  if(email){
-    window.open(`mailto:${email}?subject=Reply from Shubhi Education Foundation&body=${encodeURIComponent(reply)}`);
-  }
-
   alert("Reply saved successfully ✅");
+
+  if(email){
+    window.location.href =
+      `mailto:${email}?subject=Reply from Shubhi Education Foundation&body=${encodeURIComponent(reply)}`;
+  }
 
   loadEnquiries();
 }
