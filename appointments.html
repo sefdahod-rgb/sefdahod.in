@@ -152,21 +152,7 @@ let allAppointments = [];
     .from("appointments") .select("*") .order("id", { ascending: false }); 
                          if (error) { console.log(error); alert("Error loading appointments"); 
                                      return; } allAppointments = data || []; render(allAppointments); } 
-  /* RENDER TABLE */ 
-  function render(data) { const table = document.getElementById("table"); 
-                         table.innerHTML = ` <tr> <th>Appointment No</th> 
-                         <th>Name</th> <th>Photo</th> <th>Type</th> 
-                         <th>Designation</th> <th>Joining Date</th> 
-                         <th>Salary</th> <th>Actions</th> </tr> `; 
-                         if (!data.length) { table.innerHTML += ` <tr> 
-                         <td colspan="8">No appointments found</td> </tr> `; 
-                                            return; } data.forEach(a => 
-                           { table.innerHTML += ` <tr> <td>${a.appointment_no || "-"}</td> <td>${a.name || "-"}</td>
-                           <td> ${ a.photo ? `<img src="${a.photo}" width="55" height="65" style="object-fit:cover;border-radius:6px;">` : "-" } </td> 
-                           <td>${a.type || "-"}</td> <td>${a.designation || "-"}</td> <td>${a.joining_date || "-"}</td> <td>₹${a.salary || 0}</td> 
-                           <td> <button onclick="editAppointment(${a.id})">Edit</button> <button onclick="deleteAppointment(${a.id})">Delete</button> 
-                           <button onclick="printAppointment(${a.id})">Print</button> 
-                           <button onclick="sendEmail('${a.email || ""}','${a.name}','${a.appointment_no}')">Email</button> </td> </tr> `; }); } 
+  /* RENDER TABLE */ function render(data) { const table = document.getElementById("table"); table.innerHTML = ` <tr> <th>Appointment No</th> <th>Name</th> <th>Photo</th> <th>Type</th> <th>Designation</th> <th>Joining Date</th> <th>Salary</th> <th>Actions</th> </tr> `; if (!data || data.length === 0) { table.innerHTML += ` <tr> <td colspan="8">No appointments found</td> </tr> `; return; } data.forEach(a => { table.innerHTML += ` <tr> <td>${a.appointment_no || "-"}</td> <td>${a.name || "-"}</td> <td> ${ a.photo ? `<img src="${a.photo}" width="50" height="60" style="object-fit:cover;border-radius:6px;">` : "-" } </td> <td>${a.type || "-"}</td> <td>${a.designation || "-"}</td> <td>${a.joining_date || "-"}</td> <td>₹${a.salary || 0}</td> <td> <button onclick="editAppointment(${a.id})"> Edit </button> <button onclick="deleteAppointment(${a.id})"> Delete </button> <button onclick="printAppointment(${a.id})"> Print </button> <button onclick="sendEmail( '${a.email || ""}', '${a.name}', '${a.appointment_no}' )"> Email </button> </td> </tr> `; }); }
   /* ADD APPOINTMENT */ 
   async function addAppointment() 
   { const name = document.getElementById("name").value.trim(); 
