@@ -96,10 +96,6 @@ th{
 /* ✅ WATERMARK LOGO */
 <!-- ✅ printCertificate() function me pura certificate div ko is design se replace karo -->
 
-<!-- ✅ GUARANTEED WORKING METHOD:
-Popup me background-image use karo -->
-
-<!-- .certificate style me ye line add karo -->
 
 background:
   linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
@@ -108,28 +104,53 @@ background-size:300px;
 
 
 <!-- FULL EXAMPLE -->
-<div class="certificate"
+<!-- ✅ certificates.html me printCertificate() function ke andar
+<div class="certificate" style="..."> ke style section me OLD style replace karo -->
+
 style="
 width:1000px;
 padding:60px;
 margin:auto;
-border:12px solid #0F9D58;
+border:16px double #d4af37;
 text-align:center;
-font-family:'Times New Roman';
-background:
-linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
-url('${window.location.origin}/logo.png') center center no-repeat;
-background-size:300px;
+font-family:Georgia, serif;
+background:#fffdf5;
+position:relative;
+box-shadow:0 0 35px rgba(0,0,0,0.25);
+"
+
+
+<!-- ✅ certificate ke END me (closing </div> se just pehle) ye add karo -->
+
+<img src="logo.png" style="
+position:absolute;
+bottom:40px;
+right:50px;
+width:100px;
+opacity:0.18;
 ">
 
-<!-- ✅ WATERMARK -->
-<!-- ✅ WATERMARK ISSUE FIX:
-logo.png path popup window me load nahi ho raha.
-Base URL use karo -->
 
-<!-- printCertificate() ke andar watermark image ko replace karo -->
+<!-- ✅ Heading font improve -->
+<h1 style="color:#1d4ed8;font-size:58px;margin:0;font-family:Georgia,serif;">
 
-<img src="${window.location.origin}/logo.png"
+<!-- ✅ Signature section -->
+<div style="
+display:flex;
+justify-content:space-between;
+margin-top:80px;
+font-size:24px;
+">
+  <div>
+    ___________________<br>
+    Director Signature
+  </div>
+
+  <div>
+    ___________________<br>
+    Official Seal
+  </div>
+</div><img src="${window.location.origin}/logo.png"
 style="
 position:absolute;
 top:50%;
