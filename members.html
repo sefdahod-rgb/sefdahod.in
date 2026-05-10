@@ -154,25 +154,25 @@ async function load(){
   }
 
   allMembers = data || [];
-  render(allMembers);
+  renderTable(allMembers);
 }
 
 /* RENDER TABLE */
 function renderTable(data){
 
-  document.getElementById("search")
-.addEventListener("input", function(){
+  const table = document.getElementById("table");
 
-  const val = this.value.toLowerCase();
-
-  renderTable(
-    allMembers.filter(m =>
-      (m.name || "").toLowerCase().includes(val) ||
-      (m.member_id || "").toLowerCase().includes(val) ||
-      (m.member_no || "").toLowerCase().includes(val)
-    )
-  );
-});
+  table.innerHTML = `
+    <tr>
+      <th>ID</th>
+      <th>Member ID</th>
+      <th>Name</th>
+      <th>Designation</th>
+      <th>Mobile</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  `;
 
   if(data.length===0){
     table.innerHTML += `<tr><td colspan="7">No members found</td></tr>`;
@@ -184,15 +184,13 @@ function renderTable(data){
     table.innerHTML += `
       <tr>
         <td>${m.id}</td>
-        <td>${m.member_no || "-"}</td>
+        <td>${m.member_id || "-"}</td>
         <td>${m.name || "-"}</td>
         <td>${m.designation || "-"}</td>
         <td>${m.mobile || "-"}</td>
+        <td>${m.status || "-"}</td>
         <td>
-          ${m.photo ? `<img src="${m.photo}" width="50">` : "-"}
-        </td>
-        <td>
-          <button onclick="printIDCard(allMembers.find(x=>x.id===${m.id}))">Print ID Card</button>
+          <button onclick="printIDCard(${m.id})">Print ID Card</button>
           <button onclick="editMember(${m.id})">Edit</button>
           <button onclick="deleteMember(${m.id})">Delete</button>
         </td>
@@ -289,7 +287,7 @@ document.getElementById("search")
 
   const val = this.value.toLowerCase();
 
-  render(
+  renderTable(
     allMembers.filter(m =>
       (m.name || "").toLowerCase().includes(val) ||
       (m.member_id || "").toLowerCase().includes(val)
@@ -314,9 +312,11 @@ function exportCSV(){
   a.click();
 }
 
-/* PRINT ID CARD */
+/* PRINT PROFESSIONAL ID CARD */
+function printIDCard(id){
 
-function printIDCard(member){
+  const member = allMembers.find(x=>x.id===id);
+  if(!member) return alert("Member not found");
 
   const w = window.open("", "_blank");
 
@@ -329,6 +329,7 @@ function printIDCard(member){
         font-family:Arial,sans-serif;
         background:#f3f4f6;
         display:flex;
+        flex-direction:column;
         justify-content:center;
         align-items:center;
         height:100vh;
@@ -342,7 +343,6 @@ function printIDCard(member){
         background:white;
         box-shadow:0 0 25px rgba(0,0,0,0.25);
         border:4px solid #1d4ed8;
-        position:relative;
         text-align:center;
       }
 
@@ -361,7 +361,7 @@ function printIDCard(member){
       }
 
       .foundation{
-        font-size:24px;
+        font-size:22px;
         font-weight:bold;
         margin-top:10px;
       }
@@ -383,7 +383,7 @@ function printIDCard(member){
       }
 
       .member-name{
-        font-size:26px;
+        font-size:24px;
         font-weight:bold;
         color:#16a34a;
         margin-top:15px;
@@ -392,7 +392,7 @@ function printIDCard(member){
       .details{
         text-align:left;
         padding:20px 30px;
-        font-size:18px;
+        font-size:16px;
         line-height:1.8;
       }
 
@@ -401,17 +401,7 @@ function printIDCard(member){
       }
 
       .footer{
-        position:absolute;
-        bottom:20px;
-        width:100%;
-        font-size:14px;
-      }
-
-      .signature{
-        margin-top:15px;
-        border-top:1px solid #000;
-        display:inline-block;
-        padding-top:5px;
+        margin-top:20px;
       }
 
       button{
@@ -438,41 +428,32 @@ function printIDCard(member){
 
       <div class="top">
         <img src="logo.png">
-        <div class="foundation">
-          Shubhi Education Foundation
-        </div>
-        <div class="subtitle">
-          Official Member Identity Card
-        </div>
+        <div class="foundation">Shubhi Education Foundation</div>
+        <div class="subtitle">Official Member Identity Card</div>
       </div>
 
       <div class="photo">
         <img src="${member.photo || 'user.png'}">
       </div>
 
-      <div class="member-name">
-        ${member.name}
-      </div>
+      <div class="member-name">${member.name}</div>
 
       <div class="details">
         <strong>Member ID:</strong> ${member.member_id}<br>
         <strong>Designation:</strong> ${member.designation}<br>
         <strong>Mobile:</strong> ${member.mobile}<br>
-        <strong>Address:</strong> ${member.address}<br>
-        <strong>Join Date:</strong> ${member.join_date}
+        <strong>Email:</strong> ${member.email || "-"}<br>
+        <strong>Join Date:</strong> ${member.join_date || "-"}<br>
+        <strong>Status:</strong> ${member.status || "-"}
       </div>
 
       <div class="footer">
-        <div class="signature">
-          Authorized Signature
-        </div>
+        Authorized Signature
       </div>
 
     </div>
 
-    <button onclick="window.print()">
-      Print / Download ID Card
-    </button>
+    <button onclick="window.print()">Print / Download ID Card</button>
 
   </body>
   </html>
@@ -490,4 +471,3 @@ load();
 
 </body>
 </html>
-```
