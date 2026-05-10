@@ -160,6 +160,7 @@ async function uploadCandidatePhoto(file){
     .upload(fileName, file);
 
   if(error){
+    console.log(error);
     alert("Photo upload failed");
     return "";
   }
@@ -220,7 +221,7 @@ function render(data){
       <td>${a.appointment_no || "-"}</td>
       <td>
         ${a.photo
-          ? `<img src="${a.photo}" width="50" height="50" style="border-radius:50%;">`
+          ? `<img src="${a.photo}" width="50" height="50" style="border-radius:50%;object-fit:cover;">`
           : "-"}
       </td>
       <td>${a.name || "-"}</td>
@@ -271,7 +272,10 @@ async function addAppointment(){
     await uploadCandidatePhoto(photoFile);
 
   const appointment_no =
-    "SEF-APP-" + new Date().getFullYear() + "-" + Date.now();
+    "SEF-APP-" +
+    new Date().getFullYear() +
+    "-" +
+    Date.now();
 
   const { error } = await client
     .from("appointments")
@@ -377,6 +381,14 @@ function exportCSV(){
 /* PRINT LETTER */
 function printAppointment(no,name,email,photo,type,designation,date,salary,remarks){
 
+  const finalPhoto =
+    photo && photo !== ""
+    ? photo
+    : "user.png";
+
+  const finalSignature =
+    "signature.png";
+
   const w = window.open("", "_blank");
 
   w.document.write(`
@@ -399,57 +411,87 @@ function printAppointment(no,name,email,photo,type,designation,date,salary,remar
         border-radius:15px;
         position:relative;
         box-shadow:0 0 25px rgba(0,0,0,0.15);
+        overflow:hidden;
       }
 
-      .letterhead{
+      .watermark{
         position:absolute;
-        top:40%;
+        top:50%;
         left:50%;
         transform:translate(-50%,-50%);
-        width:300px;
+        width:320px;
         opacity:0.05;
+        z-index:0;
       }
 
       .header{
         text-align:center;
         border-bottom:3px solid #7c3aed;
         padding-bottom:15px;
-        margin-bottom:20px;
+        margin-bottom:25px;
+        position:relative;
+        z-index:2;
       }
 
       .header img{
         width:80px;
       }
 
-      .candidate-photo{
-        width:120px;
-        height:140px;
-        object-fit:cover;
-        border:3px solid #7c3aed;
-        float:right;
+      .header h1{
+        margin:10px 0 5px;
+        color:#6d28d9;
       }
 
       .title{
         text-align:center;
         font-size:30px;
-        color:#7c3aed;
         font-weight:bold;
+        color:#7c3aed;
         text-decoration:underline;
         margin:20px 0;
+        position:relative;
+        z-index:2;
+      }
+
+      .candidate-box{
+        text-align:right;
+        margin-bottom:20px;
+        position:relative;
+        z-index:2;
+      }
+
+      .candidate-photo{
+        width:130px;
+        height:150px;
+        object-fit:cover;
+        border:3px solid #7c3aed;
+        border-radius:10px;
       }
 
       .content{
         font-size:18px;
-        line-height:1.8;
+        line-height:1.9;
+        color:#222;
+        position:relative;
+        z-index:2;
       }
 
       .signature{
-        margin-top:50px;
+        margin-top:60px;
         text-align:right;
+        position:relative;
+        z-index:2;
       }
 
       .signature img{
-        width:150px;
+        width:180px;
+        height:auto;
+      }
+
+      .signature-line{
+        border-top:1px solid #000;
+        display:inline-block;
+        padding-top:6px;
       }
 
       button{
@@ -474,15 +516,17 @@ function printAppointment(no,name,email,photo,type,designation,date,salary,remar
 
     <div class="letter">
 
-      <img src="logo.png" class="letterhead">
+      <img src="logo.png" class="watermark">
 
       <div class="header">
         <img src="logo.png">
         <h1>Shubhi Education Foundation</h1>
-        <p>Official Appointment Letter</p>
+        <p>Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD</p>
       </div>
 
-      ${photo ? `<img src="${photo}" class="candidate-photo">` : ""}
+      <div class="candidate-box">
+        <img src="${finalPhoto}" class="candidate-photo">
+      </div>
 
       <div class="title">
         Appointment Letter
@@ -497,25 +541,31 @@ function printAppointment(no,name,email,photo,type,designation,date,salary,remar
         <p><strong>${name}</strong></p>
 
         <p>
-          We are pleased to appoint you as 
-          <strong>${designation}</strong> for the role of 
-          <strong>${type}</strong> at Shubhi Education Foundation.
+          We are pleased to appoint you as
+          <strong>${designation}</strong>
+          under the role of
+          <strong>${type}</strong>
+          at Shubhi Education Foundation.
         </p>
 
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Joining Date:</strong> ${date}</p>
-        <p><strong>Salary/Stipend:</strong> ₹${salary}</p>
-
-        <p>${remarks || "You are expected to follow all organizational policies and contribute positively."}</p>
+        <p><strong>Salary / Stipend:</strong> ₹${salary}</p>
 
         <p>
-          We welcome you to our organization and wish you a successful journey ahead.
+          ${remarks || "You are expected to follow all organizational rules, maintain discipline, and contribute positively to our mission."}
+        </p>
+
+        <p>
+          We welcome you to our organization and wish you success.
         </p>
 
         <div class="signature">
-          <img src="signature.png"><br>
-          Authorized Signature<br>
-          HR Department
+          <img src="${finalSignature}" onerror="this.style.display='none'"><br>
+          <div class="signature-line">
+            Authorized Signature<br>
+            HR Department
+          </div>
         </div>
 
       </div>
@@ -532,9 +582,9 @@ function printAppointment(no,name,email,photo,type,designation,date,salary,remar
   </html>
   `);
 
-  if(email){
+  if(email && email !== ""){
     window.open(
-      `mailto:${email}?subject=Appointment Letter from Shubhi Education Foundation&body=Dear ${name}, Congratulations! Your appointment letter has been issued.`
+      `mailto:${email}?subject=Appointment Letter - Shubhi Education Foundation&body=Dear ${name},%0D%0A%0D%0ACongratulations! Your appointment letter has been issued by Shubhi Education Foundation.%0D%0A%0D%0ARegards,%0D%0ASEF Dahod`
     );
   }
 }
@@ -548,6 +598,7 @@ function logout(){
 /* INIT */
 load();
 </script>
+
 
 </body>
 </html>
