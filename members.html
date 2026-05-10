@@ -208,6 +208,7 @@ async function addMember(){
   const designation = document.getElementById("designation").value.trim();
   const status = document.getElementById("status").value;
   const join_date = document.getElementById("join_date").value;
+  const photoFile = document.getElementById("photo").files[0];
 
   if(!name || !mobile){
     alert("Name and mobile required");
@@ -216,6 +217,31 @@ async function addMember(){
 
   const member_id = "MEM-" + Date.now();
 
+  let photoUrl = "";
+
+  /* PHOTO UPLOAD */
+  if(photoFile){
+
+    const fileName = Date.now() + "_" + photoFile.name;
+
+    const { error:uploadError } = await client.storage
+      .from("member-photos")
+      .upload(fileName, photoFile);
+
+    if(uploadError){
+      console.log(uploadError);
+      alert("Photo upload failed");
+      return;
+    }
+
+    const { data } = client.storage
+      .from("member-photos")
+      .getPublicUrl(fileName);
+
+    photoUrl = data.publicUrl;
+  }
+
+  /* SAVE MEMBER */
   const { error } = await client
     .from("members")
     .insert([{
@@ -225,7 +251,8 @@ async function addMember(){
       email,
       designation,
       join_date,
-      status
+      status,
+      photo: photoUrl
     }]);
 
   if(error){
@@ -241,10 +268,10 @@ async function addMember(){
   document.getElementById("email").value="";
   document.getElementById("designation").value="";
   document.getElementById("join_date").value="";
+  document.getElementById("photo").value="";
 
   load();
 }
-
 /* DELETE */
 async function deleteMember(id){
 
