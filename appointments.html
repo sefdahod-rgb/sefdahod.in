@@ -146,6 +146,32 @@ const client = supabase.createClient(
 
 let allAppointments=[];
 
+/* PHOTO UPLOAD */
+async function uploadCandidatePhoto(file){
+
+  if(!file) return "";
+
+  const fileName =
+    "appointment_" + Date.now() + "_" + file.name;
+
+  const { error } = await client
+    .storage
+    .from("appointments")
+    .upload(fileName, file);
+
+  if(error){
+    alert("Photo upload failed");
+    return "";
+  }
+
+  const { data } = client
+    .storage
+    .from("appointments")
+    .getPublicUrl(fileName);
+
+  return data.publicUrl;
+}
+
 /* LOAD */
 async function load(){
 
@@ -172,16 +198,18 @@ function render(data){
   table.innerHTML = `
   <tr>
     <th>Appointment No</th>
+    <th>Photo</th>
     <th>Name</th>
+    <th>Email</th>
     <th>Type</th>
     <th>Designation</th>
     <th>Joining Date</th>
-    <th>Salary/Stipend</th>
+    <th>Salary</th>
     <th>Actions</th>
   </tr>`;
 
   if(data.length===0){
-    table.innerHTML += `<tr><td colspan="7">No appointments found</td></tr>`;
+    table.innerHTML += `<tr><td colspan="9">No appointments found</td></tr>`;
     return;
   }
 
@@ -190,7 +218,13 @@ function render(data){
     table.innerHTML += `
     <tr>
       <td>${a.appointment_no || "-"}</td>
+      <td>
+        ${a.photo
+          ? `<img src="${a.photo}" width="50" height="50" style="border-radius:50%;">`
+          : "-"}
+      </td>
       <td>${a.name || "-"}</td>
+      <td>${a.email || "-"}</td>
       <td>${a.type || "-"}</td>
       <td>${a.designation || "-"}</td>
       <td>${a.joining_date || "-"}</td>
@@ -201,6 +235,8 @@ function render(data){
         <button onclick="printAppointment(
           '${a.appointment_no}',
           '${a.name}',
+          '${a.email || ""}',
+          '${a.photo || ""}',
           '${a.type}',
           '${a.designation}',
           '${a.joining_date}',
@@ -216,24 +252,34 @@ function render(data){
 async function addAppointment(){
 
   const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
   const type = document.getElementById("type").value;
   const designation = document.getElementById("designation").value.trim();
   const joining_date = document.getElementById("joining_date").value;
   const salary = Number(document.getElementById("salary").value) || 0;
   const remarks = document.getElementById("remarks").value.trim();
 
+  const photoFile =
+    document.getElementById("photo").files[0];
+
   if(!name || !designation){
     alert("Name and designation required");
     return;
   }
 
-  const appointment_no = "APP-" + Date.now();
+  const photoUrl =
+    await uploadCandidatePhoto(photoFile);
+
+  const appointment_no =
+    "SEF-APP-" + new Date().getFullYear() + "-" + Date.now();
 
   const { error } = await client
     .from("appointments")
     .insert([{
       appointment_no,
       name,
+      email,
+      photo:photoUrl,
       type,
       designation,
       joining_date,
@@ -250,10 +296,12 @@ async function addAppointment(){
   alert("Appointment created successfully ✅");
 
   document.getElementById("name").value="";
+  document.getElementById("email").value="";
   document.getElementById("designation").value="";
   document.getElementById("joining_date").value="";
   document.getElementById("salary").value="";
   document.getElementById("remarks").value="";
+  document.getElementById("photo").value="";
 
   load();
 }
@@ -311,10 +359,11 @@ document.getElementById("search")
 /* EXPORT CSV */
 function exportCSV(){
 
-  let csv = "Appointment No,Name,Type,Designation,Joining Date,Salary\n";
+  let csv =
+    "Appointment No,Name,Email,Type,Designation,Joining Date,Salary\n";
 
   allAppointments.forEach(a=>{
-    csv += `${a.appointment_no},${a.name},${a.type},${a.designation},${a.joining_date},${a.salary}\n`;
+    csv += `${a.appointment_no},${a.name},${a.email},${a.type},${a.designation},${a.joining_date},${a.salary}\n`;
   });
 
   const blob = new Blob([csv],{type:"text/csv"});
@@ -325,8 +374,8 @@ function exportCSV(){
   link.click();
 }
 
-/* PRINT APPOINTMENT LETTER */
-function printAppointment(no,name,type,designation,date,salary,remarks){
+/* PRINT LETTER */
+function printAppointment(no,name,email,photo,type,designation,date,salary,remarks){
 
   const w = window.open("", "_blank");
 
@@ -338,7 +387,7 @@ function printAppointment(no,name,type,designation,date,salary,remarks){
       body{
         font-family:Arial,sans-serif;
         background:#f3f4f6;
-        padding:30px;
+        padding:20px;
       }
 
       .letter{
@@ -346,68 +395,61 @@ function printAppointment(no,name,type,designation,date,salary,remarks){
         margin:auto;
         background:white;
         padding:50px;
-        border:3px solid #7c3aed;
+        border:4px solid #7c3aed;
         border-radius:15px;
-        box-shadow:0 0 20px rgba(0,0,0,0.15);
         position:relative;
+        box-shadow:0 0 25px rgba(0,0,0,0.15);
       }
 
-      .watermark{
+      .letterhead{
         position:absolute;
-        top:45%;
+        top:40%;
         left:50%;
         transform:translate(-50%,-50%);
-        width:280px;
-        opacity:0.06;
+        width:300px;
+        opacity:0.05;
       }
 
       .header{
         text-align:center;
         border-bottom:3px solid #7c3aed;
         padding-bottom:15px;
-        margin-bottom:25px;
+        margin-bottom:20px;
       }
 
       .header img{
         width:80px;
       }
 
-      .header h1{
-        margin:10px 0 5px;
-        color:#6d28d9;
-      }
-
-      .header p{
-        margin:0;
-        color:#555;
+      .candidate-photo{
+        width:120px;
+        height:140px;
+        object-fit:cover;
+        border:3px solid #7c3aed;
+        float:right;
       }
 
       .title{
         text-align:center;
         font-size:30px;
-        font-weight:bold;
         color:#7c3aed;
-        margin:20px 0;
+        font-weight:bold;
         text-decoration:underline;
+        margin:20px 0;
       }
 
       .content{
         font-size:18px;
         line-height:1.8;
-        color:#222;
-      }
-
-      .details{
-        margin:25px 0;
-      }
-
-      .details p{
-        margin:8px 0;
       }
 
       .signature{
-        margin-top:60px;
+        margin-top:50px;
         text-align:right;
+      }
+
+      .signature img{
+        width:150px;
       }
 
       button{
@@ -432,13 +474,15 @@ function printAppointment(no,name,type,designation,date,salary,remarks){
 
     <div class="letter">
 
-      <img src="logo.png" class="watermark">
+      <img src="logo.png" class="letterhead">
 
       <div class="header">
         <img src="logo.png">
         <h1>Shubhi Education Foundation</h1>
-        <p>Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD</p>
+        <p>Official Appointment Letter</p>
       </div>
+
+      ${photo ? `<img src="${photo}" class="candidate-photo">` : ""}
 
       <div class="title">
         Appointment Letter
@@ -447,39 +491,29 @@ function printAppointment(no,name,type,designation,date,salary,remarks){
       <div class="content">
 
         <p><strong>Appointment No:</strong> ${no}</p>
-
-        <p>Date: ${new Date().toLocaleDateString()}</p>
+        <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
 
         <p>To,</p>
         <p><strong>${name}</strong></p>
 
         <p>
           We are pleased to appoint you as 
-          <strong>${designation}</strong> under the role of 
+          <strong>${designation}</strong> for the role of 
           <strong>${type}</strong> at Shubhi Education Foundation.
         </p>
 
-        <div class="details">
-          <p><strong>Joining Date:</strong> ${date}</p>
-          <p><strong>Salary / Stipend:</strong> ₹${salary}</p>
-          <p><strong>Position Type:</strong> ${type}</p>
-        </div>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Joining Date:</strong> ${date}</p>
+        <p><strong>Salary/Stipend:</strong> ₹${salary}</p>
+
+        <p>${remarks || "You are expected to follow all organizational policies and contribute positively."}</p>
 
         <p>
-          Your contribution to our organization will be valuable in achieving
-          our mission of education, social welfare, and community development.
-        </p>
-
-        <p><strong>Terms / Notes:</strong></p>
-        <p>${remarks || "You are expected to follow all organizational rules and policies."}</p>
-
-        <p>
-          We welcome you to the Shubhi Education Foundation family
-          and wish you success in your role.
+          We welcome you to our organization and wish you a successful journey ahead.
         </p>
 
         <div class="signature">
-          ___________________________<br>
+          <img src="signature.png"><br>
           Authorized Signature<br>
           HR Department
         </div>
@@ -497,6 +531,12 @@ function printAppointment(no,name,type,designation,date,salary,remarks){
   </body>
   </html>
   `);
+
+  if(email){
+    window.open(
+      `mailto:${email}?subject=Appointment Letter from Shubhi Education Foundation&body=Dear ${name}, Congratulations! Your appointment letter has been issued.`
+    );
+  }
 }
 
 /* LOGOUT */
