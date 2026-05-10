@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="hi">
 <head>
@@ -10,7 +11,7 @@
 <style>
 body{
   margin:0;
-  font-family:Segoe UI;
+  font-family:Segoe UI,sans-serif;
   background:#f3f4f6;
 }
 .header{
@@ -43,11 +44,15 @@ nav a{
   border-radius:10px;
 }
 input,select,textarea{
-  padding:8px;
-  margin:5px;
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border:1px solid #ccc;
+  border-radius:6px;
+  box-sizing:border-box;
 }
 button{
-  padding:8px 12px;
+  padding:10px 15px;
   border:none;
   border-radius:6px;
   cursor:pointer;
@@ -70,8 +75,6 @@ th{
 }
 .search{
   width:100%;
-  padding:10px;
-  margin-top:10px;
 }
 @media print{
   nav,.no-print,button,input,select,textarea{
@@ -91,61 +94,53 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 </script>
 
 <div class="header">
-<img src="logo.png">
-<h2>Shubhi Education Foundation</h2>
-  <p>Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD<p>
-<p>Appointment Management System</p>
+  <img src="logo.png">
+  <h2>Shubhi Education Foundation</h2>
+  <p>Under Indian Society Act 1860 Guj./2249/DHD</p>
+  <p>Appointment Management System</p>
 </div>
 
 <nav>
-<a href="admin.html">Admin</a>
-<a href="members.html">Members</a>
-<a href="index.html">Home</a>
-<a href="#" onclick="logout()">Logout</a>
+  <a href="admin.html">Admin</a>
+  <a href="members.html">Members</a>
+  <a href="index.html">Home</a>
+  <a href="#" onclick="logout()">Logout</a>
 </nav>
 
 <div class="card">
-<h3>Create Appointment Letter</h3>
+  <h3>Create Appointment Letter</h3>
 
-<input type="text" id="name" placeholder="Candidate Name">
+  <input type="text" id="name" placeholder="Candidate Name">
+  <input type="email" id="email" placeholder="Candidate Email">
   <input type="file" id="photo" accept="image/*">
 
-<select id="type">
-<option value="Volunteer">Volunteer</option>
-<option value="Staff">Staff</option>
-<option value="Internship">Internship</option>
-<option value="Project Coordinator">Project Coordinator</option>
-</select>
+  <select id="type">
+    <option value="Volunteer">Volunteer</option>
+    <option value="Staff">Staff</option>
+    <option value="Internship">Internship</option>
+    <option value="Project Coordinator">Project Coordinator</option>
+  </select>
 
-<input type="text" id="designation" placeholder="Designation">
+  <input type="text" id="designation" placeholder="Designation">
+  <input type="date" id="joining_date">
+  <input type="number" id="salary" placeholder="Salary / Stipend">
 
-<input type="date" id="joining_date">
+  <textarea id="remarks" placeholder="Terms / Notes"></textarea>
 
-<input type="number" id="salary" placeholder="Salary / Stipend">
-
-<textarea id="remarks" placeholder="Terms / Notes"></textarea>
-
-<button onclick="addAppointment()">Create Appointment</button>
+  <button onclick="addAppointment()">Create Appointment</button>
 </div>
 
 <div class="card">
-<h3>Appointments List</h3>
+  <h3>Appointments List</h3>
 
-<input type="text" id="search" class="search" placeholder="Search Appointment...">
+  <input type="text" id="search" class="search" placeholder="Search Appointment...">
 
-<button onclick="exportCSV()" class="no-print">Export CSV</button>
-<button onclick="window.print()" class="no-print">Print</button>
+  <button onclick="exportCSV()" class="no-print">Export CSV</button>
+  <button onclick="window.print()" class="no-print">Print</button>
 
-<table id="table"></table>
+  <table id="table"></table>
 </div>
 
-let allAppointments = []; /* LOAD APPOINTMENTS */ 
-  async function load(){ const { data, error } = await client 
-  .from("appointments") .select("*") .order("id",{ascending:false}); 
-  if(error){ console.log(error); alert("Error loading appointments"); return; } 
-  allAppointments = data || []; render(allAppointments); } 
-  /* RENDER TABLE */ function render(data){ const table = document.getElementById("table"); 
-  ```html
 <script>
 const client = supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
@@ -154,7 +149,7 @@ const client = supabase.createClient(
 
 let allAppointments = [];
 
-/* LOAD APPOINTMENTS */
+/* LOAD */
 async function load() {
   const { data, error } = await client
     .from("appointments")
@@ -171,7 +166,7 @@ async function load() {
   render(allAppointments);
 }
 
-/* RENDER TABLE */
+/* RENDER */
 function render(data) {
   const table = document.getElementById("table");
 
@@ -188,7 +183,7 @@ function render(data) {
     </tr>
   `;
 
-  if (data.length === 0) {
+  if (!data.length) {
     table.innerHTML += `
       <tr>
         <td colspan="8">No appointments found</td>
@@ -214,32 +209,17 @@ function render(data) {
         <td>${a.joining_date || "-"}</td>
         <td>₹${a.salary || 0}</td>
         <td>
-          <button onclick="editAppointment(${a.id})">
-            Edit
-          </button>
-
-          <button onclick="deleteAppointment(${a.id})">
-            Delete
-          </button>
-
-          <button onclick="printAppointment(${a.id})">
-            Print
-          </button>
-
-          <button onclick="sendEmail(
-            '${a.email || ""}',
-            '${a.name}',
-            '${a.appointment_no}'
-          )">
-            Email
-          </button>
+          <button onclick="editAppointment(${a.id})">Edit</button>
+          <button onclick="deleteAppointment(${a.id})">Delete</button>
+          <button onclick="printAppointment(${a.id})">Print</button>
+          <button onclick="sendEmail('${a.email || ""}','${a.name}','${a.appointment_no}')">Email</button>
         </td>
       </tr>
     `;
   });
 }
 
-/* ADD APPOINTMENT */
+/* ADD */
 async function addAppointment() {
   const name = document.getElementById("name").value.trim();
   const email = document.getElementById("email").value.trim();
@@ -250,7 +230,7 @@ async function addAppointment() {
   const remarks = document.getElementById("remarks").value.trim();
 
   const photoInput = document.getElementById("photo");
-  const photoFile = photoInput ? photoInput.files[0] : null;
+  const photoFile = photoInput.files[0];
 
   if (!name || !designation || !joining_date) {
     alert("Please fill all required fields");
@@ -259,7 +239,6 @@ async function addAppointment() {
 
   let photoUrl = "";
 
-  /* PHOTO UPLOAD */
   if (photoFile) {
     const fileName = Date.now() + "_" + photoFile.name;
 
@@ -273,31 +252,28 @@ async function addAppointment() {
       return;
     }
 
-    const { data: publicUrlData } = client.storage
+    const { data } = client.storage
       .from("appointments")
       .getPublicUrl(fileName);
 
-    photoUrl = publicUrlData.publicUrl;
+    photoUrl = data.publicUrl;
   }
 
   const appointment_no = "APP-" + Date.now();
 
-  /* INSERT */
   const { error } = await client
     .from("appointments")
-    .insert([
-      {
-        appointment_no,
-        name,
-        email,
-        type,
-        designation,
-        joining_date,
-        salary,
-        remarks,
-        photo: photoUrl
-      }
-    ]);
+    .insert([{
+      appointment_no,
+      name,
+      email,
+      type,
+      designation,
+      joining_date,
+      salary,
+      remarks,
+      photo: photoUrl
+    }]);
 
   if (error) {
     console.log(error);
@@ -307,17 +283,13 @@ async function addAppointment() {
 
   alert("Appointment created successfully ✅");
 
-  /* RESET FORM */
   document.getElementById("name").value = "";
   document.getElementById("email").value = "";
   document.getElementById("designation").value = "";
   document.getElementById("joining_date").value = "";
   document.getElementById("salary").value = "";
   document.getElementById("remarks").value = "";
-
-  if (photoInput) {
-    photoInput.value = "";
-  }
+  document.getElementById("photo").value = "";
 
   load();
 }
@@ -337,12 +309,11 @@ async function deleteAppointment(id) {
 /* EDIT */
 async function editAppointment(id) {
   const ap = allAppointments.find(x => x.id === id);
-
   if (!ap) return;
 
-  let newName = prompt("Name", ap.name);
-  let newDesignation = prompt("Designation", ap.designation);
-  let newSalary = prompt("Salary", ap.salary);
+  const newName = prompt("Name", ap.name);
+  const newDesignation = prompt("Designation", ap.designation);
+  const newSalary = prompt("Salary", ap.salary);
 
   if (!newName) return;
 
@@ -366,22 +337,18 @@ function sendEmail(email, name, no) {
   }
 
   const subject = `Appointment Letter - ${no}`;
-
   const body =
     `Dear ${name},%0D%0A%0D%0A` +
     `Your appointment letter has been generated successfully.%0D%0A` +
     `Appointment No: ${no}%0D%0A%0D%0A` +
     `Regards,%0D%0AShubhi Education Foundation`;
 
-  window.open(
-    `mailto:${email}?subject=${subject}&body=${body}`
-  );
+  window.open(`mailto:${email}?subject=${subject}&body=${body}`);
 }
 
-/* PRINT LETTER */
+/* PRINT */
 function printAppointment(id) {
   const a = allAppointments.find(x => x.id === id);
-
   if (!a) return;
 
   const photo = a.photo || "user.png";
@@ -395,80 +362,56 @@ function printAppointment(id) {
     <style>
       body{
         font-family:Georgia,serif;
-        padding:25px;
+        padding:20px;
         background:#f3f4f6;
       }
-
       .letter{
         max-width:900px;
         margin:auto;
         background:white;
-        padding:50px;
+        padding:40px;
         border:4px solid #7c3aed;
         position:relative;
       }
-
-      .header{
-        text-align:center;
-        border-bottom:3px solid #7c3aed;
-        padding-bottom:15px;
-      }
-
-      .header img{
-        width:80px;
-      }
-
-      .header h1{
-        color:#7c3aed;
-        margin:10px 0;
-      }
-
-      .top{
-        display:flex;
-        justify-content:space-between;
-        align-items:flex-start;
-        margin-top:20px;
-      }
-
-      .photo{
-        width:130px;
-        height:150px;
-        object-fit:cover;
-        border:3px solid #7c3aed;
-        border-radius:8px;
-      }
-
-      .title{
-        font-size:28px;
-        font-weight:bold;
-        color:#7c3aed;
-        text-decoration:underline;
-      }
-
-      .content{
-        margin-top:25px;
-        font-size:18px;
-        line-height:1.9;
-      }
-
-      .signature{
-        text-align:right;
-        margin-top:50px;
-      }
-
-      .signature img{
-        width:140px;
-      }
-
       .watermark{
         position:absolute;
         top:35%;
         left:50%;
         transform:translate(-50%,-50%);
-        width:350px;
+        width:300px;
         opacity:0.05;
       }
-
+      .header{
+        text-align:center;
+        border-bottom:3px solid #7c3aed;
+        padding-bottom:15px;
+      }
+      .header img{
+        width:80px;
+      }
+      .top{
+        display:flex;
+        justify-content:space-between;
+        margin-top:20px;
+      }
+      .photo{
+        width:130px;
+        height:150px;
+        object-fit:cover;
+        border:3px solid #7c3aed;
+      }
+      .content{
+        margin-top:25px;
+        font-size:18px;
+        line-height:1.9;
+      }
+      .signature{
+        text-align:right;
+        margin-top:50px;
+      }
+      .signature img{
+        width:140px;
+      }
       button{
         margin-top:20px;
         padding:10px 20px;
@@ -477,44 +420,32 @@ function printAppointment(id) {
         border:none;
         border-radius:8px;
       }
-
       @media print{
-        button{
-          display:none;
-        }
+        button{display:none;}
       }
     </style>
   </head>
-
   <body>
-
     <div class="letter">
-
       <img src="logo.png" class="watermark">
 
       <div class="header">
         <img src="logo.png">
         <h1>Shubhi Education Foundation</h1>
-        <p>Under Indian Society Act 1860</p>
+        <p>Official Appointment Letter</p>
       </div>
 
       <div class="top">
-
         <div>
-          <div class="title">
-            Appointment Letter
-          </div>
-
+          <h2>Appointment Letter</h2>
           <p><b>Appointment No:</b> ${a.appointment_no}</p>
           <p><b>Date:</b> ${new Date().toLocaleDateString()}</p>
         </div>
 
         <img src="${photo}" class="photo">
-
       </div>
 
       <div class="content">
-
         <p>To,<br><b>${a.name}</b></p>
 
         <p>
@@ -522,46 +453,33 @@ function printAppointment(id) {
           <b>${a.designation}</b>
           under
           <b>${a.type}</b>
-          category effective from
+          effective from
           <b>${a.joining_date}</b>.
         </p>
 
-        <p>
-          Salary / Stipend:
-          <b>₹${a.salary}</b>
-        </p>
+        <p><b>Salary / Stipend:</b> ₹${a.salary}</p>
 
-        <p>
-          ${a.remarks || ""}
-        </p>
+        <p>${a.remarks || ""}</p>
 
-        <p>
-          Welcome to Shubhi Education Foundation.
-        </p>
+        <p>Welcome to Shubhi Education Foundation.</p>
 
         <div class="signature">
           <img src="signature.png"><br>
           Authorized Signature
         </div>
-
       </div>
-
     </div>
 
     <center>
-      <button onclick="window.print()">
-        Print / Download
-      </button>
+      <button onclick="window.print()">Print / Download</button>
     </center>
-
   </body>
   </html>
   `);
 }
 
 /* SEARCH */
-document.getElementById("search")
-.addEventListener("input", function () {
+document.getElementById("search").addEventListener("input", function() {
   const val = this.value.toLowerCase();
 
   render(
@@ -572,6 +490,22 @@ document.getElementById("search")
   );
 });
 
+/* EXPORT */
+function exportCSV() {
+  let csv = "Appointment No,Name,Type,Designation,Joining Date,Salary\n";
+
+  allAppointments.forEach(a => {
+    csv += `${a.appointment_no},${a.name},${a.type},${a.designation},${a.joining_date},${a.salary}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const link = document.createElement("a");
+
+  link.href = URL.createObjectURL(blob);
+  link.download = "appointments.csv";
+  link.click();
+}
+
 /* LOGOUT */
 function logout() {
   localStorage.clear();
@@ -581,3 +515,7 @@ function logout() {
 /* START */
 load();
 </script>
+
+</body>
+</html>
+```
