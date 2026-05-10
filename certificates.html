@@ -110,7 +110,13 @@ overflow:hidden;
 ">
 
 <!-- ✅ WATERMARK -->
-<img src="logo.png"
+<!-- ✅ WATERMARK ISSUE FIX:
+logo.png path popup window me load nahi ho raha.
+Base URL use karo -->
+
+<!-- printCertificate() ke andar watermark image ko replace karo -->
+
+<img src="${window.location.origin}/logo.png"
 style="
 position:absolute;
 top:50%;
@@ -122,10 +128,11 @@ z-index:0;
 pointer-events:none;
 ">
 
-<!-- ✅ FRONT LOGO -->
-<div style="position:relative;z-index:2;">
-  <img src='logo.png' style='width:90px;'><br><br>
 
+<!-- FRONT TOP LOGO bhi replace karo -->
+
+<img src="${window.location.origin}/logo.png"
+style="width:90px;">
   <h1 style="color:#1d4ed8;font-size:58px;margin:0;">
     Shubhi Education Foundation
   </h1>
