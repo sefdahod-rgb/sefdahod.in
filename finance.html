@@ -80,29 +80,87 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <p id="ai">Calculating...</p>
 </div>
 
-  <!-- OPEN BALANCE -->
+  <!-- OPENING BALANCE -->
 <div class="box">
-<h3>Opening Balance</h3>
-<input id="open_cash" placeholder="Opening_Cash">
-<input id="open_bank" placeholder="Opening Bank">
-<button class="btn" onclick="saveopening()">Save</button>
-</div>
-  
-<!-- ADD -->
-<div class="box">
-<h3>➕ Add Income</h3>
-<input id="inc_amt" placeholder="Amount">
-<input id="inc_note" placeholder="Note">
-<input type="date" id="inc_date">
-<button class="btn" onclick="addIncome()">Add</button>
+  <h3>Opening Balance</h3>
+
+  <input 
+    type="number"
+    id="open_cash" 
+    placeholder="Opening Cash"
+  >
+
+  <input 
+    type="number"
+    id="open_bank" 
+    placeholder="Opening Bank"
+  >
+
+  <button class="btn" onclick="saveOpening()">
+    Save Opening Balance
+  </button>
 </div>
 
+<!-- ADD INCOME -->
 <div class="box">
-<h3>➖ Add Expense</h3>
-<input id="exp_amt" placeholder="Amount">
-<input id="exp_note" placeholder="Note">
-<input type="date" id="exp_date">
-<button class="btn" onclick="addExpense()">Add</button>
+  <h3>➕ Add Income</h3>
+
+  <input 
+    type="number"
+    id="inc_amt" 
+    placeholder="Amount"
+  >
+
+  <input 
+    type="text"
+    id="inc_note" 
+    placeholder="Note"
+  >
+
+  <input 
+    type="date"
+    id="inc_date"
+  >
+
+  <select id="inc_mode">
+    <option value="cash">Cash</option>
+    <option value="bank">Bank</option>
+  </select>
+
+  <button class="btn" onclick="addIncome()">
+    Add Income
+  </button>
+</div>
+
+<!-- ADD EXPENSE -->
+<div class="box">
+  <h3>➖ Add Expense</h3>
+
+  <input 
+    type="number"
+    id="exp_amt" 
+    placeholder="Amount"
+  >
+
+  <input 
+    type="text"
+    id="exp_note" 
+    placeholder="Note"
+  >
+
+  <input 
+    type="date"
+    id="exp_date"
+  >
+
+  <select id="exp_mode">
+    <option value="cash">Cash</option>
+    <option value="bank">Bank</option>
+  </select>
+
+  <button class="btn" onclick="addExpense()">
+    Add Expense
+  </button>
 </div>
 
 <!-- REPORT -->
