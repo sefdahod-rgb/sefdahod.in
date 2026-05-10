@@ -212,23 +212,12 @@ const client = window.supabase.createClient(
 /* ADD STAFF */
 async function addStaff(){
 
-  const name =
-    document.getElementById("name").value.trim();
-
-  const designation =
-    document.getElementById("designation").value.trim();
-
-  const department =
-    document.getElementById("department").value;
-
-  const salary =
-    Number(document.getElementById("salary").value);
-
-  const joining_date =
-    document.getElementById("joining").value;
-
-  const status =
-    document.getElementById("status").value;
+  const name = document.getElementById("name").value.trim();
+  const designation = document.getElementById("designation").value.trim();
+  const department = document.getElementById("department").value;
+  const salary = Number(document.getElementById("salary").value);
+  const joining_date = document.getElementById("joining").value;
+  const status = document.getElementById("status").value;
 
   if(!name || !designation || !salary || !joining_date){
     alert("Please fill all required fields");
@@ -247,6 +236,7 @@ async function addStaff(){
     }]);
 
   if(error){
+    console.log(error);
     alert("Failed to add staff");
     return;
   }
@@ -269,11 +259,11 @@ async function loadStaff(){
     .select("*")
     .order("id", { ascending:false });
 
-  const table =
-    document.getElementById("staffTable");
+  const table = document.getElementById("staffTable");
 
   if(error){
     console.log(error);
+    alert("Failed to load staff");
     return;
   }
 
@@ -293,40 +283,50 @@ async function loadStaff(){
   let teachers = 0;
   let volunteers = 0;
 
+  if(!data || data.length===0){
+    table.innerHTML += `
+      <tr>
+        <td colspan="7">No staff records found.</td>
+      </tr>
+    `;
+  }
+
   data.forEach(s => {
 
     totalSalary += Number(s.salary) || 0;
 
-    if(
-      s.designation.toLowerCase().includes("teacher")
-    ) teachers++;
+    if((s.designation || "").toLowerCase().includes("teacher")){
+      teachers++;
+    }
 
-    if(
-      s.department.toLowerCase() === "volunteer"
-    ) volunteers++;
+    if((s.department || "").toLowerCase() === "volunteer"){
+      volunteers++;
+    }
 
     table.innerHTML += `
       <tr>
-        <td>${s.name}</td>
-        <td>${s.designation}</td>
-        <td>${s.department}</td>
-        <td>₹${s.salary}</td>
-        <td>${new Date(s.joining_date).toLocaleDateString()}</td>
-        <td>${s.status}</td>
+        <td>${s.name || "-"}</td>
+        <td>${s.designation || "-"}</td>
+        <td>${s.department || "-"}</td>
+        <td>₹${s.salary || 0}</td>
+        <td>${s.joining_date ? new Date(s.joining_date).toLocaleDateString() : "-"}</td>
+        <td>${s.status || "-"}</td>
         <td>
           <button class="edit-btn"
-            onclick="editStaff(${s.id},
-            \`${s.name}\`,
-            \`${s.designation}\`,
-            ${s.salary})">
+            onclick="editStaff(
+              ${s.id},
+              \`${s.name || ""}\`,
+              \`${s.designation || ""}\`,
+              ${s.salary || 0}
+            )">
             Edit
           </button>
 
           <button class="salary-btn"
             onclick="generateSalarySlip(
-              '${s.name}',
-              '${s.designation}',
-              ${s.salary}
+              \`${s.name || ""}\`,
+              \`${s.designation || ""}\`,
+              ${s.salary || 0}
             )">
             Salary Slip
           </button>
@@ -340,20 +340,13 @@ async function loadStaff(){
     `;
   });
 
-  document.getElementById("totalStaff").innerText =
-    data.length;
-
-  document.getElementById("totalSalary").innerText =
-    "₹" + totalSalary;
-
-  document.getElementById("teachers").innerText =
-    teachers;
-
-  document.getElementById("volunteers").innerText =
-    volunteers;
+  document.getElementById("totalStaff").innerText = data.length;
+  document.getElementById("totalSalary").innerText = "₹" + totalSalary;
+  document.getElementById("teachers").innerText = teachers;
+  document.getElementById("volunteers").innerText = volunteers;
 }
 
-/* DELETE */
+/* DELETE STAFF */
 async function deleteStaff(id){
 
   if(!confirm("Delete this employee?")) return;
@@ -366,17 +359,12 @@ async function deleteStaff(id){
   loadStaff();
 }
 
-/* EDIT */
+/* EDIT STAFF */
 async function editStaff(id, oldName, oldDesignation, oldSalary){
 
-  const newName =
-    prompt("Edit Name:", oldName);
-
-  const newDesignation =
-    prompt("Edit Designation:", oldDesignation);
-
-  const newSalary =
-    prompt("Edit Salary:", oldSalary);
+  const newName = prompt("Edit Name:", oldName);
+  const newDesignation = prompt("Edit Designation:", oldDesignation);
+  const newSalary = prompt("Edit Salary:", oldSalary);
 
   if(!newName || !newDesignation || !newSalary) return;
 
@@ -393,8 +381,6 @@ async function editStaff(id, oldName, oldDesignation, oldSalary){
 }
 
 /* SALARY SLIP */
-/* ✅ REPLACE ONLY generateSalarySlip() FUNCTION */
-
 function generateSalarySlip(name, designation, salary){
 
   const win = window.open("", "_blank");
@@ -583,5 +569,7 @@ function generateSalarySlip(name, designation, salary){
   </html>
   `);
 }
-</body>
-</html>
+
+/* INIT */
+loadStaff();
+</script>
