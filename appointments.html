@@ -139,23 +139,445 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <table id="table"></table>
 </div>
 
+let allAppointments = []; /* LOAD APPOINTMENTS */ 
+  async function load(){ const { data, error } = await client 
+  .from("appointments") .select("*") .order("id",{ascending:false}); 
+  if(error){ console.log(error); alert("Error loading appointments"); return; } 
+  allAppointments = data || []; render(allAppointments); } 
+  /* RENDER TABLE */ function render(data){ const table = document.getElementById("table"); 
+  ```html
 <script>
 const client = supabase.createClient(
-"https://kqahcvaoxnmxfcgyyync.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+  "https://kqahcvaoxnmxfcgyyync.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
+let allAppointments = [];
 
-let allAppointments = []; /* PHOTO UPLOAD */ async function uploadPhoto(file){ if(!file) return ""; const fileName = Date.now() + "_" + file.name; const { error } = await client.storage .from("appointments") .upload(fileName, file); if(error){ console.log(error); alert("Photo upload failed"); return ""; } const { data } = client.storage .from("appointments") .getPublicUrl(fileName); return data.publicUrl; } /* LOAD */ async function load(){ const { data, error } = await client .from("appointments") .select("*") .order("id",{ascending:false}); if(error){ console.log(error); return; } allAppointments = data || []; render(allAppointments); } /* RENDER TABLE */ function render(data){ const table = document.getElementById("table"); table.innerHTML = ` <tr> <th>Appointment No</th> <th>Name</th> <th>Photo</th> <th>Type</th> <th>Designation</th> <th>Joining Date</th> <th>Salary</th> <th>Actions</th> </tr> `; if(data.length===0){ table.innerHTML += ` <tr> <td colspan="8">No appointments found</td> </tr> `; return; } data.forEach(a=>{ table.innerHTML += ` <tr> <td>${a.appointment_no || "-"}</td> <td>${a.name || "-"}</td> <td> ${a.photo ? `<img src="${a.photo}" width="50" height="60" style="object-fit:cover;border-radius:6px;">` : "-"} </td> <td>${a.type || "-"}</td> <td>${a.designation || "-"}</td> <td>${a.joining_date || "-"}</td> <td>₹${a.salary || 0}</td> <td> <button onclick="editAppointment(${a.id})"> Edit </button> <button onclick="deleteAppointment(${a.id})"> Delete </button> <button onclick="printAppointment(${a.id})"> Print </button> <button onclick="sendEmail( '${a.email || ""}', '${a.name}', '${a.appointment_no}' )"> Email </button> </td> </tr> `; }); } /* ADD APPOINTMENT */ async function addAppointment(){ const name = document.getElementById("name").value.trim(); const type = document.getElementById("type").value; const designation = document.getElementById("designation").value.trim(); const joining_date = document.getElementById("joining_date").value; const salary = Number(document.getElementById("salary").value) || 0; const remarks = document.getElementById("remarks").value.trim(); const email = document.getElementById("email").value.trim(); const photoFile = document.getElementById("photo").files[0]; if(!name || !designation){ alert("Name and designation required"); return; } let photoUrl = ""; if(photoFile){ photoUrl = await uploadPhoto(photoFile); } const appointment_no = "APP-" + Date.now(); const { error } = await client .from("appointments") .insert([{ appointment_no, name, type, designation, joining_date, salary, remarks, email, photo: photoUrl }]); if(error){ console.log(error); alert("Failed to create appointment"); return; } alert("Appointment created successfully ✅"); document.getElementById("name").value=""; document.getElementById("designation").value=""; document.getElementById("joining_date").value=""; document.getElementById("salary").value=""; document.getElementById("remarks").value=""; document.getElementById("email").value=""; document.getElementById("photo").value=""; load(); } /* DELETE */ async function deleteAppointment(id){ if(!confirm("Delete this appointment?")) return; await client .from("appointments") .delete() .eq("id",id); load(); } /* EDIT */ async function editAppointment(id){ const ap = allAppointments.find(x=>x.id===id); let newName = prompt("Name", ap.name); let newDesignation = prompt("Designation", ap.designation); let newSalary = prompt("Salary", ap.salary); if(!newName) return; await client .from("appointments") .update({ name:newName, designation:newDesignation, salary:newSalary }) .eq("id",id); load(); } /* EMAIL */ function sendEmail(email,name,no){ if(!email){ alert("Candidate email not available"); return; } const subject = `Appointment Letter - ${no}`; const body = `Dear ${name},%0D%0A%0D%0A` + `Your appointment letter has been issued successfully.%0D%0A` + `Appointment No: ${no}%0D%0A%0D%0A` + `Regards,%0D%0AShubhi Education Foundation`; window.open( `mailto:${email}?subject=${subject}&body=${body}` ); } /* PRINT */ function printAppointment(id){ const a = allAppointments.find(x=>x.id===id); if(!a) return; const finalPhoto = a.photo || "user.png"; const w = window.open("", "_blank"); w.document.write(` <html> <head> <title>Appointment Letter</title> <style> body{ font-family:Georgia,serif; background:#f3f4f6; padding:30px; } .letter{ max-width:900px; margin:auto; background:white; padding:50px; border:4px solid #7c3aed; position:relative; } .watermark{ position:absolute; top:35%; left:50%; transform:translate(-50%,-50%); width:350px; opacity:0.06; } .header{ text-align:center; border-bottom:3px solid #7c3aed; padding-bottom:15px; } .header img{ width:80px; } .header h1{ color:#7c3aed; margin:10px 0; } .top-section{ display:flex; justify-content:space-between; margin-top:25px; } .title{ font-size:30px; font-weight:bold; color:#7c3aed; text-decoration:underline; } .candidate-photo{ width:130px; height:150px; object-fit:cover; border:3px solid #7c3aed; border-radius:10px; } .content{ margin-top:25px; font-size:18px; line-height:1.9; } .signature{ margin-top:50px; text-align:right; } .signature img{ width:140px; } button{ margin-top:30px; padding:10px 20px; background:#16a34a; color:white; border:none; border-radius:8px; } @media print{ button{ display:none; } } </style> </head> <body> <div class="letter"> <img src="logo.png" class="watermark"> <div class="header"> <img src="logo.png"> <h1>Shubhi Education Foundation</h1> <p> Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD </p> </div> <div class="top-section"> <div> <div class="title"> Appointment Letter </div> </div> <div> <img src="${finalPhoto}" class="candidate-photo"> </div> </div> <div class="content"> <p><b>Appointment No:</b> ${a.appointment_no}</p> <p><b>Date:</b> ${new Date().toLocaleDateString()}</p> <p>To,<br><b>${a.name}</b></p> <p> We are pleased to appoint you as <b>${a.designation}</b> under the role of <b>${a.type}</b> effective from <b>${a.joining_date}</b>. </p> <p> Salary / Stipend: <b>₹${a.salary}</b> </p> <p>${a.remarks || ""}</p> <p> We welcome you to Shubhi Education Foundation. </p> <div class="signature"> <img src="signature.png"><br> Authorized Signature </div> </div> </div> <center> <button onclick="window.print()"> Print / Download Letter </button> </center> </body> </html> `); } /* SEARCH */ document.getElementById("search") .addEventListener("input", function(){ const val = this.value.toLowerCase(); render( allAppointments.filter(a => (a.name || "").toLowerCase().includes(val) || (a.appointment_no || "").toLowerCase().includes(val) ) ); }); /* INIT */ load(); </script>
-/* LOGOUT */
-function logout(){
-  localStorage.clear();
-  location.href="index.html";
+/* LOAD APPOINTMENTS */
+async function load() {
+  const { data, error } = await client
+    .from("appointments")
+    .select("*")
+    .order("id", { ascending: false });
+
+  if (error) {
+    console.log(error);
+    alert("Error loading appointments");
+    return;
+  }
+
+  allAppointments = data || [];
+  render(allAppointments);
 }
 
-/* INIT */
+/* RENDER TABLE */
+function render(data) {
+  const table = document.getElementById("table");
+
+  table.innerHTML = `
+    <tr>
+      <th>Appointment No</th>
+      <th>Name</th>
+      <th>Photo</th>
+      <th>Type</th>
+      <th>Designation</th>
+      <th>Joining Date</th>
+      <th>Salary</th>
+      <th>Actions</th>
+    </tr>
+  `;
+
+  if (data.length === 0) {
+    table.innerHTML += `
+      <tr>
+        <td colspan="8">No appointments found</td>
+      </tr>
+    `;
+    return;
+  }
+
+  data.forEach(a => {
+    table.innerHTML += `
+      <tr>
+        <td>${a.appointment_no || "-"}</td>
+        <td>${a.name || "-"}</td>
+        <td>
+          ${
+            a.photo
+              ? `<img src="${a.photo}" width="55" height="65" style="object-fit:cover;border-radius:6px;">`
+              : "-"
+          }
+        </td>
+        <td>${a.type || "-"}</td>
+        <td>${a.designation || "-"}</td>
+        <td>${a.joining_date || "-"}</td>
+        <td>₹${a.salary || 0}</td>
+        <td>
+          <button onclick="editAppointment(${a.id})">
+            Edit
+          </button>
+
+          <button onclick="deleteAppointment(${a.id})">
+            Delete
+          </button>
+
+          <button onclick="printAppointment(${a.id})">
+            Print
+          </button>
+
+          <button onclick="sendEmail(
+            '${a.email || ""}',
+            '${a.name}',
+            '${a.appointment_no}'
+          )">
+            Email
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+/* ADD APPOINTMENT */
+async function addAppointment() {
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const type = document.getElementById("type").value;
+  const designation = document.getElementById("designation").value.trim();
+  const joining_date = document.getElementById("joining_date").value;
+  const salary = Number(document.getElementById("salary").value) || 0;
+  const remarks = document.getElementById("remarks").value.trim();
+
+  const photoInput = document.getElementById("photo");
+  const photoFile = photoInput ? photoInput.files[0] : null;
+
+  if (!name || !designation || !joining_date) {
+    alert("Please fill all required fields");
+    return;
+  }
+
+  let photoUrl = "";
+
+  /* PHOTO UPLOAD */
+  if (photoFile) {
+    const fileName = Date.now() + "_" + photoFile.name;
+
+    const { error: uploadError } = await client.storage
+      .from("appointments")
+      .upload(fileName, photoFile);
+
+    if (uploadError) {
+      console.log(uploadError);
+      alert("Photo upload failed");
+      return;
+    }
+
+    const { data: publicUrlData } = client.storage
+      .from("appointments")
+      .getPublicUrl(fileName);
+
+    photoUrl = publicUrlData.publicUrl;
+  }
+
+  const appointment_no = "APP-" + Date.now();
+
+  /* INSERT */
+  const { error } = await client
+    .from("appointments")
+    .insert([
+      {
+        appointment_no,
+        name,
+        email,
+        type,
+        designation,
+        joining_date,
+        salary,
+        remarks,
+        photo: photoUrl
+      }
+    ]);
+
+  if (error) {
+    console.log(error);
+    alert("Failed to create appointment");
+    return;
+  }
+
+  alert("Appointment created successfully ✅");
+
+  /* RESET FORM */
+  document.getElementById("name").value = "";
+  document.getElementById("email").value = "";
+  document.getElementById("designation").value = "";
+  document.getElementById("joining_date").value = "";
+  document.getElementById("salary").value = "";
+  document.getElementById("remarks").value = "";
+
+  if (photoInput) {
+    photoInput.value = "";
+  }
+
+  load();
+}
+
+/* DELETE */
+async function deleteAppointment(id) {
+  if (!confirm("Delete this appointment?")) return;
+
+  await client
+    .from("appointments")
+    .delete()
+    .eq("id", id);
+
+  load();
+}
+
+/* EDIT */
+async function editAppointment(id) {
+  const ap = allAppointments.find(x => x.id === id);
+
+  if (!ap) return;
+
+  let newName = prompt("Name", ap.name);
+  let newDesignation = prompt("Designation", ap.designation);
+  let newSalary = prompt("Salary", ap.salary);
+
+  if (!newName) return;
+
+  await client
+    .from("appointments")
+    .update({
+      name: newName,
+      designation: newDesignation,
+      salary: newSalary
+    })
+    .eq("id", id);
+
+  load();
+}
+
+/* EMAIL */
+function sendEmail(email, name, no) {
+  if (!email) {
+    alert("Candidate email not available");
+    return;
+  }
+
+  const subject = `Appointment Letter - ${no}`;
+
+  const body =
+    `Dear ${name},%0D%0A%0D%0A` +
+    `Your appointment letter has been generated successfully.%0D%0A` +
+    `Appointment No: ${no}%0D%0A%0D%0A` +
+    `Regards,%0D%0AShubhi Education Foundation`;
+
+  window.open(
+    `mailto:${email}?subject=${subject}&body=${body}`
+  );
+}
+
+/* PRINT LETTER */
+function printAppointment(id) {
+  const a = allAppointments.find(x => x.id === id);
+
+  if (!a) return;
+
+  const photo = a.photo || "user.png";
+
+  const w = window.open("", "_blank");
+
+  w.document.write(`
+  <html>
+  <head>
+    <title>Appointment Letter</title>
+    <style>
+      body{
+        font-family:Georgia,serif;
+        padding:25px;
+        background:#f3f4f6;
+      }
+
+      .letter{
+        max-width:900px;
+        margin:auto;
+        background:white;
+        padding:50px;
+        border:4px solid #7c3aed;
+        position:relative;
+      }
+
+      .header{
+        text-align:center;
+        border-bottom:3px solid #7c3aed;
+        padding-bottom:15px;
+      }
+
+      .header img{
+        width:80px;
+      }
+
+      .header h1{
+        color:#7c3aed;
+        margin:10px 0;
+      }
+
+      .top{
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        margin-top:20px;
+      }
+
+      .photo{
+        width:130px;
+        height:150px;
+        object-fit:cover;
+        border:3px solid #7c3aed;
+        border-radius:8px;
+      }
+
+      .title{
+        font-size:28px;
+        font-weight:bold;
+        color:#7c3aed;
+        text-decoration:underline;
+      }
+
+      .content{
+        margin-top:25px;
+        font-size:18px;
+        line-height:1.9;
+      }
+
+      .signature{
+        text-align:right;
+        margin-top:50px;
+      }
+
+      .signature img{
+        width:140px;
+      }
+
+      .watermark{
+        position:absolute;
+        top:35%;
+        left:50%;
+        transform:translate(-50%,-50%);
+        width:350px;
+        opacity:0.05;
+      }
+
+      button{
+        margin-top:20px;
+        padding:10px 20px;
+        background:#16a34a;
+        color:white;
+        border:none;
+        border-radius:8px;
+      }
+
+      @media print{
+        button{
+          display:none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="letter">
+
+      <img src="logo.png" class="watermark">
+
+      <div class="header">
+        <img src="logo.png">
+        <h1>Shubhi Education Foundation</h1>
+        <p>Under Indian Society Act 1860</p>
+      </div>
+
+      <div class="top">
+
+        <div>
+          <div class="title">
+            Appointment Letter
+          </div>
+
+          <p><b>Appointment No:</b> ${a.appointment_no}</p>
+          <p><b>Date:</b> ${new Date().toLocaleDateString()}</p>
+        </div>
+
+        <img src="${photo}" class="photo">
+
+      </div>
+
+      <div class="content">
+
+        <p>To,<br><b>${a.name}</b></p>
+
+        <p>
+          We are pleased to appoint you as
+          <b>${a.designation}</b>
+          under
+          <b>${a.type}</b>
+          category effective from
+          <b>${a.joining_date}</b>.
+        </p>
+
+        <p>
+          Salary / Stipend:
+          <b>₹${a.salary}</b>
+        </p>
+
+        <p>
+          ${a.remarks || ""}
+        </p>
+
+        <p>
+          Welcome to Shubhi Education Foundation.
+        </p>
+
+        <div class="signature">
+          <img src="signature.png"><br>
+          Authorized Signature
+        </div>
+
+      </div>
+
+    </div>
+
+    <center>
+      <button onclick="window.print()">
+        Print / Download
+      </button>
+    </center>
+
+  </body>
+  </html>
+  `);
+}
+
+/* SEARCH */
+document.getElementById("search")
+.addEventListener("input", function () {
+  const val = this.value.toLowerCase();
+
+  render(
+    allAppointments.filter(a =>
+      (a.name || "").toLowerCase().includes(val) ||
+      (a.appointment_no || "").toLowerCase().includes(val)
+    )
+  );
+});
+
+/* LOGOUT */
+function logout() {
+  localStorage.clear();
+  location.href = "index.html";
+}
+
+/* START */
 load();
 </script>
-</body>
-</html>
-```
