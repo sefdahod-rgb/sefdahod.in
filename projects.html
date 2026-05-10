@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Projects Management - Shubhi Education Foundation</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{
+  margin:0;
+  font-family:Segoe UI;
+  background:#f1f5f9;
+}
+
+.header{
+  background:#2563eb;
+  color:white;
+  text-align:center;
+  padding:15px;
+}
+
+.header img{
+  width:60px;
+}
+
+nav{
+  background:#1d4ed8;
+  text-align:center;
+  padding:10px;
+}
+
+nav a{
+  color:white;
+  text-decoration:none;
+  margin:8px;
+  padding:8px 12px;
+  border-radius:6px;
+  background:rgba(255,255,255,0.15);
+}
+
+.container{
+  padding:20px;
+}
+
+.card{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  margin-bottom:20px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+input,select,textarea{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+
+button{
+  padding:10px 15px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.btn-add{
+  background:#16a34a;
+  color:white;
+}
+
+.btn-edit{
+  background:#f59e0b;
+  color:white;
+}
+
+.btn-delete{
+  background:#dc2626;
+  color:white;
+}
+
+.btn-print{
+  background:#2563eb;
+  color:white;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+
+th,td{
+  padding:10px;
+  border-bottom:1px solid #ddd;
+  text-align:left;
+}
+
+th{
+  background:#2563eb;
+  color:white;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:15px;
+}
+
+.stat-box{
+  background:#dbeafe;
+  padding:15px;
+  border-radius:10px;
+  text-align:center;
+}
+
+.stat-box h3{
+  margin:0;
+  color:#1d4ed8;
+}
+
+.stat-box p{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.search{
+  margin-bottom:15px;
+}
+
+.progress-bar{
+  width:100%;
+  background:#e5e7eb;
+  border-radius:8px;
+  overflow:hidden;
+}
+
+.progress{
+  height:18px;
+  background:#16a34a;
+  color:white;
+  text-align:center;
+  font-size:12px;
+}
+
+@media print{
+  nav,.no-print,button,input,textarea,select{
+    display:none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<script>
+if(localStorage.getItem("isAdmin")!=="yes"){
+  localStorage.setItem("redirectAfterLogin","projects.html");
+  location.href="login.html";
+}
+</script>
+
+<div class="header">
+  <img src="logo.png">
+  <h2>Projects Management</h2>
+  <p>Shubhi Education Foundation</p>
+</div>
+
+<nav>
+  <a href="admin.html">Admin</a>
+  <a href="index.html">Home</a>
+  <a href="#" onclick="logout()">Logout</a>
+</nav>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-box">
+      <h3>Total Projects</h3>
+      <p id="totalProjects">0</p>
+    </div>
+
+    <div class="stat-box">
+      <h3>Active Projects</h3>
+      <p id="activeProjects">0</p>
+    </div>
+
+    <div class="stat-box">
+      <h3>Completed</h3>
+      <p id="completedProjects">0</p>
+    </div>
+
+    <div class="stat-box">
+      <h3>Total Budget</h3>
+      <p id="totalBudget">₹0</p>
+    </div>
+  </div>
+
+  <!-- ADD PROJECT -->
+  <div class="card no-print">
+    <h3>Add New Project</h3>
+
+    <input type="text" id="title" placeholder="Project Title">
+
+    <textarea id="description" placeholder="Project Description"></textarea>
+
+    <input type="number" id="budget" placeholder="Project Budget">
+
+    <input type="number" id="spent" placeholder="Amount Spent">
+
+    <input type="date" id="startDate">
+
+    <input type="date" id="endDate">
+
+    <select id="status">
+      <option value="">Select Status</option>
+      <option>Active</option>
+      <option>Completed</option>
+      <option>On Hold</option>
+    </select>
+
+    <input type="text" id="manager" placeholder="Project Manager">
+
+    <button class="btn-add" onclick="addProject()">Add Project</button>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="card no-print">
+    <input type="text" id="search" class="search" placeholder="Search project...">
+    <button class="btn-print" onclick="window.print()">Print Report</button>
+  </div>
+
+  <!-- TABLE -->
+  <div class="card">
+    <h3>Project Records</h3>
+
+    <table id="table">
+      <tr>
+        <th>ID</th>
+        <th>Project</th>
+        <th>Budget</th>
+        <th>Spent</th>
+        <th>Progress</th>
+        <th>Status</th>
+        <th>Manager</th>
+        <th>Action</th>
+      </tr>
+    </table>
+  </div>
+
+</div>
+
+<script>
+const client = supabase.createClient(
+  "https://kqahcvaoxnmxfcgyyync.supabase.co",
+  "YOUR_SUPABASE_ANON_KEY"
+);
+
+let allData=[];
+
+/* LOAD */
+async function loadProjects(){
+
+  const { data, error } = await client
+    .from("projects")
+    .select("*")
+    .order("id",{ascending:false});
+
+  if(error){
+    console.log(error);
+    return;
+  }
+
+  allData = data || [];
+
+  renderTable(allData);
+  updateStats(allData);
+}
+
+/* ADD */
+async function addProject(){
+
+  const title = document.getElementById("title").value.trim();
+  const description = document.getElementById("description").value.trim();
+  const budget = Number(document.getElementById("budget").value);
+  const spent = Number(document.getElementById("spent").value);
+  const start_date = document.getElementById("startDate").value;
+  const end_date = document.getElementById("endDate").value;
+  const status = document.getElementById("status").value;
+  const manager = document.getElementById("manager").value.trim();
+
+  if(!title || !budget){
+    alert("Please fill required fields.");
+    return;
+  }
+
+  const { error } = await client
+    .from("projects")
+    .insert([{
+      title,
+      description,
+      budget,
+      spent,
+      start_date,
+      end_date,
+      status,
+      manager,
+      created_at:new Date()
+    }]);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  alert("Project added successfully ✅");
+
+  document.getElementById("title").value="";
+  document.getElementById("description").value="";
+  document.getElementById("budget").value="";
+  document.getElementById("spent").value="";
+  document.getElementById("startDate").value="";
+  document.getElementById("endDate").value="";
+  document.getElementById("status").value="";
+  document.getElementById("manager").value="";
+
+  loadProjects();
+}
+
+/* TABLE */
+function renderTable(data){
+
+  const table = document.getElementById("table");
+
+  table.innerHTML = `
+    <tr>
+      <th>ID</th>
+      <th>Project</th>
+      <th>Budget</th>
+      <th>Spent</th>
+      <th>Progress</th>
+      <th>Status</th>
+      <th>Manager</th>
+      <th class="no-print">Action</th>
+    </tr>
+  `;
+
+  if(data.length===0){
+    table.innerHTML += `
+      <tr>
+        <td colspan="8">No projects found.</td>
+      </tr>
+    `;
+    return;
+  }
+
+  data.forEach(p=>{
+
+    const progress = p.budget > 0
+      ? Math.min(100, ((p.spent || 0)/p.budget)*100)
+      : 0;
+
+    table.innerHTML += `
+      <tr>
+        <td>${p.id}</td>
+        <td>${p.title}</td>
+        <td>₹${Number(p.budget).toFixed(2)}</td>
+        <td>₹${Number(p.spent || 0).toFixed(2)}</td>
+        <td>
+          <div class="progress-bar">
+            <div class="progress" style="width:${progress}%">
+              ${progress.toFixed(0)}%
+            </div>
+          </div>
+        </td>
+        <td>${p.status || "-"}</td>
+        <td>${p.manager || "-"}</td>
+        <td class="no-print">
+          <button class="btn-edit" onclick="editProject(${p.id}, '${p.title}', ${p.budget})">Edit</button>
+          <button class="btn-delete" onclick="deleteProject(${p.id})">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+/* EDIT */
+async function editProject(id, oldTitle, oldBudget){
+
+  const newTitle = prompt("Edit Project Title:", oldTitle);
+  const newBudget = prompt("Edit Budget:", oldBudget);
+
+  if(!newTitle || !newBudget) return;
+
+  await client
+    .from("projects")
+    .update({
+      title:newTitle,
+      budget:Number(newBudget)
+    })
+    .eq("id",id);
+
+  loadProjects();
+}
+
+/* DELETE */
+async function deleteProject(id){
+
+  if(!confirm("Delete this project?")) return;
+
+  await client
+    .from("projects")
+    .delete()
+    .eq("id",id);
+
+  loadProjects();
+}
+
+/* STATS */
+function updateStats(data){
+
+  let totalBudget = 0;
+
+  data.forEach(p=>{
+    totalBudget += Number(p.budget) || 0;
+  });
+
+  document.getElementById("totalProjects").innerText = data.length;
+
+  document.getElementById("activeProjects").innerText =
+    data.filter(x=>x.status==="Active").length;
+
+  document.getElementById("completedProjects").innerText =
+    data.filter(x=>x.status==="Completed").length;
+
+  document.getElementById("totalBudget").innerText =
+    "₹" + totalBudget.toFixed(2);
+}
+
+/* SEARCH */
+document.getElementById("search")
+.addEventListener("input",function(){
+
+  const val = this.value.toLowerCase();
+
+  const filtered = allData.filter(p =>
+    (p.title || "").toLowerCase().includes(val) ||
+    (p.manager || "").toLowerCase().includes(val)
+  );
+
+  renderTable(filtered);
+});
+
+/* LOGOUT */
+function logout(){
+  localStorage.clear();
+  location.href="index.html";
+}
+
+/* START */
+loadProjects();
+</script>
+
+</body>
+</html>
