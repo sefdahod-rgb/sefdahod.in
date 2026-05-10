@@ -94,26 +94,28 @@ th{
 }
 
 /* ✅ WATERMARK LOGO */
-.certificate::before{
-  content:"";
+<!-- ✅ printCertificate() ke CSS me OLD .certificate::before hatao
+Aur certificate div ke andar ye IMAGE add karo -->
+
+<img src="logo.png" class="watermark">
+
+<style>
+.watermark{
   position:absolute;
   top:50%;
   left:50%;
   transform:translate(-50%, -50%);
-  width:400px;
-  height:400px;
-  background:url('logo.png') no-repeat center center;
-  background-size:contain;
-  opacity:0.08;   /* watermark light effect */
-  z-index:0;
+  width:350px;
+  opacity:0.08;
+  z-index:1;
 }
 
-/* ✅ CONTENT ABOVE WATERMARK */
 .certificate *{
   position:relative;
   z-index:2;
 }
 </style>
+
 </head>
 
 <body>
