@@ -184,17 +184,16 @@ const client = supabase.createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
+
 let chart;
 
-/* SAVE OPENING BALANCE */
+/* OPENING BALANCE */
 function saveOpening() {
-  localStorage.setItem(
-    "open_cash",
+  localStorage.setItem("open_cash",
     document.getElementById("open_cash").value || 0
   );
 
-  localStorage.setItem(
-    "open_bank",
+  localStorage.setItem("open_bank",
     document.getElementById("open_bank").value || 0
   );
 
@@ -202,32 +201,55 @@ function saveOpening() {
   load();
 }
 
+function editOpening() {
+  document.getElementById("open_cash").value =
+    localStorage.getItem("open_cash") || 0;
+
+  document.getElementById("open_bank").value =
+    localStorage.getItem("open_bank") || 0;
+}
+
+function deleteOpening() {
+  localStorage.removeItem("open_cash");
+  localStorage.removeItem("open_bank");
+
+  document.getElementById("open_cash").value = "";
+  document.getElementById("open_bank").value = "";
+
+  alert("Opening balance deleted ✅");
+  load();
+}
+
 /* ADD INCOME */
 async function addIncome() {
-  const amount = Number(document.getElementById("inc_amt").value);
-  const note = document.getElementById("inc_note").value;
+
+  const amount =
+    Number(document.getElementById("inc_amt").value);
+
+  const note =
+    document.getElementById("inc_note").value;
+
   const created_at =
     document.getElementById("inc_date").value ||
     new Date().toISOString();
 
   const mode =
-    document.getElementById("inc_mode")?.value || "cash";
+    document.getElementById("inc_mode").value;
 
-  if (!amount || amount <= 0) {
+  if(!amount || amount <= 0){
     alert("Enter valid income amount");
     return;
   }
 
-  const { error } = await client
-    .from("income")
-    .insert([{
+  const { error } =
+    await client.from("income").insert([{
       amount,
       note,
       mode,
       created_at
     }]);
 
-  if (error) {
+  if(error){
     alert("Income add failed: " + error.message);
     return;
   }
@@ -243,30 +265,34 @@ async function addIncome() {
 
 /* ADD EXPENSE */
 async function addExpense() {
-  const amount = Number(document.getElementById("exp_amt").value);
-  const note = document.getElementById("exp_note").value;
+
+  const amount =
+    Number(document.getElementById("exp_amt").value);
+
+  const note =
+    document.getElementById("exp_note").value;
+
   const created_at =
     document.getElementById("exp_date").value ||
     new Date().toISOString();
 
   const mode =
-    document.getElementById("exp_mode")?.value || "cash";
+    document.getElementById("exp_mode").value;
 
-  if (!amount || amount <= 0) {
+  if(!amount || amount <= 0){
     alert("Enter valid expense amount");
     return;
   }
 
-  const { error } = await client
-    .from("expenses")
-    .insert([{
+  const { error } =
+    await client.from("expenses").insert([{
       amount,
       note,
       mode,
       created_at
     }]);
 
-  if (error) {
+  if(error){
     alert("Expense add failed: " + error.message);
     return;
   }
@@ -280,16 +306,16 @@ async function addExpense() {
   load();
 }
 
-/* MAIN LOAD */
+/* LOAD */
 async function load() {
 
-  let from =
+  const from =
     document.getElementById("from").value;
 
-  let to =
+  const to =
     document.getElementById("to").value;
 
-  let modeFilter =
+  const modeFilter =
     document.getElementById("modeFilter")?.value || "all";
 
   const { data: don = [] } =
@@ -301,11 +327,10 @@ async function load() {
   const { data: exp = [] } =
     await client.from("expenses").select("*");
 
-  function checkDate(d) {
+  function checkDate(d){
+    if(!from || !to) return true;
 
-    if (!from || !to) return true;
-
-    let dt =
+    const dt =
       new Date(d.created_at)
       .toISOString()
       .split("T")[0];
@@ -313,45 +338,23 @@ async function load() {
     return dt >= from && dt <= to;
   }
 
-  const donations =
-    don.filter(checkDate);
+  const donations = don.filter(checkDate);
 
-  let income =
-    inc.filter(checkDate);
+  let income = inc.filter(checkDate);
+  let expense = exp.filter(checkDate);
 
-  let expense =
-    exp.filter(checkDate);
-
-  /* MODE FILTER */
-  if (modeFilter === "cash") {
-    income =
-      income.filter(i =>
-        (i.mode || "cash") === "cash"
-      );
-
-    expense =
-      expense.filter(e =>
-        (e.mode || "cash") === "cash"
-      );
+  if(modeFilter === "cash"){
+    income = income.filter(i => (i.mode || "cash") === "cash");
+    expense = expense.filter(e => (e.mode || "cash") === "cash");
   }
 
-  if (modeFilter === "bank") {
-    income =
-      income.filter(i =>
-        (i.mode || "cash") === "bank"
-      );
-
-    expense =
-      expense.filter(e =>
-        (e.mode || "cash") === "bank"
-      );
+  if(modeFilter === "bank"){
+    income = income.filter(i => (i.mode || "cash") === "bank");
+    expense = expense.filter(e => (e.mode || "cash") === "bank");
   }
 
   let grossDonation = 0;
-  let gatewayFees = 0;
-  let serviceFees = 0;
-  let gstFees = 0;
-  let totalDonationFees = 0;
+  let totalFees = 0;
   let netDonation = 0;
 
   let cashIncome = 0;
@@ -360,162 +363,11 @@ async function load() {
   let cashExpense = 0;
   let bankExpense = 0;
 
-  /* DONATION CALC */
-  if (modeFilter !== "cash") {
-
+  /* DONATIONS */
+  if(modeFilter !== "cash"){
     donations.forEach(d => {
 
-      const gross =
-        Number(d.amount) || 0;
-
-      const gateway =
-        Number(d.gateway_fee) || 0;
-
-      const service =
-        Number(d.service_fee) || 0;
-
-      const gst =
-        Number(d.gst) || 0;
-
-      const fees =
-        gateway + service + gst;
-
-      const net =
-        gross - fees;
-
-      grossDonation += gross;
-      gatewayFees += gateway;
-      serviceFees += service;
-      gstFees += gst;
-      totalDonationFees += fees;
-      netDonation += net;
-
-      bankIncome += net;
-    });
-  }
-
-  /* OTHER INCOME */
-  income.forEach(i => {
-
-    const amt =
-      Number(i.amount) || 0;
-
-    if ((i.mode || "cash") === "bank") {
-      bankIncome += amt;
-    } else {
-      cashIncome += amt;
-    }
-
-  });
-
-  /* EXPENSE */
-  expense.forEach(e => {
-
-    const amt =
-      Number(e.amount) || 0;
-
-    if ((e.mode || "cash") === "bank") {
-      bankExpense += amt;
-    } else {
-      cashExpense += amt;
-    }
-
-  });
-
-  /* OPENING */
-  const openCash =
-    Number(localStorage.getItem("open_cash")) || 0;
-
-  const openBank =
-    Number(localStorage.getItem("open_bank")) || 0;
-
-  /* FINAL BALANCES */
-  const finalCash =
-    openCash + cashIncome - cashExpense;
-
-  const finalBank =
-    openBank + bankIncome - bankExpense;
-
-  /* TOTALS */
-  const totalIncome =
-    cashIncome + bankIncome;
-
-  const totalExpense =
-    cashExpense + bankExpense;
-
-  /* CORRECT PROFIT/LOSS */
-  const balance =
-    totalIncome - totalExpense;
-
-  /* NET AVAILABLE FUND */
-  const totalFund =
-    finalCash + finalBank;
-
-  /* UI */
-  document.getElementById("income").innerText =
-    "₹" + totalIncome.toFixed(2);
-
-  document.getElementById("expense").innerText =
-    "₹" + totalExpense.toFixed(2);
-
-  document.getElementById("balance").innerText =
-    "₹" + balance.toFixed(2);
-
-  document.getElementById("cash").innerText =
-    "₹" + finalCash.toFixed(2);
-
-  document.getElementById("bank").innerText =
-    "₹" + finalBank.toFixed(2);
-
-  /* AI */
-  document.getElementById("ai").innerHTML = `
-    Gross Donation: ₹${grossDonation.toFixed(2)} <br>
-    Gateway Fee: ₹${gatewayFees.toFixed(2)} <br>
-    Service Fee: ₹${serviceFees.toFixed(2)} <br>
-    GST: ₹${gstFees.toFixed(2)} <br>
-    Total Fees Deducted: ₹${totalDonationFees.toFixed(2)} <br>
-    Net Online Donation: ₹${netDonation.toFixed(2)} <br><br>
-
-    Cash Income: ₹${cashIncome.toFixed(2)} <br>
-    Bank Income: ₹${bankIncome.toFixed(2)} <br><br>
-
-    Cash Expense: ₹${cashExpense.toFixed(2)} <br>
-    Bank Expense: ₹${bankExpense.toFixed(2)} <br><br>
-
-    Final Cash Balance: ₹${finalCash.toFixed(2)} <br>
-    Final Bank Balance: ₹${finalBank.toFixed(2)} <br>
-    Total Available Fund: ₹${totalFund.toFixed(2)} <br><br>
-
-    ${
-      balance >= 0
-        ? "📈 Profit ₹" + balance.toFixed(2)
-        : "⚠️ Loss ₹" + Math.abs(balance).toFixed(2)
-    }
-  `;
-
-  /* TABLE */
-  const table =
-    document.getElementById("table");
-
-  table.innerHTML = `
-    <tr>
-      <th>Type</th>
-      <th>Gross</th>
-      <th>Fees</th>
-      <th>Net</th>
-      <th>Mode</th>
-      <th>Note</th>
-      <th>Date</th>
-    </tr>
-  `;
-
-  /* DONATION ROWS */
-  if (modeFilter !== "cash") {
-
-    donations.forEach(d => {
-
-      const gross =
-        Number(d.amount) || 0;
+      const gross = Number(d.amount) || 0;
 
       const fees =
         Number(d.gateway_fee || 0) +
@@ -525,24 +377,144 @@ async function load() {
       const net =
         gross - fees;
 
-      table.innerHTML += `
-        <tr>
-          <td>Donation</td>
-          <td>₹${gross.toFixed(2)}</td>
-          <td>₹${fees.toFixed(2)}</td>
-          <td>₹${net.toFixed(2)}</td>
-          <td>Bank</td>
-          <td>${d.name || "-"}</td>
-          <td>${new Date(d.created_at).toLocaleDateString()}</td>
-        </tr>
-      `;
+      grossDonation += gross;
+      totalFees += fees;
+      netDonation += net;
+
+      bankIncome += net;
     });
   }
 
-  /* INCOME ROWS */
+  /* INCOME */
+  income.forEach(i => {
+    const amt = Number(i.amount) || 0;
+
+    if((i.mode || "cash") === "bank"){
+      bankIncome += amt;
+    } else {
+      cashIncome += amt;
+    }
+  });
+
+  /* EXPENSE */
+  expense.forEach(e => {
+    const amt = Number(e.amount) || 0;
+
+    if((e.mode || "cash") === "bank"){
+      bankExpense += amt;
+    } else {
+      cashExpense += amt;
+    }
+  });
+
+  /* OPENING */
+  const openCash =
+    Number(localStorage.getItem("open_cash")) || 0;
+
+  const openBank =
+    Number(localStorage.getItem("open_bank")) || 0;
+
+  const finalCash =
+    openCash + cashIncome - cashExpense;
+
+  const finalBank =
+    openBank + bankIncome - bankExpense;
+
+  const totalIncome =
+    cashIncome + bankIncome;
+
+  const totalExpense =
+    cashExpense + bankExpense;
+
+  const profitLoss =
+    totalIncome - totalExpense;
+
+  const totalFund =
+    finalCash + finalBank;
+
+  /* UI */
+  income.innerText = "₹" + totalIncome.toFixed(2);
+  expense.innerText = "₹" + totalExpense.toFixed(2);
+  balance.innerText = "₹" + profitLoss.toFixed(2);
+  cash.innerText = "₹" + finalCash.toFixed(2);
+  bank.innerText = "₹" + finalBank.toFixed(2);
+
+  /* AI */
+  ai.innerHTML = `
+    Gross Donation: ₹${grossDonation.toFixed(2)}<br>
+    Total Fees: ₹${totalFees.toFixed(2)}<br>
+    Net Donation: ₹${netDonation.toFixed(2)}<br><br>
+
+    Cash Income: ₹${cashIncome.toFixed(2)}<br>
+    Bank Income: ₹${bankIncome.toFixed(2)}<br><br>
+
+    Cash Expense: ₹${cashExpense.toFixed(2)}<br>
+    Bank Expense: ₹${bankExpense.toFixed(2)}<br><br>
+
+    Opening Cash: ₹${openCash.toFixed(2)}<br>
+    Opening Bank: ₹${openBank.toFixed(2)}<br><br>
+
+    Final Cash: ₹${finalCash.toFixed(2)}<br>
+    Final Bank: ₹${finalBank.toFixed(2)}<br>
+
+    Total Fund: ₹${totalFund.toFixed(2)}<br><br>
+
+    ${
+      profitLoss >= 0
+        ? "📈 Profit ₹" + profitLoss.toFixed(2)
+        : "⚠️ Loss ₹" + Math.abs(profitLoss).toFixed(2)
+    }
+  `;
+
+  /* TABLE */
+  table.innerHTML = `
+    <tr>
+      <th>Voucher</th>
+      <th>Type</th>
+      <th>Gross</th>
+      <th>Fees</th>
+      <th>Net</th>
+      <th>Mode</th>
+      <th>Note</th>
+      <th>Date</th>
+      <th>Action</th>
+    </tr>
+  `;
+
+  let voucherNo = 1;
+
+  donations.forEach(d => {
+
+    const gross = Number(d.amount) || 0;
+
+    const fees =
+      Number(d.gateway_fee || 0) +
+      Number(d.service_fee || 0) +
+      Number(d.gst || 0);
+
+    const net = gross - fees;
+
+    table.innerHTML += `
+      <tr>
+        <td>V-${voucherNo++}</td>
+        <td>Donation</td>
+        <td>₹${gross.toFixed(2)}</td>
+        <td>₹${fees.toFixed(2)}</td>
+        <td>₹${net.toFixed(2)}</td>
+        <td>Bank</td>
+        <td>${d.name || "-"}</td>
+        <td>${new Date(d.created_at).toLocaleDateString()}</td>
+        <td>
+          <button onclick="printVoucher('Donation','${d.name}','${gross}','${fees}','${net}','Bank')">Voucher</button>
+        </td>
+      </tr>
+    `;
+  });
+
   income.forEach(i => {
     table.innerHTML += `
       <tr>
+        <td>V-${voucherNo++}</td>
         <td>Income</td>
         <td>₹${Number(i.amount).toFixed(2)}</td>
         <td>₹0.00</td>
@@ -550,14 +522,19 @@ async function load() {
         <td>${i.mode || "cash"}</td>
         <td>${i.note || "-"}</td>
         <td>${new Date(i.created_at).toLocaleDateString()}</td>
+        <td>
+          <button onclick="editIncome(${i.id})">Edit</button>
+          <button onclick="deleteIncome(${i.id})">Delete</button>
+          <button onclick="printVoucher('Income','${i.note}','${i.amount}','0','${i.amount}','${i.mode}')">Voucher</button>
+        </td>
       </tr>
     `;
   });
 
-  /* EXPENSE ROWS */
   expense.forEach(e => {
     table.innerHTML += `
       <tr>
+        <td>V-${voucherNo++}</td>
         <td>Expense</td>
         <td>₹${Number(e.amount).toFixed(2)}</td>
         <td>₹0.00</td>
@@ -565,72 +542,94 @@ async function load() {
         <td>${e.mode || "cash"}</td>
         <td>${e.note || "-"}</td>
         <td>${new Date(e.created_at).toLocaleDateString()}</td>
+        <td>
+          <button onclick="editExpense(${e.id})">Edit</button>
+          <button onclick="deleteExpense(${e.id})">Delete</button>
+          <button onclick="printVoucher('Expense','${e.note}','${e.amount}','0','${e.amount}','${e.mode}')">Voucher</button>
+        </td>
       </tr>
     `;
   });
 
   /* CHART */
-  if (chart) chart.destroy();
+  if(chart) chart.destroy();
 
-  let ctx =
-    document.getElementById("chart");
-
-  chart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: [
-        "Cash Income",
-        "Bank Income",
-        "Cash Expense",
-        "Bank Expense"
-      ],
-      datasets: [{
-        data: [
-          cashIncome,
-          bankIncome,
-          cashExpense,
-          bankExpense
+  chart = new Chart(
+    document.getElementById("chart"),
+    {
+      type: "bar",
+      data: {
+        labels: [
+          "Cash Income",
+          "Bank Income",
+          "Cash Expense",
+          "Bank Expense"
         ],
-        backgroundColor: [
-          "green",
-          "blue",
-          "orange",
-          "red"
-        ]
-      }]
+        datasets: [{
+          data: [
+            cashIncome,
+            bankIncome,
+            cashExpense,
+            bankExpense
+          ],
+          backgroundColor: [
+            "green",
+            "blue",
+            "orange",
+            "red"
+          ]
+        }]
+      }
     }
-  });
+  );
+}
 
+/* VOUCHER */
+function printVoucher(type,note,gross,fees,net,mode){
+  const win = window.open("", "_blank");
+
+  win.document.write(`
+    <h2>Shubhi Education Foundation Voucher</h2>
+    <p>Type: ${type}</p>
+    <p>Note: ${note}</p>
+    <p>Gross: ₹${gross}</p>
+    <p>Fees: ₹${fees}</p>
+    <p>Net: ₹${net}</p>
+    <p>Mode: ${mode}</p>
+    <p>Date: ${new Date().toLocaleString()}</p>
+    <hr>
+    <p>Authorized Signature</p>
+  `);
+
+  win.print();
 }
 
 /* DELETE */
-async function deleteIncome(id) {
+async function deleteIncome(id){
   await client.from("income").delete().eq("id", id);
   load();
 }
 
-async function deleteExpense(id) {
+async function deleteExpense(id){
   await client.from("expenses").delete().eq("id", id);
   load();
 }
 
 /* EDIT */
-async function editIncome(id) {
+async function editIncome(id){
   let a = prompt("Enter new income amount:");
-  if (a) {
-    await client
-      .from("income")
+  if(a){
+    await client.from("income")
       .update({ amount: Number(a) })
       .eq("id", id);
     load();
   }
 }
 
-async function editExpense(id) {
+async function editExpense(id){
   let a = prompt("Enter new expense amount:");
-  if (a) {
-    await client
-      .from("expenses")
+  if(a){
+    await client.from("expenses")
       .update({ amount: Number(a) })
       .eq("id", id);
     load();
@@ -638,45 +637,34 @@ async function editExpense(id) {
 }
 
 /* CSV */
-function exportCSV() {
-  let rows =
-    document.querySelectorAll("table tr");
-
+function exportCSV(){
+  let rows = document.querySelectorAll("table tr");
   let csv = "";
 
   rows.forEach(r => {
-    let cols =
-      r.querySelectorAll("td,th");
-
+    let cols = r.querySelectorAll("td,th");
     let row = [];
 
-    cols.forEach(c =>
-      row.push(c.innerText)
-    );
+    cols.forEach(c => row.push(c.innerText));
 
     csv += row.join(",") + "\n";
   });
 
   let blob = new Blob([csv]);
-
   let a = document.createElement("a");
 
-  a.href =
-    URL.createObjectURL(blob);
-
-  a.download =
-    "finance_report.csv";
-
+  a.href = URL.createObjectURL(blob);
+  a.download = "finance_report.csv";
   a.click();
 }
 
 /* PRINT */
-function printReport() {
+function printReport(){
   window.print();
 }
 
 /* LOGOUT */
-function logout() {
+function logout(){
   localStorage.clear();
   alert("Logged out successfully ✅");
   window.location.href = "index.html";
