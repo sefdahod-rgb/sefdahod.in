@@ -160,19 +160,19 @@ async function load(){
 /* RENDER TABLE */
 function renderTable(data){
 
-  const table = document.getElementById("table");
+  document.getElementById("search")
+.addEventListener("input", function(){
 
-  table.innerHTML = `
-    <tr>
-      <th>ID</th>
-      <th>Member No</th>
-      <th>Name</th>
-      <th>Designation</th>
-      <th>Mobile</th>
-      <th>Photo</th>
-      <th>Actions</th>
-    </tr>
-  `;
+  const val = this.value.toLowerCase();
+
+  renderTable(
+    allMembers.filter(m =>
+      (m.name || "").toLowerCase().includes(val) ||
+      (m.member_id || "").toLowerCase().includes(val) ||
+      (m.member_no || "").toLowerCase().includes(val)
+    )
+  );
+});
 
   if(data.length===0){
     table.innerHTML += `<tr><td colspan="7">No members found</td></tr>`;
@@ -192,7 +192,7 @@ function renderTable(data){
           ${m.photo ? `<img src="${m.photo}" width="50">` : "-"}
         </td>
         <td>
-          <button onclick="printIDCard(${m.id})">Print ID Card</button>
+          <button onclick="printIDCard(allMembers.find(x=>x.id===${m.id}))">Print ID Card</button>
           <button onclick="editMember(${m.id})">Edit</button>
           <button onclick="deleteMember(${m.id})">Delete</button>
         </td>
