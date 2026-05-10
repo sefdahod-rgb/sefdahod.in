@@ -424,61 +424,55 @@ function printAppointment(no,name,email,photo,type,designation,date,salary,remar
         z-index:0;
       }
 
-      .header{
-        text-align:center;
-        border-bottom:3px solid #7c3aed;
-        padding-bottom:15px;
-        margin-bottom:25px;
-        position:relative;
-        z-index:2;
-      }
+      /* PERFECT LAYOUT KE LIYE YE FINAL CSS USE KARO */
 
-      .header img{
-        width:80px;
-      }
+.header{
+  text-align:center;
+  border-bottom:3px solid #7c3aed;
+  padding-bottom:15px;
+  margin-bottom:30px;
+  position:relative;
+  z-index:2;
+}
 
-      .header h1{
-        margin:10px 0 5px;
-        color:#6d28d9;
-      }
-
-      .title{
-  position:absolute;
-  top:170px;
-  left:60px;
-  font-size:26px;
+.title{
+  font-size:30px;
   font-weight:bold;
   color:#7c3aed;
   text-decoration:underline;
-  margin:0;
-  z-index:2;
+  margin-top:20px;
+  margin-bottom:25px;
+  text-align:left;
+}
+
+.top-section{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:20px;
 }
 
 .candidate-box{
-  position:absolute;
-  top:150px;
-  right:60px;
+  width:140px;
   text-align:right;
-  z-index:2;
 }
 
-      .candidate-photo{
-        width:130px;
-        height:150px;
-        object-fit:cover;
-        border:3px solid #7c3aed;
-        border-radius:10px;
-      }
+.candidate-photo{
+  width:130px;
+  height:150px;
+  object-fit:cover;
+  border:3px solid #7c3aed;
+  border-radius:10px;
+}
 
-      .content{
+.content{
   font-size:18px;
   line-height:1.8;
   color:#222;
   position:relative;
   z-index:2;
-  margin-top:140px;
+  margin-top:20px;
 }
-
       .signature{
         margin-top:60px;
         text-align:right;
