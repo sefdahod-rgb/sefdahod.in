@@ -158,44 +158,46 @@ async function load(){
 }
 
 /* RENDER TABLE */
-function render(data){
+function renderTable(data){
 
   const table = document.getElementById("table");
 
   table.innerHTML = `
-  <tr>
-    <th>Member ID</th>
-    <th>Name</th>
-    <th>Mobile</th>
-    <th>Email</th>
-    <th>Designation</th>
-    <th>Join Date</th>
-    <th>Status</th>
-    <th>Actions</th>
-  </tr>`;
+    <tr>
+      <th>ID</th>
+      <th>Member No</th>
+      <th>Name</th>
+      <th>Designation</th>
+      <th>Mobile</th>
+      <th>Photo</th>
+      <th>Actions</th>
+    </tr>
+  `;
 
   if(data.length===0){
-    table.innerHTML += `<tr><td colspan="8">No members found</td></tr>`;
+    table.innerHTML += `<tr><td colspan="7">No members found</td></tr>`;
     return;
   }
 
   data.forEach(m=>{
 
     table.innerHTML += `
-    <tr>
-      <td>${m.member_id || "-"}</td>
-      <td>${m.name || "-"}</td>
-      <td>${m.mobile || "-"}</td>
-      <td>${m.email || "-"}</td>
-      <td>${m.designation || "-"}</td>
-      <td>${m.join_date || "-"}</td>
-      <td>${m.status || "-"}</td>
-      <td>
-        <button onclick="editMember(${m.id})">Edit</button>
-        <button onclick="deleteMember(${m.id})">Delete</button>
-        <button onclick="printID('${m.member_id}','${m.name}','${m.designation}')">ID Card</button>
-      </td>
-    </tr>`;
+      <tr>
+        <td>${m.id}</td>
+        <td>${m.member_no || "-"}</td>
+        <td>${m.name || "-"}</td>
+        <td>${m.designation || "-"}</td>
+        <td>${m.mobile || "-"}</td>
+        <td>
+          ${m.photo ? `<img src="${m.photo}" width="50">` : "-"}
+        </td>
+        <td>
+          <button onclick="printIDCard(${m.id})">Print ID Card</button>
+          <button onclick="editMember(${m.id})">Edit</button>
+          <button onclick="deleteMember(${m.id})">Delete</button>
+        </td>
+      </tr>
+    `;
   });
 }
 
