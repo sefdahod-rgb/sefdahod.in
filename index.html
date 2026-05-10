@@ -172,9 +172,55 @@ We aspire to build a future that is educated, self-reliant, and socially respons
   <img src="img6.jpg" class="slide">
 
 </div>
+<div class="card" style="max-width:350px;float:right;margin-top:20px;">
+  <h2>📰 Latest News / Events</h2>
 
+  <marquee direction="up" scrollamount="3" height="400"
+    onmouseover="this.stop();"
+    onmouseout="this.start();">
+
+    <div id="newsTicker">
+      Loading latest updates...
+    </div>
+
+  </marquee>
+</div>
 </div>
 
+<script>
+async function loadNewsTicker(){
+
+  const { data, error } = await client
+    .from("news")
+    .select("*")
+    .eq("status","Published")
+    .order("id",{ascending:false})
+    .limit(10);
+
+  const box = document.getElementById("newsTicker");
+
+  if(error || !data.length){
+    box.innerHTML = "<p>No latest updates available.</p>";
+    return;
+  }
+
+  box.innerHTML = "";
+
+  data.forEach(n=>{
+    box.innerHTML += `
+      <div style="padding:10px;border-bottom:1px solid #ccc;">
+        <strong>${n.title}</strong><br>
+        ${n.content}<br>
+        <small>${n.publish_date}</small>
+      </div>
+      <hr>
+    `;
+  });
+}
+
+loadNewsTicker();
+</script>
+  
 </section>
 <!-- ✅ PUBLIC ENQUIRY FORM SECTION (About Us ke niche ya footer se upar paste karo) -->
 
