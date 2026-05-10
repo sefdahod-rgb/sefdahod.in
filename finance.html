@@ -189,71 +189,102 @@ let chart;
 /* SAVE OPENING BALANCE */
 function saveOpening(){
 
-  localStorage.setItem(
-    "open_cash",
-    document.getElementById("open_cash").value || 0
-  );
+  const cash =
+    Number(document.getElementById("open_cash").value) || 0;
 
-  localStorage.setItem(
-    "open_bank",
-    document.getElementById("open_bank").value || 0
-  );
+  const bank =
+    Number(document.getElementById("open_bank").value) || 0;
+
+  localStorage.setItem("open_cash", cash);
+  localStorage.setItem("open_bank", bank);
 
   alert("Opening balance saved successfully ✅");
 
   load();
 }
 
-/* ADD INCOME WITH MODE */
+/* ADD INCOME */
 async function addIncome(){
 
   const amount =
-    Number(
-      document.getElementById("inc_amt").value
-    );
+    Number(document.getElementById("inc_amt").value);
 
   const note =
-    document.getElementById("inc_note").value;
+    document.getElementById("inc_note").value.trim();
 
   const created_at =
-    document.getElementById("inc_date").value || new Date();
+    document.getElementById("inc_date").value ||
+    new Date().toISOString();
 
   const mode =
-    prompt("Enter income mode: cash or bank", "cash");
+    document.getElementById("inc_mode").value;
 
-  await client.from("income").insert([{
-    amount,
-    note,
-    mode: mode?.toLowerCase() === "bank" ? "bank" : "cash",
-    created_at
-  }]);
+  if(!amount || amount <= 0){
+    alert("Please enter valid income amount.");
+    return;
+  }
+
+  const { error } =
+    await client.from("income").insert([{
+      amount,
+      note,
+      mode,
+      created_at
+    }]);
+
+  if(error){
+    alert("Income add failed: " + error.message);
+    return;
+  }
+
+  alert("Income added successfully ✅");
+
+  document.getElementById("inc_amt").value = "";
+  document.getElementById("inc_note").value = "";
+  document.getElementById("inc_date").value = "";
 
   load();
 }
 
-/* ADD EXPENSE WITH MODE */
+/* ADD EXPENSE */
 async function addExpense(){
 
   const amount =
-    Number(
-      document.getElementById("exp_amt").value
-    );
+    Number(document.getElementById("exp_amt").value);
 
   const note =
-    document.getElementById("exp_note").value;
+    document.getElementById("exp_note").value.trim();
 
   const created_at =
-    document.getElementById("exp_date").value || new Date();
+    document.getElementById("exp_date").value ||
+    new Date().toISOString();
 
   const mode =
-    prompt("Enter expense mode: cash or bank", "cash");
+    document.getElementById("exp_mode").value;
 
-  await client.from("expenses").insert([{
-    amount,
-    note,
-    mode: mode?.toLowerCase() === "bank" ? "bank" : "cash",
-    created_at
-  }]);
+  if(!amount || amount <= 0){
+    alert("Please enter valid expense amount.");
+    return;
+  }
+
+  const { error } =
+    await client.from("expenses").insert([{
+      amount,
+      note,
+      mode,
+      created_at
+    }]);
+
+  if(error){
+    alert("Expense add failed: " + error.message);
+    return;
+  }
+
+  alert("Expense added successfully ✅");
+
+  document.getElementById("exp_amt").value = "";
+  document.getElementById("exp_note").value = "";
+  document.getElementById("exp_date").value = "";
 
   load();
 }
@@ -288,21 +319,15 @@ async function load(){
     return dt >= from && dt <= to;
   }
 
-  const donations =
-    don.filter(check);
+  const donations = don.filter(check);
+  const income = inc.filter(check);
+  const expense = exp.filter(check);
 
-  const income =
-    inc.filter(check);
-
-  const expense =
-    exp.filter(check);
-
-  /* TOTALS */
   let grossDonation = 0;
+  let totalDonationFees = 0;
   let gatewayFees = 0;
   let serviceFees = 0;
   let gstFees = 0;
-  let totalDonationFees = 0;
   let netDonation = 0;
 
   let cashIncome = 0;
@@ -311,7 +336,7 @@ async function load(){
   let cashExpense = 0;
   let bankExpense = 0;
 
-  /* DONATIONS (ONLINE → BANK) */
+  /* DONATIONS */
   donations.forEach(d => {
 
     const gross =
@@ -330,7 +355,7 @@ async function load(){
       gateway + service + gst;
 
     const net =
-      gross - fees;
+      Number(d.net_amount) || (gross - fees);
 
     grossDonation += gross;
     gatewayFees += gateway;
@@ -340,7 +365,6 @@ async function load(){
     netDonation += net;
 
     bankIncome += net;
-
   });
 
   /* OTHER INCOME */
@@ -349,12 +373,11 @@ async function load(){
     const amt =
       Number(i.amount) || 0;
 
-    if(i.mode === "bank"){
+    if((i.mode || "cash") === "bank"){
       bankIncome += amt;
     } else {
       cashIncome += amt;
     }
-
   });
 
   /* EXPENSE */
@@ -363,15 +386,13 @@ async function load(){
     const amt =
       Number(e.amount) || 0;
 
-    if(e.mode === "bank"){
+    if((e.mode || "cash") === "bank"){
       bankExpense += amt;
     } else {
       cashExpense += amt;
     }
-
   });
 
-  /* FINAL CALCULATIONS */
   const totalIncome =
     bankIncome + cashIncome;
 
@@ -381,18 +402,12 @@ async function load(){
   const balance =
     totalIncome - totalExpense;
 
-  /* OPENING */
   const openCash =
-    Number(
-      localStorage.getItem("open_cash")
-    ) || 0;
+    Number(localStorage.getItem("open_cash")) || 0;
 
   const openBank =
-    Number(
-      localStorage.getItem("open_bank")
-    ) || 0;
+    Number(localStorage.getItem("open_bank")) || 0;
 
-  /* FINAL LEDGER */
   const finalCash =
     openCash + cashIncome - cashExpense;
 
@@ -415,28 +430,28 @@ async function load(){
   document.getElementById("bank").innerText =
     "₹" + finalBank.toFixed(2);
 
-  /* AI */
+  /* AI REPORT */
   document.getElementById("ai").innerHTML = `
     Gross Online Donation: ₹${grossDonation.toFixed(2)} <br>
     Gateway Fee: ₹${gatewayFees.toFixed(2)} <br>
     Service Fee: ₹${serviceFees.toFixed(2)} <br>
     GST: ₹${gstFees.toFixed(2)} <br>
-    Total Online Fees: ₹${totalDonationFees.toFixed(2)} <br>
-    Net Online Donation (Bank): ₹${netDonation.toFixed(2)} <br><br>
+    Total Fees: ₹${totalDonationFees.toFixed(2)} <br>
+    Net Online Donation: ₹${netDonation.toFixed(2)} <br><br>
 
-    Other Bank Income: ₹${bankIncome - netDonation} <br>
-    Cash Income: ₹${cashIncome.toFixed(2)} <br><br>
+    Cash Income: ₹${cashIncome.toFixed(2)} <br>
+    Bank Income: ₹${(bankIncome - netDonation).toFixed(2)} <br><br>
 
-    Bank Expense: ₹${bankExpense.toFixed(2)} <br>
-    Cash Expense: ₹${cashExpense.toFixed(2)} <br><br>
+    Cash Expense: ₹${cashExpense.toFixed(2)} <br>
+    Bank Expense: ₹${bankExpense.toFixed(2)} <br><br>
 
-    Final Bank Balance: ₹${finalBank.toFixed(2)} <br>
-    Final Cash Balance: ₹${finalCash.toFixed(2)} <br><br>
+    Final Cash: ₹${finalCash.toFixed(2)} <br>
+    Final Bank: ₹${finalBank.toFixed(2)} <br><br>
 
     ${
       balance >= 0
-        ? "📈 Profit ₹" + balance.toFixed(2)
-        : "⚠️ Loss ₹" + Math.abs(balance).toFixed(2)
+      ? "📈 Profit ₹" + balance.toFixed(2)
+      : "⚠️ Loss ₹" + Math.abs(balance).toFixed(2)
     }
   `;
 
@@ -468,7 +483,7 @@ async function load(){
       Number(d.gst || 0);
 
     const net =
-      gross - fees;
+      Number(d.net_amount) || (gross - fees);
 
     table.innerHTML += `
       <tr>
@@ -485,7 +500,6 @@ async function load(){
   });
 
   income.forEach(i => {
-
     table.innerHTML += `
       <tr>
         <td>Income</td>
@@ -504,7 +518,6 @@ async function load(){
   });
 
   expense.forEach(e => {
-
     table.innerHTML += `
       <tr>
         <td>Expense</td>
@@ -525,7 +538,7 @@ async function load(){
   /* CHART */
   if(chart) chart.destroy();
 
-  let ctx =
+  const ctx =
     document.getElementById("chart");
 
   chart = new Chart(ctx, {
@@ -553,7 +566,6 @@ async function load(){
       }]
     }
   });
-
 }
 
 /* DELETE */
@@ -570,7 +582,7 @@ async function deleteExpense(id){
 /* EDIT */
 async function editIncome(id){
 
-  let a =
+  const a =
     prompt("Enter new income amount:");
 
   if(a){
@@ -587,7 +599,7 @@ async function editIncome(id){
 
 async function editExpense(id){
 
-  let a =
+  const a =
     prompt("Enter new expense amount:");
 
   if(a){
@@ -621,9 +633,7 @@ function exportCSV(){
       row.push(c.innerText)
     );
 
-    csv +=
-      row.join(",") + "\n";
-
+    csv += row.join(",") + "\n";
   });
 
   let blob =
