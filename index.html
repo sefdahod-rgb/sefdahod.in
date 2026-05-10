@@ -199,22 +199,46 @@ We aspire to build a future that is educated, self-reliant, and socially respons
     </form>
   </div>
 
-  <!-- NEWS / EVENTS -->
-  <div class="news-box">
+ <!-- ✅ INDEX.HTML ME FOOTER SE PEHLE YA SUPABASE CLIENT KE BAAD YE SCRIPT ZARUR HO -->
 
-    <h2>📰 Latest News / Events</h2>
+<script>
+async function loadNewsTicker(){
 
-    <marquee direction="up"
-      scrollamount="3"
-      height="350"
-      onmouseover="this.stop();"
-      onmouseout="this.start();">
+  const { data, error } = await client
+    .from("news")
+    .select("*")
+    .eq("status","Published")
+    .order("id",{ascending:false})
+    .limit(10);
 
-      <div id="newsTicker">
-        Loading latest updates...
+  const box = document.getElementById("newsTicker");
+
+  if(error){
+    console.log(error);
+    box.innerHTML = "<p>Failed to load news.</p>";
+    return;
+  }
+
+  if(!data || data.length===0){
+    box.innerHTML = "<p>No latest updates available.</p>";
+    return;
+  }
+
+  box.innerHTML = "";
+
+  data.forEach(n=>{
+    box.innerHTML += `
+      <div style="padding:12px;border-bottom:1px solid rgba(255,255,255,0.3);">
+        <strong>${n.title || ""}</strong><br>
+        ${n.content || ""}<br>
+        <small>${n.publish_date || ""}</small>
       </div>
+    `;
+  });
+}
 
-    </marquee>
+loadNewsTicker();
+</script>
 
   </div>
 
