@@ -393,31 +393,195 @@ async function editStaff(id, oldName, oldDesignation, oldSalary){
 }
 
 /* SALARY SLIP */
-function generateSalarySlip(name, designation, salary){
+/* ✅ REPLACE ONLY generateSalarySlip() FUNCTION */
 
-  const slip = `
-Shubhi Education Foundation
------------------------------
-Employee Name: ${name}
-Designation: ${designation}
-Monthly Salary: ₹${salary}
-Date: ${new Date().toLocaleDateString()}
------------------------------
-Authorized HR Department
-  `;
+function generateSalarySlip(name, designation, salary){
 
   const win = window.open("", "_blank");
 
-  win.document.write(
-    "<pre>" + slip + "</pre>"
-  );
+  win.document.write(`
+  <html>
+  <head>
+    <title>Salary Slip</title>
+    <style>
+      body{
+        font-family:Arial,sans-serif;
+        background:#f3f4f6;
+        padding:30px;
+      }
 
-  win.print();
+      .slip{
+        max-width:850px;
+        margin:auto;
+        background:white;
+        padding:40px;
+        border:3px solid #16a34a;
+        border-radius:15px;
+        box-shadow:0 0 20px rgba(0,0,0,0.15);
+        position:relative;
+      }
+
+      .watermark{
+        position:absolute;
+        top:35%;
+        left:50%;
+        transform:translate(-50%,-50%);
+        opacity:0.08;
+        width:250px;
+      }
+
+      .header{
+        text-align:center;
+        border-bottom:3px solid #16a34a;
+        padding-bottom:15px;
+        margin-bottom:25px;
+      }
+
+      .header img{
+        width:80px;
+      }
+
+      .header h1{
+        margin:10px 0 5px;
+        color:#166534;
+      }
+
+      .header p{
+        margin:0;
+        color:#555;
+      }
+
+      .title{
+        text-align:center;
+        font-size:28px;
+        font-weight:bold;
+        color:#15803d;
+        margin:20px 0;
+      }
+
+      table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:20px;
+      }
+
+      th,td{
+        border:1px solid #ccc;
+        padding:12px;
+        text-align:left;
+      }
+
+      th{
+        background:#dcfce7;
+        color:#166534;
+      }
+
+      .salary{
+        font-size:26px;
+        font-weight:bold;
+        color:#7c3aed;
+      }
+
+      .footer{
+        margin-top:50px;
+        display:flex;
+        justify-content:space-between;
+      }
+
+      .signature{
+        text-align:center;
+        margin-top:50px;
+      }
+
+      button{
+        margin-top:25px;
+        padding:12px 20px;
+        background:#16a34a;
+        color:white;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;
+      }
+
+      @media print{
+        button{
+          display:none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="slip">
+
+      <img src="logo.png" class="watermark">
+
+      <div class="header">
+        <img src="logo.png">
+        <h1>Shubhi Education Foundation</h1>
+        <p>Official Salary Slip</p>
+      </div>
+
+      <div class="title">
+        Salary Slip
+      </div>
+
+      <table>
+        <tr>
+          <th>Employee Name</th>
+          <td>${name}</td>
+        </tr>
+
+        <tr>
+          <th>Designation</th>
+          <td>${designation}</td>
+        </tr>
+
+        <tr>
+          <th>Salary Month</th>
+          <td>${new Date().toLocaleString('default',{month:'long'})} ${new Date().getFullYear()}</td>
+        </tr>
+
+        <tr>
+          <th>Basic Salary</th>
+          <td class="salary">₹${salary}</td>
+        </tr>
+
+        <tr>
+          <th>Total Payable</th>
+          <td class="salary">₹${salary}</td>
+        </tr>
+
+        <tr>
+          <th>Status</th>
+          <td>Paid</td>
+        </tr>
+      </table>
+
+      <div class="footer">
+        <div>
+          <strong>Date:</strong><br>
+          ${new Date().toLocaleDateString()}
+        </div>
+
+        <div class="signature">
+          ___________________<br>
+          HR Authorized Signature
+        </div>
+      </div>
+
+      <center>
+        <button onclick="window.print()">
+          Print / Download Salary Slip
+        </button>
+      </center>
+
+    </div>
+
+  </body>
+  </html>
+  `);
 }
-
-/* INIT */
-loadStaff();
-</script>
-
 </body>
 </html>
