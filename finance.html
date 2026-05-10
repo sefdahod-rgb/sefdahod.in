@@ -186,49 +186,56 @@ const client = supabase.createClient(
 
 
 let chart;
+let donationsData = [];
+let incomeData = [];
+let expenseData = [];
 
-/* ===========================
-OPENING BALANCE
-=========================== */
+/* OPENING BALANCE */
 function saveOpening(){
-  localStorage.setItem("open_cash", document.getElementById("open_cash").value || 0);
-  localStorage.setItem("open_bank", document.getElementById("open_bank").value || 0);
+  localStorage.setItem(
+    "open_cash",
+    document.getElementById("open_cash").value || 0
+  );
+
+  localStorage.setItem(
+    "open_bank",
+    document.getElementById("open_bank").value || 0
+  );
+
   alert("Opening balance saved successfully ✅");
+
   load();
 }
 
-function editOpening(){
-  document.getElementById("open_cash").value = localStorage.getItem("open_cash") || 0;
-  document.getElementById("open_bank").value = localStorage.getItem("open_bank") || 0;
-}
-
-function deleteOpening(){
-  localStorage.removeItem("open_cash");
-  localStorage.removeItem("open_bank");
-  alert("Opening balance deleted successfully ✅");
-  load();
-}
-
-/* ===========================
-ADD INCOME
-=========================== */
+/* ADD INCOME */
 async function addIncome(){
-  const amount = Number(document.getElementById("inc_amt").value);
-  const note = document.getElementById("inc_note").value;
-  const created_at = document.getElementById("inc_date").value || new Date().toISOString();
-  const mode = document.getElementById("inc_mode").value;
+
+  const amount =
+    Number(document.getElementById("inc_amt").value);
+
+  const note =
+    document.getElementById("inc_note").value;
+
+  const created_at =
+    document.getElementById("inc_date").value || new Date();
+
+  const mode =
+    document.getElementById("inc_mode").value;
 
   if(!amount || amount <= 0){
     alert("Enter valid income amount");
     return;
   }
 
-  const { error } = await client.from("income").insert([{
-    amount,
-    note,
-    mode,
-    created_at
-  }]);
+  const { error } =
+    await client
+    .from("income")
+    .insert([{
+      amount,
+      note,
+      mode,
+      created_at
+    }]);
 
   if(error){
     alert("Income add failed: " + error.message);
@@ -236,29 +243,42 @@ async function addIncome(){
   }
 
   alert("Income added successfully ✅");
+
+  document.getElementById("inc_amt").value = "";
+  document.getElementById("inc_note").value = "";
+
   load();
 }
 
-/* ===========================
-ADD EXPENSE
-=========================== */
+/* ADD EXPENSE */
 async function addExpense(){
-  const amount = Number(document.getElementById("exp_amt").value);
-  const note = document.getElementById("exp_note").value;
-  const created_at = document.getElementById("exp_date").value || new Date().toISOString();
-  const mode = document.getElementById("exp_mode").value;
+
+  const amount =
+    Number(document.getElementById("exp_amt").value);
+
+  const note =
+    document.getElementById("exp_note").value;
+
+  const created_at =
+    document.getElementById("exp_date").value || new Date();
+
+  const mode =
+    document.getElementById("exp_mode").value;
 
   if(!amount || amount <= 0){
     alert("Enter valid expense amount");
     return;
   }
 
-  const { error } = await client.from("expenses").insert([{
-    amount,
-    note,
-    mode,
-    created_at
-  }]);
+  const { error } =
+    await client
+    .from("expenses")
+    .insert([{
+      amount,
+      note,
+      mode,
+      created_at
+    }]);
 
   if(error){
     alert("Expense add failed: " + error.message);
@@ -266,31 +286,49 @@ async function addExpense(){
   }
 
   alert("Expense added successfully ✅");
+
+  document.getElementById("exp_amt").value = "";
+  document.getElementById("exp_note").value = "";
+
   load();
 }
 
-/* ===========================
-MAIN LOAD FUNCTION
-=========================== */
+/* MAIN LOAD */
 async function load(){
 
-  const from = document.getElementById("from").value;
-  const to = document.getElementById("to").value;
-  const ledgerFilter = document.getElementById("ledger_filter")?.value || "all";
+  let from =
+    document.getElementById("from").value;
 
-  const { data: donations=[] } = await client.from("donations").select("*");
-  const { data: income=[] } = await client.from("income").select("*");
-  const { data: expenses=[] } = await client.from("expenses").select("*");
+  let to =
+    document.getElementById("to").value;
 
-  function dateCheck(d){
+  const { data: don = [] } =
+    await client.from("donations").select("*");
+
+  const { data: inc = [] } =
+    await client.from("income").select("*");
+
+  const { data: exp = [] } =
+    await client.from("expenses").select("*");
+
+  function check(d){
     if(!from || !to) return true;
-    const dt = new Date(d.created_at).toISOString().split("T")[0];
+
+    let dt =
+      new Date(d.created_at)
+      .toISOString()
+      .split("T")[0];
+
     return dt >= from && dt <= to;
   }
 
-  const filteredDonations = donations.filter(dateCheck);
-  const filteredIncome = income.filter(dateCheck);
-  const filteredExpenses = expenses.filter(dateCheck);
+  const donations = don.filter(check);
+  const income = inc.filter(check);
+  const expense = exp.filter(check);
+
+  donationsData = donations;
+  incomeData = income;
+  expenseData = expense;
 
   let grossDonation = 0;
   let gatewayFees = 0;
@@ -301,11 +339,13 @@ async function load(){
 
   let cashIncome = 0;
   let bankIncome = 0;
+
   let cashExpense = 0;
   let bankExpense = 0;
 
-  /* DONATIONS */
-  filteredDonations.forEach(d=>{
+  /* DONATION */
+  donations.forEach(d => {
+
     const gross = Number(d.amount) || 0;
     const gateway = Number(d.gateway_fee) || 0;
     const service = Number(d.service_fee) || 0;
@@ -325,8 +365,9 @@ async function load(){
   });
 
   /* OTHER INCOME */
-  filteredIncome.forEach(i=>{
+  income.forEach(i => {
     const amt = Number(i.amount) || 0;
+
     if(i.mode === "bank"){
       bankIncome += amt;
     } else {
@@ -334,9 +375,10 @@ async function load(){
     }
   });
 
-  /* EXPENSES */
-  filteredExpenses.forEach(e=>{
+  /* EXPENSE */
+  expense.forEach(e => {
     const amt = Number(e.amount) || 0;
+
     if(e.mode === "bank"){
       bankExpense += amt;
     } else {
@@ -344,32 +386,50 @@ async function load(){
     }
   });
 
-  /* TOTALS */
-  const totalIncome = grossDonation + cashIncome + (bankIncome - netDonation);
-  const totalExpense = totalDonationFees + cashExpense + bankExpense;
-  const profitLoss = totalIncome - totalExpense;
+  const totalIncome =
+    bankIncome + cashIncome;
 
-  /* OPENING */
-  const openCash = Number(localStorage.getItem("open_cash")) || 0;
-  const openBank = Number(localStorage.getItem("open_bank")) || 0;
+  const totalExpense =
+    bankExpense + cashExpense;
 
-  const finalCash = openCash + cashIncome - cashExpense;
-  const finalBank = openBank + bankIncome - bankExpense;
+  const balance =
+    totalIncome - totalExpense;
 
-  /* DASHBOARD */
-  document.getElementById("income").innerText = "₹" + totalIncome.toFixed(2);
-  document.getElementById("expense").innerText = "₹" + totalExpense.toFixed(2);
-  document.getElementById("balance").innerText = "₹" + profitLoss.toFixed(2);
-  document.getElementById("cash").innerText = "₹" + finalCash.toFixed(2);
-  document.getElementById("bank").innerText = "₹" + finalBank.toFixed(2);
+  const openCash =
+    Number(localStorage.getItem("open_cash")) || 0;
 
-  /* AI */
+  const openBank =
+    Number(localStorage.getItem("open_bank")) || 0;
+
+  const finalCash =
+    openCash + cashIncome - cashExpense;
+
+  const finalBank =
+    openBank + bankIncome - bankExpense;
+
+  /* UI CARDS */
+  document.getElementById("income").innerText =
+    "₹" + totalIncome.toFixed(2);
+
+  document.getElementById("expense").innerText =
+    "₹" + totalExpense.toFixed(2);
+
+  document.getElementById("balance").innerText =
+    "₹" + balance.toFixed(2);
+
+  document.getElementById("cash").innerText =
+    "₹" + finalCash.toFixed(2);
+
+  document.getElementById("bank").innerText =
+    "₹" + finalBank.toFixed(2);
+
+  /* AI INSIGHT */
   document.getElementById("ai").innerHTML = `
     Gross Donation: ₹${grossDonation.toFixed(2)} <br>
     Gateway Fee: ₹${gatewayFees.toFixed(2)} <br>
     Service Fee: ₹${serviceFees.toFixed(2)} <br>
     GST: ₹${gstFees.toFixed(2)} <br>
-    Total Online Fees: ₹${totalDonationFees.toFixed(2)} <br>
+    Total Donation Fees: ₹${totalDonationFees.toFixed(2)} <br>
     Net Donation Received: ₹${netDonation.toFixed(2)} <br><br>
 
     Cash Income: ₹${cashIncome.toFixed(2)} <br>
@@ -382,14 +442,15 @@ async function load(){
     Final Bank Balance: ₹${finalBank.toFixed(2)} <br><br>
 
     ${
-      profitLoss >= 0
-      ? "📈 Profit ₹" + profitLoss.toFixed(2)
-      : "⚠️ Loss ₹" + Math.abs(profitLoss).toFixed(2)
+      balance >= 0
+      ? "📈 Profit ₹" + balance.toFixed(2)
+      : "⚠️ Loss ₹" + Math.abs(balance).toFixed(2)
     }
   `;
 
-  /* TABLE */
-  const table = document.getElementById("table");
+  /* REPORT TABLE */
+  const table =
+    document.getElementById("table");
 
   table.innerHTML = `
     <tr>
@@ -405,38 +466,38 @@ async function load(){
     </tr>
   `;
 
-  let voucher = 1001;
+  donations.forEach(d => {
 
-  filteredDonations.forEach(d=>{
-    if(ledgerFilter !== "all" && ledgerFilter !== "bank") return;
+    const gross = Number(d.amount) || 0;
+    const fees =
+      Number(d.gateway_fee || 0) +
+      Number(d.service_fee || 0) +
+      Number(d.gst || 0);
 
-    const gross = Number(d.amount)||0;
-    const fees = Number(d.gateway_fee||0)+Number(d.service_fee||0)+Number(d.gst||0);
     const net = gross - fees;
 
     table.innerHTML += `
       <tr>
-        <td>DN-${voucher++}</td>
+        <td>${d.receipt_no || "DN-" + d.id}</td>
         <td>Donation</td>
         <td>₹${gross.toFixed(2)}</td>
         <td>₹${fees.toFixed(2)}</td>
         <td>₹${net.toFixed(2)}</td>
-        <td>Bank</td>
+        <td>bank</td>
         <td>${d.name || "-"}</td>
         <td>${new Date(d.created_at).toLocaleDateString()}</td>
         <td>
-          <button onclick="printVoucher('Donation','${d.name}',${gross},${fees},${net},'Bank')">Voucher</button>
+          <button onclick="printVoucher('donation',${d.id})">Voucher</button>
         </td>
       </tr>
     `;
   });
 
-  filteredIncome.forEach(i=>{
-    if(ledgerFilter !== "all" && ledgerFilter !== i.mode) return;
+  income.forEach(i => {
 
     table.innerHTML += `
       <tr>
-        <td>IN-${voucher++}</td>
+        <td>IN-${i.id}</td>
         <td>Income</td>
         <td>₹${Number(i.amount).toFixed(2)}</td>
         <td>₹0.00</td>
@@ -447,18 +508,17 @@ async function load(){
         <td>
           <button onclick="editIncome(${i.id})">Edit</button>
           <button onclick="deleteIncome(${i.id})">Delete</button>
-          <button onclick="printVoucher('Income','${i.note}',${i.amount},0,${i.amount},'${i.mode}')">Voucher</button>
+          <button onclick="printVoucher('income',${i.id})">Voucher</button>
         </td>
       </tr>
     `;
   });
 
-  filteredExpenses.forEach(e=>{
-    if(ledgerFilter !== "all" && ledgerFilter !== e.mode) return;
+  expense.forEach(e => {
 
     table.innerHTML += `
       <tr>
-        <td>EX-${voucher++}</td>
+        <td>EX-${e.id}</td>
         <td>Expense</td>
         <td>₹${Number(e.amount).toFixed(2)}</td>
         <td>₹0.00</td>
@@ -469,7 +529,7 @@ async function load(){
         <td>
           <button onclick="editExpense(${e.id})">Edit</button>
           <button onclick="deleteExpense(${e.id})">Delete</button>
-          <button onclick="printVoucher('Expense','${e.note}',${e.amount},0,${e.amount},'${e.mode}')">Voucher</button>
+          <button onclick="printVoucher('expense',${e.id})">Voucher</button>
         </td>
       </tr>
     `;
@@ -478,35 +538,83 @@ async function load(){
   /* CHART */
   if(chart) chart.destroy();
 
-  const ctx = document.getElementById("chart");
+  let ctx =
+    document.getElementById("chart");
 
-  chart = new Chart(ctx,{
-    type:"bar",
-    data:{
-      labels:["Cash Income","Bank Income","Cash Expense","Bank Expense"],
-      datasets:[{
-        data:[cashIncome, bankIncome, cashExpense, bankExpense],
-        backgroundColor:["green","blue","orange","red"]
+  chart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: [
+        "Bank Income",
+        "Cash Income",
+        "Bank Expense",
+        "Cash Expense"
+      ],
+      datasets: [{
+        data: [
+          bankIncome,
+          cashIncome,
+          bankExpense,
+          cashExpense
+        ],
+        backgroundColor: [
+          "blue",
+          "green",
+          "red",
+          "orange"
+        ]
       }]
     }
   });
 }
 
-/* ===========================
-VOUCHER PRINT
-=========================== */
+/* DELETE */
+async function deleteIncome(id){
+  await client.from("income").delete().eq("id", id);
+  load();
+}
+
+async function deleteExpense(id){
+  await client.from("expenses").delete().eq("id", id);
+  load();
+}
+
+/* EDIT */
+async function editIncome(id){
+  let a = prompt("Enter new income amount:");
+  if(a){
+    await client.from("income")
+      .update({ amount: Number(a) })
+      .eq("id", id);
+    load();
+  }
+}
+
+async function editExpense(id){
+  let a = prompt("Enter new expense amount:");
+  if(a){
+    await client.from("expenses")
+      .update({ amount: Number(a) })
+      .eq("id", id);
+    load();
+  }
+}
+
+/* VOUCHER PRINT */
 function printVoucher(type,id){
 
   let item = null;
 
   if(type === "donation"){
-    item = donations.find(d => d.id == id);
+    item = donationsData.find(d => Number(d.id) === Number(id));
   }
-  else if(type === "income"){
-    item = income.find(i => i.id == id);
+
+  if(type === "income"){
+    item = incomeData.find(i => Number(i.id) === Number(id));
   }
-  else if(type === "expense"){
-    item = expense.find(e => e.id == id);
+
+  if(type === "expense"){
+    item = expenseData.find(e => Number(e.id) === Number(id));
   }
 
   if(!item){
@@ -514,19 +622,16 @@ function printVoucher(type,id){
     return;
   }
 
-  let voucherNo = "";
+  let voucherNo =
+    type === "donation"
+      ? (item.receipt_no || "DN-" + item.id)
+      : type === "income"
+      ? "IN-" + item.id
+      : "EX-" + item.id;
 
-  if(type === "donation"){
-    voucherNo = item.receipt_no || ("DN-" + item.id);
-  }
-  else if(type === "income"){
-    voucherNo = "IN-" + item.id;
-  }
-  else{
-    voucherNo = "EX-" + item.id;
-  }
+  let gross =
+    Number(item.amount || 0);
 
-  let gross = Number(item.amount || 0);
   let fees =
     Number(item.gateway_fee || 0) +
     Number(item.service_fee || 0) +
@@ -534,88 +639,46 @@ function printVoucher(type,id){
 
   let net = gross - fees;
 
-  const win = window.open("", "", "width=900,height=800");
+  let mode =
+    item.mode ||
+    (type === "donation" ? "bank" : "cash");
+
+  const win =
+    window.open("", "", "width=900,height=800");
 
   win.document.write(`
     <html>
     <head>
-      <title>Voucher Print</title>
+      <title>Voucher</title>
       <style>
         body{
           font-family:Arial;
           padding:30px;
-          color:#111;
-        }
-        h2,h3{
-          text-align:center;
-          margin:4px;
         }
         table{
           width:100%;
           border-collapse:collapse;
-          margin-top:20px;
         }
         td,th{
           border:1px solid #000;
           padding:10px;
-          text-align:left;
-        }
-        th{
-          background:#16a34a;
-          color:white;
-        }
-        .footer{
-          margin-top:30px;
-          text-align:center;
-          font-size:14px;
         }
       </style>
     </head>
     <body>
-
-      <h2>Shubhi Education Foundation</h2>
-      <h3>Official Accounting Voucher</h3>
+      <h2 style="text-align:center;">Shubhi Education Foundation</h2>
+      <h3 style="text-align:center;">Official Voucher</h3>
 
       <table>
-        <tr>
-          <th>Voucher No.</th>
-          <td>${voucherNo}</td>
-        </tr>
-        <tr>
-          <th>Type</th>
-          <td>${type.toUpperCase()}</td>
-        </tr>
-        <tr>
-          <th>Date</th>
-          <td>${new Date(item.created_at).toLocaleString()}</td>
-        </tr>
-        <tr>
-          <th>Name / Note</th>
-          <td>${item.name || item.note || "-"}</td>
-        </tr>
-        <tr>
-          <th>Payment Mode</th>
-          <td>${item.mode || "bank"}</td>
-        </tr>
-        <tr>
-          <th>Gross Amount</th>
-          <td>₹${gross.toFixed(2)}</td>
-        </tr>
-        <tr>
-          <th>Total Fees</th>
-          <td>₹${fees.toFixed(2)}</td>
-        </tr>
-        <tr>
-          <th>Net Amount</th>
-          <td>₹${net.toFixed(2)}</td>
-        </tr>
+        <tr><th>Voucher No</th><td>${voucherNo}</td></tr>
+        <tr><th>Type</th><td>${type}</td></tr>
+        <tr><th>Date</th><td>${new Date(item.created_at).toLocaleString()}</td></tr>
+        <tr><th>Name/Note</th><td>${item.name || item.note || "-"}</td></tr>
+        <tr><th>Mode</th><td>${mode}</td></tr>
+        <tr><th>Gross</th><td>₹${gross.toFixed(2)}</td></tr>
+        <tr><th>Fees</th><td>₹${fees.toFixed(2)}</td></tr>
+        <tr><th>Net</th><td>₹${net.toFixed(2)}</td></tr>
       </table>
-
-      <div class="footer">
-        <p>Generated by SEF Dahod NGO Finance ERP</p>
-        <p>This is a system generated voucher.</p>
-      </div>
-
     </body>
     </html>
   `);
@@ -624,45 +687,7 @@ function printVoucher(type,id){
   win.print();
 }
 
-/* ===========================
-DELETE
-=========================== */
-async function deleteIncome(id){
-  await client.from("income").delete().eq("id",id);
-  load();
-}
-
-async function deleteExpense(id){
-  await client.from("expenses").delete().eq("id",id);
-  load();
-}
-
-/* ===========================
-EDIT
-=========================== */
-async function editIncome(id){
-  const amount = prompt("Enter new income amount:");
-  if(amount){
-    await client.from("income").update({
-      amount:Number(amount)
-    }).eq("id",id);
-    load();
-  }
-}
-
-async function editExpense(id){
-  const amount = prompt("Enter new expense amount:");
-  if(amount){
-    await client.from("expenses").update({
-      amount:Number(amount)
-    }).eq("id",id);
-    load();
-  }
-}
-
-/* ===========================
-CSV EXPORT
-=========================== */
+/* CSV */
 function exportCSV(){
   let rows = document.querySelectorAll("table tr");
   let csv = "";
@@ -681,24 +706,19 @@ function exportCSV(){
   a.click();
 }
 
-/* ===========================
-PRINT REPORT
-=========================== */
+/* PRINT */
 function printReport(){
   window.print();
 }
 
-/* ===========================
-LOGOUT
-=========================== */
+/* LOGOUT */
 function logout(){
   localStorage.clear();
   alert("Logged out successfully ✅");
-  window.location.href = "index.html";
+  location.href = "index.html";
 }
 
-/* ===========================
-START
-=========================== */
+/* START */
 load();
 </script>
+```
