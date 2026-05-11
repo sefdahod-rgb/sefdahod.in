@@ -8,35 +8,41 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
       background: #f4f7fb;
-      margin: 0;
       padding: 20px;
     }
 
     .container {
       max-width: 1100px;
       margin: auto;
-      background: white;
+      background: #fff;
       padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     h1 {
       text-align: center;
-      color: #333;
       margin-bottom: 25px;
+      color: #333;
     }
 
     .form-group {
       margin-bottom: 15px;
     }
 
-    input, textarea, select {
+    input,
+    textarea,
+    select {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 15px;
@@ -47,19 +53,23 @@
     }
 
     button {
-      padding: 10px 18px;
       border: none;
       border-radius: 8px;
+      padding: 10px 18px;
       cursor: pointer;
       font-size: 14px;
-      margin-top: 5px;
+      transition: 0.3s;
+      pointer-events: auto;
+      position: relative;
+      z-index: 10;
     }
 
     .upload-btn {
+      width: 100%;
       background: #28a745;
       color: white;
-      width: 100%;
       font-size: 16px;
+      font-weight: bold;
     }
 
     .upload-btn:hover {
@@ -74,10 +84,12 @@
     }
 
     .gallery-item {
-      background: #fff;
+      background: white;
       border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
       overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
     }
 
     .gallery-item img,
@@ -85,6 +97,7 @@
       width: 100%;
       height: 220px;
       object-fit: cover;
+      display: block;
     }
 
     .gallery-content {
@@ -92,32 +105,48 @@
     }
 
     .gallery-content h3 {
-      margin: 0 0 8px;
+      margin: 0 0 10px;
+      font-size: 20px;
       color: #222;
     }
 
     .gallery-content p {
+      margin: 0 0 10px;
       color: #555;
       font-size: 14px;
     }
 
     .gallery-content small {
+      display: block;
+      margin-bottom: 15px;
       color: #888;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .edit-btn,
+    .delete-btn {
+      flex: 1;
+      padding: 12px;
+      font-weight: bold;
     }
 
     .edit-btn {
       background: #007bff;
       color: white;
-      margin-right: 8px;
+    }
+
+    .edit-btn:hover {
+      background: #0056b3;
     }
 
     .delete-btn {
       background: #dc3545;
       color: white;
-    }
-
-    .edit-btn:hover {
-      background: #0056b3;
     }
 
     .delete-btn:hover {
@@ -167,66 +196,64 @@
   let allGallery = [];
 
   async function uploadGallery() {
-    const title = document.getElementById('title').value.trim();
-    const description = document.getElementById('description').value.trim();
-    const event_date = document.getElementById('event_date').value;
-    const mediaType = document.getElementById('mediaType').value;
-    const file = document.getElementById('mediaFile').files[0];
+    const title = document.getElementById("title").value.trim();
+    const description = document.getElementById("description").value.trim();
+    const event_date = document.getElementById("event_date").value;
+    const mediaType = document.getElementById("mediaType").value;
+    const file = document.getElementById("mediaFile").files[0];
 
     if (!title || !file) {
-      alert('Title and file are required');
+      alert("Title and file are required");
       return;
     }
 
     const fileName = Date.now() + "_" + file.name;
 
     const { error: uploadError } = await client.storage
-      .from('gallery')
+      .from("gallery")
       .upload(fileName, file);
 
     if (uploadError) {
-      alert('Upload failed: ' + uploadError.message);
+      alert("Upload failed: " + uploadError.message);
       return;
     }
 
     const { data: urlData } = client.storage
-      .from('gallery')
+      .from("gallery")
       .getPublicUrl(fileName);
 
     const media_url = urlData.publicUrl;
 
     const { error } = await client
-      .from('gallery')
-      .insert([
-        {
-          title,
-          description,
-          event_date,
-          media_type: mediaType,
-          media_url
-        }
-      ]);
+      .from("gallery")
+      .insert([{
+        title,
+        description,
+        event_date,
+        media_type: mediaType,
+        media_url
+      }]);
 
     if (error) {
-      alert('Save failed: ' + error.message);
+      alert("Save failed: " + error.message);
       return;
     }
 
-    alert('Uploaded successfully');
+    alert("Uploaded successfully");
 
-    document.getElementById('title').value = '';
-    document.getElementById('description').value = '';
-    document.getElementById('event_date').value = '';
-    document.getElementById('mediaFile').value = '';
+    document.getElementById("title").value = "";
+    document.getElementById("description").value = "";
+    document.getElementById("event_date").value = "";
+    document.getElementById("mediaFile").value = "";
 
     loadGallery();
   }
 
   async function loadGallery() {
     const { data, error } = await client
-      .from('gallery')
-      .select('*')
-      .order('id', { ascending: false });
+      .from("gallery")
+      .select("*")
+      .order("id", { ascending: false });
 
     if (error) {
       console.error(error);
@@ -238,23 +265,26 @@
   }
 
   function renderGallery() {
-    const box = document.getElementById('galleryList');
-    box.innerHTML = '';
+    const box = document.getElementById("galleryList");
+    box.innerHTML = "";
 
     allGallery.forEach(g => {
+      const media = g.media_type === "video"
+        ? `<video controls src="${g.media_url}"></video>`
+        : `<img src="${g.media_url}" alt="${g.title}">`;
+
       box.innerHTML += `
         <div class="gallery-item">
-          ${
-            g.media_type === 'video'
-              ? `<video controls src="${g.media_url}"></video>`
-              : `<img src="${g.media_url}" alt="${g.title}">`
-          }
+          ${media}
           <div class="gallery-content">
             <h3>${g.title}</h3>
-            <p>${g.description || ''}</p>
-            <small>${g.event_date || ''}</small><br><br>
-            <button class="edit-btn" onclick="editGallery(${g.id})">Edit</button>
-            <button class="delete-btn" onclick="deleteGallery(${g.id})">Delete</button>
+            <p>${g.description || ""}</p>
+            <small>${g.event_date || ""}</small>
+
+            <div class="button-group">
+              <button class="edit-btn" onclick="editGallery(${g.id})">Edit</button>
+              <button class="delete-btn" onclick="deleteGallery(${g.id})">Delete</button>
+            </div>
           </div>
         </div>
       `;
@@ -262,15 +292,15 @@
   }
 
   async function deleteGallery(id) {
-    if (!confirm('Delete this item?')) return;
+    if (!confirm("Delete this item?")) return;
 
     const { error } = await client
-      .from('gallery')
+      .from("gallery")
       .delete()
-      .eq('id', id);
+      .eq("id", id);
 
     if (error) {
-      alert('Delete failed');
+      alert("Delete failed");
       return;
     }
 
@@ -280,21 +310,23 @@
   async function editGallery(id) {
     const item = allGallery.find(x => x.id === id);
 
-    const newTitle = prompt('Edit Title', item.title);
-    const newDesc = prompt('Edit Description', item.description || '');
+    if (!item) return;
 
+    const newTitle = prompt("Edit Title", item.title);
     if (!newTitle) return;
 
+    const newDesc = prompt("Edit Description", item.description || "");
+
     const { error } = await client
-      .from('gallery')
+      .from("gallery")
       .update({
         title: newTitle,
         description: newDesc
       })
-      .eq('id', id);
+      .eq("id", id);
 
     if (error) {
-      alert('Update failed');
+      alert("Update failed");
       return;
     }
 
