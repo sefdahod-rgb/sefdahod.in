@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gallery Admin Panel</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     * {
@@ -210,8 +210,8 @@
     const fileName = Date.now() + "_" + file.name;
 
     const { error: uploadError } = await client.storage
-      .from("gallery")
-      .upload(fileName, file);
+  .from("gallery")
+  .upload(fileName, file, { upsert: true });
 
     if (uploadError) {
       alert("Upload failed: " + uploadError.message);
@@ -284,6 +284,7 @@
             <div class="button-group">
               <button class="edit-btn" onclick="editGallery(${g.id})">Edit</button>
               <button class="delete-btn" onclick="deleteGallery(${g.id})">Delete</button>
+              <button type="button" class="upload-btn" onclick="uploadGallery()">Upload Gallery Item</button>
             </div>
           </div>
         </div>
@@ -292,20 +293,27 @@
   }
 
   async function deleteGallery(id) {
-    if (!confirm("Delete this item?")) return;
+  if (!confirm("Delete this item?")) return;
 
-    const { error } = await client
-      .from("gallery")
-      .delete()
-      .eq("id", id);
+  const item = allGallery.find(x => x.id === id);
+  if (!item) return;
 
-    if (error) {
-      alert("Delete failed");
-      return;
-    }
+  const filePath = item.media_url.split("/gallery/")[1];
 
-    loadGallery();
+  await client.storage.from("gallery").remove([filePath]);
+
+  const { error } = await client
+    .from("gallery")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    alert("Delete failed");
+    return;
   }
+
+  loadGallery();
+}
 
   async function editGallery(id) {
     const item = allGallery.find(x => x.id === id);
