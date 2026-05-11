@@ -316,8 +316,17 @@ async function uploadGallery() {
             <div class="button-group">
               <button class="edit-btn" onclick="editGallery(${g.id})">Edit</button>
               <button class="delete-btn" onclick="deleteGallery(${g.id})">Delete</button>
-              <button type="button" class="upload-btn" onclick="uploadGallery()">Upload Gallery Item</button>         
-        </div>
+              <button
+  type="button"
+  class="upload-btn"
+  id="uploadBtn">
+  Upload Gallery Item
+</button>
+
+<script>
+// BUTTON CLICK FIX
+document.getElementById("uploadBtn").addEventListener("click", uploadGallery);
+</script>
   
     });
   }
