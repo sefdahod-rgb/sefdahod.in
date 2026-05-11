@@ -214,59 +214,72 @@
 
   let allGallery = [];
 
-  async function uploadGallery() {
-    const title = document.getElementById("title").value.trim();
-    const description = document.getElementById("description").value.trim();
-    const event_date = document.getElementById("event_date").value;
-    const mediaType = document.getElementById("mediaType").value;
-    const file = document.getElementById("mediaFile").files[0];
+  // REPLACE YOUR uploadGallery() FUNCTION WITH THIS FINAL FIXED VERSION
 
-    if (!title || !file) {
-      alert("Title and file are required");
-      return;
-    }
+async function uploadGallery() {
+  const title = document.getElementById("title").value.trim();
+  const description = document.getElementById("description").value.trim();
+  const event_date = document.getElementById("event_date").value;
+  const mediaType = document.getElementById("mediaType").value;
+  const file = document.getElementById("mediaFile").files[0];
 
-    const fileName = Date.now() + "_" + file.name;
-
-    const { error: uploadError } = await client.storage
-  .from("gallery")
-  .upload(fileName, file, { upsert: true });
-
-    if (uploadError) {
-      alert("Upload failed: " + uploadError.message);
-      return;
-    }
-
-    const { data: urlData } = client.storage
-      .from("gallery")
-      .getPublicUrl(fileName);
-
-    const media_url = urlData.publicUrl;
-
-    const { error } = await client
-      .from("gallery")
-      .insert([{
-        title,
-        description,
-        event_date,
-        media_type: mediaType,
-        media_url
-      }]);
-
-    if (error) {
-      alert("Save failed: " + error.message);
-      return;
-    }
-
-    alert("Uploaded successfully");
-
-    document.getElementById("title").value = "";
-    document.getElementById("description").value = "";
-    document.getElementById("event_date").value = "";
-    document.getElementById("mediaFile").value = "";
-
-    loadGallery();
+  if (!title || !file) {
+    alert("Title and file are required");
+    return;
   }
+
+  // SAFE FILE NAME
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${Date.now()}.${fileExt}`;
+
+  // UPLOAD TO SUPABASE STORAGE
+  const { data: uploadData, error: uploadError } = await client.storage
+    .from("gallery")
+    .upload(fileName, file, {
+      cacheControl: "3600",
+      upsert: true
+    });
+
+  if (uploadError) {
+    alert("Upload failed: " + uploadError.message);
+    console.error(uploadError);
+    return;
+  }
+
+  // GET PUBLIC URL
+  const { data: publicUrlData } = client.storage
+    .from("gallery")
+    .getPublicUrl(fileName);
+
+  const media_url = publicUrlData.publicUrl;
+
+  // SAVE TO DATABASE
+  const { error: insertError } = await client
+    .from("gallery")
+    .insert([{
+      title: title,
+      description: description,
+      event_date: event_date,
+      media_type: mediaType,
+      media_url: media_url
+    }]);
+
+  if (insertError) {
+    alert("Database save failed: " + insertError.message);
+    console.error(insertError);
+    return;
+  }
+
+  alert("Gallery item uploaded successfully!");
+
+  // RESET FORM
+  document.getElementById("title").value = "";
+  document.getElementById("description").value = "";
+  document.getElementById("event_date").value = "";
+  document.getElementById("mediaFile").value = "";
+
+  loadGallery();
+}
 
   async function loadGallery() {
     const { data, error } = await client
