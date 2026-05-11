@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+const client = supabase.createClient("YOUR_SUPABASE_URL","YOUR_SUPABASE_KEY");
+let allGallery=[];
+async function uploadGallery(){
+  const title=document.getElementById('title').value.trim();
+  const description=document.getElementById('description').value.trim();
+  const event_date=document.getElementById('event_date').value;
+  const mediaType=document.getElementById('mediaType').value;
+  const file=document.getElementById('mediaFile').files[0];
+  if(!title || !file){alert('Title and file required');return;}
+  const fileName=Date.now()+"_"+file.name;
+  const {error:uploadError}=await client.storage.from('gallery').upload(fileName,file);
+  if(uploadError){alert('Upload failed');return;}
+  const {data:urlData}=client.storage.from('gallery').getPublicUrl(fileName);
+  const media_url=urlData.publicUrl;
+  const {error}=await client.from('gallery').insert([{title,description,event_date,media_type:mediaType,media_url}]);
+  if(error){alert('Save failed');return;}
+  alert('Uploaded successfully');
+  loadGallery();
+}
+async function loadGallery(){
+  const {data}=await client.from('gallery').select('*').order('id',{ascending:false});
+  allGallery=data||[]; renderGallery();
+}
+function renderGallery(){
+  const box=document.getElementById('galleryList'); box.innerHTML='';
+  allGallery.forEach(g=>{
+    box.innerHTML += `<div class="gallery-item">
+      ${g.media_type==='video' ? `<video controls src="${g.media_url}"></video>` : `<img src="${g.media_url}">`}
+      <div class="gallery-content">
+        <h3>${g.title}</h3>
+        <p>${g.description||''}</p>
+        <small>${g.event_date||''}</small><br>
+        <button class="edit-btn" onclick="editGallery(${g.id})">Edit</button>
+        <button class="delete-btn" onclick="deleteGallery(${g.id})">Delete</button>
+      </div>
+    </div>`;
+  });
+}
+async function deleteGallery(id){
+  if(!confirm('Delete this item?')) return;
+  await client.from('gallery').delete().eq('id',id);
+  loadGallery();
+}
+async function editGallery(id){
+  const item=allGallery.find(x=>x.id===id);
+  const newTitle=prompt('Edit Title',item.title);
+  const newDesc=prompt('Edit Description',item.description||'');
+  if(!newTitle) return;
+  await client.from('gallery').update({title:newTitle,description:newDesc}).eq('id',id);
+  loadGallery();
+}
+loadGallery();
+</script>
+</body>
+</html>
