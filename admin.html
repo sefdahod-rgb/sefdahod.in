@@ -145,16 +145,20 @@ if(localStorage.getItem("isAdmin") !== "yes"){
 
 <!-- TABLE -->
 <div class="card">
-<a href="gallery-admin.html" class="btn export"> Gallery Management </a>
-<input type="text" id="search" class="search" placeholder="Search name...">
 
-<button class="btn refresh" onclick="load()">Refresh</button>
-<button class="btn export" onclick="exportCSV()">Export CSV</button>
-<button class="btn export" onclick="location.href='gallery-admin.html'"> Gallery Management </button>
+  <a href="gallery.html" class="btn export">🖼️ View Gallery</a>
 
-<div class="table-wrap">
-<table id="table"></table>
-</div>
+  <a href="gallery-admin.html" class="btn export">📤 Gallery Upload</a>
+
+  <input type="text" id="search" class="search" placeholder="Search name...">
+
+  <button class="btn refresh" onclick="load()">Refresh</button>
+
+  <button class="btn export" onclick="exportCSV()">Export CSV</button>
+
+  <div class="table-wrap">
+    <table id="table"></table>
+  </div>
 
 </div>
 
