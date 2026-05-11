@@ -316,7 +316,8 @@ async function uploadGallery() {
             <div class="button-group">
               <button class="edit-btn" onclick="editGallery(${g.id})">Edit</button>
               <button class="delete-btn" onclick="deleteGallery(${g.id})">Delete</button>
-              <button
+              <!-- FIXED UPLOAD BUTTON -->
+<button
   type="button"
   class="upload-btn"
   id="uploadBtn">
@@ -325,11 +326,10 @@ async function uploadGallery() {
 
 <script>
 // BUTTON CLICK FIX
-document.getElementById("uploadBtn").addEventListener("click", uploadGallery);
+document.addEventListener("DOMContentLoaded", function () {
+  document.getElementById("uploadBtn").addEventListener("click", uploadGallery);
+});
 </script>
-  
-    });
-  }
 
   async function deleteGallery(id) {
   if (!confirm("Delete this item?")) return;
