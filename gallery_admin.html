@@ -1,58 +1,308 @@
 <!DOCTYPE html>
-const client = supabase.createClient(
-"https://kqahcvaoxnmxfcgyyync.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg");
-let allGallery=[];
-async function uploadGallery(){
-  const title=document.getElementById('title').value.trim();
-  const description=document.getElementById('description').value.trim();
-  const event_date=document.getElementById('event_date').value;
-  const mediaType=document.getElementById('mediaType').value;
-  const file=document.getElementById('mediaFile').files[0];
-  if(!title || !file){alert('Title and file required');return;}
-  const fileName=Date.now()+"_"+file.name;
-  const {error:uploadError}=await client.storage.from('gallery').upload(fileName,file);
-  if(uploadError){alert('Upload failed');return;}
-  const {data:urlData}=client.storage.from('gallery').getPublicUrl(fileName);
-  const media_url=urlData.publicUrl;
-  const {error}=await client.from('gallery').insert([{title,description,event_date,media_type:mediaType,media_url}]);
-  if(error){alert('Save failed');return;}
-  alert('Uploaded successfully');
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery Admin Panel</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .upload-btn {
+      background: #28a745;
+      color: white;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    .upload-btn:hover {
+      background: #218838;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .gallery-item {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    .gallery-item img,
+    .gallery-item video {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .gallery-content {
+      padding: 15px;
+    }
+
+    .gallery-content h3 {
+      margin: 0 0 8px;
+      color: #222;
+    }
+
+    .gallery-content p {
+      color: #555;
+      font-size: 14px;
+    }
+
+    .gallery-content small {
+      color: #888;
+    }
+
+    .edit-btn {
+      background: #007bff;
+      color: white;
+      margin-right: 8px;
+    }
+
+    .delete-btn {
+      background: #dc3545;
+      color: white;
+    }
+
+    .edit-btn:hover {
+      background: #0056b3;
+    }
+
+    .delete-btn:hover {
+      background: #b52a37;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Gallery Admin Panel</h1>
+
+  <div class="form-group">
+    <input type="text" id="title" placeholder="Enter Title">
+  </div>
+
+  <div class="form-group">
+    <textarea id="description" rows="3" placeholder="Enter Description"></textarea>
+  </div>
+
+  <div class="form-group">
+    <input type="date" id="event_date">
+  </div>
+
+  <div class="form-group">
+    <select id="mediaType">
+      <option value="image">Image</option>
+      <option value="video">Video</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <input type="file" id="mediaFile" accept="image/*,video/*">
+  </div>
+
+  <button class="upload-btn" onclick="uploadGallery()">Upload Gallery Item</button>
+
+  <div id="galleryList" class="gallery-grid"></div>
+</div>
+
+<script>
+  const client = supabase.createClient(
+    "https://kqahcvaoxnmxfcgyyync.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+  );
+
+  let allGallery = [];
+
+  async function uploadGallery() {
+    const title = document.getElementById('title').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const event_date = document.getElementById('event_date').value;
+    const mediaType = document.getElementById('mediaType').value;
+    const file = document.getElementById('mediaFile').files[0];
+
+    if (!title || !file) {
+      alert('Title and file are required');
+      return;
+    }
+
+    const fileName = Date.now() + "_" + file.name;
+
+    const { error: uploadError } = await client.storage
+      .from('gallery')
+      .upload(fileName, file);
+
+    if (uploadError) {
+      alert('Upload failed: ' + uploadError.message);
+      return;
+    }
+
+    const { data: urlData } = client.storage
+      .from('gallery')
+      .getPublicUrl(fileName);
+
+    const media_url = urlData.publicUrl;
+
+    const { error } = await client
+      .from('gallery')
+      .insert([
+        {
+          title,
+          description,
+          event_date,
+          media_type: mediaType,
+          media_url
+        }
+      ]);
+
+    if (error) {
+      alert('Save failed: ' + error.message);
+      return;
+    }
+
+    alert('Uploaded successfully');
+
+    document.getElementById('title').value = '';
+    document.getElementById('description').value = '';
+    document.getElementById('event_date').value = '';
+    document.getElementById('mediaFile').value = '';
+
+    loadGallery();
+  }
+
+  async function loadGallery() {
+    const { data, error } = await client
+      .from('gallery')
+      .select('*')
+      .order('id', { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    allGallery = data || [];
+    renderGallery();
+  }
+
+  function renderGallery() {
+    const box = document.getElementById('galleryList');
+    box.innerHTML = '';
+
+    allGallery.forEach(g => {
+      box.innerHTML += `
+        <div class="gallery-item">
+          ${
+            g.media_type === 'video'
+              ? `<video controls src="${g.media_url}"></video>`
+              : `<img src="${g.media_url}" alt="${g.title}">`
+          }
+          <div class="gallery-content">
+            <h3>${g.title}</h3>
+            <p>${g.description || ''}</p>
+            <small>${g.event_date || ''}</small><br><br>
+            <button class="edit-btn" onclick="editGallery(${g.id})">Edit</button>
+            <button class="delete-btn" onclick="deleteGallery(${g.id})">Delete</button>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  async function deleteGallery(id) {
+    if (!confirm('Delete this item?')) return;
+
+    const { error } = await client
+      .from('gallery')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      alert('Delete failed');
+      return;
+    }
+
+    loadGallery();
+  }
+
+  async function editGallery(id) {
+    const item = allGallery.find(x => x.id === id);
+
+    const newTitle = prompt('Edit Title', item.title);
+    const newDesc = prompt('Edit Description', item.description || '');
+
+    if (!newTitle) return;
+
+    const { error } = await client
+      .from('gallery')
+      .update({
+        title: newTitle,
+        description: newDesc
+      })
+      .eq('id', id);
+
+    if (error) {
+      alert('Update failed');
+      return;
+    }
+
+    loadGallery();
+  }
+
   loadGallery();
-}
-async function loadGallery(){
-  const {data}=await client.from('gallery').select('*').order('id',{ascending:false});
-  allGallery=data||[]; renderGallery();
-}
-function renderGallery(){
-  const box=document.getElementById('galleryList'); box.innerHTML='';
-  allGallery.forEach(g=>{
-    box.innerHTML += `<div class="gallery-item">
-      ${g.media_type==='video' ? `<video controls src="${g.media_url}"></video>` : `<img src="${g.media_url}">`}
-      <div class="gallery-content">
-        <h3>${g.title}</h3>
-        <p>${g.description||''}</p>
-        <small>${g.event_date||''}</small><br>
-        <button class="edit-btn" onclick="editGallery(${g.id})">Edit</button>
-        <button class="delete-btn" onclick="deleteGallery(${g.id})">Delete</button>
-      </div>
-    </div>`;
-  });
-}
-async function deleteGallery(id){
-  if(!confirm('Delete this item?')) return;
-  await client.from('gallery').delete().eq('id',id);
-  loadGallery();
-}
-async function editGallery(id){
-  const item=allGallery.find(x=>x.id===id);
-  const newTitle=prompt('Edit Title',item.title);
-  const newDesc=prompt('Edit Description',item.description||'');
-  if(!newTitle) return;
-  await client.from('gallery').update({title:newTitle,description:newDesc}).eq('id',id);
-  loadGallery();
-}
-loadGallery();
 </script>
+
 </body>
 </html>
