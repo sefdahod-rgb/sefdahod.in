@@ -4,41 +4,167 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SEF Gallery</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-body{font-family:Segoe UI,sans-serif;background:#f3f4f6;margin:0;}
-.header{text-align:center;background:#2563eb;color:white;padding:20px;}
-.gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;padding:20px;max-width:1300px;margin:auto;}
-.gallery-item{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
-.gallery-item img,.gallery-item video{width:100%;height:220px;object-fit:cover;}
-.gallery-content{padding:15px;}
+*{
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Segoe UI,sans-serif;
+  background:#f3f4f6;
+  margin:0;
+}
+
+/* HEADER */
+.header{
+  text-align:center;
+  background:#2563eb;
+  color:white;
+  padding:20px;
+  position:relative;
+}
+
+.header h1{
+  margin:0;
+  font-size:32px;
+}
+
+.header p{
+  margin-top:8px;
+  font-size:16px;
+}
+
+/* BACK BUTTON */
+.back-btn{
+  position:absolute;
+  left:20px;
+  top:20px;
+  background:white;
+  color:#2563eb;
+  border:none;
+  padding:10px 16px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+  font-size:14px;
+}
+
+.back-btn:hover{
+  background:#dbeafe;
+}
+
+/* GALLERY GRID */
+.gallery-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:20px;
+  padding:20px;
+  max-width:1400px;
+  margin:auto;
+}
+
+/* GALLERY CARD */
+.gallery-item{
+  background:white;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* MEDIA FULL DISPLAY */
+.gallery-item img,
+.gallery-item video{
+  width:100%;
+  height:auto;
+  max-height:none;
+  object-fit:contain;
+  display:block;
+  background:black;
+}
+
+/* CONTENT */
+.gallery-content{
+  padding:15px;
+}
+
+.gallery-content h3{
+  margin:0 0 10px;
+  font-size:24px;
+}
+
+.gallery-content p{
+  margin:0;
+  color:#555;
+  font-size:15px;
+}
 </style>
 </head>
+
 <body>
+
+<!-- HEADER -->
 <div class="header">
-<h1>Shubhi Education Foundation Gallery</h1>
-<p>Events, Activities & Updates</p>
+
+  <button class="back-btn" onclick="window.location.href='dashboard.html'">
+    ⬅ Back to Dashboard
+  </button>
+
+  <h1>Shubhi Education Foundation Gallery</h1>
+  <p>Events, Activities & Updates</p>
+
 </div>
+
+<!-- GALLERY -->
 <div id="galleryList" class="gallery-grid"></div>
+
 <script>
 const client = supabase.createClient(
- "https://kqahcvaoxnmxfcgyyync.supabase.co",
- "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg");
-async function loadGallery(){
- const {data}=await client.from('gallery').select('*').order('id',{ascending:false});
- const box=document.getElementById('galleryList');
- box.innerHTML='';
- (data||[]).forEach(g=>{
-   box.innerHTML += `<div class="gallery-item">
-     ${g.media_type==='video' ? `<video controls src="${g.media_url}"></video>` : `<img src="${g.media_url}">`}
-     <div class="gallery-content">
-       <h3>${g.title}</h3>
-       <p>${g.description||''}</p>
-     </div>
-   </div>`;
- });
+  "https://kqahcvaoxnmxfcgyyync.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+);
+
+async function loadGallery() {
+  const { data, error } = await client
+    .from("gallery")
+    .select("*")
+    .order("id", { ascending: false });
+
+  const box = document.getElementById("galleryList");
+  box.innerHTML = "";
+
+  if (error) {
+    box.innerHTML = "<p>Failed to load gallery.</p>";
+    console.error(error);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    box.innerHTML = "<p>No gallery items available.</p>";
+    return;
+  }
+
+  data.forEach(g => {
+    const media = g.media_type === "video"
+      ? `<video controls src="${g.media_url}"></video>`
+      : `<img src="${g.media_url}" alt="${g.title}">`;
+
+    box.innerHTML += `
+      <div class="gallery-item">
+        ${media}
+        <div class="gallery-content">
+          <h3>${g.title}</h3>
+          <p>${g.description || ""}</p>
+        </div>
+      </div>
+    `;
+  });
 }
+
 loadGallery();
 </script>
+
 </body>
 </html>
