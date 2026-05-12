@@ -268,25 +268,25 @@ document.getElementById("donationForm")
       color: "#16a34a"
     },
 
-   modal: {
-  backdropclose: false,
-  escape: false,
-  confirm_close: true,
-  ondismiss: function () {
-    alert("Payment cancelled.");
-  }
-},
-
-config: {
+  config: {
   display: {
-    language: "en",
+    hide: [],
     blocks: {
-      fees: {
-        name: "Payment Options",
+      upi: {
+        name: "UPI / QR Payment",
         instruments: [
           {
             method: "upi",
-            flows: ["qr", "collect", "intent"]
+            flows: ["qr"]
+          }
+        ]
+      },
+      fees: {
+        name: "Other Payment Methods",
+        instruments: [
+          {
+            method: "upi",
+            flows: ["collect", "intent"]
           },
           {
             method: "card"
@@ -300,14 +300,21 @@ config: {
         ]
       }
     },
-    sequence: ["block.fees"],
+    sequence: ["block.upi", "block.fees"],
     preferences: {
       show_default_blocks: false
     }
   }
 },
 
-subscription_id: undefined,
+modal: {
+  backdropclose: false,
+  escape: false,
+  confirm_close: true,
+  ondismiss: function () {
+    alert("Payment cancelled.");
+  }
+},
     handler: async function(response){
 
       try{
