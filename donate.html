@@ -268,16 +268,34 @@ document.getElementById("donationForm")
       color: "#16a34a"
     },
 
-    config: {
+   modal: {
+  backdropclose: false,
+  escape: false,
+  confirm_close: true,
+  ondismiss: function () {
+    alert("Payment cancelled.");
+  }
+},
+
+config: {
   display: {
     blocks: {
       utib: {
         name: "Pay using",
         instruments: [
-          { method: "upi", flows: ["collect", "qr"] },
-          { method: "card" },
-          { method: "netbanking" },
-          { method: "wallet" }
+          {
+            method: "upi",
+            flows: ["collect", "qr"]
+          },
+          {
+            method: "card"
+          },
+          {
+            method: "netbanking"
+          },
+          {
+            method: "wallet"
+          }
         ]
       }
     },
@@ -286,8 +304,7 @@ document.getElementById("donationForm")
       show_default_blocks: false
     }
   }
-},        
-
+},
     handler: async function(response){
 
       try{
