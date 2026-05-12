@@ -147,129 +147,372 @@ const client = supabase.createClient(
 );
 
 let allAppointments = [];
-  /* LOAD APPOINTMENTS */ 
-  async function load() { const { data, error } = await client 
-    .from("appointments") .select("*") .order("id", { ascending: false }); 
-                         if (error) { console.log(error); alert("Error loading appointments"); 
-                                     return; } allAppointments = data || []; render(allAppointments); } 
-  /* RENDER TABLE */ function render(data) { const table = document.getElementById("table"); table.innerHTML = ` 
-  <tr> <th>Appointment No</th> <th>Name</th> 
-  <th>Photo</th> <th>Type</th> <th>Designation</th> 
-  <th>Joining Date</th> <th>Salary</th> <th>Actions</th> </tr> `; 
-                                            if (!data || data.length === 0) { table.innerHTML += ` 
-                                            <tr> <td colspan="8">No appointments found</td> </tr> `; 
-                                                                             return; } data.forEach(a => 
-                                              { table.innerHTML += ` <tr> 
-                                              <td>${a.appointment_no || "-"}</td>
-                                              <td>${a.name || "-"}</td> <td> ${ a.photo ? 
-                                                                               `<img src="${a.photo}" width="50" height="60" 
-                                                                               style="object-fit:cover;border-radius:6px;">` : "-" } 
-                                                                               </td> <td>${a.type || "-"}</td> <td>${a.designation || "-"}
-                                                                               <td>${a.joining_date ? new Date(a.joining_date).toLocaleDateString('en-GB') : "-"}</td> <td>₹${a.salary || 0}</td> 
-                                  <td> <button onclick="editAppointment(${a.id})"> Edit </button> 
-                                  <button onclick="deleteAppointment(${a.id})"> Delete </button> 
-                                  <button onclick="printAppointment(${a.id})"> Print </button> 
-                                  <button onclick="sendEmail( '${a.email || ""}', '${a.name}', '${a.appointment_no}' )"> Email 
-                                  </button> </td> </tr> `; }); }
-  /* ADD APPOINTMENT */ 
-  async function addAppointment() 
-  { const name = document.getElementById("name").value.trim(); 
-   const email = document.getElementById("email")?.value.trim() || ""; 
-   const type = document.getElementById("type").value; 
-   const designation = document.getElementById("designation").value.trim(); 
-   const joining_date = document.getElementById("joining_date").value; 
-   const salary = Number(document.getElementById("salary").value) || 0; 
-   const remarks = document.getElementById("remarks").value.trim(); 
-   const photoInput = document.getElementById("photo"); const photoFile = photoInput?.files[0]; 
-   if (!name || !designation || !joining_date) { alert("Please fill all required fields"); 
-                                                return; } 
-  let photoUrl = ""; if (photoFile) { const fileExt = photoFile.name.split(".").pop(); 
-                                     const fileName = `appointment_${Date.now()}.${fileExt}`; 
-                                     const { error: uploadError } = await client.storage 
-                                       .from("appointment-photos") .upload(fileName, photoFile, { upsert: true }); 
-                                     if (uploadError) { console.log(uploadError); alert("Photo upload failed"); return; } 
-                                     const { data } = client.storage .from("appointment-photos") .getPublicUrl(fileName); photoUrl = data.publicUrl; }
-   const appointment_no = "APP-" + Date.now(); 
-   const { error } = await client .from("appointments") 
-     .insert([ { appointment_no, name, email, type, designation, joining_date, salary, remarks, photo: photoUrl } ]); 
-   if (error) { console.log(error); alert("Failed to create appointment"); 
-               return; } alert("Appointment created successfully ✅"); document.getElementById("name").value = ""; 
-   if (document.getElementById("email")) document.getElementById("email").value = ""; 
-   document.getElementById("designation").value = ""; document.getElementById("joining_date").value = ""; 
-   document.getElementById("salary").value = ""; document.getElementById("remarks").value = ""; 
-   if (photoInput) photoInput.value = ""; load(); } 
-  /* DELETE */ 
-  async function deleteAppointment(id) { if (!confirm("Delete this appointment?")) return; 
-                                        await client .from("appointments") .delete() .eq("id", id); load(); } 
-  /* EDIT */ 
-  async function editAppointment(id) { const ap = allAppointments.find(x => x.id === id); 
-                                      if (!ap) return; const newName = prompt("Name", ap.name); 
-                                      const newDesignation = prompt("Designation", ap.designation); 
-                                      const newSalary = prompt("Salary", ap.salary); if (!newName) return; 
-                                      await client .from("appointments") 
-                                        .update({ name: newName, designation: newDesignation, salary: newSalary }) 
-                                        .eq("id", id); load(); } 
-  /* EMAIL */ 
-  function sendEmail(email, name, no) 
-  { if (!email) { alert("Candidate email not available"); return; } 
-   const subject = `Appointment Letter - ${no}`; 
-   const body = `Dear ${name},%0D%0A%0D%0A` + `Your appointment letter has been generated successfully.%0D%0A` + `Appointment No: ${no}%0D%0A%0D%0A` + `Regards,%0D%0AShubhi Education Foundation`; 
-   window.open(`mailto:${email}?subject=${subject}&body=${body}`); } 
-  /* PRINT LETTER */ 
-  function printAppointment(id) 
-  { const a = allAppointments.find(x => x.id === id); 
-   if (!a) return; const photo = a.photo || "user.png"; 
-   const w = window.open("", "_blank"); w.document.write(` <html> <head> <title>Appointment Letter</title> 
-   <style> body { font-family: Georgia, serif; margin: 0; padding: 20px; background: #f3f4f6; } 
-   .letter { max-width: 900px; margin: auto; background: white; padding: 40px; border: 4px solid #7c3aed; position: relative; } 
-   .watermark { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 300px; opacity: 0.05; z-index: 0; } 
-   .header { text-align: center; border-bottom: 3px solid #7c3aed; padding-bottom: 15px; position: relative; z-index: 2; } 
-   .header img { width: 75px; } 
-   .header h1 { color: #7c3aed; margin: 10px 0; } 
-   .top-section { display: flex; justify-content: space-between; 
-   align-items: flex-start; margin-top: 25px; position: relative; z-index: 2; } 
-   .title { color: #7c3aed; font-size: 30px; font-weight: bold; text-decoration: underline; } 
-   .candidate-photo { width: 120px; height: 140px; object-fit: cover; border: 3px solid #7c3aed; border-radius: 8px; } 
-   .content { margin-top: 30px; font-size: 18px; line-height: 1.9; position: relative; z-index: 2; } 
-   .signature { text-align: right; margin-top: 50px; } 
-   .signature img { width: 150px; } 
-   button { margin-top: 20px; padding: 10px 20px; background: #16a34a; color: white; border: none; border-radius: 8px; cursor: pointer; }
-   @media print { button { display: none; } } 
-   </style> </head> 
-   <body> <div class="letter">
-   <img src="logo.png" class="watermark"> 
-   <div class="header"> 
-   <img src="logo.png">
-   <h1>Shubhi Education Foundation</h1>
-   <p>Under Indian Society Act 1860 Guj./2249/DHD</p> </div> 
-   <div class="top-section"> <div>
-   <div class="title">Appointment Letter</div> 
-   <p><b>Appointment No:</b> ${a.appointment_no}</p> 
-   <p><b>Date:</b> ${new Date().toLocaleDateString('en-GB')}</p> 
-   </div> <img src="${photo}" class="candidate-photo"> </div> 
-   <div class="content"> <p>To,<br><b>${a.name}</b></p> 
-   <p> We are pleased to appoint you as <b>${a.designation}</b> under the role of <b>${a.type}</b> 
-   effective from <b>${a.joining_date ? new Date(a.joining_date).toLocaleDateString('en-GB') : "-"}</b>
-   </p> <p><b>Salary / Stipend:</b> ₹${a.salary}</p> <p>${a.remarks || ""}</p> 
-   <p> We welcome you to Shubhi Education Foundation and look forward to your valuable contribution. </p> 
-   <div class="signature"> 
-   <img src="signature.png"><br> 
-   Authorized Signature </div> </div> 
-   </div> <center> <button onclick="window.print()"> Print / Download </button> </center> </body> </html> `); } 
-  /* EXPORT CSV */ 
-  function exportCSV() 
-  { let csv = "Appointment No,Name,Type,Designation,Joining Date,Salary\n"; 
-   allAppointments.forEach(a => {csv += `${a.appointment_no},${a.name},${a.type},${a.designation},${a.joining_date ? new Date(a.joining_date).toLocaleDateString('en-GB') : ""},${a.salary}\n`;
- 
-   const blob = new Blob([csv], { type: "text/csv" }); 
-   const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "appointments.csv"; link.click(); } 
-  /* SEARCH */ 
-  document.getElementById("search").addEventListener("input", function () 
-                                                     { const val = this.value.toLowerCase(); 
-                                                      render( allAppointments.filter(a => (a.name || "").toLowerCase().includes(val) || 
-                                                        (a.appointment_no || "").toLowerCase().includes(val) ) ); }); 
-  /* LOGOUT */ 
-  function logout() { localStorage.clear(); location.href = "index.html"; } 
-  /* START */ 
-  load(); 
+
+/* DATE FORMAT FUNCTION */
+function formatDate(dateString) {
+  if (!dateString) return "-";
+  return new Date(dateString).toLocaleDateString('en-GB');
+}
+
+/* LOAD APPOINTMENTS */
+async function load() {
+  const { data, error } = await client
+    .from("appointments")
+    .select("*")
+    .order("id", { ascending: false });
+
+  if (error) {
+    console.log(error);
+    alert("Error loading appointments");
+    return;
+  }
+
+  allAppointments = data || [];
+  render(allAppointments);
+}
+
+/* RENDER TABLE */
+function render(data) {
+  const table = document.getElementById("table");
+
+  table.innerHTML = `
+    <tr>
+      <th>Appointment No</th>
+      <th>Name</th>
+      <th>Photo</th>
+      <th>Type</th>
+      <th>Designation</th>
+      <th>Joining Date</th>
+      <th>Salary</th>
+      <th>Actions</th>
+    </tr>
+  `;
+
+  if (!data || data.length === 0) {
+    table.innerHTML += `
+      <tr>
+        <td colspan="8">No appointments found</td>
+      </tr>
+    `;
+    return;
+  }
+
+  data.forEach(a => {
+    table.innerHTML += `
+      <tr>
+        <td>${a.appointment_no || "-"}</td>
+        <td>${a.name || "-"}</td>
+        <td>
+          ${
+            a.photo
+              ? `<img src="${a.photo}" width="50" height="60" style="object-fit:cover;border-radius:6px;">`
+              : "-"
+          }
+        </td>
+        <td>${a.type || "-"}</td>
+        <td>${a.designation || "-"}</td>
+        <td>${formatDate(a.joining_date)}</td>
+        <td>₹${a.salary || 0}</td>
+        <td>
+          <button onclick="editAppointment(${a.id})">Edit</button>
+          <button onclick="deleteAppointment(${a.id})">Delete</button>
+          <button onclick="printAppointment(${a.id})">Print</button>
+          <button onclick="sendEmail('${a.email || ""}','${a.name}','${a.appointment_no}')">Email</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+/* ADD APPOINTMENT */
+async function addAppointment() {
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const type = document.getElementById("type").value;
+  const designation = document.getElementById("designation").value.trim();
+  const joining_date = document.getElementById("joining_date").value;
+  const salary = Number(document.getElementById("salary").value) || 0;
+  const remarks = document.getElementById("remarks").value.trim();
+  const photoInput = document.getElementById("photo");
+  const photoFile = photoInput.files[0];
+
+  if (!name || !designation || !joining_date) {
+    alert("Please fill all required fields");
+    return;
+  }
+
+  let photoUrl = "";
+
+  if (photoFile) {
+    const fileExt = photoFile.name.split(".").pop();
+    const fileName = `appointment_${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await client.storage
+      .from("appointment-photos")
+      .upload(fileName, photoFile, { upsert: true });
+
+    if (uploadError) {
+      console.log(uploadError);
+      alert("Photo upload failed");
+      return;
+    }
+
+    const { data } = client.storage
+      .from("appointment-photos")
+      .getPublicUrl(fileName);
+
+    photoUrl = data.publicUrl;
+  }
+
+  const appointment_no = "APP-" + Date.now();
+
+  const { error } = await client
+    .from("appointments")
+    .insert([
+      {
+        appointment_no,
+        name,
+        email,
+        type,
+        designation,
+        joining_date,
+        salary,
+        remarks,
+        photo: photoUrl
+      }
+    ]);
+
+  if (error) {
+    console.log(error);
+    alert("Failed to create appointment");
+    return;
+  }
+
+  alert("Appointment created successfully ✅");
+
+  document.getElementById("name").value = "";
+  document.getElementById("email").value = "";
+  document.getElementById("designation").value = "";
+  document.getElementById("joining_date").value = "";
+  document.getElementById("salary").value = "";
+  document.getElementById("remarks").value = "";
+  photoInput.value = "";
+
+  load();
+}
+
+/* DELETE */
+async function deleteAppointment(id) {
+  if (!confirm("Delete this appointment?")) return;
+
+  await client
+    .from("appointments")
+    .delete()
+    .eq("id", id);
+
+  load();
+}
+
+/* EDIT */
+async function editAppointment(id) {
+  const ap = allAppointments.find(x => x.id === id);
+  if (!ap) return;
+
+  const newName = prompt("Name", ap.name);
+  if (!newName) return;
+
+  const newDesignation = prompt("Designation", ap.designation);
+  const newSalary = prompt("Salary", ap.salary);
+
+  await client
+    .from("appointments")
+    .update({
+      name: newName,
+      designation: newDesignation,
+      salary: newSalary
+    })
+    .eq("id", id);
+
+  load();
+}
+
+/* EMAIL */
+function sendEmail(email, name, no) {
+  if (!email) {
+    alert("Candidate email not available");
+    return;
+  }
+
+  const subject = `Appointment Letter - ${no}`;
+  const body =
+    `Dear ${name},%0D%0A%0D%0A` +
+    `Your appointment letter has been generated successfully.%0D%0A` +
+    `Appointment No: ${no}%0D%0A%0D%0A` +
+    `Regards,%0D%0AShubhi Education Foundation`;
+
+  window.open(`mailto:${email}?subject=${subject}&body=${body}`);
+}
+
+/* PRINT LETTER */
+function printAppointment(id) {
+  const a = allAppointments.find(x => x.id === id);
+  if (!a) return;
+
+  const photo = a.photo || "user.png";
+
+  const w = window.open("", "_blank");
+
+  w.document.write(`
+    <html>
+    <head>
+      <title>Appointment Letter</title>
+      <style>
+        body {
+          font-family: Georgia, serif;
+          margin: 0;
+          padding: 20px;
+          background: #f3f4f6;
+        }
+        .letter {
+          max-width: 900px;
+          margin: auto;
+          background: white;
+          padding: 40px;
+          border: 4px solid #7c3aed;
+          position: relative;
+        }
+        .watermark {
+          position: absolute;
+          top: 45%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 300px;
+          opacity: 0.05;
+        }
+        .header {
+          text-align: center;
+          border-bottom: 3px solid #7c3aed;
+          padding-bottom: 15px;
+        }
+        .header img {
+          width: 75px;
+        }
+        .title {
+          color: #7c3aed;
+          font-size: 30px;
+          font-weight: bold;
+          text-decoration: underline;
+        }
+        .candidate-photo {
+          width: 120px;
+          height: 140px;
+          object-fit: cover;
+          border: 3px solid #7c3aed;
+          border-radius: 8px;
+        }
+        button {
+          margin-top: 20px;
+          padding: 10px 20px;
+          background: #16a34a;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+        }
+        @media print {
+          button { display: none; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="letter">
+        <img src="logo.png" class="watermark">
+
+        <div class="header">
+          <img src="logo.png">
+          <h1>Shubhi Education Foundation</h1>
+          <p>Under Indian Society Act 1860 Guj./2249/DHD</p>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;margin-top:25px;">
+          <div>
+            <div class="title">Appointment Letter</div>
+            <p><b>Appointment No:</b> ${a.appointment_no}</p>
+            <p><b>Date:</b> ${formatDate(new Date())}</p>
+          </div>
+          <img src="${photo}" class="candidate-photo">
+        </div>
+
+        <div style="margin-top:30px;font-size:18px;line-height:1.9;">
+          <p>To,<br><b>${a.name}</b></p>
+
+          <p>
+            We are pleased to appoint you as
+            <b>${a.designation}</b>
+            under the role of
+            <b>${a.type}</b>
+            effective from
+            <b>${formatDate(a.joining_date)}</b>.
+          </p>
+
+          <p><b>Salary / Stipend:</b> ₹${a.salary}</p>
+
+          <p>${a.remarks || ""}</p>
+
+          <p>
+            We welcome you to Shubhi Education Foundation and look
+            forward to your valuable contribution.
+          </p>
+
+          <div style="text-align:right;margin-top:50px;">
+            <img src="signature.png" width="150"><br>
+            Authorized Signature
+          </div>
+        </div>
+      </div>
+
+      <center>
+        <button onclick="window.print()">Print / Download</button>
+      </center>
+    </body>
+    </html>
+  `);
+}
+
+/* EXPORT CSV */
+function exportCSV() {
+  let csv = "Appointment No,Name,Type,Designation,Joining Date,Salary\n";
+
+  allAppointments.forEach(a => {
+    csv += `${a.appointment_no},${a.name},${a.type},${a.designation},${formatDate(a.joining_date)},${a.salary}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const link = document.createElement("a");
+
+  link.href = URL.createObjectURL(blob);
+  link.download = "appointments.csv";
+  link.click();
+}
+
+/* SEARCH */
+document.getElementById("search").addEventListener("input", function () {
+  const val = this.value.toLowerCase();
+
+  render(
+    allAppointments.filter(a =>
+      (a.name || "").toLowerCase().includes(val) ||
+      (a.appointment_no || "").toLowerCase().includes(val)
+    )
+  );
+});
+
+/* LOGOUT */
+function logout() {
+  localStorage.clear();
+  location.href = "index.html";
+}
+
+/* START */
+load();
 </script>
