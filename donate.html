@@ -280,13 +280,18 @@ document.getElementById("donationForm")
 config: {
   display: {
     blocks: {
-      utib: {
-        name: "Pay using",
+      upi: {
+        name: "UPI",
         instruments: [
           {
             method: "upi",
-            flows: ["collect", "qr"]
-          },
+            flows: ["qr", "collect", "intent"]
+          }
+        ]
+      },
+      other: {
+        name: "Other Options",
+        instruments: [
           {
             method: "card"
           },
@@ -299,7 +304,7 @@ config: {
         ]
       }
     },
-    sequence: ["block.utib"],
+    sequence: ["block.upi", "block.other"],
     preferences: {
       show_default_blocks: false
     }
