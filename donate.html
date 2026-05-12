@@ -279,19 +279,15 @@ document.getElementById("donationForm")
 
 config: {
   display: {
+    language: "en",
     blocks: {
-      upi: {
-        name: "UPI",
+      fees: {
+        name: "Payment Options",
         instruments: [
           {
             method: "upi",
             flows: ["qr", "collect", "intent"]
-          }
-        ]
-      },
-      other: {
-        name: "Other Options",
-        instruments: [
+          },
           {
             method: "card"
           },
@@ -304,12 +300,14 @@ config: {
         ]
       }
     },
-    sequence: ["block.upi", "block.other"],
+    sequence: ["block.fees"],
     preferences: {
       show_default_blocks: false
     }
   }
 },
+
+subscription_id: undefined,
     handler: async function(response){
 
       try{
