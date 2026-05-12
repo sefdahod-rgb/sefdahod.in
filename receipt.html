@@ -479,6 +479,18 @@
     localStorage.getItem("receiptData")
   );
 
+  // DATE FORMAT FUNCTION (DD/MM/YYYY)
+  function formatDate(dateString) {
+    if (!dateString) return "-";
+
+    const date = new Date(dateString);
+
+    if (isNaN(date)) return dateString;
+
+    return date.toLocaleDateString("en-GB") + " " +
+      date.toLocaleTimeString("en-GB");
+  }
+
   if(!data){
 
     alert("Receipt data not found.");
@@ -490,9 +502,10 @@
     document.getElementById("receiptNo").innerText =
       data.receipt;
 
-    document.getElementById("date").innerText = 
-    data.date;
-    
+    // FIXED DATE FORMAT
+    document.getElementById("date").innerText =
+      formatDate(data.date);
+
     document.getElementById("name").innerText =
       data.name;
 
@@ -528,6 +541,3 @@
     window.print();
   }
 </script>
-
-</body>
-</html>
