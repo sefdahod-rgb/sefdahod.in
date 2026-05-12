@@ -269,24 +269,24 @@ document.getElementById("donationForm")
     },
 
     config: {
-      display: {
-        blocks: {
-          utib: {
-            name: "Pay using",
-            instruments: [
-              { method: "upi" },
-              { method: "card" },
-              { method: "netbanking" },
-              { method: "wallet" }
-            ]
-          }
-        },
-        sequence: ["block.utib"],
-        preferences: {
-          show_default_blocks: false
-        }
+  display: {
+    blocks: {
+      utib: {
+        name: "Pay using",
+        instruments: [
+          { method: "upi", flows: ["collect", "qr"] },
+          { method: "card" },
+          { method: "netbanking" },
+          { method: "wallet" }
+        ]
       }
     },
+    sequence: ["block.utib"],
+    preferences: {
+      show_default_blocks: false
+    }
+  }
+},        
 
     handler: async function(response){
 
