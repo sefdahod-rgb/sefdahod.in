@@ -81,43 +81,22 @@ function openReceipt(donor){
 
   const receiptData = {
 
-    receipt:
-      donor.receipt_no || "-",
+    receipt: donor.receipt_no || "-",
+    name: donor.name || "-",
+    aadhaar: donor.aadhaar_no || "-",
+    pan: donor.pan_no || "-",
+    email: donor.email || "-",
+    amount: donor.amount || 0,
+    gateway: donor.gateway_fee || 0,
+    service: donor.service_fee || 0,
+    gst: donor.gst || 0,
+    totalFees: donor.total_fees || 0,
+    netAmount: donor.net_amount || 0,
 
-    name:
-      donor.name || "-",
-
-    aadhaar:
-      donor.aadhaar_no || "-",
-
-    pan:
-      donor.pan_no || "-",
-
-    email:
-      donor.email || "-",
-
-    amount:
-      donor.amount || 0,
-
-    gateway:
-      donor.gateway_fee || 0,
-
-    service:
-      donor.service_fee || 0,
-
-    gst:
-      donor.gst || 0,
-
-    totalFees:
-      donor.total_fees || 0,
-
-    netAmount:
-      donor.net_amount || 0,
-
-    date:
-      donor.created_at
-        ? new Date(donor.created_at).toLocaleString()
-        : "-"
+    date: donor.created_at
+      ? new Date(donor.created_at).toLocaleDateString('en-GB') + " " +
+        new Date(donor.created_at).toLocaleTimeString('en-GB')
+      : "-"
 
   };
 
@@ -126,13 +105,9 @@ function openReceipt(donor){
     JSON.stringify(receiptData)
   );
 
-  window.open(
-    "receipt.html",
-    "_blank"
-  );
-
+  /* ✅ SAME TAB OPEN — BLANK PAGE ISSUE FIX */
+  window.location.href = "receipt.html";
 }
-
 /* LOAD DONORS */
 async function load(){
 
