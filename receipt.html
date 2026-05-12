@@ -250,10 +250,10 @@
   } else {
 
     document.getElementById("receiptNo").innerText =
-      data.receipt;
+      data.receipt;Date(receipt.date).toLocaleDateString('en-GB') : ""}
 
-    document.getElementById("date").innerText =
-    data.date;
+    document.getElementById("date").innerText = {
+    data.date;Date(data.date).toLocaleDateString('en-GB') : ""}
 
     document.getElementById("name").innerText =
       data.name;
