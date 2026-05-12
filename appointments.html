@@ -152,7 +152,25 @@ let allAppointments = [];
     .from("appointments") .select("*") .order("id", { ascending: false }); 
                          if (error) { console.log(error); alert("Error loading appointments"); 
                                      return; } allAppointments = data || []; render(allAppointments); } 
-  /* RENDER TABLE */ function render(data) { const table = document.getElementById("table"); table.innerHTML = ` <tr> <th>Appointment No</th> <th>Name</th> <th>Photo</th> <th>Type</th> <th>Designation</th> <th>Joining Date</th> <th>Salary</th> <th>Actions</th> </tr> `; if (!data || data.length === 0) { table.innerHTML += ` <tr> <td colspan="8">No appointments found</td> </tr> `; return; } data.forEach(a => { table.innerHTML += ` <tr> <td>${a.appointment_no || "-"}</td> <td>${a.name || "-"}</td> <td> ${ a.photo ? `<img src="${a.photo}" width="50" height="60" style="object-fit:cover;border-radius:6px;">` : "-" } </td> <td>${a.type || "-"}</td> <td>${a.designation || "-"}</td> <td>${a.joining_date || "-"}</td> <td>₹${a.salary || 0}</td> <td> <button onclick="editAppointment(${a.id})"> Edit </button> <button onclick="deleteAppointment(${a.id})"> Delete </button> <button onclick="printAppointment(${a.id})"> Print </button> <button onclick="sendEmail( '${a.email || ""}', '${a.name}', '${a.appointment_no}' )"> Email </button> </td> </tr> `; }); }
+  /* RENDER TABLE */ function render(data) { const table = document.getElementById("table"); table.innerHTML = ` 
+  <tr> <th>Appointment No</th> <th>Name</th> 
+  <th>Photo</th> <th>Type</th> <th>Designation</th> 
+  <th>Joining Date</th> <th>Salary</th> <th>Actions</th> </tr> `; 
+                                            if (!data || data.length === 0) { table.innerHTML += ` 
+                                            <tr> <td colspan="8">No appointments found</td> </tr> `; 
+                                                                             return; } data.forEach(a => 
+                                              { table.innerHTML += ` <tr> 
+                                              <td>${a.appointment_no || "-"}</td>
+                                              <td>${a.name || "-"}</td> <td> ${ a.photo ? 
+                                                                               `<img src="${a.photo}" width="50" height="60" 
+                                                                               style="object-fit:cover;border-radius:6px;">` : "-" } 
+                                                                               </td> <td>${a.type || "-"}</td> <td>${a.designation || "-"}
+                                                                               <td>${a.joining_date ? new Date(a.joining_date).toLocaleDateString('en-GB') : "-"}</td> <td>₹${a.salary || 0}</td> 
+                                  <td> <button onclick="editAppointment(${a.id})"> Edit </button> 
+                                  <button onclick="deleteAppointment(${a.id})"> Delete </button> 
+                                  <button onclick="printAppointment(${a.id})"> Print </button> 
+                                  <button onclick="sendEmail( '${a.email || ""}', '${a.name}', '${a.appointment_no}' )"> Email 
+                                  </button> </td> </tr> `; }); }
   /* ADD APPOINTMENT */ 
   async function addAppointment() 
   { const name = document.getElementById("name").value.trim(); 
@@ -227,10 +245,11 @@ let allAppointments = [];
    <div class="top-section"> <div>
    <div class="title">Appointment Letter</div> 
    <p><b>Appointment No:</b> ${a.appointment_no}</p> 
-   <p><b>Date:</b> ${new Date().toLocaleDateString()}</p> 
+   <p><b>Date:</b> ${new Date().toLocaleDateString('en-GB')}</p> 
    </div> <img src="${photo}" class="candidate-photo"> </div> 
    <div class="content"> <p>To,<br><b>${a.name}</b></p> 
-   <p> We are pleased to appoint you as <b>${a.designation}</b> under the role of <b>${a.type}</b> effective from <b>${a.joining_date}</b>. 
+   <p> We are pleased to appoint you as <b>${a.designation}</b> under the role of <b>${a.type}</b> 
+   effective from <b>${a.joining_date ? new Date(a.joining_date).toLocaleDateString('en-GB') : "-"}</b>
    </p> <p><b>Salary / Stipend:</b> ₹${a.salary}</p> <p>${a.remarks || ""}</p> 
    <p> We welcome you to Shubhi Education Foundation and look forward to your valuable contribution. </p> 
    <div class="signature"> 
@@ -240,7 +259,8 @@ let allAppointments = [];
   /* EXPORT CSV */ 
   function exportCSV() 
   { let csv = "Appointment No,Name,Type,Designation,Joining Date,Salary\n"; 
-   allAppointments.forEach(a => { csv += `${a.appointment_no},${a.name},${a.type},${a.designation},${a.joining_date},${a.salary}\n`; }); 
+   allAppointments.forEach(a => {csv += `${a.appointment_no},${a.name},${a.type},${a.designation},${a.joining_date ? new Date(a.joining_date).toLocaleDateString('en-GB') : ""},${a.salary}\n`;
+ 
    const blob = new Blob([csv], { type: "text/csv" }); 
    const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "appointments.csv"; link.click(); } 
   /* SEARCH */ 
