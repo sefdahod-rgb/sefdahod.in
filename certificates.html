@@ -288,9 +288,16 @@ const client = supabase.createClient(
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
+```html
+<script>
+const client = supabase.createClient(
+"https://kqahcvaoxnmxfcgyyync.supabase.co",
+"YOUR_SUPABASE_KEY"
+);
+
 let allCertificates=[];
 
-/* DATE FORMAT FUNCTION */
+/* DATE FORMAT ONLY */
 function formatDate(dateString){
   if(!dateString) return "-";
   return new Date(dateString).toLocaleDateString('en-GB');
@@ -466,8 +473,121 @@ function printCertificate(cert_no,name,type,issue_date,remarks){
     <html>
     <head>
       <title>Certificate</title>
+      <style>
+        body{
+          margin:0;
+          padding:0;
+          font-family:'Georgia', serif;
+          background:#f8f5e9;
+        }
+
+        .certificate{
+          width:1000px;
+          height:700px;
+          margin:20px auto;
+          padding:40px;
+          border:12px solid #d4af37;
+          background:white;
+          text-align:center;
+          position:relative;
+          box-shadow:0 0 25px rgba(0,0,0,0.3);
+        }
+
+        .logo{
+          width:100px;
+          margin-bottom:10px;
+        }
+
+        h1{
+          font-size:42px;
+          color:#1d4ed8;
+          margin:10px 0;
+        }
+
+        h2{
+          font-size:32px;
+          color:#d97706;
+          margin:15px 0;
+        }
+
+        .cert-no{
+          position:absolute;
+          top:20px;
+          right:30px;
+          font-size:16px;
+          color:#555;
+        }
+
+        .content{
+          margin-top:40px;
+          font-size:24px;
+          line-height:1.8;
+          color:#222;
+        }
+
+        .recipient{
+          font-size:38px;
+          color:#16a34a;
+          font-weight:bold;
+          margin:20px 0;
+          text-decoration:underline;
+        }
+
+        .remarks{
+          margin-top:20px;
+          font-size:20px;
+          color:#444;
+          padding:0 40px;
+        }
+
+        .footer{
+          margin-top:60px;
+          display:flex;
+          justify-content:space-between;
+          padding:0 60px;
+          font-size:18px;
+        }
+
+        .signature{
+          border-top:2px solid #000;
+          padding-top:8px;
+          width:220px;
+          margin:auto;
+        }
+
+        .seal{
+          position:absolute;
+          bottom:40px;
+          right:60px;
+          width:120px;
+          opacity:0.2;
+        }
+
+        .print-btn{
+          margin-top:20px;
+          text-align:center;
+        }
+
+        button{
+          padding:12px 25px;
+          background:#2563eb;
+          color:white;
+          border:none;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+        }
+
+        @media print{
+          .print-btn{
+            display:none;
+          }
+        }
+      </style>
     </head>
+
     <body>
+
       <div class="certificate">
 
         <div class="cert-no">
@@ -505,6 +625,20 @@ function printCertificate(cert_no,name,type,issue_date,remarks){
           Issued on: ${formatDate(issue_date)}
         </div>
 
+        <div class="footer">
+          <div>
+            <div class="signature">
+              Director Signature
+            </div>
+          </div>
+
+          <div>
+            <div class="signature">
+              Authorized Signature
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <div class="print-btn">
@@ -526,4 +660,3 @@ function logout(){
 
 load();
 </script>
-```
