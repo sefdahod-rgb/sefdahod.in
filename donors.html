@@ -1,17 +1,50 @@
 <!DOCTYPE html>
 <html lang="hi">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Donors - Shubhi Education Foundation</title><link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
-<body><div class="overlay">
-<header><img src="logo.png"><h1>Shubhi Education Foundation, Dahod</h1></header>
-  <p>Registration No.:- Under Indian Society Act 1860 Guj./2249/DHD. & 
-Mumbai Public Trust Act 1950 F/2247/DHD</p>
-  <p>80G Registration No. :-AAOTS1413MF20251
-12A Registration No. :- AAOTS1413ME20241
-CSR no.:- CSR00096110</p>
-  <p class="info">Address: Rainbow Public School, Shalimar co-operative society, Muvaliya Road, Rabdal, Dahod Gujarat - 389151<br>
-  Email: sefdahod@gmail.com | Mobile: 9408695001 | Landline: 02673-450037</p>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Donors - Shubhi Education Foundation</title>
+
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+<!-- ✅ ADMIN LOGIN CHECK -->
+<script>
+if(localStorage.getItem("isAdmin")!=="yes"){
+  localStorage.setItem("redirectAfterLogin","donors.html");
+  location.href="login.html";
+}
+</script>
+
+<div class="overlay">
+
+<header>
+  <img src="logo.png">
+  <h1>Shubhi Education Foundation, Dahod</h1>
+</header>
+
+<p>
+  Registration No.:- Under Indian Society Act 1860 Guj./2249/DHD. &
+  Mumbai Public Trust Act 1950 F/2247/DHD
+</p>
+
+<p>
+  80G Registration No. :-AAOTS1413MF20251
+  12A Registration No. :- AAOTS1413ME20241
+  CSR no.:- CSR00096110
+</p>
+
+<p class="info">
+  Address: Rainbow Public School, Shalimar co-operative society,
+  Muvaliya Road, Rabdal, Dahod Gujarat - 389151<br>
+  Email: sefdahod@gmail.com |
+  Mobile: 9408695001 |
+  Landline: 02673-450037
+</p>
+
 <nav>
   <a href="index.html">Home</a>
   <a href="dashboard.html">Dashboard</a>
@@ -19,13 +52,24 @@ CSR no.:- CSR00096110</p>
   <a href="donors.html" class="active">Donors</a>
   <a href="finance.html">Finance</a>
   <a href="admin.html">Admin</a>
+  <a href="#" onclick="logout()">Logout</a>
 </nav>
+
 <section>
   <div class="card">
     <h2>Our Donors</h2>
-    <table id="donorTable"><tr><th>Name</th><th>Email</th><th>Amount (₹)</th><th>Date</th></tr></table>
+
+    <table id="donorTable">
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Amount (₹)</th>
+        <th>Date</th>
+      </tr>
+    </table>
   </div>
 </section>
+
 <script>
 const client = window.supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
@@ -72,8 +116,7 @@ function openReceipt(donor){
 
     date:
       donor.created_at
-        ? new Date(donor.created_at)
-          .toLocaleString()
+        ? new Date(donor.created_at).toLocaleString()
         : "-"
 
   };
@@ -95,14 +138,11 @@ async function load(){
 
   const { data, error } =
     await client
-    .from("donations")
-    .select("*")
-    .order("id", {
-      ascending: false
-    });
-
-  console.log("DATA:", data);
-  console.log("ERROR:", error);
+      .from("donations")
+      .select("*")
+      .order("id", {
+        ascending: false
+      });
 
   const t =
     document.getElementById(
@@ -171,7 +211,7 @@ async function load(){
           d.created_at
             ? new Date(
                 d.created_at
-              ).toLocaleDateString()
+              ).toLocaleDateString('en-GB')
             : "-"
         }</td>
 
@@ -190,6 +230,16 @@ async function load(){
 
 }
 
+/* ✅ LOGOUT SYSTEM */
+function logout(){
+  localStorage.clear();
+  location.href = "index.html";
+}
+
 /* START */
 load();
 </script>
+
+</div>
+</body>
+</html>
