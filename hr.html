@@ -385,6 +385,18 @@ function generateSalarySlip(name, designation, salary){
 
   const win = window.open("", "_blank");
 
+  // ✅ ONLY DATE FIX
+  const currentDate = new Date();
+  const formattedDate =
+    String(currentDate.getDate()).padStart(2,'0') + '/' +
+    String(currentDate.getMonth()+1).padStart(2,'0') + '/' +
+    currentDate.getFullYear();
+
+  const salaryMonth =
+    currentDate.toLocaleString('default',{month:'long'}) +
+    ' ' +
+    currentDate.getFullYear();
+
   win.document.write(`
   <html>
   <head>
@@ -526,7 +538,7 @@ function generateSalarySlip(name, designation, salary){
 
         <tr>
           <th>Salary Month</th>
-          <td>${new Date().toLocaleString('default',{month:'long'})} ${new Date().getFullYear()}</td>
+          <td>${salaryMonth}</td>
         </tr>
 
         <tr>
@@ -548,7 +560,7 @@ function generateSalarySlip(name, designation, salary){
       <div class="footer">
         <div>
           <strong>Date:</strong><br>
-          ${new Date().toLocaleDateString()}
+          ${formattedDate}
         </div>
 
         <div class="signature">
@@ -569,7 +581,6 @@ function generateSalarySlip(name, designation, salary){
   </html>
   `);
 }
-
 /* INIT */
 loadStaff();
 </script>
