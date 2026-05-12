@@ -168,9 +168,7 @@ document.getElementById("donationForm")
   const message =
     document.getElementById("dmsg").value.trim();
 
-  /* VALIDATION */
   if(!name || !email || !pan || !aadhaar || !amount){
-
     alert("Please fill all required fields.");
     return;
   }
@@ -179,7 +177,6 @@ document.getElementById("donationForm")
     /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
 
   if(!panRegex.test(pan)){
-
     alert("Invalid PAN number.");
     return;
   }
@@ -188,13 +185,11 @@ document.getElementById("donationForm")
     /^[0-9]{12}$/;
 
   if(!aadhaarRegex.test(aadhaar)){
-
     alert("Invalid Aadhaar number.");
     return;
   }
 
   if(amount < 1){
-
     alert("Minimum donation amount is ₹1.");
     return;
   }
@@ -202,7 +197,6 @@ document.getElementById("donationForm")
   const receiptNo =
     "SEF-" + Date.now();
 
-  /* FEES */
   const gatewayFee =
     parseFloat((amount * 0.02).toFixed(2));
 
@@ -227,35 +221,19 @@ document.getElementById("donationForm")
       .toFixed(2)
     );
 
-  /* PRE-SAVE receipt before payment */
   const receiptData = {
-
     receipt: receiptNo,
-
     name: name,
-
     aadhaar: aadhaar,
-
     pan: pan,
-
     email: email,
-
     amount: amount,
-
     gateway: gatewayFee,
-
     service: serviceFee,
-
     gst: gst,
-
     totalFees: totalFees,
-
     netAmount: netAmount,
-
-    date:
-      new Date()
-      .toLocaleString()
-
+    date: new Date().toLocaleString()
   };
 
   localStorage.setItem(
@@ -263,21 +241,17 @@ document.getElementById("donationForm")
     JSON.stringify(receiptData)
   );
 
-  /* RAZORPAY */
   const options = {
 
     key: "rzp_live_SeDR91zuvNa9fG",
 
-    amount:
-      Math.round(amount * 100),
+    amount: Math.round(amount * 100),
 
     currency: "INR",
 
-    name:
-      "Shubhi Education Foundation",
+    name: "Shubhi Education Foundation",
 
-    description:
-      "Secure Donation Payment",
+    description: "Secure Donation Payment",
 
     image: "logo.png",
 
@@ -292,6 +266,26 @@ document.getElementById("donationForm")
 
     theme: {
       color: "#16a34a"
+    },
+
+    config: {
+      display: {
+        blocks: {
+          utib: {
+            name: "Pay using",
+            instruments: [
+              { method: "upi" },
+              { method: "card" },
+              { method: "netbanking" },
+              { method: "wallet" }
+            ]
+          }
+        },
+        sequence: ["block.utib"],
+        preferences: {
+          show_default_blocks: false
+        }
+      }
     },
 
     handler: async function(response){
@@ -333,7 +327,6 @@ document.getElementById("donationForm")
           return;
         }
 
-        /* SUCCESS REDIRECT */
         window.location.href =
           "receipt.html";
 
@@ -355,9 +348,7 @@ document.getElementById("donationForm")
 
     modal: {
       ondismiss: function(){
-
         alert("Payment cancelled.");
-
       }
     }
 
