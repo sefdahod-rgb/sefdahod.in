@@ -465,6 +465,32 @@ async function load(){
   const balance =
     totalIncome - totalExpense;
 
+/* AI INSIGHT + DUAL BANK SYSTEM */
+document.getElementById("ai").innerHTML = `
+  Gross Donation: ₹${grossDonation.toFixed(2)} <br>
+  Gateway Fee: ₹${gatewayFees.toFixed(2)} <br>
+  Service Fee: ₹${serviceFees.toFixed(2)} <br>
+  GST: ₹${gstFees.toFixed(2)} <br>
+  Total Donation Fees: ₹${totalDonationFees.toFixed(2)} <br>
+  Net Donation Received: ₹${netDonation.toFixed(2)} <br><br>
+
+  Cash Income: ₹${cashIncome.toFixed(2)} <br>
+  Bank of Baroda Balance: ₹${barodaBalance.toFixed(2)} <br>
+  Kotak Bank Balance: ₹${kotakBalance.toFixed(2)} <br><br>
+
+  Cash Expense: ₹${cashExpense.toFixed(2)} <br>
+  Bank Expense: ₹${bankExpense.toFixed(2)} <br><br>
+
+  Final Cash Balance: ₹${finalCash.toFixed(2)} <br>
+  Final Total Bank Balance: ₹${(barodaBalance + kotakBalance).toFixed(2)} <br><br>
+
+  ${
+    balance >= 0
+      ? "📈 Profit ₹" + balance.toFixed(2)
+      : "⚠️ Loss ₹" + Math.abs(balance).toFixed(2)
+  }
+`;
+  
   /* UI */
   document.getElementById("income").innerText =
     "₹" + totalIncome.toFixed(2);
