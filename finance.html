@@ -4,59 +4,113 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>NGO Finance ERP - SEF Dahod</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 body{
   margin:0;
   font-family:Segoe UI;
-  background:linear-gradient(rgba(240,253,244,0.95),rgba(240,253,244,0.95)), url('bg.jpg') no-repeat center fixed;
+  background:linear-gradient(rgba(240,253,244,0.95),rgba(240,253,244,0.95)),
+             url('bg.jpg') no-repeat center fixed;
   background-size:cover;
 }
 .header{text-align:center;background:#fff;padding:15px}
 .header img{width:55px}
 nav{text-align:center;padding:10px}
-nav a{margin:5px;padding:8px 12px;background:#16a34a;color:#fff;border-radius:6px;text-decoration:none}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;padding:10px}
-.card{background:#fff;padding:12px;border-radius:8px;text-align:center}
-.box{margin:10px;background:#fff;padding:12px;border-radius:8px}
-table{width:100%;border-collapse:collapse}
-th,td{padding:6px;border-bottom:1px solid #ddd;text-align:center}
-th{background:#16a34a;color:#fff}
-.btn{padding:6px 10px;background:#16a34a;color:#fff;border:none;border-radius:6px;cursor:pointer}
+nav a{
+  margin:5px;
+  padding:8px 12px;
+  background:#16a34a;
+  color:#fff;
+  border-radius:6px;
+  text-decoration:none
+}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:10px;
+  padding:10px
+}
+.card{
+  background:#fff;
+  padding:12px;
+  border-radius:8px;
+  text-align:center
+}
+.box{
+  margin:10px;
+  background:#fff;
+  padding:12px;
+  border-radius:8px
+}
+table{
+  width:100%;
+  border-collapse:collapse
+}
+th,td{
+  padding:6px;
+  border-bottom:1px solid #ddd
+}
+th{
+  background:#16a34a;
+  color:#fff
+}
+.btn{
+  padding:6px 10px;
+  background:#16a34a;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer
+}
 .chart-box{height:260px}
-input,select{padding:6px;margin:4px}
-@media print{nav,button,input,select{display:none}}
+input,select{
+  padding:6px;
+  margin:4px;
+}
+@media print{
+  nav,button,input,select{display:none}
+}
 </style>
 </head>
+
 <body>
+
 <script>
 if(localStorage.getItem("isAdmin")!=="yes"){
   localStorage.setItem("redirectAfterLogin","finance.html");
   location.href="login.html";
 }
 </script>
+
 <div class="header">
 <img src="logo.png">
 <h3>Shubhi Education Foundation</h3>
 <p>Complete NGO Accounting ERP</p>
 </div>
+
 <nav>
 <a href="index.html">Home</a>
 <a href="#" onclick="logout()">Logout</a>
 </nav>
+
 <div class="box">
 <h3>📅 Date Filter</h3>
 <input type="date" id="from">
 <input type="date" id="to">
+
 <select id="bankFilter">
-<option value="all">All</option>
-<option value="cash">Cash</option>
-<option value="bob">Bank of Baroda</option>
-<option value="kotak">Kotak Bank</option>
+  <option value="all">All</option>
+  <option value="cash">Cash</option>
+  <option value="bob">Bank of Baroda</option>
+  <option value="kotak">Kotak Bank</option>
 </select>
+
 <button class="btn" onclick="load()">Apply</button>
 </div>
+
 <div class="cards">
 <div class="card">Income <br><b id="income">₹0</b></div>
 <div class="card">Expense <br><b id="expense">₹0</b></div>
@@ -64,10 +118,12 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <div class="card">Cash <br><b id="cash">₹0</b></div>
 <div class="card">Bank <br><b id="bank">₹0</b></div>
 </div>
+
 <div class="box">
 <h3>🤖 AI Insight</h3>
 <p id="ai">Calculating...</p>
 </div>
+
 <div class="box">
 <h3>Opening Balance</h3>
 <input type="number" id="open_cash" placeholder="Opening Cash">
@@ -75,112 +131,324 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <input type="number" id="open_kotak" placeholder="Opening Kotak Bank">
 <button class="btn" onclick="saveOpening()">Save Opening Balance</button>
 </div>
+
 <div class="box">
 <h3>➕ Add Income</h3>
 <input type="number" id="inc_amt" placeholder="Amount">
 <input type="text" id="inc_note" placeholder="Note">
 <input type="date" id="inc_date">
 <select id="inc_mode">
-<option value="cash">Cash</option>
-<option value="bob">Bank of Baroda</option>
-<option value="kotak">Kotak Bank</option>
+  <option value="cash">Cash</option>
+  <option value="bob">Bank of Baroda</option>
+  <option value="kotak">Kotak Bank</option>
 </select>
 <button class="btn" onclick="addIncome()">Add Income</button>
 </div>
+
 <div class="box">
 <h3>➖ Add Expense</h3>
 <input type="number" id="exp_amt" placeholder="Amount">
 <input type="text" id="exp_note" placeholder="Note">
 <input type="date" id="exp_date">
 <select id="exp_mode">
-<option value="cash">Cash</option>
-<option value="bob">Bank of Baroda</option>
-<option value="kotak">Kotak Bank</option>
+  <option value="cash">Cash</option>
+  <option value="bob">Bank of Baroda</option>
+  <option value="kotak">Kotak Bank</option>
 </select>
 <button class="btn" onclick="addExpense()">Add Expense</button>
 </div>
+
 <div class="box">
 <h3>📊 Report</h3>
 <button class="btn" onclick="printReport()">Print</button>
 <button class="btn" onclick="exportCSV()">Excel/CSV</button>
 <table id="table"></table>
 </div>
+
 <div class="box">
 <h3>📈 Monthly Graph</h3>
-<div class="chart-box"><canvas id="chart"></canvas></div>
+<div class="chart-box">
+<canvas id="chart"></canvas>
 </div>
+</div>
+
 <script>
 function formatDateIndian(dateString){
-  const dateObj = new Date(dateString);
-  const day = String(dateObj.getDate()).padStart(2,"0");
-  const month = String(dateObj.getMonth()+1).padStart(2,"0");
-  const year = dateObj.getFullYear();
+  const d = new Date(dateString);
+  const day = String(d.getDate()).padStart(2,"0");
+  const month = String(d.getMonth()+1).padStart(2,"0");
+  const year = d.getFullYear();
   return `${day}-${month}-${year}`;
 }
-const client = supabase.createClient
-  ("https://kqahcvaoxnmxfcgyyync.supabase.co",
-   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
-   );
-let chart, donationsData=[], incomeData=[], expenseData=[];
+
+const client = supabase.createClient(
+  "https://kqahcvaoxnmxfcgyyync.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+);
+
+let chart;
+let donationsData = [];
+let incomeData = [];
+let expenseData = [];
+
 function logout(){
   localStorage.removeItem("isAdmin");
   localStorage.removeItem("redirectAfterLogin");
   alert("Logged out successfully ✅");
-  window.location.href="index.html";
+  window.location.href = "index.html";
 }
+
 function saveOpening(){
-  localStorage.setItem("open_cash",document.getElementById("open_cash").value||0);
-  localStorage.setItem("open_bob",document.getElementById("open_bob").value||0);
-  localStorage.setItem("open_kotak",document.getElementById("open_kotak").value||0);
+  localStorage.setItem("open_cash", document.getElementById("open_cash").value || 0);
+  localStorage.setItem("open_bob", document.getElementById("open_bob").value || 0);
+  localStorage.setItem("open_kotak", document.getElementById("open_kotak").value || 0);
   alert("Opening balance saved successfully ✅");
   load();
 }
-async function addIncome(){/* existing insert logic */}
-async function addExpense(){/* existing insert logic */}
-async function deleteIncome(id){await client.from("income").delete().eq("id",id);load();}
-async function deleteExpense(id){await client.from("expenses").delete().eq("id",id);load();}
-async function editIncome(id){const amount=prompt("Enter new income amount:");if(!amount)return;await client.from("income").update({amount:Number(amount)}).eq("id",id);load();}
-async function editExpense(id){const amount=prompt("Enter new expense amount:");if(!amount)return;await client.from("expenses").update({amount:Number(amount)}).eq("id",id);load();}
-function printVoucher(type,id){/* keep your existing voucher function */}
-function exportCSV(){/* keep corrected CSV function using formatDateIndian */}
-function printReport(){window.print();}
-async function load(){
- try{
-  const bankFilter=document.getElementById("bankFilter")?.value||"all";
-  const fromDate=document.getElementById("from").value;
-  const toDate=document.getElementById("to").value;
-  function inDateRange(date){
-    if(!fromDate && !toDate) return true;
-    const d=new Date(date);
-    if(fromDate && d<new Date(fromDate)) return false;
-    if(toDate && d>new Date(toDate+"T23:59:59")) return false;
-    return true;
-  }
-  const {data:donations=[]}=await client.from("donations").select("*").order("created_at",{ascending:false});
-  const {data:income=[]}=await client.from("income").select("*").order("created_at",{ascending:false});
-  const {data:expenses=[]}=await client.from("expenses").select("*").order("created_at",{ascending:false});
-  donationsData=donations; incomeData=income; expenseData=expenses;
-  /* KEEP YOUR FULL CALCULATION SECTION */
-  const table=document.getElementById("table");
-  table.innerHTML=`<tr><th>Voucher</th><th>Type</th><th>Gross</th><th>Fees</th><th>Net</th><th>Mode</th><th>Note</th><th>Date</th><th>Action</th></tr>`;
-  donations.forEach(d=>{
-    if(!inDateRange(d.created_at)) return;
-    if(bankFilter!=="all" && bankFilter!=="kotak") return;
-  });
-  income.forEach(i=>{
-    if(!inDateRange(i.created_at)) return;
-    if(bankFilter!=="all" && (i.mode||"cash")!==bankFilter) return;
-  });
-  expenses.forEach(e=>{
-    if(!inDateRange(e.created_at)) return;
-    if(bankFilter!=="all" && (e.mode||"cash")!==bankFilter) return;
-  });
- }catch(err){
-  console.error(err);
-  alert("Data loading error: "+err.message);
- }
+
+async function addIncome(){
+  const amount = Number(document.getElementById("inc_amt").value);
+  const note = document.getElementById("inc_note").value;
+  const created_at = document.getElementById("inc_date").value || new Date().toISOString();
+  const mode = document.getElementById("inc_mode").value;
+
+  if(!amount || amount<=0) return alert("Enter valid income");
+
+  const { error } = await client.from("income").insert([{amount,note,mode,created_at}]);
+
+  if(error) return alert(error.message);
+
+  alert("Income Added ✅");
+  load();
 }
+
+async function addExpense(){
+  const amount = Number(document.getElementById("exp_amt").value);
+  const note = document.getElementById("exp_note").value;
+  const created_at = document.getElementById("exp_date").value || new Date().toISOString();
+  const mode = document.getElementById("exp_mode").value;
+
+  if(!amount || amount<=0) return alert("Enter valid expense");
+
+  const { error } = await client.from("expenses").insert([{amount,note,mode,created_at}]);
+
+  if(error) return alert(error.message);
+
+  alert("Expense Added ✅");
+  load();
+}
+
+function printReport(){
+  window.print();
+}
+
+function exportCSV(){
+  let csv = "Voucher,Type,Amount,Mode,Note,Date\n";
+
+  donationsData.forEach(d=>{
+    csv += `"${d.receipt_no || "DN-"+d.id}","Donation","${d.amount}","Kotak","${d.name||"-"}","${formatDateIndian(d.created_at)}"\n`;
+  });
+
+  incomeData.forEach(i=>{
+    csv += `"IN-${i.id}","Income","${i.amount}","${i.mode}","${i.note||"-"}","${formatDateIndian(i.created_at)}"\n`;
+  });
+
+  expenseData.forEach(e=>{
+    csv += `"EX-${e.id}","Expense","${e.amount}","${e.mode}","${e.note||"-"}","${formatDateIndian(e.created_at)}"\n`;
+  });
+
+  const blob = new Blob([csv], {type:"text/csv"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "finance_report.csv";
+  a.click();
+}
+
+```javascript
+/* FINAL LOAD FUNCTION — ISKO PURANE async function load() KO DELETE KARKE PASTE KARO */
+
+async function load() {
+  try {
+    const bankFilter = document.getElementById("bankFilter")?.value || "all";
+    const fromDate = document.getElementById("from").value;
+    const toDate = document.getElementById("to").value;
+
+    function inDateRange(date) {
+      if (!fromDate && !toDate) return true;
+      const d = new Date(date);
+      if (fromDate && d < new Date(fromDate)) return false;
+      if (toDate && d > new Date(toDate + "T23:59:59")) return false;
+      return true;
+    }
+
+    const { data: donations = [] } = await client.from("donations").select("*").order("created_at", { ascending: false });
+    const { data: income = [] } = await client.from("income").select("*").order("created_at", { ascending: false });
+    const { data: expenses = [] } = await client.from("expenses").select("*").order("created_at", { ascending: false });
+
+    donationsData = donations;
+    incomeData = income;
+    expenseData = expenses;
+
+    let grossDonation = 0, gatewayFees = 0, serviceFees = 0, gstFees = 0, netDonation = 0;
+    let cashIncome = 0, bobIncome = 0, kotakIncome = 0;
+    let cashExpense = 0, bobExpense = 0, kotakExpense = 0;
+
+    donations.forEach(d => {
+      const gross = Number(d.amount || 0);
+      const gateway = Number(d.gateway_fee || 0);
+      const service = Number(d.service_fee || 0);
+      const gst = Number(d.gst || 0);
+
+      grossDonation += gross;
+      gatewayFees += gateway;
+      serviceFees += service;
+      gstFees += gst;
+
+      const net = gross - gateway - service - gst;
+      netDonation += net;
+      kotakIncome += net;
+    });
+
+    income.forEach(i => {
+      if (!inDateRange(i.created_at)) return;
+      const amt = Number(i.amount || 0);
+      if (i.mode === "bob") bobIncome += amt;
+      else if (i.mode === "kotak") kotakIncome += amt;
+      else cashIncome += amt;
+    });
+
+    expenses.forEach(e => {
+      if (!inDateRange(e.created_at)) return;
+      const amt = Number(e.amount || 0);
+      if (e.mode === "bob") bobExpense += amt;
+      else if (e.mode === "kotak") kotakExpense += amt;
+      else cashExpense += amt;
+    });
+
+    const finalCash = (Number(localStorage.getItem("open_cash")) || 0) + cashIncome - cashExpense;
+    const finalBob = (Number(localStorage.getItem("open_bob")) || 0) + bobIncome - bobExpense;
+    const finalKotak = (Number(localStorage.getItem("open_kotak")) || 0) + kotakIncome - kotakExpense;
+
+    const totalIncome = cashIncome + bobIncome + kotakIncome;
+    const totalExpense = cashExpense + bobExpense + kotakExpense;
+    const balance = totalIncome - totalExpense;
+
+    document.getElementById("income").innerText = "₹" + totalIncome.toFixed(2);
+    document.getElementById("expense").innerText = "₹" + totalExpense.toFixed(2);
+    document.getElementById("balance").innerText = "₹" + balance.toFixed(2);
+    document.getElementById("cash").innerText = "₹" + finalCash.toFixed(2);
+    document.getElementById("bank").innerText = "₹" + (finalBob + finalKotak).toFixed(2);
+
+    document.getElementById("ai").innerHTML = `
+      Gross Donation: ₹${grossDonation.toFixed(2)}<br>
+      Gateway Fee: ₹${gatewayFees.toFixed(2)}<br>
+      Service Fee: ₹${serviceFees.toFixed(2)}<br>
+      GST: ₹${gstFees.toFixed(2)}<br>
+      Net Donation: ₹${netDonation.toFixed(2)}<br><br>
+      Cash Balance: ₹${finalCash.toFixed(2)}<br>
+      Bank of Baroda: ₹${finalBob.toFixed(2)}<br>
+      Kotak Bank: ₹${finalKotak.toFixed(2)}<br><br>
+      ${balance >= 0 ? "📈 Profit ₹" + balance.toFixed(2) : "⚠️ Loss ₹" + Math.abs(balance).toFixed(2)}
+    `;
+
+    const table = document.getElementById("table");
+
+    table.innerHTML = `
+      <tr>
+        <th>Voucher</th>
+        <th>Type</th>
+        <th>Gross</th>
+        <th>Fees</th>
+        <th>Net</th>
+        <th>Mode</th>
+        <th>Note</th>
+        <th>Date</th>
+        <th>Action</th>
+      </tr>
+    `;
+
+    donations.forEach(d => {
+      if (!inDateRange(d.created_at)) return;
+      if (bankFilter !== "all" && bankFilter !== "kotak") return;
+
+      const gross = Number(d.amount || 0);
+      const fees = Number(d.gateway_fee || 0) + Number(d.service_fee || 0) + Number(d.gst || 0);
+      const net = gross - fees;
+
+      table.innerHTML += `
+        <tr>
+          <td>${d.receipt_no || "DN-" + d.id}</td>
+          <td>Donation</td>
+          <td>₹${gross.toFixed(2)}</td>
+          <td>₹${fees.toFixed(2)}</td>
+          <td>₹${net.toFixed(2)}</td>
+          <td>Kotak</td>
+          <td>${d.name || "-"}</td>
+          <td>${formatDateIndian(d.created_at)}</td>
+          <td><button onclick="printVoucher('donation', ${d.id})">Voucher</button></td>
+        </tr>
+      `;
+    });
+
+    income.forEach(i => {
+      if (!inDateRange(i.created_at)) return;
+      if (bankFilter !== "all" && (i.mode || "cash") !== bankFilter) return;
+
+      table.innerHTML += `
+        <tr>
+          <td>IN-${i.id}</td>
+          <td>Income</td>
+          <td>₹${Number(i.amount).toFixed(2)}</td>
+          <td>₹0.00</td>
+          <td>₹${Number(i.amount).toFixed(2)}</td>
+          <td>${i.mode}</td>
+          <td>${i.note || "-"}</td>
+          <td>${formatDateIndian(i.created_at)}</td>
+          <td>---</td>
+        </tr>
+      `;
+    });
+
+    expenses.forEach(e => {
+      if (!inDateRange(e.created_at)) return;
+      if (bankFilter !== "all" && (e.mode || "cash") !== bankFilter) return;
+
+      table.innerHTML += `
+        <tr>
+          <td>EX-${e.id}</td>
+          <td>Expense</td>
+          <td>₹${Number(e.amount).toFixed(2)}</td>
+          <td>₹0.00</td>
+          <td>₹${Number(e.amount).toFixed(2)}</td>
+          <td>${e.mode}</td>
+          <td>${e.note || "-"}</td>
+          <td>${formatDateIndian(e.created_at)}</td>
+          <td>---</td>
+        </tr>
+      `;
+    });
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(document.getElementById("chart"), {
+      type: "bar",
+      data: {
+        labels: ["Cash", "BOB", "Kotak", "Expense"],
+        datasets: [{
+          data: [finalCash, finalBob, finalKotak, totalExpense],
+          backgroundColor: ["green", "blue", "purple", "red"]
+        }]
+      }
+    });
+
+  } catch (err) {
+    console.error(err);
+    alert("Data loading error: " + err.message);
+  }
+}
+
 load();
 </script>
+
 </body>
 </html>
