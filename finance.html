@@ -484,22 +484,118 @@ async function load(){
     "₹" + (finalBob + finalKotak).toFixed(2);
 
   /* AI REPORT */
-  document.getElementById("ai").innerHTML = `
-    Gross Donation: ₹${grossDonation.toFixed(2)} <br>
-    Donation Fees: ₹${totalDonationFees.toFixed(2)} <br>
-    Net Donation: ₹${netDonation.toFixed(2)} <br><br>
+  /* REPORT TABLE */
+const table =
+  document.getElementById("table");
 
-    Cash Balance: ₹${finalCash.toFixed(2)} <br>
-    Bank of Baroda Balance: ₹${finalBob.toFixed(2)} <br>
-    Kotak Bank Balance: ₹${finalKotak.toFixed(2)} <br><br>
+table.innerHTML = `
+  <tr>
+    <th>Voucher No.</th>
+    <th>Type</th>
+    <th>Gross</th>
+    <th>Fees</th>
+    <th>Net</th>
+    <th>Bank/Cash</th>
+    <th>Note</th>
+    <th>Date</th>
+    <th>Action</th>
+  </tr>
+`;
 
-    ${
-      balance >= 0
-      ? "📈 Profit ₹" + balance.toFixed(2)
-      : "⚠️ Loss ₹" + Math.abs(balance).toFixed(2)
-    }
+/* DONATIONS */
+donations.forEach(d => {
+
+  const gross =
+    Number(d.amount) || 0;
+
+  const fees =
+    Number(d.gateway_fee || 0) +
+    Number(d.service_fee || 0) +
+    Number(d.gst || 0);
+
+  const net =
+    gross - fees;
+
+  table.innerHTML += `
+    <tr>
+      <td>${d.receipt_no || "DN-" + d.id}</td>
+      <td>Donation</td>
+      <td>₹${gross.toFixed(2)}</td>
+      <td>₹${fees.toFixed(2)}</td>
+      <td>₹${net.toFixed(2)}</td>
+      <td>Kotak Bank</td>
+      <td>${d.name || "-"}</td>
+      <td>${new Date(d.created_at).toLocaleDateString()}</td>
+      <td>
+        <button onclick="printVoucher('donation',${d.id})">
+          Voucher
+        </button>
+      </td>
+    </tr>
   `;
+});
 
+/* INCOME */
+income.forEach(i => {
+
+  let bankName =
+    i.mode === "bob"
+    ? "Bank of Baroda"
+    : i.mode === "kotak"
+    ? "Kotak Bank"
+    : "Cash";
+
+  table.innerHTML += `
+    <tr>
+      <td>IN-${i.id}</td>
+      <td>Income</td>
+      <td>₹${Number(i.amount).toFixed(2)}</td>
+      <td>₹0.00</td>
+      <td>₹${Number(i.amount).toFixed(2)}</td>
+      <td>${bankName}</td>
+      <td>${i.note || "-"}</td>
+      <td>${new Date(i.created_at).toLocaleDateString()}</td>
+      <td>
+        <button onclick="editIncome(${i.id})">Edit</button>
+        <button onclick="deleteIncome(${i.id})">Delete</button>
+        <button onclick="printVoucher('income',${i.id})">
+          Voucher
+        </button>
+      </td>
+    </tr>
+  `;
+});
+
+/* EXPENSE */
+expense.forEach(e => {
+
+  let bankName =
+    e.mode === "bob"
+    ? "Bank of Baroda"
+    : e.mode === "kotak"
+    ? "Kotak Bank"
+    : "Cash";
+
+  table.innerHTML += `
+    <tr>
+      <td>EX-${e.id}</td>
+      <td>Expense</td>
+      <td>₹${Number(e.amount).toFixed(2)}</td>
+      <td>₹0.00</td>
+      <td>₹${Number(e.amount).toFixed(2)}</td>
+      <td>${bankName}</td>
+      <td>${e.note || "-"}</td>
+      <td>${new Date(e.created_at).toLocaleDateString()}</td>
+      <td>
+        <button onclick="editExpense(${e.id})">Edit</button>
+        <button onclick="deleteExpense(${e.id})">Delete</button>
+        <button onclick="printVoucher('expense',${e.id})">
+          Voucher
+        </button>
+      </td>
+    </tr>
+  `;
+});
   /* GRAPH */
   if(chart) chart.destroy();
 
