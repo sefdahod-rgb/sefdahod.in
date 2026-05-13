@@ -185,6 +185,11 @@ const client = supabase.createClient(
 );
 
 
+/* =========================
+PASTE THIS FULL UPDATED CODE INSIDE YOUR <script> SECTION
+OLD SAME FUNCTIONS KO REPLACE KAR DO
+========================= */
+
 let chart;
 let donationsData = [];
 let incomeData = [];
@@ -203,6 +208,24 @@ function saveOpening(){
   );
 
   alert("Opening balance saved successfully ✅");
+
+  load();
+}
+
+/* BANK OPENING */
+function saveBankOpening(){
+
+  localStorage.setItem(
+    "bob_open",
+    document.getElementById("bob_open").value || 0
+  );
+
+  localStorage.setItem(
+    "kotak_open",
+    document.getElementById("kotak_open").value || 0
+  );
+
+  alert("Bank balances saved successfully ✅");
 
   load();
 }
@@ -338,10 +361,12 @@ async function load(){
   let netDonation = 0;
 
   let cashIncome = 0;
-  let bankIncome = 0;
+  let bobIncome = 0;
+  let kotakIncome = 0;
 
   let cashExpense = 0;
-  let bankExpense = 0;
+  let bobExpense = 0;
+  let kotakExpense = 0;
 
   /* DONATION */
   donations.forEach(d => {
@@ -361,16 +386,21 @@ async function load(){
     totalDonationFees += fees;
     netDonation += net;
 
-    bankIncome += net;
+    kotakIncome += net;
+
   });
 
   /* OTHER INCOME */
   income.forEach(i => {
     const amt = Number(i.amount) || 0;
 
-    if(i.mode === "bank"){
-      bankIncome += amt;
-    } else {
+    if(i.mode === "bob"){
+      bobIncome += amt;
+    }
+    else if(i.mode === "kotak"){
+      kotakIncome += amt;
+    }
+    else{
       cashIncome += amt;
     }
   });
@@ -379,12 +409,22 @@ async function load(){
   expense.forEach(e => {
     const amt = Number(e.amount) || 0;
 
-    if(e.mode === "bank"){
-      bankExpense += amt;
-    } else {
+    if(e.mode === "bob"){
+      bobExpense += amt;
+    }
+    else if(e.mode === "kotak"){
+      kotakExpense += amt;
+    }
+    else{
       cashExpense += amt;
     }
   });
+
+  const bankIncome =
+    bobIncome + kotakIncome;
+
+  const bankExpense =
+    bobExpense + kotakExpense;
 
   const totalIncome =
     bankIncome + cashIncome;
@@ -398,16 +438,25 @@ async function load(){
   const openCash =
     Number(localStorage.getItem("open_cash")) || 0;
 
-  const openBank =
-    Number(localStorage.getItem("open_bank")) || 0;
+  const openBob =
+    Number(localStorage.getItem("bob_open")) || 0;
+
+  const openKotak =
+    Number(localStorage.getItem("kotak_open")) || 0;
 
   const finalCash =
     openCash + cashIncome - cashExpense;
 
-  const finalBank =
-    openBank + bankIncome - bankExpense;
+  const finalBob =
+    openBob + bobIncome - bobExpense;
 
-  /* UI CARDS */
+  const finalKotak =
+    openKotak + kotakIncome - kotakExpense;
+
+  const finalBank =
+    finalBob + finalKotak;
+
+  /* UI */
   document.getElementById("income").innerText =
     "₹" + totalIncome.toFixed(2);
 
@@ -423,7 +472,13 @@ async function load(){
   document.getElementById("bank").innerText =
     "₹" + finalBank.toFixed(2);
 
-  /* AI INSIGHT */
+  document.getElementById("bobBank").innerText =
+    "₹" + finalBob.toFixed(2);
+
+  document.getElementById("kotakBank").innerText =
+    "₹" + finalKotak.toFixed(2);
+
+  /* AI */
   document.getElementById("ai").innerHTML = `
     Gross Donation: ₹${grossDonation.toFixed(2)} <br>
     Gateway Fee: ₹${gatewayFees.toFixed(2)} <br>
@@ -433,13 +488,15 @@ async function load(){
     Net Donation Received: ₹${netDonation.toFixed(2)} <br><br>
 
     Cash Income: ₹${cashIncome.toFixed(2)} <br>
-    Bank Other Income: ₹${(bankIncome - netDonation).toFixed(2)} <br><br>
+    Bank of Baroda Balance: ₹${finalBob.toFixed(2)} <br>
+    Kotak Bank Balance: ₹${finalKotak.toFixed(2)} <br><br>
 
     Cash Expense: ₹${cashExpense.toFixed(2)} <br>
-    Bank Expense: ₹${bankExpense.toFixed(2)} <br><br>
+    BOB Expense: ₹${bobExpense.toFixed(2)} <br>
+    Kotak Expense: ₹${kotakExpense.toFixed(2)} <br><br>
 
     Final Cash Balance: ₹${finalCash.toFixed(2)} <br>
-    Final Bank Balance: ₹${finalBank.toFixed(2)} <br><br>
+    Final Total Bank Balance: ₹${finalBank.toFixed(2)} <br><br>
 
     ${
       balance >= 0
@@ -447,7 +504,7 @@ async function load(){
       : "⚠️ Loss ₹" + Math.abs(balance).toFixed(2)
     }
   `;
-
+}
   /* REPORT TABLE */
   const table =
     document.getElementById("table");
