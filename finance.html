@@ -464,7 +464,13 @@ async function load(){
 
   const balance =
     totalIncome - totalExpense;
-
+let grossDonation = 0;
+let gatewayFees = 0;
+let serviceFees = 0;
+let gstFees = 0;
+let totalDonationFees = 0;
+let netDonation = 0;
+  
 /* AI INSIGHT + DUAL BANK SYSTEM */
 document.getElementById("ai").innerHTML = `
   Gross Donation: ₹${grossDonation.toFixed(2)} <br>
@@ -525,25 +531,16 @@ table.innerHTML = `
     <th>Action</th>
   </tr>
 `;
-let grossDonation = 0;
-let gatewayFees = 0;
-let serviceFees = 0;
-let gstFees = 0;
-let totalDonationFees = 0;
-let netDonation = 0;
+
 /* DONATIONS */
 donations.forEach(d => {
 
-  const gross =
-    Number(d.amount) || 0;
-
-  const fees =
-    Number(d.gateway_fee || 0) +
-    Number(d.service_fee || 0) +
-    Number(d.gst || 0);
-
-  const net =
-    gross - fees;
+ grossDonation += gross;
+gatewayFees += Number(d.gateway_fee || 0);
+serviceFees += Number(d.service_fee || 0);
+gstFees += Number(d.gst || 0);
+totalDonationFees += fees;
+netDonation += net;
 
   table.innerHTML += `
     <tr>
