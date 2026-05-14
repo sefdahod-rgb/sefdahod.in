@@ -283,7 +283,6 @@ async function editExpense(id) {
   load();
 }
 
-/* FIXED VOUCHER PRINT */
 function printVoucher(type, id) {
   let item = null;
 
@@ -325,50 +324,115 @@ function printVoucher(type, id) {
       ? "Kotak Bank"
       : "Cash";
 
-  const win = window.open("", "", "width=900,height=800");
+  const win = window.open("", "", "width=1000,height=900");
 
   win.document.write(`
     <html>
       <head>
-        <title>Voucher Print</title>
+        <title>Official Voucher</title>
         <style>
           body {
             font-family: Arial;
-            padding: 30px;
+            padding: 40px;
+            background-image: url('logo.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 300px;
+            opacity: 1;
           }
+
+          .watermark {
+            position: fixed;
+            top: 35%;
+            left: 25%;
+            opacity: 0.08;
+            z-index: -1;
+          }
+
           h2, h3 {
             text-align: center;
+            margin: 5px;
           }
+
           table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 25px;
           }
+
           td, th {
             border: 1px solid black;
             padding: 10px;
           }
+
           th {
             background: #16a34a;
             color: white;
+            width: 40%;
+          }
+
+          .signature {
+            margin-top: 80px;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+          }
+
+          .sign-box {
+            text-align: center;
+            width: 250px;
+          }
+
+          .line {
+            margin-top: 50px;
+            border-top: 1px solid black;
+          }
+
+          .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 13px;
           }
         </style>
       </head>
+
       <body>
 
-        <h2>Shubhi Education Foundation</h2>
-        <h3>Official Voucher</h3>
+        <img src="logo.png" class="watermark" width="350">
+
+        <div style="text-align:center;">
+          <img src="logo.png" width="80"><br>
+          <h2>Shubhi Education Foundation</h2>
+          <h3>Official NGO Finance Voucher</h3>
+        </div>
 
         <table>
           <tr><th>Voucher No.</th><td>${voucherNo}</td></tr>
-          <tr><th>Type</th><td>${type}</td></tr>
+          <tr><th>Transaction Type</th><td>${type.toUpperCase()}</td></tr>
           <tr><th>Date</th><td>${formatDateIndian(item.created_at)}</td></tr>
           <tr><th>Name / Note</th><td>${item.name || item.note || "-"}</td></tr>
-          <tr><th>Mode</th><td>${mode}</td></tr>
+          <tr><th>Payment Mode</th><td>${mode}</td></tr>
           <tr><th>Gross Amount</th><td>₹${gross.toFixed(2)}</td></tr>
-          <tr><th>Fees</th><td>₹${fees.toFixed(2)}</td></tr>
+          <tr><th>Fees / Charges</th><td>₹${fees.toFixed(2)}</td></tr>
           <tr><th>Net Amount</th><td>₹${net.toFixed(2)}</td></tr>
         </table>
+
+        <div class="signature">
+          <div class="sign-box">
+            <div class="line"></div>
+            Prepared By
+          </div>
+
+          <div class="sign-box">
+            <img src="signature.png" width="140"><br>
+            <div class="line"></div>
+            Authorized Signature
+          </div>
+        </div>
+
+        <div class="footer">
+          SEF Dahod NGO ERP System | www.sefdahod.in
+        </div>
 
       </body>
     </html>
