@@ -165,16 +165,27 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <table id="table"></table>
 </div>
 
-<!-- NGO AUDIT SUMMARY -->
 <div class="box">
   <h3>📑 NGO Audit Summary</h3>
   <table>
+    <tr><th>Opening Cash</th><td id="auditOpenCash">₹0</td></tr>
+    <tr><th>Opening Bank of Baroda</th><td id="auditOpenBob">₹0</td></tr>
+    <tr><th>Opening Kotak Bank</th><td id="auditOpenKotak">₹0</td></tr>
+
     <tr><th>Total Donation</th><td id="auditDonation">₹0</td></tr>
+    <tr><th>Gateway Fees</th><td id="auditFees">₹0</td></tr>
+    <tr><th>Net Donation</th><td id="auditNetDonation">₹0</td></tr>
+
     <tr><th>Other Income</th><td id="auditIncome">₹0</td></tr>
     <tr><th>Total Expenses</th><td id="auditExpense">₹0</td></tr>
+
     <tr><th>Closing Cash</th><td id="auditCash">₹0</td></tr>
     <tr><th>Closing Bank of Baroda</th><td id="auditBob">₹0</td></tr>
     <tr><th>Closing Kotak Bank</th><td id="auditKotak">₹0</td></tr>
+
+    <tr><th>Total Bank Balance</th><td id="auditTotalBank">₹0</td></tr>
+    <tr><th>Total Closing Funds</th><td id="auditClosingFunds">₹0</td></tr>
+
     <tr><th>Net Surplus / Deficit</th><td id="auditBalance">₹0</td></tr>
   </table>
 </div>
