@@ -218,6 +218,50 @@ const client = supabase.createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
+/* DELETE FUNCTIONS */
+async function deleteIncome(id){
+  const confirmDelete = confirm("Delete this income entry?");
+  if(!confirmDelete) return;
+
+  await client.from("income").delete().eq("id", id);
+  alert("Income deleted successfully ✅");
+  load();
+}
+
+async function deleteExpense(id){
+  const confirmDelete = confirm("Delete this expense entry?");
+  if(!confirmDelete) return;
+
+  await client.from("expenses").delete().eq("id", id);
+  alert("Expense deleted successfully ✅");
+  load();
+}
+
+/* EDIT FUNCTIONS */
+async function editIncome(id){
+  const newAmount = prompt("Enter new income amount:");
+  if(!newAmount || Number(newAmount) <= 0) return;
+
+  await client.from("income")
+    .update({ amount: Number(newAmount) })
+    .eq("id", id);
+
+  alert("Income updated successfully ✅");
+  load();
+}
+
+async function editExpense(id){
+  const newAmount = prompt("Enter new expense amount:");
+  if(!newAmount || Number(newAmount) <= 0) return;
+
+  await client.from("expenses")
+    .update({ amount: Number(newAmount) })
+    .eq("id", id);
+
+  alert("Expense updated successfully ✅");
+  load();
+}
+  
 let chart;
 let donationsData = [];
 let incomeData = [];
