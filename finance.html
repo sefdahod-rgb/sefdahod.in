@@ -324,7 +324,7 @@ function printVoucher(type, id) {
       ? "Kotak Bank"
       : "Cash";
 
-  const win = window.open("", "", "width=1000,height=900");
+  const win = window.open("", "", "width=1100,height=900");
 
   win.document.write(`
     <html>
@@ -332,108 +332,175 @@ function printVoucher(type, id) {
         <title>Official Voucher</title>
         <style>
           body {
-            font-family: Arial;
-            padding: 40px;
-            background-image: url('logo.png');
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 300px;
-            opacity: 1;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 25px;
+            background: #ffffff;
+          }
+
+          .voucher-container {
+            border: 3px solid #1b5e20;
+            padding: 25px;
+            position: relative;
+            min-height: 95vh;
+            box-sizing: border-box;
           }
 
           .watermark {
-            position: fixed;
-            top: 35%;
-            left: 25%;
-            opacity: 0.08;
-            z-index: -1;
+            position: absolute;
+            top: 48%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.05;
+            width: 420px;
+            z-index: 0;
           }
 
-          h2, h3 {
+          .top-bar {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 10px;
+            z-index: 2;
+            position: relative;
+          }
+
+          .header {
             text-align: center;
-            margin: 5px;
+            position: relative;
+            z-index: 2;
+          }
+
+          .header img {
+            width: 90px;
+            margin-bottom: 8px;
+          }
+
+          .header h1 {
+            margin: 8px 0 5px;
+            color: #0b3d0b;
+            font-size: 30px;
+          }
+
+          .header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: #000;
           }
 
           table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 25px;
+            margin-top: 30px;
+            position: relative;
+            z-index: 2;
           }
 
-          td, th {
-            border: 1px solid black;
-            padding: 10px;
+          th, td {
+            border: 1px solid #000;
+            padding: 14px;
+            font-size: 18px;
           }
 
           th {
             background: #16a34a;
             color: white;
-            width: 40%;
+            width: 42%;
+            text-align: center;
           }
 
-          .signature {
-            margin-top: 80px;
+          td {
+            background: rgba(255,255,255,0.92);
+          }
+
+          .signature-section {
+            margin-top: 120px;
             display: flex;
             justify-content: space-between;
-            width: 100%;
+            position: relative;
+            z-index: 2;
           }
 
           .sign-box {
+            width: 260px;
             text-align: center;
-            width: 250px;
+            font-size: 16px;
           }
 
-          .line {
-            margin-top: 50px;
-            border-top: 1px solid black;
+          .sign-line {
+            border-top: 2px solid #000;
+            margin-top: 10px;
+            padding-top: 8px;
+          }
+
+          .auth-sign {
+            width: 130px;
+            margin-bottom: -10px;
           }
 
           .footer {
-            margin-top: 40px;
+            margin-top: 80px;
             text-align: center;
-            font-size: 13px;
+            font-size: 14px;
+            position: relative;
+            z-index: 2;
+          }
+
+          @media print {
+            body {
+              margin: 0;
+            }
           }
         </style>
       </head>
 
       <body>
+        <div class="voucher-container">
 
-        <img src="logo.png" class="watermark" width="350">
+          <img src="logo.png" class="watermark">
 
-        <div style="text-align:center;">
-          <img src="logo.png" width="80"><br>
-          <h2>Shubhi Education Foundation</h2>
-          <h3>Official NGO Finance Voucher</h3>
-        </div>
-
-        <table>
-          <tr><th>Voucher No.</th><td>${voucherNo}</td></tr>
-          <tr><th>Transaction Type</th><td>${type.toUpperCase()}</td></tr>
-          <tr><th>Date</th><td>${formatDateIndian(item.created_at)}</td></tr>
-          <tr><th>Name / Note</th><td>${item.name || item.note || "-"}</td></tr>
-          <tr><th>Payment Mode</th><td>${mode}</td></tr>
-          <tr><th>Gross Amount</th><td>₹${gross.toFixed(2)}</td></tr>
-          <tr><th>Fees / Charges</th><td>₹${fees.toFixed(2)}</td></tr>
-          <tr><th>Net Amount</th><td>₹${net.toFixed(2)}</td></tr>
-        </table>
-
-        <div class="signature">
-          <div class="sign-box">
-            <div class="line"></div>
-            Prepared By
+          <div class="top-bar">
+            <div>${new Date().toLocaleString()}</div>
+            <div><b>Official Voucher</b></div>
           </div>
 
-          <div class="sign-box">
-            <img src="signature.png" width="140"><br>
-            <div class="line"></div>
-            Authorized Signature
+          <div class="header">
+            <img src="logo.png">
+            <h1>Shubhi Education Foundation</h1>
+            <h2>Official NGO Finance Voucher</h2>
           </div>
-        </div>
 
-        <div class="footer">
-          SEF Dahod NGO ERP System | www.sefdahod.in
-        </div>
+          <table>
+            <tr><th>Voucher No.</th><td>${voucherNo}</td></tr>
+            <tr><th>Transaction Type</th><td>${type.toUpperCase()}</td></tr>
+            <tr><th>Date</th><td>${formatDateIndian(item.created_at)}</td></tr>
+            <tr><th>Name / Note</th><td>${item.name || item.note || "-"}</td></tr>
+            <tr><th>Payment Mode</th><td>${mode}</td></tr>
+            <tr><th>Gross Amount</th><td>₹${gross.toFixed(2)}</td></tr>
+            <tr><th>Fees / Charges</th><td>₹${fees.toFixed(2)}</td></tr>
+            <tr><th>Net Amount</th><td>₹${net.toFixed(2)}</td></tr>
+          </table>
 
+          <div class="signature-section">
+
+            <div class="sign-box">
+              <div class="sign-line"></div>
+              Prepared By
+            </div>
+
+            <div class="sign-box">
+              <img src="signature.png" class="auth-sign"><br>
+              <div class="sign-line"></div>
+              Authorized Signature
+            </div>
+
+          </div>
+
+          <div class="footer">
+            SEF Dahod NGO ERP System | www.sefdahod.in
+          </div>
+
+        </div>
       </body>
     </html>
   `);
