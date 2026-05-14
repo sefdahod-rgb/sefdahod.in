@@ -455,44 +455,48 @@ function printVoucher(type, id) {
       </head>
 
       <body>
-        <div class="voucher-container">
+        <body>
+  <div class="voucher-container">
 
-          <img src="logo.png" class="watermark">
+    <!-- WATERMARK LOGO -->
+    <img src="https://www.sefdahod.in/logo.png" class="watermark">
 
-          <div class="top-bar">
-            <div>${new Date().toLocaleString()}</div>
-            <div><b>Official Voucher</b></div>
-          </div>
+    <div class="top-bar">
+      <div>${new Date().toLocaleString()}</div>
+      <div><b>Official Voucher</b></div>
+    </div>
 
-          <div class="header">
-            <img src="logo.png">
-            <h1>Shubhi Education Foundation</h1>
-            <h2>Official NGO Finance Voucher</h2>
-          </div>
+    <!-- TOP HEADER LOGO -->
+    <div class="header">
+      <img src="https://www.sefdahod.in/logo.png">
+      <h1>Shubhi Education Foundation</h1>
+      <h2>Official NGO Finance Voucher</h2>
+    </div>
 
-          <table>
-            <tr><th>Voucher No.</th><td>${voucherNo}</td></tr>
-            <tr><th>Transaction Type</th><td>${type.toUpperCase()}</td></tr>
-            <tr><th>Date</th><td>${formatDateIndian(item.created_at)}</td></tr>
-            <tr><th>Name / Note</th><td>${item.name || item.note || "-"}</td></tr>
-            <tr><th>Payment Mode</th><td>${mode}</td></tr>
-            <tr><th>Gross Amount</th><td>₹${gross.toFixed(2)}</td></tr>
-            <tr><th>Fees / Charges</th><td>₹${fees.toFixed(2)}</td></tr>
-            <tr><th>Net Amount</th><td>₹${net.toFixed(2)}</td></tr>
-          </table>
+    <table>
+      <tr><th>Voucher No.</th><td>${voucherNo}</td></tr>
+      <tr><th>Transaction Type</th><td>${type.toUpperCase()}</td></tr>
+      <tr><th>Date</th><td>${formatDateIndian(item.created_at)}</td></tr>
+      <tr><th>Name / Note</th><td>${item.name || item.note || "-"}</td></tr>
+      <tr><th>Payment Mode</th><td>${mode}</td></tr>
+      <tr><th>Gross Amount</th><td>₹${gross.toFixed(2)}</td></tr>
+      <tr><th>Fees / Charges</th><td>₹${fees.toFixed(2)}</td></tr>
+      <tr><th>Net Amount</th><td>₹${net.toFixed(2)}</td></tr>
+    </table>
 
-          <div class="signature-section">
+    <div class="signature-section">
 
-            <div class="sign-box">
-              <div class="sign-line"></div>
-              Prepared By
-            </div>
+      <div class="sign-box">
+        <div class="sign-line"></div>
+        Prepared By
+      </div>
 
-            <div class="sign-box">
-              <img src="signature.png" class="auth-sign"><br>
-              <div class="sign-line"></div>
-              Authorized Signature
-            </div>
+      <div class="sign-box">
+        <!-- SIGNATURE -->
+        <img src="https://www.sefdahod.in/signature.png" class="auth-sign"><br>
+        <div class="sign-line"></div>
+        Authorized Signature
+      </div>
 
           </div>
 
