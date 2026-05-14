@@ -324,6 +324,9 @@ function printVoucher(type, id) {
       ? "Kotak Bank"
       : "Cash";
 
+  const logoUrl = "https://www.sefdahod.in/logo.png";
+  const signUrl = "https://www.sefdahod.in/signature.png";
+
   const win = window.open("", "", "width=1100,height=900");
 
   win.document.write(`
@@ -336,6 +339,8 @@ function printVoucher(type, id) {
             margin: 0;
             padding: 25px;
             background: #ffffff;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
 
           .voucher-container {
@@ -344,25 +349,26 @@ function printVoucher(type, id) {
             position: relative;
             min-height: 95vh;
             box-sizing: border-box;
+            overflow: hidden;
           }
 
           .watermark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 420px;
-  opacity: 0.03;
-  z-index: 0;
-}
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 420px;
+            opacity: 0.03;
+            z-index: 0;
+          }
 
           .top-bar {
             display: flex;
             justify-content: space-between;
             font-size: 14px;
             margin-bottom: 10px;
-            z-index: 2;
             position: relative;
+            z-index: 2;
           }
 
           .header {
@@ -372,10 +378,10 @@ function printVoucher(type, id) {
           }
 
           .header img {
-  width: 90px;
-  display: block;
-  margin: 0 auto 10px auto;
-}
+            width: 90px;
+            display: block;
+            margin: 0 auto 10px auto;
+          }
 
           .header h1 {
             margin: 8px 0 5px;
@@ -404,8 +410,8 @@ function printVoucher(type, id) {
           }
 
           th {
-            background: #16a34a;
-            color: white;
+            background: #16a34a !important;
+            color: white !important;
             width: 42%;
             text-align: center;
           }
@@ -447,67 +453,62 @@ function printVoucher(type, id) {
             z-index: 2;
           }
 
-         @media print {
-  body {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-.watermark {
-    opacity: 0.03 !important;
-    display: block !important;
-  }
-   .header img {
-    display: block !important;
-  }
-}
-          
+          @media print {
+            body {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+
+            .watermark {
+              display: block !important;
+              opacity: 0.03 !important;
+            }
+
+            .header img {
+              display: block !important;
+            }
+          }
         </style>
       </head>
 
       <body>
-        <body>
-  <div class="voucher-container">
+        <div class="voucher-container">
 
-    <!-- WATERMARK LOGO -->
-    <img src="https://www.sefdahod.in/logo.png" class="watermark">
+          <img src="${logoUrl}" class="watermark">
 
-    <div class="top-bar">
-      <div>${new Date().toLocaleString()}</div>
-      <div><b>Official Voucher</b></div>
-    </div>
+          <div class="top-bar">
+            <div>${new Date().toLocaleString()}</div>
+            <div><b>Official Voucher</b></div>
+          </div>
 
-    <!-- TOP HEADER LOGO -->
-    <div class="header">
-      <img src="https://www.sefdahod.in/logo.png">
-      <h1>Shubhi Education Foundation</h1>
-      <h2>Official NGO Finance Voucher</h2>
-    </div>
+          <div class="header">
+            <img src="${logoUrl}">
+            <h1>Shubhi Education Foundation</h1>
+            <h2>Official NGO Finance Voucher</h2>
+          </div>
 
-    <table>
-      <tr><th>Voucher No.</th><td>${voucherNo}</td></tr>
-      <tr><th>Transaction Type</th><td>${type.toUpperCase()}</td></tr>
-      <tr><th>Date</th><td>${formatDateIndian(item.created_at)}</td></tr>
-      <tr><th>Name / Note</th><td>${item.name || item.note || "-"}</td></tr>
-      <tr><th>Payment Mode</th><td>${mode}</td></tr>
-      <tr><th>Gross Amount</th><td>₹${gross.toFixed(2)}</td></tr>
-      <tr><th>Fees / Charges</th><td>₹${fees.toFixed(2)}</td></tr>
-      <tr><th>Net Amount</th><td>₹${net.toFixed(2)}</td></tr>
-    </table>
+          <table>
+            <tr><th>Voucher No.</th><td>${voucherNo}</td></tr>
+            <tr><th>Transaction Type</th><td>${type.toUpperCase()}</td></tr>
+            <tr><th>Date</th><td>${formatDateIndian(item.created_at)}</td></tr>
+            <tr><th>Name / Note</th><td>${item.name || item.note || "-"}</td></tr>
+            <tr><th>Payment Mode</th><td>${mode}</td></tr>
+            <tr><th>Gross Amount</th><td>₹${gross.toFixed(2)}</td></tr>
+            <tr><th>Fees / Charges</th><td>₹${fees.toFixed(2)}</td></tr>
+            <tr><th>Net Amount</th><td>₹${net.toFixed(2)}</td></tr>
+          </table>
 
-    <div class="signature-section">
+          <div class="signature-section">
+            <div class="sign-box">
+              <div class="sign-line"></div>
+              Prepared By
+            </div>
 
-      <div class="sign-box">
-        <div class="sign-line"></div>
-        Prepared By
-      </div>
-
-      <div class="sign-box">
-        <!-- SIGNATURE -->
-        <img src="https://www.sefdahod.in/signature.png" class="auth-sign"><br>
-        <div class="sign-line"></div>
-        Authorized Signature
-      </div>
-
+            <div class="sign-box">
+              <img src="${signUrl}" class="auth-sign"><br>
+              <div class="sign-line"></div>
+              Authorized Signature
+            </div>
           </div>
 
           <div class="footer">
@@ -520,7 +521,11 @@ function printVoucher(type, id) {
   `);
 
   win.document.close();
-  win.print();
+
+  win.onload = function () {
+    win.focus();
+    win.print();
+  };
 }
   
 let chart;
