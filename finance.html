@@ -237,29 +237,145 @@ async function deleteExpense(id){
   load();
 }
 
-/* EDIT FUNCTIONS */
-async function editIncome(id){
-  const newAmount = prompt("Enter new income amount:");
-  if(!newAmount || Number(newAmount) <= 0) return;
+/* IMPROVED EDIT INCOME */
+async function editIncome(id) {
+  const item = incomeData.find(i => Number(i.id) === Number(id));
+  if (!item) return alert("Income record not found");
+
+  const newAmount = prompt("Enter new income amount:", item.amount);
+  if (!newAmount || Number(newAmount) <= 0) return;
+
+  const newNote = prompt("Enter new income note:", item.note || "");
+  const newMode = prompt("Enter mode: cash / bob / kotak", item.mode || "cash");
 
   await client.from("income")
-    .update({ amount: Number(newAmount) })
+    .update({
+      amount: Number(newAmount),
+      note: newNote,
+      mode: newMode.toLowerCase()
+    })
     .eq("id", id);
 
   alert("Income updated successfully ✅");
   load();
 }
 
-async function editExpense(id){
-  const newAmount = prompt("Enter new expense amount:");
-  if(!newAmount || Number(newAmount) <= 0) return;
+/* IMPROVED EDIT EXPENSE */
+async function editExpense(id) {
+  const item = expenseData.find(e => Number(e.id) === Number(id));
+  if (!item) return alert("Expense record not found");
+
+  const newAmount = prompt("Enter new expense amount:", item.amount);
+  if (!newAmount || Number(newAmount) <= 0) return;
+
+  const newNote = prompt("Enter new expense note:", item.note || "");
+  const newMode = prompt("Enter mode: cash / bob / kotak", item.mode || "cash");
 
   await client.from("expenses")
-    .update({ amount: Number(newAmount) })
+    .update({
+      amount: Number(newAmount),
+      note: newNote,
+      mode: newMode.toLowerCase()
+    })
     .eq("id", id);
 
   alert("Expense updated successfully ✅");
   load();
+}
+
+/* FIXED VOUCHER PRINT */
+function printVoucher(type, id) {
+  let item = null;
+
+  if (type === "donation") {
+    item = donationsData.find(d => Number(d.id) === Number(id));
+  } else if (type === "income") {
+    item = incomeData.find(i => Number(i.id) === Number(id));
+  } else if (type === "expense") {
+    item = expenseData.find(e => Number(e.id) === Number(id));
+  }
+
+  if (!item) {
+    alert("Voucher data not found");
+    return;
+  }
+
+  const voucherNo =
+    type === "donation"
+      ? (item.receipt_no || "DN-" + item.id)
+      : type === "income"
+      ? "IN-" + item.id
+      : "EX-" + item.id;
+
+  const gross = Number(item.amount || 0);
+
+  const fees =
+    Number(item.gateway_fee || 0) +
+    Number(item.service_fee || 0) +
+    Number(item.gst || 0);
+
+  const net = gross - fees;
+
+  const mode =
+    type === "donation"
+      ? "Bank of Baroda"
+      : item.mode === "bob"
+      ? "Bank of Baroda"
+      : item.mode === "kotak"
+      ? "Kotak Bank"
+      : "Cash";
+
+  const win = window.open("", "", "width=900,height=800");
+
+  win.document.write(`
+    <html>
+      <head>
+        <title>Voucher Print</title>
+        <style>
+          body {
+            font-family: Arial;
+            padding: 30px;
+          }
+          h2, h3 {
+            text-align: center;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+          }
+          td, th {
+            border: 1px solid black;
+            padding: 10px;
+          }
+          th {
+            background: #16a34a;
+            color: white;
+          }
+        </style>
+      </head>
+      <body>
+
+        <h2>Shubhi Education Foundation</h2>
+        <h3>Official Voucher</h3>
+
+        <table>
+          <tr><th>Voucher No.</th><td>${voucherNo}</td></tr>
+          <tr><th>Type</th><td>${type}</td></tr>
+          <tr><th>Date</th><td>${formatDateIndian(item.created_at)}</td></tr>
+          <tr><th>Name / Note</th><td>${item.name || item.note || "-"}</td></tr>
+          <tr><th>Mode</th><td>${mode}</td></tr>
+          <tr><th>Gross Amount</th><td>₹${gross.toFixed(2)}</td></tr>
+          <tr><th>Fees</th><td>₹${fees.toFixed(2)}</td></tr>
+          <tr><th>Net Amount</th><td>₹${net.toFixed(2)}</td></tr>
+        </table>
+
+      </body>
+    </html>
+  `);
+
+  win.document.close();
+  win.print();
 }
   
 let chart;
