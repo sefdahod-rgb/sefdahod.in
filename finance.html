@@ -347,14 +347,14 @@ function printVoucher(type, id) {
           }
 
           .watermark {
-            position: absolute;
-            top: 48%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0.05;
-            width: 420px;
-            z-index: 0;
-          }
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 420px;
+  opacity: 0.03;
+  z-index: 0;
+}
 
           .top-bar {
             display: flex;
@@ -372,9 +372,10 @@ function printVoucher(type, id) {
           }
 
           .header img {
-            width: 90px;
-            margin-bottom: 8px;
-          }
+  width: 90px;
+  display: block;
+  margin: 0 auto 10px auto;
+}
 
           .header h1 {
             margin: 8px 0 5px;
@@ -446,11 +447,20 @@ function printVoucher(type, id) {
             z-index: 2;
           }
 
-          @media print {
-            body {
-              margin: 0;
-            }
-          }
+         @media print {
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+.watermark {
+    opacity: 0.03 !important;
+    display: block !important;
+  }
+   .header img {
+    display: block !important;
+  }
+}
+          
         </style>
       </head>
 
