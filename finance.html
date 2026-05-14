@@ -410,7 +410,27 @@ async function load() {
 
       ${balance >= 0 ? "📈 Profit ₹" + balance.toFixed(2) : "⚠️ Loss ₹" + Math.abs(balance).toFixed(2)}
     `;
+/* NGO AUDIT SUMMARY UPDATE */
+document.getElementById("auditDonation").innerText = "₹" + grossDonation.toFixed(2);
 
+document.getElementById("auditIncome").innerText =
+  "₹" + (cashIncome + bobIncome + kotakIncome).toFixed(2);
+
+document.getElementById("auditExpense").innerText =
+  "₹" + totalExpense.toFixed(2);
+
+document.getElementById("auditCash").innerText =
+  "₹" + finalCash.toFixed(2);
+
+document.getElementById("auditBob").innerText =
+  "₹" + finalBob.toFixed(2);
+
+document.getElementById("auditKotak").innerText =
+  "₹" + finalKotak.toFixed(2);
+
+document.getElementById("auditBalance").innerText =
+  "₹" + balance.toFixed(2);
+    
     /* REPORT TABLE */
     const table = document.getElementById("table");
 
