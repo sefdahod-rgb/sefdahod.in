@@ -111,6 +111,18 @@ nav a.active{
   font-weight:bold;
   margin:10px;
 }
+
+.visitor-box{
+  text-align:center;
+  background:#0f172a;
+  color:white;
+  padding:12px;
+  font-size:20px;
+  font-weight:bold;
+  border-radius:10px;
+  margin:15px;
+}
+  
 </style>
 
 </head>
@@ -221,7 +233,12 @@ We aspire to build a future that is educated, self-reliant, and socially respons
 
     </form>
   </div>
-
+  
+<div class="visitor-box">
+👥 Total Visitors:
+<span id="visitorCount">0</span>
+</div>
+  
   <!-- NEWS BOX -->
   <div class="news-box">
 
@@ -327,6 +344,18 @@ async function loadNewsTicker(){
 }
 
 loadNewsTicker();
+
+  let count = localStorage.getItem("visitorCount");
+
+if(!count){
+  count = 1;
+}else{
+  count = Number(count) + 1;
+}
+
+localStorage.setItem("visitorCount", count);
+
+document.getElementById("visitorCount").innerText = count;
 </script>
   </div>
 
