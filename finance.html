@@ -168,9 +168,64 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <div class="box">
   <h3>📑 NGO Audit Summary</h3>
   <table>
-    <tr><th>Opening Cash</th><td id="auditOpenCash">₹0</td></tr>
-    <tr><th>Opening Bank of Baroda</th><td id="auditOpenBob">₹0</td></tr>
-    <tr><th>Opening Kotak Bank</th><td id="auditOpenKotak">₹0</td></tr>
+    <table width="100%" border="1" cellpadding="10">
+
+<tr>
+<th>Particular</th>
+<th>Amount</th>
+</tr>
+
+<tr>
+<td>Opening Cash</td>
+<td id="auditOpenCash">₹0</td>
+</tr>
+
+<tr>
+<td>Opening Bank of Baroda</td>
+<td id="auditOpenBob">₹0</td>
+</tr>
+
+<tr>
+<td>Opening Kotak Bank</td>
+<td id="auditOpenKotak">₹0</td>
+</tr>
+
+<tr>
+<td>Total Donation</td>
+<td id="auditDonation">₹0</td>
+</tr>
+
+<tr>
+<td>Total Income</td>
+<td id="auditIncome">₹0</td>
+</tr>
+
+<tr>
+<td>Total Expense</td>
+<td id="auditExpense">₹0</td>
+</tr>
+
+<tr>
+<td>Closing Cash</td>
+<td id="auditCash">₹0</td>
+</tr>
+
+<tr>
+<td>Closing BOB</td>
+<td id="auditBob">₹0</td>
+</tr>
+
+<tr>
+<td>Closing Kotak</td>
+<td id="auditKotak">₹0</td>
+</tr>
+
+<tr>
+<td><b>Final Balance</b></td>
+<td id="auditBalance"><b>₹0</b></td>
+</tr>
+
+</table>
 
     <tr><th>Total Donation</th><td id="auditDonation">₹0</td></tr>
     <tr><th>Gateway Fees</th><td id="auditFees">₹0</td></tr>
@@ -907,20 +962,7 @@ expenses.forEach(e => {
     console.error(err);
     alert("Data loading error: " + err.message);
   }
-  <tr>
-<td>Opening Cash</td>
-<td id="auditOpenCash">₹0</td>
-</tr>
-
-<tr>
-<td>Opening Bank of Baroda</td>
-<td id="auditOpenBob">₹0</td>
-</tr>
-
-<tr>
-<td>Opening Kotak Bank</td>
-<td id="auditOpenKotak">₹0</td>
-</tr>
+  
 }
 
 /* =========================
