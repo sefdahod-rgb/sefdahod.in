@@ -547,10 +547,24 @@ function logout() {
    OPENING BALANCE
 ========================= */
 function saveOpening() {
-  localStorage.setItem("open_cash", document.getElementById("open_cash").value || 0);
-  localStorage.setItem("open_bob", document.getElementById("open_bob").value || 0);
-  localStorage.setItem("open_kotak", document.getElementById("open_kotak").value || 0);
-  alert("Opening balance saved successfully ✅");
+
+  localStorage.setItem(
+    "openingCash",
+    document.getElementById("open_cash").value || 0
+  );
+
+  localStorage.setItem(
+    "openingBOB",
+    document.getElementById("open_bob").value || 0
+  );
+
+  localStorage.setItem(
+    "openingKotak",
+    document.getElementById("open_kotak").value || 0
+  );
+
+  alert("Opening Balance Saved Successfully ✅");
+
   load();
 }
 
@@ -667,9 +681,14 @@ async function load() {
     let kotakExpense = 0;
 
     // Opening Balances
-let openingCash = Number(localStorage.getItem("openingCash")) || 0;
-let openingBOB = Number(localStorage.getItem("openingBOB")) || 0;
-let openingKotak = Number(localStorage.getItem("openingKotak")) || 0;
+let openingCash =
+Number(localStorage.getItem("openingCash")) || 0;
+
+let openingBOB =
+Number(localStorage.getItem("openingBOB")) || 0;
+
+let openingKotak =
+Number(localStorage.getItem("openingKotak")) || 0;
 
     /* DONATIONS */
     donations.forEach(d => {
@@ -707,9 +726,20 @@ let openingKotak = Number(localStorage.getItem("openingKotak")) || 0;
     });
 
     /* FINAL BALANCE */
-    const finalCash = (Number(localStorage.getItem("open_cash")) || 0) + cashIncome - cashExpense;
-    const finalBob = (Number(localStorage.getItem("open_bob")) || 0) + bobIncome - bobExpense;
-    const finalKotak = (Number(localStorage.getItem("open_kotak")) || 0) + kotakIncome - kotakExpense;
+    const finalCash =
+  openingCash +
+  cashIncome -
+  cashExpense;
+
+const finalBob =
+  openingBOB +
+  bobIncome -
+  bobExpense;
+
+const finalKotak =
+  openingKotak +
+  kotakIncome -
+  kotakExpense;
 
     const totalIncome = cashIncome + bobIncome + kotakIncome;
     const totalExpense = cashExpense + bobExpense + kotakExpense;
@@ -877,6 +907,20 @@ expenses.forEach(e => {
     console.error(err);
     alert("Data loading error: " + err.message);
   }
+  <tr>
+<td>Opening Cash</td>
+<td id="auditOpenCash">₹0</td>
+</tr>
+
+<tr>
+<td>Opening Bank of Baroda</td>
+<td id="auditOpenBob">₹0</td>
+</tr>
+
+<tr>
+<td>Opening Kotak Bank</td>
+<td id="auditOpenKotak">₹0</td>
+</tr>
 }
 
 /* =========================
