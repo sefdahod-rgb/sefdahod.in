@@ -666,6 +666,11 @@ async function load() {
     let bobExpense = 0;
     let kotakExpense = 0;
 
+    // Opening Balances
+let openingCash = Number(localStorage.getItem("openingCash")) || 0;
+let openingBOB = Number(localStorage.getItem("openingBOB")) || 0;
+let openingKotak = Number(localStorage.getItem("openingKotak")) || 0;
+
     /* DONATIONS */
     donations.forEach(d => {
       const gross = Number(d.amount || 0);
@@ -729,9 +734,18 @@ async function load() {
       Bank of Baroda: ₹${finalBob.toFixed(2)}<br>
       Kotak Bank: ₹${finalKotak.toFixed(2)}<br><br>
 
-      ${balance >= 0 ? "📈 Profit ₹" + balance.toFixed(2) : "⚠️ Loss ₹" + Math.abs(balance).toFixed(2)}
+           ${balance >= 0 ? "📈 Profit ₹" + balance.toFixed(2) : "⚠️ Loss ₹" + Math.abs(balance).toFixed(2)}
     `;
 /* NGO AUDIT SUMMARY UPDATE */
+document.getElementById("auditOpenCash").innerText =
+"₹" + openingCash.toFixed(2);
+
+document.getElementById("auditOpenBob").innerText =
+"₹" + openingBOB.toFixed(2);
+
+document.getElementById("auditOpenKotak").innerText =
+"₹" + openingKotak.toFixed(2);
+    
 document.getElementById("auditDonation").innerText = "₹" + grossDonation.toFixed(2);
 
 document.getElementById("auditIncome").innerText =
