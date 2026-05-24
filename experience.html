@@ -327,7 +327,36 @@ Print
 
 /* ADD */
 
-async function addExperience(){
+async function addExperience() {
+
+const photoFile =
+document.getElementById("photo").files[0];
+
+let photoUrl = "";
+
+if(photoFile){
+
+const fileName =
+Date.now() + "_" + photoFile.name;
+
+const { error: uploadError } =
+await client.storage
+.from("experience")
+.upload(fileName, photoFile);
+
+if(!uploadError){
+
+photoUrl =
+client.storage
+.from("experience")
+.getPublicUrl(fileName)
+.data.publicUrl;
+
+}
+
+}
+
+}
 
 const name =
 document.getElementById("name").value.trim();
@@ -347,11 +376,7 @@ document.getElementById("joining_date").value;
 const ending_date =
 document.getElementById("ending_date").value;
 
-  const photoFile =
-document.getElementById("photo").files[0];
-
-let photoUrl = "";
-
+ 
 const salary =
 Number(document.getElementById("salary").value) || 0;
 
