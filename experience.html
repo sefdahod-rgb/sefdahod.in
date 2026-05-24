@@ -329,32 +329,36 @@ Print
 
 async function addExperience() {
 
-  const name =
-    document.getElementById("name").value;
+  const name = document.getElementById("name").value.trim();
 
-  const role =
-    document.getElementById("role").value;
+  const designation = document.getElementById("designation").value.trim();
 
-  const from_date =
-    document.getElementById("from_date").value;
+  const type = document.getElementById("type").value;
 
-  const to_date =
-    document.getElementById("to_date").value;
+  const joining_date = document.getElementById("joining_date").value;
+
+  const ending_date = document.getElementById("ending_date").value;
+
+  const salary =
+    Number(document.getElementById("salary").value) || 0;
 
   const remarks =
-    document.getElementById("remarks").value;
+    document.getElementById("remarks").value.trim();
 
   const photoFile =
     document.getElementById("photo").files[0];
 
-  if (!name || !role || !from_date || !to_date) {
-    alert("Fill all fields");
+  if (!name || !designation || !joining_date) {
+
+    alert("Please fill required fields");
+
     return;
   }
 
   let photoUrl = "";
 
   /* PHOTO UPLOAD */
+
   if (photoFile) {
 
     const fileName =
@@ -375,61 +379,42 @@ async function addExperience() {
     }
   }
 
-  /* INSERT DATA */
+  const experience_no =
+    "EXP-" + Date.now();
+
+  /* SAVE DATA */
+
   const { error } =
     await client
       .from("experiences")
       .insert([{
+
+        experience_no,
         name,
-        role,
-        from_date,
-        to_date,
+        designation,
+        type,
+        joining_date,
+        ending_date,
+        salary,
         remarks,
         photo: photoUrl
+
       }]);
 
   if (error) {
-    alert("Failed to create");
+
     console.log(error);
+
+    alert("Failed to create");
+
     return;
   }
 
-  alert("Experience Certificate Created");
+  alert("Experience Certificate Created ✅");
 
-  loadExperiences();
-
-}
-
-const experience_no =
-"EXP-" + Date.now();
-
-const { error } = await client
-.from("experiences")
-.insert([{
-
-experience_no,
-name,
-email,
-type,
-designation,
-joining_date,
-ending_date,
-salary,
-remarks
-
-}]);
-
-if(error){
-
-console.log(error);
-
-alert("Failed to create");
-
-return;
+  load();
 
 }
-
-alert("Experience Certificate Created ✅");
 
 document.getElementById("name").value = "";
 document.getElementById("email").value = "";
