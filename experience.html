@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Experience Letter</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+body{
+    font-family: Arial;
+    background:#f3f4f6;
+    padding:30px;
+}
+
+.letter-box{
+    width:900px;
+    margin:auto;
+    background:white;
+    padding:50px;
+    border:3px solid #166534;
+    position:relative;
+}
+
+.watermark{
+    position:absolute;
+    top:220px;
+    left:180px;
+    width:450px;
+    opacity:0.05;
+    z-index:0;
+}
+
+.header{
+    text-align:center;
+    position:relative;
+    z-index:2;
+}
+
+.header img{
+    width:90px;
+}
+
+.header h1{
+    margin:10px 0 5px;
+    color:#14532d;
+    font-size:42px;
+}
+
+.header h2{
+    margin:0;
+    font-size:28px;
+}
+
+.header p{
+    margin-top:10px;
+    font-size:16px;
+}
+
+hr{
+    margin-top:20px;
+    border:1px solid #ccc;
+}
+
+.content{
+    margin-top:50px;
+    position:relative;
+    z-index:2;
+}
+
+.content p{
+    font-size:20px;
+    line-height:36px;
+    text-align:justify;
+}
+
+.sign-section{
+    margin-top:100px;
+    display:flex;
+    justify-content:space-between;
+    position:relative;
+    z-index:2;
+}
+
+.sign-box{
+    width:250px;
+    text-align:center;
+}
+
+.sign-line{
+    border-top:2px solid black;
+    margin-top:10px;
+    padding-top:5px;
+}
+
+.auth-sign{
+    width:130px;
+}
+
+.footer{
+    margin-top:70px;
+    text-align:center;
+    font-size:14px;
+    color:#444;
+    position:relative;
+    z-index:2;
+}
+
+.print-btn{
+    background:#16a34a;
+    color:white;
+    border:none;
+    padding:12px 25px;
+    font-size:18px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-bottom:20px;
+}
+
+@media print{
+
+.print-btn{
+display:none;
+}
+
+body{
+background:white;
+padding:0;
+}
+
+.letter-box{
+border:none;
+width:100%;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<script>
+if(localStorage.getItem("isAdmin")!=="yes"){
+  localStorage.setItem("redirectAfterLogin","experience.html");
+  location.href="login.html";
+}
+</script>
+
+<center>
+<button class="print-btn" onclick="window.print()">
+🖨 Print Experience Letter
+</button>
+</center>
+
+<div class="letter-box">
+
+<img src="logo.png" class="watermark">
+
+<div class="header">
+
+<img src="logo.png">
+
+<h1>Rainbow Public School</h1>
+
+<h2>Official Experience Letter</h2>
+
+<p>
+Shubhi Education Foundation
+</p>
+
+
+<p>
+Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD
+</p>
+
+<hr>
+
+</div>
+
+<nav>
+  <a href="admin.html">Admin</a>
+  <a href="members.html">Members</a>
+  <a href="index.html">Home</a>
+  <a href="#" onclick="logout()">Logout</a>
+</nav>
+
+<div class="content">
+
+<p style="text-align:right;">
+Date: 13-05-2026
+</p>
+
+<p>
+To Whom It May Concern,
+</p>
+
+<p>
+
+This is to certify that 
+<b>Rahul Kumar</b> 
+has successfully worked with 
+<b>Shubhi Education Foundation</b> 
+as a 
+<b>Account Assistant</b> 
+from 
+<b>01-01-2025</b> 
+to 
+<b>01-01-2026</b>.
+
+During the employment period, the employee performed duties sincerely, honestly, and responsibly. Their work performance and behavior were found satisfactory.
+
+We appreciate the contribution made by the employee towards the organization and wish them a successful and bright future ahead.
+
+</p>
+
+</div>
+
+<div class="sign-section">
+
+<div class="sign-box">
+
+<div class="sign-line"></div>
+Prepared By
+
+</div>
+
+<div class="sign-box">
+
+<img src="signature.png" class="auth-sign">
+
+<div class="sign-line"></div>
+Authorized Signature
+
+</div>
+
+</div>
+
+<div class="footer">
+
+SEF Dahod NGO ERP System | www.sefdahod.in
+
+</div>
+/* LOGOUT */
+function logout() {
+  localStorage.clear();
+  location.href = "index.html";
+}
+
+</div>
+
+</body>
+</html>
