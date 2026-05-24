@@ -417,15 +417,16 @@ async function addExperience(){
 
       }]);
 
-  if(error){
+ if(error){
 
-    console.log(error);
+  console.log(error);
 
-    alert("Failed to create");
+  alert(error.message);
 
-    return;
-  }
+  return;
+}
 
+    
   alert("Experience Certificate Created ✅");
 
   /* CLEAR FORM */
