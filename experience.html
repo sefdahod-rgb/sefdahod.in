@@ -195,7 +195,7 @@ Print
 
 </div>
 
-<script>
+  <script>
 
 const client = supabase.createClient(
 "https://kqahcvaoxnmxfcgyyync.supabase.co",
@@ -204,140 +204,152 @@ const client = supabase.createClient(
 
 let allExperiences = [];
 
+/* DATE FORMAT */
+
 function formatDate(date){
 
   if(!date) return "-";
 
   const d = new Date(date);
 
-  const day = String(d.getDate()).padStart(2,'0');
+  const day =
+    String(d.getDate()).padStart(2,"0");
 
-  const month = String(d.getMonth()+1).padStart(2,'0');
+  const month =
+    String(d.getMonth()+1).padStart(2,"0");
 
-  const year = d.getFullYear();
+  const year =
+    d.getFullYear();
 
-  return day + "-" + month + "-" + year;
+  return `${day}-${month}-${year}`;
 }
 
-/* LOAD */
+/* LOAD DATA */
 
 async function load(){
 
-const { data, error } = await client
-.from("experiences")
-.select("*")
-.order("id",{ascending:false});
+  const { data, error } =
+    await client
+      .from("experiences")
+      .select("*")
+      .order("id",{ascending:false});
 
-if(error){
+  if(error){
 
-console.log(error);
+    console.log(error);
 
-alert("Error loading experiences");
+    alert("Error loading data");
 
-return;
+    return;
+  }
 
+  allExperiences = data || [];
+
+  render(allExperiences);
 }
 
-allExperiences = data || [];
-
-render(allExperiences);
-
-}
-
-/* RENDER */
+/* RENDER TABLE */
 
 function render(data){
 
-const table = document.getElementById("table");
+  const table =
+    document.getElementById("table");
 
-table.innerHTML = `
-<tr>
-<th>Certificate No</th>
-<th>Name</th>
-<th>Photo</th>
-<th>Type</th>
-<th>Designation</th>
-<th>Joining</th>
-<th>Ending</th>
-<th>Salary</th>
-<th>Actions</th>
-</tr>
-`;
+  table.innerHTML = `
+  <tr>
+    <th>Certificate No</th>
+    <th>Name</th>
+    <th>Photo</th>
+    <th>Type</th>
+    <th>Designation</th>
+    <th>Joining</th>
+    <th>Ending</th>
+    <th>Salary</th>
+    <th>Actions</th>
+  </tr>
+  `;
 
-if(data.length===0){
+  if(data.length===0){
 
-table.innerHTML += `
-<tr>
-<td colspan="9">No Data Found</td>
-</tr>
-`;
+    table.innerHTML += `
+    <tr>
+      <td colspan="9">
+        No Data Found
+      </td>
+    </tr>
+    `;
 
-return;
+    return;
+  }
+
+  data.forEach(a=>{
+
+    table.innerHTML += `
+    <tr>
+
+      <td>${a.experience_no || "-"}</td>
+
+      <td>${a.name || "-"}</td>
+
+      <td>
+        ${
+          a.photo
+          ? `<img src="${a.photo}" width="55" height="65"
+               style="object-fit:cover;border-radius:8px;">`
+          : "-"
+        }
+      </td>
+
+      <td>${a.type || "-"}</td>
+
+      <td>${a.designation || "-"}</td>
+
+      <td>${formatDate(a.joining_date)}</td>
+
+      <td>${formatDate(a.ending_date)}</td>
+
+      <td>₹${a.salary || 0}</td>
+
+      <td>
+
+        <button onclick="editExperience(${a.id})">
+          Edit
+        </button>
+
+        <button onclick="deleteExperience(${a.id})">
+          Delete
+        </button>
+
+        <button onclick="printExperience(${a.id})">
+          Print
+        </button>
+
+      </td>
+
+    </tr>
+    `;
+  });
 
 }
 
-data.forEach(a=>{
+/* ADD EXPERIENCE */
 
-table.innerHTML += `
-<tr>
+async function addExperience(){
 
-<td>${a.experience_no || "-"}</td>
+  const name =
+    document.getElementById("name").value.trim();
 
-<td>${a.name || "-"}</td>
+  const designation =
+    document.getElementById("designation").value.trim();
 
-<td>
-${a.photo
-? `<img src="${a.photo}" width="50" height="60" style="object-fit:cover;border-radius:6px;">`
-: "-"
-}
-</td>
+  const type =
+    document.getElementById("type").value;
 
-<td>${a.type || "-"}</td>
+  const joining_date =
+    document.getElementById("joining_date").value;
 
-<td>${a.designation || "-"}</td>
-
-<td>${formatDate(a.joining_date)}</td>
-
-<td>${formatDate(a.ending_date)}</td>
-
-<td>₹${a.salary || 0}</td>
-
-<td>
-
-<button onclick="editExperience(${a.id})">
-Edit
-</button>
-
-<button onclick="deleteExperience(${a.id})">
-Delete
-</button>
-
-<button onclick="printExperience(${a.id})">
-Print
-</button>
-
-</td>
-
-</tr>
-`;
-
-});
-
-}
-
-/* ADD */
-
-async function addExperience() {
-
-  const name = document.getElementById("name").value.trim();
-
-  const designation = document.getElementById("designation").value.trim();
-
-  const type = document.getElementById("type").value;
-
-  const joining_date = document.getElementById("joining_date").value;
-
-  const ending_date = document.getElementById("ending_date").value;
+  const ending_date =
+    document.getElementById("ending_date").value;
 
   const salary =
     Number(document.getElementById("salary").value) || 0;
@@ -348,7 +360,7 @@ async function addExperience() {
   const photoFile =
     document.getElementById("photo").files[0];
 
-  if (!name || !designation || !joining_date) {
+  if(!name || !designation || !joining_date){
 
     alert("Please fill required fields");
 
@@ -359,7 +371,7 @@ async function addExperience() {
 
   /* PHOTO UPLOAD */
 
-  if (photoFile) {
+  if(photoFile){
 
     const fileName =
       Date.now() + "_" + photoFile.name;
@@ -369,7 +381,11 @@ async function addExperience() {
         .from("experience")
         .upload(fileName, photoFile);
 
-    if (!uploadError) {
+    if(uploadError){
+
+      console.log(uploadError);
+
+    }else{
 
       photoUrl =
         client.storage
@@ -382,7 +398,7 @@ async function addExperience() {
   const experience_no =
     "EXP-" + Date.now();
 
-  /* SAVE DATA */
+  /* SAVE */
 
   const { error } =
     await client
@@ -401,7 +417,7 @@ async function addExperience() {
 
       }]);
 
-  if (error) {
+  if(error){
 
     console.log(error);
 
@@ -412,334 +428,340 @@ async function addExperience() {
 
   alert("Experience Certificate Created ✅");
 
+  /* CLEAR FORM */
+
+  document.getElementById("name").value = "";
+  document.getElementById("designation").value = "";
+  document.getElementById("joining_date").value = "";
+  document.getElementById("ending_date").value = "";
+  document.getElementById("salary").value = "";
+  document.getElementById("remarks").value = "";
+  document.getElementById("photo").value = "";
+
   load();
-
 }
-
-document.getElementById("name").value = "";
-document.getElementById("email").value = "";
-document.getElementById("designation").value = "";
-document.getElementById("joining_date").value = "";
-document.getElementById("ending_date").value = "";
-document.getElementById("salary").value = "";
-document.getElementById("remarks").value = "";
-
-load();
 
 /* DELETE */
 
 async function deleteExperience(id){
 
-if(!confirm("Delete this certificate?")) return;
+  if(!confirm("Delete this certificate?"))
+    return;
 
-await client
-.from("experiences")
-.delete()
-.eq("id",id);
+  await client
+    .from("experiences")
+    .delete()
+    .eq("id",id);
 
-load();
-
+  load();
 }
 
-if(photoFile){
-
-const fileName =
-Date.now() + "_" + photoFile.name;
-
-const { error: uploadError } =
-await client.storage
-.from("experience")
-.upload(fileName, photoFile);
-
-if(!uploadError){
-
-photoUrl =
-client.storage
-.from("experience")
-.getPublicUrl(fileName)
-.data.publicUrl;
-
-}
-
-}
-  
 /* EDIT */
 
 async function editExperience(id){
 
-const a =
-allExperiences.find(x=>x.id===id);
+  const a =
+    allExperiences.find(x=>x.id===id);
 
-if(!a) return;
+  if(!a) return;
 
-const newName =
-prompt("Name",a.name);
+  const newName =
+    prompt("Name",a.name);
 
-if(!newName) return;
+  if(!newName) return;
 
-const newDesignation =
-prompt("Designation",a.designation);
+  const newDesignation =
+    prompt("Designation",a.designation);
 
-const newSalary =
-prompt("Salary",a.salary);
+  const newSalary =
+    prompt("Salary",a.salary);
 
-await client
-.from("experiences")
-.update({
+  await client
+    .from("experiences")
+    .update({
 
-name:newName,
-designation:newDesignation,
-salary:newSalary
+      name:newName,
+      designation:newDesignation,
+      salary:newSalary
 
-})
-.eq("id",id);
+    })
+    .eq("id",id);
 
-load();
-
+  load();
 }
 
 /* PRINT */
 
 function printExperience(id){
 
-const a =
-allExperiences.find(x=>x.id===id);
+  const a =
+    allExperiences.find(x=>x.id===id);
 
-if(!a) return;
+  if(!a) return;
 
-const w = window.open("","_blank");
+  const w =
+    window.open("","_blank");
 
-w.document.write(`
+  w.document.write(`
 
-<html>
+  <html>
 
-<head>
+  <head>
 
-<title>Experience Certificate</title>
+  <title>Experience Certificate</title>
 
-<style>
+  <style>
 
-bodybody{
-  font-family:Georgia,serif;
-  background:#dcfce7;
-  padding:10px;
-  margin:0;
+  body{
+    font-family:Georgia,serif;
+    background:#dcfce7;
+    padding:10px;
+    margin:0;
+  }
+
+  .letter{
+    max-width:820px;
+    margin:auto;
+    background:white;
+    padding:25px 35px;
+    border:4px solid #22c55e;
+    position:relative;
+  }
+
+  .watermark{
+    position:absolute;
+    top:45%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:320px;
+    opacity:0.05;
+  }
+
+  .header{
+    text-align:center;
+    border-bottom:3px solid #16a34a;
+    padding-bottom:15px;
+  }
+
+  .header img{
+    width:80px;
+  }
+
+  .title{
+    color:#16a34a;
+    font-size:32px;
+    font-weight:bold;
+    text-decoration:underline;
+  }
+
+  .candidate-photo{
+    width:110px;
+    height:130px;
+    object-fit:cover;
+    border-radius:10px;
+    border:2px solid #16a34a;
+  }
+
+  button{
+    padding:10px 20px;
+    background:#16a34a;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    margin-top:20px;
+  }
+
+  @page{
+    size:A4;
+    margin:10mm;
+  }
+
+  @media print{
+
+    body{
+      background:white;
+    }
+
+    button{
+      display:none;
+    }
+  }
+
+  </style>
+
+  </head>
+
+  <body>
+
+  <div class="letter">
+
+    <img src="logo.png" class="watermark">
+
+    <div class="header">
+
+      <img src="logo.png">
+
+      <h1>Rainbow Public School</h1>
+
+      <p>
+        Shubhi Education Foundation, Dahod
+      </p>
+
+      <p>
+        Under Indian Society Act 1860
+        Guj./2249/DHD
+      </p>
+
+    </div>
+
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-top:25px;
+    ">
+
+      <div>
+
+        <div class="title">
+          Experience Certificate
+        </div>
+
+        <p>
+          <b>Certificate No:</b>
+          ${a.experience_no}
+        </p>
+
+        <p>
+          <b>Date:</b>
+          ${formatDate(new Date())}
+        </p>
+
+      </div>
+
+      ${
+        a.photo
+        ? `<img src="${a.photo}" class="candidate-photo">`
+        : ""
+      }
+
+    </div>
+
+    <div style="
+      margin-top:35px;
+      font-size:18px;
+      line-height:1.9;
+    ">
+
+      <p>
+
+        To,
+        <br>
+
+        <b>${a.name}</b>
+
+      </p>
+
+      <p>
+
+        This is to certify that
+        <b>${a.name}</b>
+        worked with
+        <b>Shubhi Education Foundation</b>
+        as
+        <b>${a.designation}</b>
+        under
+        <b>${a.type}</b> role.
+
+      </p>
+
+      <p>
+
+        The employee served from
+        <b>${formatDate(a.joining_date)}</b>
+        to
+        <b>${formatDate(a.ending_date)}</b>.
+
+      </p>
+
+      <p>
+
+        During the working period,
+        the employee performed duties
+        sincerely, honestly and responsibly.
+
+      </p>
+
+      <p>
+
+        We appreciate the contribution
+        and wish a bright future ahead.
+
+      </p>
+
+      <div style="
+        text-align:right;
+        margin-top:60px;
+      ">
+
+        <img src="signature.png" width="140">
+
+        <br>
+
+        Authorized Signature
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <center>
+
+    <button onclick="window.print()">
+      Print / Download
+    </button>
+
+  </center>
+
+  </body>
+
+  </html>
+
+  `);
+
 }
 
-.letter{
-  max-width:820px;
-  margin:auto;
-  background:white;
-  padding:25px 35px;
-  border:4px solid #22c55e;
-  position:relative;
-  min-height:auto;
-}
-
-.watermark{
-position:absolute;
-top:45%;
-left:50%;
-transform:translate(-50%,-50%);
-width:320px;
-opacity:0.05;
-}
-
-.header{
-text-align:center;
-border-bottom:3px solid #16a34a;
-padding-bottom:15px;
-}
-
-.header img{
-width:80px;
-}
-
-.title{
-color:#16a34a;
-font-size:32px;
-font-weight:bold;
-text-decoration:underline;
-}
-
-button{
-padding:10px 20px;
-background:#16a34a;
-color:white;
-border:none;
-border-radius:8px;
-cursor:pointer;
-margin-top:20px;
-}
-
-@page{
-  size:A4;
-  margin:10mm;
-}
-
-@media print{
-
-body{
-  background:white;
-}
-
-button{
-  display:none;
-}
-
-.letter{
-  border:4px solid #22c55e;
-  box-shadow:none;
-  page-break-after:auto;
-}
-
-}
-
-</style>
-
-</head>
-
-<body>
-
-<div class="letter">
-
-<img src="logo.png" class="watermark">
-
-<div class="header">
-
-<img src="logo.png">
-
-<h1>Rainbow Public School</h1>
-
-<p>Shubhi Education Foundation, Dahod</p>
-
-<p>
-Under Indian Society Act 1860 Guj./2249/DHD
-</p>
-
-</div>
-
-<div style="margin-top:30px;">
-
-<div class="title">
-Experience Certificate
-</div>
-
-<p>
-<b>Certificate No:</b>
-${a.experience_no}
-</p>
-
-<p>
-<b>Date:</b>
-${formatDate(new Date())}
-</p>
-
-</div>
-
-<div style="margin-top:40px;font-size:18px;line-height:1.9;">
-
-<p>
-To,
-<br>
-<b>${a.name}</b>
-</p>
-
-<p>
-
-This is to certify that
-<b>${a.name}</b>
-worked with
-<b>Shubhi Education Foundation</b>
-as
-<b>${a.designation}</b>
-under
-<b>${a.type}</b> role.
-
-</p>
-
-<p>
-
-The employee served from
-<b>${formatDate(a.joining_date)}</b>
-to
-<b>${formatDate(a.ending_date)}</b>.
-
-</p>
-
-<p>
-
-During the working period,
-the employee performed duties sincerely,
-honestly and responsibly.
-
-</p>
-
-<p>
-
-We appreciate the contribution and
-wish a bright future ahead.
-
-</p>
-
-<div style="text-align:right;margin-top:60px;">
-
-<img src="signature.png" width="140">
-
-<br>
-
-Authorized Signature
-
-</div>
-
-</div>
-
-</div>
-
-<center>
-
-<button onclick="window.print()">
-Print / Download
-</button>
-
-</center>
-
-</body>
-
-</html>
-
-`);
-
-}
-
-/* EXPORT */
+/* EXPORT CSV */
 
 function exportCSV(){
 
-let csv =
-"Certificate No,Name,Type,Designation,Joining Date,Ending Date,Salary\n";
+  let csv =
+  "Certificate No,Name,Type,Designation,Joining Date,Ending Date,Salary\n";
 
-allExperiences.forEach(a=>{
+  allExperiences.forEach(a=>{
 
-csv +=
-`${a.experience_no},${a.name},${a.type},${a.designation},${formatDate(a.joining_date)},${formatDate(a.ending_date)},${a.salary}\n`;
+    csv +=
+    `${a.experience_no},${a.name},${a.type},${a.designation},${formatDate(a.joining_date)},${formatDate(a.ending_date)},${a.salary}\n`;
 
-});
+  });
 
-const blob =
-new Blob([csv],{type:"text/csv"});
+  const blob =
+    new Blob([csv],{
+      type:"text/csv"
+    });
 
-const link =
-document.createElement("a");
+  const link =
+    document.createElement("a");
 
-link.href =
-URL.createObjectURL(blob);
+  link.href =
+    URL.createObjectURL(blob);
 
-link.download =
-"experience_certificates.csv";
+  link.download =
+    "experience_certificates.csv";
 
-link.click();
-
+  link.click();
 }
 
 /* SEARCH */
@@ -747,20 +769,20 @@ link.click();
 document.getElementById("search")
 .addEventListener("input",function(){
 
-const val =
-this.value.toLowerCase();
+  const val =
+    this.value.toLowerCase();
 
-render(
+  render(
 
-allExperiences.filter(a=>
+    allExperiences.filter(a=>
 
-(a.name || "")
-.toLowerCase()
-.includes(val)
+      (a.name || "")
+      .toLowerCase()
+      .includes(val)
 
-)
+    )
 
-);
+  );
 
 });
 
@@ -768,10 +790,9 @@ allExperiences.filter(a=>
 
 function logout(){
 
-localStorage.clear();
+  localStorage.clear();
 
-location.href = "index.html";
-
+  location.href = "index.html";
 }
 
 /* START */
@@ -780,5 +801,3 @@ load();
 
 </script>
 
-</body>
-</html>
