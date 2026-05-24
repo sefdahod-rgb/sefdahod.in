@@ -347,6 +347,11 @@ document.getElementById("joining_date").value;
 const ending_date =
 document.getElementById("ending_date").value;
 
+  const photoFile =
+document.getElementById("photo").files[0];
+
+let photoUrl = "";
+
 const salary =
 Number(document.getElementById("salary").value) || 0;
 
@@ -419,6 +424,28 @@ load();
 
 }
 
+if(photoFile){
+
+const fileName =
+Date.now() + "_" + photoFile.name;
+
+const { error: uploadError } =
+await client.storage
+.from("experience")
+.upload(fileName, photoFile);
+
+if(!uploadError){
+
+photoUrl =
+client.storage
+.from("experience")
+.getPublicUrl(fileName)
+.data.publicUrl;
+
+}
+
+}
+  
 /* EDIT */
 
 async function editExperience(id){
@@ -475,19 +502,21 @@ w.document.write(`
 
 <style>
 
-body{
-font-family:Georgia,serif;
-background:#dcfce7;
-padding:20px;
+bodybody{
+  font-family:Georgia,serif;
+  background:#dcfce7;
+  padding:10px;
+  margin:0;
 }
 
 .letter{
-max-width:900px;
-margin:auto;
-background:white;
-padding:40px;
-border:4px solid #16a34a;
-position:relative;
+  max-width:820px;
+  margin:auto;
+  background:white;
+  padding:25px 35px;
+  border:4px solid #22c55e;
+  position:relative;
+  min-height:auto;
 }
 
 .watermark{
@@ -526,10 +555,27 @@ cursor:pointer;
 margin-top:20px;
 }
 
-@media print{
-button{
-display:none;
+@page{
+  size:A4;
+  margin:10mm;
 }
+
+@media print{
+
+body{
+  background:white;
+}
+
+button{
+  display:none;
+}
+
+.letter{
+  border:4px solid #22c55e;
+  box-shadow:none;
+  page-break-after:auto;
+}
+
 }
 
 </style>
