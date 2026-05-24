@@ -329,65 +329,74 @@ Print
 
 async function addExperience() {
 
-const photoFile =
-document.getElementById("photo").files[0];
+  const name =
+    document.getElementById("name").value;
 
-let photoUrl = "";
+  const role =
+    document.getElementById("role").value;
 
-if(photoFile){
+  const from_date =
+    document.getElementById("from_date").value;
 
-const fileName =
-Date.now() + "_" + photoFile.name;
+  const to_date =
+    document.getElementById("to_date").value;
 
-const { error: uploadError } =
-await client.storage
-.from("experience")
-.upload(fileName, photoFile);
+  const remarks =
+    document.getElementById("remarks").value;
 
-if(!uploadError){
+  const photoFile =
+    document.getElementById("photo").files[0];
 
-photoUrl =
-client.storage
-.from("experience")
-.getPublicUrl(fileName)
-.data.publicUrl;
+  if (!name || !role || !from_date || !to_date) {
+    alert("Fill all fields");
+    return;
+  }
 
-}
+  let photoUrl = "";
 
-}
+  /* PHOTO UPLOAD */
+  if (photoFile) {
 
-}
+    const fileName =
+      Date.now() + "_" + photoFile.name;
 
-const name =
-document.getElementById("name").value.trim();
+    const { error: uploadError } =
+      await client.storage
+        .from("experience")
+        .upload(fileName, photoFile);
 
-const email =
-document.getElementById("email").value.trim();
+    if (!uploadError) {
 
-const type =
-document.getElementById("type").value;
+      photoUrl =
+        client.storage
+          .from("experience")
+          .getPublicUrl(fileName)
+          .data.publicUrl;
+    }
+  }
 
-const designation =
-document.getElementById("designation").value.trim();
+  /* INSERT DATA */
+  const { error } =
+    await client
+      .from("experiences")
+      .insert([{
+        name,
+        role,
+        from_date,
+        to_date,
+        remarks,
+        photo: photoUrl
+      }]);
 
-const joining_date =
-document.getElementById("joining_date").value;
+  if (error) {
+    alert("Failed to create");
+    console.log(error);
+    return;
+  }
 
-const ending_date =
-document.getElementById("ending_date").value;
+  alert("Experience Certificate Created");
 
- 
-const salary =
-Number(document.getElementById("salary").value) || 0;
-
-const remarks =
-document.getElementById("remarks").value.trim();
-
-if(!name || !designation || !joining_date){
-
-alert("Please fill required fields");
-
-return;
+  loadExperiences();
 
 }
 
