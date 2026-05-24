@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Experiments Management - SEF Dahod</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{
+  margin:0;
+  font-family:Segoe UI,sans-serif;
+  background:#f3f4f6;
+}
+.header{
+  background:#7c3aed;
+  color:#fff;
+  text-align:center;
+  padding:15px;
+}
+.header img{
+  width:60px;
+}
+nav{
+  text-align:center;
+  padding:10px;
+  background:#6d28d9;
+}
+nav a{
+  color:#fff;
+  text-decoration:none;
+  margin:5px;
+  padding:8px 14px;
+  display:inline-block;
+  background:#7c3aed;
+  border-radius:6px;
+}
+.card{
+  background:#fff;
+  margin:15px;
+  padding:15px;
+  border-radius:10px;
+}
+input,select,textarea{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border:1px solid #ccc;
+  border-radius:6px;
+  box-sizing:border-box;
+}
+button{
+  padding:10px 15px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  background:#7c3aed;
+  color:#fff;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+th,td{
+  border:1px solid #ddd;
+  padding:8px;
+  text-align:center;
+}
+th{
+  background:#7c3aed;
+  color:#fff;
+}
+.search{
+  width:100%;
+}
+@media print{
+  nav,.no-print,button,input,select,textarea{
+    display:none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<script>
+if(localStorage.getItem("isAdmin")!=="yes"){
+  localStorage.setItem("redirectAfterLogin","experience.html");
+  location.href="login.html";
+}
+</script>
+
+<div class="header">
+  <img src="logo.png">
+  <h2>Rainbow Public School</h2>
+  <p>Shubhi Education Foundation, Dahod</p>
+  <p>Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD</p>
+  <p>Experience Management System</p>
+</div>
+
+<nav>
+  <a href="admin.html">Admin</a>
+  <a href="members.html">Members</a>
+  <a href="index.html">Home</a>
+  <a href="#" onclick="logout()">Logout</a>
+</nav>
+
+<div class="card">
+  <h3>Create Experience Certificate</h3>
+
+  <input type="text" id="name" placeholder="Candidate Name">
+  <input type="email" id="email" placeholder="Candidate Email">
+  <input type="file" id="photo" accept="image/*">
+
+  <select id="type">
+    <option value="Volunteer">Volunteer</option>
+    <option value="Staff">Staff</option>
+    <option value="Internship">Internship</option>
+    <option value="Project Coordinator">Project Coordinator</option>
+  </select>
+
+  <input type="text" id="designation" placeholder="Designation">
+  <input type="date" id="joining_date">
+  <input type="date" id="ending_date">
+  <input type="number" id="salary" placeholder="Salary / Stipend">
+
+  <textarea id="remarks" placeholder="Terms / Notes"></textarea>
+
+  <button onclick="addExperience()">Create Experience</button>
+</div>
+
+<div class="card">
+  <h3>Experience List</h3>
+
+  <input type="text" id="search" class="search" placeholder="Search Experience...">
+
+  <button onclick="exportCSV()" class="no-print">Export CSV</button>
+  <button onclick="window.print()" class="no-print">Print</button>
+
+  <table id="table"></table>
+</div>
+
+<script>
+const client = supabase.createClient(
+  "https://kqahcvaoxnmxfcgyyync.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+);
+
+let allExperiences = [];
+
+/* DATE FORMAT FUNCTION */
+function formatDate(dateString) {
+  if (!dateString) return "-";
+  return new Date(dateString).toLocaleDateString('en-GB');
+}
+
+/* LOAD EXPERIENCE */
+async function load() {
+  const { data, error } = await client
+    .from("experience")
+    .select("*")
+    .order("id", { ascending: false });
+
+  if (error) {
+    console.log(error);
+    alert("Error loading experiences");
+    return;
+  }
+
+  allExperiences = data || [];
+  render(allExperiences);
+}
+
+/* RENDER TABLE */
+function render(data) {
+  const table = document.getElementById("table");
+
+  table.innerHTML = `
+    <tr>
+      <th>Experience No</th>
+      <th>Name</th>
+      <th>Photo</th>
+      <th>Type</th>
+      <th>Designation</th>
+      <th>Joining Date</th>
+      <th>Salary</th>
+      <th>Actions</th>
+    </tr>
+  `;
+
+  if (!data || data.length === 0) {
+    table.innerHTML += `
+      <tr>
+        <td colspan="8">No Experiences found</td>
+      </tr>
+    `;
+    return;
+  }
+
+  data.forEach(a => {
+    table.innerHTML += `
+      <tr>
+        <td>${a.Experiences_no || "-"}</td>
+        <td>${a.name || "-"}</td>
+        <td>
+          ${
+            a.photo
+              ? `<img src="${a.photo}" width="50" height="60" style="object-fit:cover;border-radius:6px;">`
+              : "-"
+          }
+        </td>
+        <td>${a.type || "-"}</td>
+        <td>${a.designation || "-"}</td>
+        <td>${formatDate(a.joining_date)}</td>
+        <td>₹${a.salary || 0}</td>
+        <td>
+          <button onclick="editExperience(${a.id})">Edit</button>
+          <button onclick="deleteExperience(${a.id})">Delete</button>
+          <button onclick="printExperiences(${a.id})">Print</button>
+          <button onclick="sendEmail('${a.email || ""}','${a.name}','${a.Experience_no}')">Email</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+/* ADD EXPERIENCE */
+async function addExperiences() {
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const type = document.getElementById("type").value;
+  const designation = document.getElementById("designation").value.trim();
+  const joining_date = document.getElementById("joining_date").value;
+  const salary = Number(document.getElementById("salary").value) || 0;
+  const remarks = document.getElementById("remarks").value.trim();
+  const photoInput = document.getElementById("photo");
+  const photoFile = photoInput.files[0];
+
+  if (!name || !designation || !joining_date) {
+    alert("Please fill all required fields");
+    return;
+  }
+
+  let photoUrl = "";
+
+  if (photoFile) {
+    const fileExt = photoFile.name.split(".").pop();
+    const fileName = `experience_${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await client.storage
+      .from("experience-photos")
+      .upload(fileName, photoFile, { upsert: true });
+
+    if (uploadError) {
+      console.log(uploadError);
+      alert("Photo upload failed");
+      return;
+    }
+
+    const { data } = client.storage
+      .from("appointment-photos")
+      .getPublicUrl(fileName);
+
+    photoUrl = data.publicUrl;
+  }
+
+  const experience_no = "APP-" + Date.now();
+
+  const { error } = await client
+    .from("experiences")
+    .insert([
+      {
+        experience_no,
+        name,
+        email,
+        type,
+        designation,
+        joining_date,
+        salary,
+        remarks,
+        photo: photoUrl
+      }
+    ]);
+
+  if (error) {
+    console.log(error);
+    alert("Failed to create experience");
+    return;
+  }
+
+  alert("Experience created successfully ✅");
+
+  document.getElementById("name").value = "";
+  document.getElementById("email").value = "";
+  document.getElementById("designation").value = "";
+  document.getElementById("joining_date").value = "";
+  document.getElementById("ending_date").value = "";
+  document.getElementById("salary").value = "";
+  document.getElementById("remarks").value = "";
+  photoInput.value = "";
+
+  load();
+}
+
+/* DELETE */
+async function deleteExperience(id) {
+  if (!confirm("Delete this experience?")) return;
+
+  await client
+    .from("experiences")
+    .delete()
+    .eq("id", id);
+
+  load();
+}
+
+/* EDIT */
+async function editExperience(id) {
+  const ap = allExperiences.find(x => x.id === id);
+  if (!ap) return;
+
+  const newName = prompt("Name", ap.name);
+  if (!newName) return;
+
+  const newDesignation = prompt("Designation", ap.designation);
+  const newSalary = prompt("Salary", ap.salary);
+
+  await client
+    .from("experiences")
+    .update({
+      name: newName,
+      designation: newDesignation,
+      salary: newSalary
+    })
+    .eq("id", id);
+
+  load();
+}
+
+/* EMAIL */
+function sendEmail(email, name, no) {
+  if (!email) {
+    alert("Candidate email not available");
+    return;
+  }
+
+  const subject = `Experience Certificate - ${no}`;
+  const body =
+    `Dear ${name},%0D%0A%0D%0A` +
+    `Your appointment letter has been generated successfully.%0D%0A` +
+    `Appointment No: ${no}%0D%0A%0D%0A` +
+    `Regards,%0D%0AShubhi Education Foundation`;
+
+  window.open(`mailto:${email}?subject=${subject}&body=${body}`);
+}
+
+/* PRINT LETTER */
+function printExperience(id) {
+  const a = allExperiences.find(x => x.id === id);
+  if (!a) return;
+
+  const photo = a.photo || "user.png";
+
+  const w = window.open("", "_blank");
+
+  w.document.write(`
+    <html>
+    <head>
+      <title>Experience Certificate</title>
+      <style>
+        body {
+          font-family: Georgia, serif;
+          margin: 0;
+          padding: 20px;
+          background: #f3f4f6;
+        }
+        .letter {
+          max-width: 900px;
+          margin: auto;
+          background: white;
+          padding: 40px;
+          border: 4px solid #7c3aed;
+          position: relative;
+        }
+        .watermark {
+          position: absolute;
+          top: 45%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 300px;
+          opacity: 0.05;
+        }
+        .header {
+          text-align: center;
+          border-bottom: 3px solid #7c3aed;
+          padding-bottom: 15px;
+        }
+        .header img {
+          width: 75px;
+        }
+        .title {
+          color: #7c3aed;
+          font-size: 30px;
+          font-weight: bold;
+          text-decoration: underline;
+        }
+        .candidate-photo {
+          width: 120px;
+          height: 140px;
+          object-fit: cover;
+          border: 3px solid #7c3aed;
+          border-radius: 8px;
+        }
+        button {
+          margin-top: 20px;
+          padding: 10px 20px;
+          background: #16a34a;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+        }
+        @media print {
+          button { display: none; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="letter">
+        <img src="logo.png" class="watermark">
+
+        <div class="header">
+          <img src="logo.png">
+          <h1>Rainbow Public School</h1>
+          <p>Shubhi Education Foundation, Dahod</p>
+          <p>Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD</p>
+  
+        </div>
+
+        <div style="display:flex;justify-content:space-between;margin-top:25px;">
+          <div>
+            <div class="title">Experience Certificate</div>
+            <p><b>Appointment No:</b> ${a.appointment_no}</p>
+            <p><b>Date:</b> ${formatDate(new Date())}</p>
+          </div>
+          <img src="${photo}" class="candidate-photo">
+        </div>
+
+        <div style="margin-top:30px;font-size:18px;line-height:1.9;">
+          <p>To,<br><b>${a.name}</b></p>
+
+          <p>
+            We are pleased to appoint you as
+            <b>${a.designation}</b>
+            under the role of
+            <b>${a.type}</b>
+            effective from
+            <b>${formatDate(a.joining_date)}</b>.
+          </p>
+
+          <p><b>Salary / Stipend:</b> ₹${a.salary}</p>
+
+          <p>${a.remarks || ""}</p>
+
+          <p>
+            We welcome you to Shubhi Education Foundation and look
+            forward to your valuable contribution.
+          </p>
+
+          <div style="text-align:right;margin-top:50px;">
+            <img src="signature.png" width="150"><br>
+            Authorized Signature
+          </div>
+        </div>
+      </div>
+
+      <center>
+        <button onclick="window.print()">Print / Download</button>
+      </center>
+    </body>
+    </html>
+  `);
+}
+
+/* EXPORT CSV */
+function exportCSV() {
+  let csv = "Experience No,Name,Type,Designation,Joining Date,Salary\n";
+
+  allExperiences.forEach(a => {
+    csv += `${a.appointment_no},${a.name},${a.type},${a.designation},${formatDate(a.joining_date)},${formatDate(a.ending_date)}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const link = document.createElement("a");
+
+  link.href = URL.createObjectURL(blob);
+  link.download = "experiences.csv";
+  link.click();
+}
+
+/* SEARCH */
+document.getElementById("search").addEventListener("input", function () {
+  const val = this.value.toLowerCase();
+
+  render(
+    allExperiences.filter(a =>
+      (a.name || "").toLowerCase().includes(val) ||
+      (a.experience_no || "").toLowerCase().includes(val)
+    )
+  );
+});
+
+/* LOGOUT */
+function logout() {
+  localStorage.clear();
+  location.href = "index.html";
+}
+
+/* START */
+load();
+</script>
