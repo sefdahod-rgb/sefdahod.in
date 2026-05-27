@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>LC Management</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<style>
+
+body{
+font-family:Arial;
+background:#dcfce7;
+margin:0;
+padding:20px;
+}
+
+.box{
+max-width:1200px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:12px;
+}
+
+h1{
+text-align:center;
+color:#166534;
+}
+
+input,textarea{
+width:100%;
+padding:10px;
+margin-top:8px;
+margin-bottom:15px;
+border:1px solid #ccc;
+border-radius:8px;
+}
+
+button{
+padding:10px 20px;
+background:#16a34a;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+margin:5px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+table td,table th{
+border:1px solid #ccc;
+padding:10px;
+}
+
+th{
+background:#16a34a;
+color:white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h1>School Leaving Certificate</h1>
+
+<input type="text" id="student_name" placeholder="Student Name">
+
+<input type="text" id="mother_name" placeholder="Mother Name">
+
+<input type="text" id="caste" placeholder="Caste">
+
+<input type="text" id="birth_place" placeholder="Birth Place">
+
+<input type="date" id="dob">
+
+<input type="text" id="aadhaar" placeholder="Aadhaar">
+
+<input type="text" id="last_school" placeholder="Last School">
+
+<input type="date" id="admission_date">
+
+<input type="text" id="progress" placeholder="Progress">
+
+<input type="text" id="conduct" placeholder="Conduct">
+
+<input type="date" id="leaving_date">
+
+<input type="text" id="standard" placeholder="Standard">
+
+<input type="text" id="reason" placeholder="Reason">
+
+<textarea id="remarks" placeholder="Remarks"></textarea>
+
+<button onclick="addLC()">
+Create LC
+</button>
+
+<table id="table"></table>
+
+</div>
+
+<script>
+
+const client = supabase.createClient(
+"https://kqahcvaoxnmxfcgyyync.supabase.co",
+"YOUR_ANON_KEY"
+);
+
+let allLC = [];
+
+function formatDate(date){
+
+if(!date) return "-";
+
+const d = new Date(date);
+
+return String(d.getDate()).padStart(2,'0') + "-" +
+String(d.getMonth()+1).padStart(2,'0') + "-" +
+d.getFullYear();
+
+}
+
+async function loadLC(){
+
+const { data,error } =
+await client
+.from("leaving_certificates")
+.select("*")
+.order("id",{ascending:false});
+
+if(error){
+
+alert(error.message);
+
+return;
+
+}
+
+allLC = data || [];
+
+render();
+
+}
+
+function render(){
+
+const table =
+document.getElementById("table");
+
+table.innerHTML = `
+<tr>
+<th>LC No</th>
+<th>Name</th>
+<th>Standard</th>
+<th>Leaving Date</th>
+<th>Actions</th>
+</tr>
+`;
+
+allLC.forEach(a=>{
+
+table.innerHTML += `
+<tr>
+
+<td>${a.lc_no}</td>
+
+<td>${a.student_name}</td>
+
+<td>${a.standard}</td>
+
+<td>${formatDate(a.leaving_date)}</td>
+
+<td>
+
+<button onclick="printLC(${a.id})">
+Print
+</button>
+
+<button onclick="deleteLC(${a.id})">
+Delete
+</button>
+
+</td>
+
+</tr>
+`;
+
+});
+
+}
+
+async function addLC(){
+
+const data = {
+
+lc_no:"LC-" + Date.now(),
+
+gr_no:"GR-" + Date.now(),
+
+student_name:
+document.getElementById("student_name").value,
+
+mother_name:
+document.getElementById("mother_name").value,
+
+caste:
+document.getElementById("caste").value,
+
+birth_place:
+document.getElementById("birth_place").value,
+
+dob:
+document.getElementById("dob").value,
+
+aadhaar:
+document.getElementById("aadhaar").value,
+
+last_school:
+document.getElementById("last_school").value,
+
+admission_date:
+document.getElementById("admission_date").value,
+
+progress:
+document.getElementById("progress").value,
+
+conduct:
+document.getElementById("conduct").value,
+
+leaving_date:
+document.getElementById("leaving_date").value,
+
+standard:
+document.getElementById("standard").value,
+
+reason:
+document.getElementById("reason").value,
+
+remarks:
+document.getElementById("remarks").value
+
+};
+
+const { error } =
+await client
+.from("leaving_certificates")
+.insert([data]);
+
+if(error){
+
+alert(error.message);
+
+return;
+
+}
+
+alert("LC Created");
+
+loadLC();
+
+}
+
+async function deleteLC(id){
+
+if(!confirm("Delete LC?")) return;
+
+await client
+.from("leaving_certificates")
+.delete()
+.eq("id",id);
+
+loadLC();
+
+}
+
+function printLC(id){
+
+const a =
+allLC.find(x=>x.id===id);
+
+if(!a) return;
+
+const w =
+window.open("","_blank");
+
+w.document.write(`
+
+<html>
+
+<head>
+
+<title>School Leaving Certificate</title>
+
+<style>
+
+body{
+font-family:'Times New Roman';
+padding:20px;
+background:#f1f5f9;
+}
+
+.lc{
+max-width:900px;
+margin:auto;
+background:white;
+padding:20px;
+border:4px solid #166534;
+position:relative;
+}
+
+.watermark{
+position:absolute;
+top:45%;
+left:50%;
+transform:translate(-50%,-50%);
+width:300px;
+opacity:0.05;
+}
+
+.header{
+text-align:center;
+border-bottom:3px solid #166534;
+padding-bottom:10px;
+}
+
+.header img{
+width:80px;
+}
+
+.school{
+font-size:40px;
+font-weight:bold;
+color:#991b1b;
+}
+
+.title{
+margin-top:15px;
+font-size:32px;
+font-weight:bold;
+color:#b91c1c;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+td{
+border:1px solid #222;
+padding:10px;
+font-size:20px;
+}
+
+.label{
+width:40%;
+font-weight:bold;
+background:#f0fdf4;
+}
+
+.sign{
+margin-top:40px;
+text-align:right;
+}
+
+@media print{
+
+body{
+background:white;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="lc">
+
+<img src="logo.png" class="watermark">
+
+<div class="header">
+
+<img src="logo.png">
+
+<div class="school">
+Rainbow Public School
+</div>
+
+<div>
+Shubhi Education Foundation, Dahod
+</div>
+
+<div class="title">
+School Leaving Certificate
+</div>
+
+</div>
+
+<table>
+
+<tr>
+<td class="label">LC No</td>
+<td>${a.lc_no}</td>
+</tr>
+
+<tr>
+<td class="label">Student Name</td>
+<td>${a.student_name}</td>
+</tr>
+
+<tr>
+<td class="label">Mother Name</td>
+<td>${a.mother_name}</td>
+</tr>
+
+<tr>
+<td class="label">Caste</td>
+<td>${a.caste}</td>
+</tr>
+
+<tr>
+<td class="label">Birth Place</td>
+<td>${a.birth_place}</td>
+</tr>
+
+<tr>
+<td class="label">Date of Birth</td>
+<td>${formatDate(a.dob)}</td>
+</tr>
+
+<tr>
+<td class="label">Last School</td>
+<td>${a.last_school}</td>
+</tr>
+
+<tr>
+<td class="label">Admission Date</td>
+<td>${formatDate(a.admission_date)}</td>
+</tr>
+
+<tr>
+<td class="label">Progress</td>
+<td>${a.progress}</td>
+</tr>
+
+<tr>
+<td class="label">Conduct</td>
+<td>${a.conduct}</td>
+</tr>
+
+<tr>
+<td class="label">Leaving Date</td>
+<td>${formatDate(a.leaving_date)}</td>
+</tr>
+
+<tr>
+<td class="label">Standard</td>
+<td>${a.standard}</td>
+</tr>
+
+<tr>
+<td class="label">Reason</td>
+<td>${a.reason}</td>
+</tr>
+
+<tr>
+<td class="label">Remarks</td>
+<td>${a.remarks}</td>
+</tr>
+
+</table>
+
+<div class="sign">
+
+<img src="signature.png" width="140">
+
+<br>
+
+Principal Signature
+
+</div>
+
+</div>
+
+<script>
+window.print();
+</script>
+
+</body>
+
+</html>
+
+`);
+
+}
+
+loadLC();
+
+</script>
+
+</body>
+</html>
