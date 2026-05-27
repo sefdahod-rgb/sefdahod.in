@@ -333,39 +333,6 @@ margin:auto;
 background:white;
 padding:20px;
 border:4px solid #166534;
-position:relative;
-}
-
-.watermark{
-position:absolute;
-top:45%;
-left:50%;
-transform:translate(-50%,-50%);
-width:300px;
-opacity:0.05;
-}
-
-.header{
-text-align:center;
-border-bottom:3px solid #166534;
-padding-bottom:10px;
-}
-
-.header img{
-width:80px;
-}
-
-.school{
-font-size:40px;
-font-weight:bold;
-color:#991b1b;
-}
-
-.title{
-margin-top:15px;
-font-size:32px;
-font-weight:bold;
-color:#b91c1c;
 }
 
 table{
@@ -386,19 +353,6 @@ font-weight:bold;
 background:#f0fdf4;
 }
 
-.sign{
-margin-top:40px;
-text-align:right;
-}
-
-@media print{
-
-body{
-background:white;
-}
-
-}
-
 </style>
 
 </head>
@@ -407,32 +361,17 @@ background:white;
 
 <div class="lc">
 
-<img src="logo.png" class="watermark">
+<center>
 
-<div class="header">
+<img src="logo.png" width="80">
 
-<img src="logo.png">
+<h1>Rainbow Public School</h1>
 
-<div class="school">
-Rainbow Public School
-</div>
+<h2>School Leaving Certificate</h2>
 
-<div>
-Shubhi Education Foundation, Dahod
-</div>
-
-<div class="title">
-School Leaving Certificate
-</div>
-
-</div>
+</center>
 
 <table>
-
-<tr>
-<td class="label">LC No</td>
-<td>${a.lc_no}</td>
-</tr>
 
 <tr>
 <td class="label">Student Name</td>
@@ -445,48 +384,13 @@ School Leaving Certificate
 </tr>
 
 <tr>
-<td class="label">Caste</td>
-<td>${a.caste}</td>
-</tr>
-
-<tr>
-<td class="label">Birth Place</td>
-<td>${a.birth_place}</td>
-</tr>
-
-<tr>
-<td class="label">Date of Birth</td>
-<td>${formatDate(a.dob)}</td>
-</tr>
-
-<tr>
-<td class="label">Last School</td>
-<td>${a.last_school}</td>
-</tr>
-
-<tr>
-<td class="label">Admission Date</td>
-<td>${formatDate(a.admission_date)}</td>
-</tr>
-
-<tr>
-<td class="label">Progress</td>
-<td>${a.progress}</td>
-</tr>
-
-<tr>
-<td class="label">Conduct</td>
-<td>${a.conduct}</td>
+<td class="label">Standard</td>
+<td>${a.standard}</td>
 </tr>
 
 <tr>
 <td class="label">Leaving Date</td>
 <td>${formatDate(a.leaving_date)}</td>
-</tr>
-
-<tr>
-<td class="label">Standard</td>
-<td>${a.standard}</td>
 </tr>
 
 <tr>
@@ -501,7 +405,9 @@ School Leaving Certificate
 
 </table>
 
-<div class="sign">
+<br><br>
+
+<div style="text-align:right;">
 
 <img src="signature.png" width="140">
 
@@ -515,7 +421,17 @@ Principal Signature
 
 <script>
 window.print();
-</script>
+<\/script>
+
+</body>
+
+</html>
+
+`);
+
+}
+
+/* START */
 
 loadLC();
 
