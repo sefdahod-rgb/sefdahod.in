@@ -175,6 +175,8 @@ function render(){
 const table =
 document.getElementById("table");
 
+if(!table) return;
+
 table.innerHTML = `
 <tr>
 <th>Sr No</th>
@@ -184,6 +186,20 @@ table.innerHTML = `
 <th>Actions</th>
 </tr>
 `;
+
+if(allLC.length===0){
+
+table.innerHTML += `
+<tr>
+<td colspan="5">
+No Data Found
+</td>
+</tr>
+`;
+
+return;
+
+}
 
 allLC.forEach(a=>{
 
