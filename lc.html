@@ -248,9 +248,6 @@ const data = {
 sr_no:
 allLC.length + 1,
 
-lc_no:
-"LC-" + Date.now(),
-
 gr_no:
 document.getElementById("gr_no").value,
 
@@ -490,24 +487,66 @@ School Leaving Certificate
 
 </div>
 
-<div class="toprow">
+<table style="width:100%;margin-top:20px;border:none;">
 
-<div style="font-size:30px;font-weight:bold;">
-Sr. No. ${a.sr_no}
-</div>
+<tr style="border:none;">
 
-<div class="round">
+<td style="
+border:none;
+font-size:32px;
+font-weight:bold;
+width:30%;
+text-align:left;
+">
+
+Sr. No. ${a.id}
+
+</td>
+
+<td style="
+border:none;
+width:40%;
+text-align:center;
+">
+
+<div style="
+width:170px;
+height:170px;
+border:5px solid #b91c1c;
+border-radius:50%;
+margin:auto;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:20px;
+font-weight:bold;
+color:#b91c1c;
+line-height:1.5;
+text-align:center;
+">
+
 School Code<br>
 24180105602
-</div>
-
-<div style="font-size:30px;font-weight:bold;">
-GR No. ${a.gr_no}
-</div>
 
 </div>
 
-<table>
+</td>
+
+<td style="
+border:none;
+font-size:32px;
+font-weight:bold;
+width:30%;
+text-align:right;
+">
+
+General Register No. ${a.gr_no}
+
+</td>
+
+</tr>
+
+</table>
 
 <tr>
 <td class="label">1. Name of pupil in full</td>
