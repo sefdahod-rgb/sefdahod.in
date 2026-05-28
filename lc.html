@@ -177,8 +177,9 @@ document.getElementById("table");
 
 table.innerHTML = `
 <tr>
-<th>Student Name</th>
+<th>Sr No</th>
 <th>GR No</th>
+<th>Student Name</th>
 <th>Standard</th>
 <th>Actions</th>
 </tr>
@@ -189,11 +190,13 @@ allLC.forEach(a=>{
 table.innerHTML += `
 <tr>
 
-<td>${a.student_name}</td>
+<td>${a.sr_no || "-"}</td>
 
-<td>${a.gr_no}</td>
+<td>${a.gr_no || "-"}</td>
 
-<td>${a.standard}</td>
+<td>${a.student_name || "-"}</td>
+
+<td>${a.standard || "-"}</td>
 
 <td>
 
