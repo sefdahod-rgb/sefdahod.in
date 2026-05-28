@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
 <meta charset="UTF-8">
@@ -8,15 +7,15 @@
 
 <title>LC Management</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 
 body{
-font-family:Arial;
-background:#fef3c7;
 margin:0;
 padding:20px;
+background:#fef3c7;
+font-family:"Times New Roman",serif;
 }
 
 .box{
@@ -24,8 +23,8 @@ max-width:1200px;
 margin:auto;
 background:white;
 padding:20px;
-border-radius:12px;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
 }
 
 h1{
@@ -36,9 +35,8 @@ margin-bottom:20px;
 
 input,textarea{
 width:100%;
-padding:10px;
-margin-top:8px;
-margin-bottom:15px;
+padding:12px;
+margin-bottom:12px;
 border:1px solid #ccc;
 border-radius:8px;
 font-size:16px;
@@ -52,25 +50,30 @@ color:white;
 border:none;
 border-radius:8px;
 cursor:pointer;
-margin:5px;
 font-size:15px;
+margin:5px;
 }
 
-#table{
-margin-top:30px;
+table{
 width:100%;
 border-collapse:collapse;
+margin-top:20px;
 }
 
-#table td,
-#table th{
+table th,
+table td{
 border:1px solid #ccc;
 padding:10px;
+text-align:center;
 }
 
 th{
 background:#991b1b;
 color:white;
+}
+
+.back{
+background:#991b1b;
 }
 
 </style>
@@ -84,18 +87,18 @@ color:white;
 <h1>School Leaving Certificate Management</h1>
 
 <a href="admin.html">
-<button style="background:#991b1b;">
+<button class="back">
 ← Back to Admin
 </button>
 </a>
 
-<input type="text" id="gr_no" placeholder="GR No">
+<input type="text" id="gr_no" placeholder="General Register Number">
 
 <input type="text" id="student_name" placeholder="Student Name">
 
 <input type="text" id="mother_name" placeholder="Mother Name">
 
-<input type="text" id="caste" placeholder="Caste">
+<input type="text" id="caste" placeholder="Race & Caste">
 
 <input type="text" id="birth_place" placeholder="Birth Place">
 
@@ -105,7 +108,7 @@ color:white;
 
 <input type="text" id="uid" placeholder="UID Number">
 
-<input type="text" id="last_school" placeholder="Last School">
+<input type="text" id="last_school" placeholder="Last School Attended">
 
 <input type="date" id="admission_date">
 
@@ -117,7 +120,7 @@ color:white;
 
 <input type="text" id="standard" placeholder="Standard">
 
-<input type="text" id="reason" placeholder="Reason">
+<input type="text" id="reason" placeholder="Reason of Leaving">
 
 <textarea id="remarks" placeholder="Remarks"></textarea>
 
@@ -125,7 +128,17 @@ color:white;
 Create LC
 </button>
 
-<table id="table"></table>
+<table id="table">
+
+<tr>
+<th>Sr No</th>
+<th>GR No</th>
+<th>Student Name</th>
+<th>Standard</th>
+<th>Action</th>
+</tr>
+
+</table>
 
 </div>
 
@@ -150,12 +163,9 @@ d.getFullYear();
 
 }
 
-/* LOAD DATA */
-
 async function loadLC(){
 
-const { data, error } =
-await client
+const { data, error } = await client
 .from("leaving_certificates")
 .select("*")
 .order("id",{ascending:false});
@@ -163,25 +173,19 @@ await client
 if(error){
 
 console.log(error);
-
-alert(error.message);
-
 return;
 
 }
 
 allLC = data || [];
 
-render();
+renderTable();
 
 }
 
-/* RENDER TABLE */
+function renderTable(){
 
-function render(){
-
-const table =
-document.getElementById("table");
+const table = document.getElementById("table");
 
 table.innerHTML = `
 <tr>
@@ -189,17 +193,15 @@ table.innerHTML = `
 <th>GR No</th>
 <th>Student Name</th>
 <th>Standard</th>
-<th>Actions</th>
+<th>Action</th>
 </tr>
 `;
 
-if(allLC.length===0){
+if(allLC.length === 0){
 
 table.innerHTML += `
 <tr>
-<td colspan="5">
-No Data Found
-</td>
+<td colspan="5">No Data Found</td>
 </tr>
 `;
 
@@ -207,12 +209,12 @@ return;
 
 }
 
-allLC.forEach(a=>{
+allLC.forEach((a,index)=>{
 
 table.innerHTML += `
 <tr>
 
-<td>${a.id}</td>
+<td>${index + 1}</td>
 
 <td>${a.gr_no || "-"}</td>
 
@@ -239,73 +241,53 @@ Delete
 
 }
 
-/* ADD LC */
-
 async function addLC(){
 
 const data = {
 
-gr_no:
-document.getElementById("gr_no").value,
+sr_no: allLC.length + 1,
 
-student_name:
-document.getElementById("student_name").value,
+gr_no: document.getElementById("gr_no").value,
 
-mother_name:
-document.getElementById("mother_name").value,
+student_name: document.getElementById("student_name").value,
 
-caste:
-document.getElementById("caste").value,
+mother_name: document.getElementById("mother_name").value,
 
-birth_place:
-document.getElementById("birth_place").value,
+caste: document.getElementById("caste").value,
 
-dob:
-document.getElementById("dob").value,
+birth_place: document.getElementById("birth_place").value,
 
-aadhaar:
-document.getElementById("aadhaar").value,
+dob: document.getElementById("dob").value,
 
-uid:
-document.getElementById("uid").value,
+aadhaar: document.getElementById("aadhaar").value,
 
-last_school:
-document.getElementById("last_school").value,
+uid: document.getElementById("uid").value,
 
-admission_date:
-document.getElementById("admission_date").value,
+last_school: document.getElementById("last_school").value,
 
-progress:
-document.getElementById("progress").value,
+admission_date: document.getElementById("admission_date").value,
 
-conduct:
-document.getElementById("conduct").value,
+progress: document.getElementById("progress").value,
 
-leaving_date:
-document.getElementById("leaving_date").value,
+conduct: document.getElementById("conduct").value,
 
-standard:
-document.getElementById("standard").value,
+leaving_date: document.getElementById("leaving_date").value,
 
-reason:
-document.getElementById("reason").value,
+standard: document.getElementById("standard").value,
 
-remarks:
-document.getElementById("remarks").value
+reason: document.getElementById("reason").value,
+
+remarks: document.getElementById("remarks").value
 
 };
 
-const { error } =
-await client
+const { error } = await client
 .from("leaving_certificates")
 .insert([data]);
 
 if(error){
 
-console.log(error);
-
 alert(error.message);
-
 return;
 
 }
@@ -316,11 +298,9 @@ loadLC();
 
 }
 
-/* DELETE */
-
 async function deleteLC(id){
 
-if(!confirm("Delete LC?")) return;
+if(!confirm("Delete LC ?")) return;
 
 await client
 .from("leaving_certificates")
@@ -331,17 +311,13 @@ loadLC();
 
 }
 
-/* PRINT */
-
 function printLC(id){
 
-const a =
-allLC.find(x=>x.id===id);
+const a = allLC.find(x => x.id === id);
 
 if(!a) return;
 
-const w =
-window.open("","_blank");
+const w = window.open("","_blank");
 
 w.document.write(`
 
@@ -349,13 +325,80 @@ w.document.write(`
 
 <head>
 
-<title>LC Print</title>
+<title>School Leaving Certificate</title>
 
 <style>
 
 body{
-font-family:'Times New Roman';
+font-family:"Times New Roman",serif;
 padding:20px;
+background:white;
+}
+
+.main{
+max-width:1100px;
+margin:auto;
+border:3px solid #666;
+padding:20px;
+}
+
+.top{
+text-align:center;
+color:#991b1b;
+position:relative;
+}
+
+.logo{
+width:90px;
+}
+
+.school{
+font-size:55px;
+font-weight:bold;
+margin:0;
+}
+
+.addr{
+font-size:20px;
+font-weight:bold;
+margin-top:5px;
+}
+
+.title{
+display:inline-block;
+border:3px solid #888;
+padding:8px 25px;
+border-radius:10px;
+font-size:42px;
+font-style:italic;
+font-weight:bold;
+margin-top:15px;
+}
+
+.headRow{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-top:20px;
+}
+
+.circle{
+width:150px;
+height:150px;
+border:5px solid #991b1b;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+font-weight:bold;
+color:#991b1b;
+font-size:22px;
+}
+
+.no{
+font-size:32px;
+font-weight:bold;
 }
 
 table{
@@ -365,15 +408,23 @@ margin-top:20px;
 }
 
 td{
-border:1px solid #333;
+border:1px solid #555;
 padding:10px;
-font-size:20px;
+font-size:26px;
 }
 
 .label{
+width:45%;
 font-weight:bold;
-width:40%;
 background:#fef3c7;
+}
+
+.footer{
+margin-top:40px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+font-size:22px;
 }
 
 </style>
@@ -382,34 +433,48 @@ background:#fef3c7;
 
 <body>
 
-<center>
+<div class="main">
 
-<img src="logo.png" width="80">
+<div class="top">
 
-<h1 style="color:#991b1b;">
+<img src="logo.png" class="logo">
+
+<div class="school">
 Rainbow Public School
-</h1>
-
-<h2>
-School Leaving Certificate
-</h2>
-
-</center>
-
-<div style="
-display:flex;
-justify-content:space-between;
-margin-top:20px;
-font-size:26px;
-font-weight:bold;
-">
-
-<div>
-Sr No : ${a.id}
 </div>
 
-<div>
-GR No : ${a.gr_no}
+<div class="addr">
+Shalimar Co-operative Society, Muvaliya Road, Rabdal, Dahod
+</div>
+
+<div class="addr">
+(Conducted By : Shubhi Education Foundation, Dahod)
+</div>
+
+<div class="addr">
+(Registered Under Mumbai Public Trust Act.1950)
+</div>
+
+<div class="title">
+School Leaving Certificate
+</div>
+
+</div>
+
+<div class="headRow">
+
+<div class="no">
+Sr. No. ${a.sr_no}
+</div>
+
+<div class="circle">
+<div>School</div>
+<div>Code</div>
+<div>24180105602</div>
+</div>
+
+<div class="no">
+GR No. ${a.gr_no}
 </div>
 
 </div>
@@ -417,91 +482,93 @@ GR No : ${a.gr_no}
 <table>
 
 <tr>
-<td class="label">Student Name</td>
+<td class="label">1. Name of pupil in full</td>
 <td>${a.student_name}</td>
 </tr>
 
 <tr>
-<td class="label">Mother Name</td>
+<td class="label">2. Mother's Name</td>
 <td>${a.mother_name}</td>
 </tr>
 
 <tr>
-<td class="label">Caste</td>
+<td class="label">3. Race and Caste (with subcaste)</td>
 <td>${a.caste}</td>
 </tr>
 
 <tr>
-<td class="label">Birth Place</td>
+<td class="label">4. Place of Birth</td>
 <td>${a.birth_place}</td>
 </tr>
 
 <tr>
-<td class="label">Date of Birth</td>
+<td class="label">5. Date of Birth month and year</td>
 <td>${formatDate(a.dob)}</td>
 </tr>
 
 <tr>
-<td class="label">Aadhaar</td>
+<td class="label">6. Aadhaar Card No.</td>
 <td>${a.aadhaar}</td>
 </tr>
 
 <tr>
-<td class="label">UID</td>
+<td class="label">7. UID Number</td>
 <td>${a.uid}</td>
 </tr>
 
 <tr>
-<td class="label">Last School</td>
+<td class="label">8. Last School attended</td>
 <td>${a.last_school}</td>
 </tr>
 
 <tr>
-<td class="label">Admission Date</td>
+<td class="label">9. Date of admission</td>
 <td>${formatDate(a.admission_date)}</td>
 </tr>
 
 <tr>
-<td class="label">Progress</td>
+<td class="label">10. Progress</td>
 <td>${a.progress}</td>
 </tr>
 
 <tr>
-<td class="label">Conduct</td>
+<td class="label">11. Conduct</td>
 <td>${a.conduct}</td>
 </tr>
 
 <tr>
-<td class="label">Leaving Date</td>
+<td class="label">12. Date of leaving School</td>
 <td>${formatDate(a.leaving_date)}</td>
 </tr>
 
 <tr>
-<td class="label">Standard</td>
+<td class="label">13. Standard in which studying</td>
 <td>${a.standard}</td>
 </tr>
 
 <tr>
-<td class="label">Reason</td>
+<td class="label">14. Reason of leaving School</td>
 <td>${a.reason}</td>
 </tr>
 
 <tr>
-<td class="label">Remarks</td>
+<td class="label">15. Remarks</td>
 <td>${a.remarks}</td>
 </tr>
 
 </table>
 
-<br><br>
+<div class="footer">
 
-<div style="text-align:right;">
+<div>
+Date : ${formatDate(new Date())}
+</div>
 
-<img src="signature.png" width="120">
+<div>
+Head Mistress
+</div>
 
-<br>
-
-Principal Signature
+</div>
 
 </div>
 
@@ -515,10 +582,13 @@ window.print();
 
 `);
 
-}
+w.document.close();
 
-/* START */
+}
 
 loadLC();
 
 </script>
+
+</body>
+</html>
