@@ -150,11 +150,11 @@ d.getFullYear();
 
 }
 
-/* LOAD */
+/* LOAD DATA */
 
 async function loadLC(){
 
-const { data,error } =
+const { data, error } =
 await client
 .from("leaving_certificates")
 .select("*")
@@ -176,7 +176,7 @@ render();
 
 }
 
-/* RENDER */
+/* RENDER TABLE */
 
 function render(){
 
@@ -212,7 +212,7 @@ allLC.forEach(a=>{
 table.innerHTML += `
 <tr>
 
-<td>${a.id || "-"}</td>
+<td>${a.id}</td>
 
 <td>${a.gr_no || "-"}</td>
 
@@ -239,14 +239,11 @@ Delete
 
 }
 
-/* ADD */
+/* ADD LC */
 
 async function addLC(){
 
 const data = {
-
-sr_no:
-allLC.length + 1,
 
 gr_no:
 document.getElementById("gr_no").value,
@@ -338,11 +335,13 @@ loadLC();
 
 function printLC(id){
 
-const a = allLC.find(x=>x.id===id);
+const a =
+allLC.find(x=>x.id===id);
 
 if(!a) return;
 
-const w = window.open("","_blank");
+const w =
+window.open("","_blank");
 
 w.document.write(`
 
@@ -350,133 +349,31 @@ w.document.write(`
 
 <head>
 
-<title>School Leaving Certificate</title>
+<title>LC Print</title>
 
 <style>
 
 body{
 font-family:'Times New Roman';
-background:white;
-margin:0;
-padding:10px;
-}
-
-.lc{
-width:1000px;
-margin:auto;
-border:3px solid #555;
-padding:12px;
-}
-
-.header{
-text-align:center;
-color:#991b1b;
-position:relative;
-}
-
-.header img{
-width:90px;
-}
-
-.school{
-font-size:52px;
-font-weight:bold;
-margin-top:5px;
-}
-
-.sub{
-font-size:18px;
-font-weight:bold;
-line-height:1.4;
-}
-
-.title{
-display:inline-block;
-margin-top:12px;
-padding:6px 30px;
-border:3px solid #777;
-border-radius:10px;
-font-size:42px;
-font-style:italic;
-font-weight:bold;
-color:#b91c1c;
-background:#fff;
-}
-
-.topline{
-margin-top:15px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.sr{
-font-size:28px;
-font-weight:bold;
-}
-
-.gr{
-font-size:28px;
-font-weight:bold;
-}
-
-.circle{
-width:160px;
-height:160px;
-border:5px solid #b91c1c;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-text-align:center;
-font-size:20px;
-font-weight:bold;
-color:#b91c1c;
-line-height:1.4;
+padding:20px;
 }
 
 table{
 width:100%;
 border-collapse:collapse;
-margin-top:15px;
+margin-top:20px;
 }
 
 td{
-border:1px solid #444;
-padding:8px;
-font-size:24px;
-vertical-align:top;
+border:1px solid #333;
+padding:10px;
+font-size:20px;
 }
 
 .label{
-width:42%;
 font-weight:bold;
+width:40%;
 background:#fef3c7;
-}
-
-.footer{
-margin-top:30px;
-display:flex;
-justify-content:space-between;
-align-items:end;
-}
-
-.sign{
-text-align:center;
-font-size:20px;
-font-weight:bold;
-}
-
-.sign img{
-width:140px;
-}
-
-@media print{
-
-body{
-padding:0;
-}
-
 }
 
 </style>
@@ -485,47 +382,34 @@ padding:0;
 
 <body>
 
-<div class="lc">
+<center>
 
-<div class="header">
+<img src="logo.png" width="80">
 
-<img src="logo.png">
-
-<div class="school">
+<h1 style="color:#991b1b;">
 Rainbow Public School
-</div>
+</h1>
 
-<div class="sub">
-Shalimar Co-operative Society, Muvaliya Road, Rabdal, Dahod
-</div>
-
-<div class="sub">
-(Conducted By : Shubhi Education Foundation, Dahod)
-</div>
-
-<div class="sub">
-(Registered Under Mumbai Public Trust Act.1950)
-</div>
-
-<div class="title">
+<h2>
 School Leaving Certificate
+</h2>
+
+</center>
+
+<div style="
+display:flex;
+justify-content:space-between;
+margin-top:20px;
+font-size:26px;
+font-weight:bold;
+">
+
+<div>
+Sr No : ${a.id}
 </div>
 
-</div>
-
-<div class="topline">
-
-<div class="sr">
-Sr. No. ${a.id}
-</div>
-
-<div class="circle">
-School Code<br>
-24180105602
-</div>
-
-<div class="gr">
-GR No. ${a.gr_no}
+<div>
+GR No : ${a.gr_no}
 </div>
 
 </div>
@@ -533,159 +417,91 @@ GR No. ${a.gr_no}
 <table>
 
 <tr>
-<td class="label">
-1. Name of pupil in full
-</td>
-<td>
-${a.student_name || "-"}
-</td>
+<td class="label">Student Name</td>
+<td>${a.student_name}</td>
 </tr>
 
 <tr>
-<td class="label">
-2. Mother's Name
-</td>
-<td>
-${a.mother_name || "-"}
-</td>
+<td class="label">Mother Name</td>
+<td>${a.mother_name}</td>
 </tr>
 
 <tr>
-<td class="label">
-3. Race and Caste
-</td>
-<td>
-${a.caste || "-"}
-</td>
+<td class="label">Caste</td>
+<td>${a.caste}</td>
 </tr>
 
 <tr>
-<td class="label">
-4. Place of Birth
-</td>
-<td>
-${a.birth_place || "-"}
-</td>
+<td class="label">Birth Place</td>
+<td>${a.birth_place}</td>
 </tr>
 
 <tr>
-<td class="label">
-5. Date of Birth
-</td>
-<td>
-${formatDate(a.dob)}
-</td>
+<td class="label">Date of Birth</td>
+<td>${formatDate(a.dob)}</td>
 </tr>
 
 <tr>
-<td class="label">
-6. Aadhaar Card No.
-</td>
-<td>
-${a.aadhaar || "-"}
-</td>
+<td class="label">Aadhaar</td>
+<td>${a.aadhaar}</td>
 </tr>
 
 <tr>
-<td class="label">
-7. UID Number
-</td>
-<td>
-${a.uid || "-"}
-</td>
+<td class="label">UID</td>
+<td>${a.uid}</td>
 </tr>
 
 <tr>
-<td class="label">
-8. Last School attended
-</td>
-<td>
-${a.last_school || "-"}
-</td>
+<td class="label">Last School</td>
+<td>${a.last_school}</td>
 </tr>
 
 <tr>
-<td class="label">
-9. Date of admission
-</td>
-<td>
-${formatDate(a.admission_date)}
-</td>
+<td class="label">Admission Date</td>
+<td>${formatDate(a.admission_date)}</td>
 </tr>
 
 <tr>
-<td class="label">
-10. Progress
-</td>
-<td>
-${a.progress || "-"}
-</td>
+<td class="label">Progress</td>
+<td>${a.progress}</td>
 </tr>
 
 <tr>
-<td class="label">
-11. Conduct
-</td>
-<td>
-${a.conduct || "-"}
-</td>
+<td class="label">Conduct</td>
+<td>${a.conduct}</td>
 </tr>
 
 <tr>
-<td class="label">
-12. Date of leaving School
-</td>
-<td>
-${formatDate(a.leaving_date)}
-</td>
+<td class="label">Leaving Date</td>
+<td>${formatDate(a.leaving_date)}</td>
 </tr>
 
 <tr>
-<td class="label">
-13. Standard in which studying
-</td>
-<td>
-${a.standard || "-"}
-</td>
+<td class="label">Standard</td>
+<td>${a.standard}</td>
 </tr>
 
 <tr>
-<td class="label">
-14. Reason of leaving School
-</td>
-<td>
-${a.reason || "-"}
-</td>
+<td class="label">Reason</td>
+<td>${a.reason}</td>
 </tr>
 
 <tr>
-<td class="label">
-15. Remarks
-</td>
-<td>
-${a.remarks || "-"}
-</td>
+<td class="label">Remarks</td>
+<td>${a.remarks}</td>
 </tr>
 
 </table>
 
-<div class="footer">
+<br><br>
 
-<div style="font-size:22px;font-weight:bold;">
-Date : ${formatDate(new Date())}
-</div>
+<div style="text-align:right;">
 
-<div class="sign">
-
-<img src="signature.png">
+<img src="signature.png" width="120">
 
 <br>
 
-Head Mistress
-
-</div>
-
-</div>
+Principal Signature
 
 </div>
 
@@ -699,4 +515,10 @@ window.print();
 
 `);
 
-} 
+}
+
+/* START */
+
+loadLC();
+
+</script>
