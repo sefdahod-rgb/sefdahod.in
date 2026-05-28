@@ -55,15 +55,22 @@ margin:5px;
 font-size:15px;
 }
 
-table{
+#table{
+margin-top:30px;
+display:table;
 width:100%;
-border-collapse:collapse;
-margin-top:20px;
+background:white;
 }
 
-table td,table th{
+#table tr{
+display:table-row;
+}
+
+#table td,
+#table th{
 border:1px solid #ccc;
 padding:10px;
+display:table-cell;
 }
 
 th{
@@ -230,9 +237,7 @@ Delete
 `;
 
 });
-
-}
-
+  
 async function addLC(){
 
 const data = {
