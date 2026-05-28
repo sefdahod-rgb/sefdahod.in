@@ -338,13 +338,11 @@ loadLC();
 
 function printLC(id){
 
-const a =
-allLC.find(x=>x.id===id);
+const a = allLC.find(x=>x.id===id);
 
 if(!a) return;
 
-const w =
-window.open("","_blank");
+const w = window.open("","_blank");
 
 w.document.write(`
 
@@ -358,61 +356,78 @@ w.document.write(`
 
 body{
 font-family:'Times New Roman';
-padding:10px;
 background:white;
+margin:0;
+padding:10px;
 }
 
 .lc{
-max-width:1000px;
+width:1000px;
 margin:auto;
-border:5px solid #666;
-padding:20px;
+border:3px solid #555;
+padding:12px;
 }
 
 .header{
 text-align:center;
 color:#991b1b;
+position:relative;
 }
 
-.header h1{
+.header img{
+width:90px;
+}
+
+.school{
 font-size:52px;
-margin:0;
+font-weight:bold;
+margin-top:5px;
 }
 
-.header p{
-margin:3px;
+.sub{
 font-size:18px;
 font-weight:bold;
+line-height:1.4;
 }
 
 .title{
-text-align:center;
-font-size:42px;
-color:#b91c1c;
-font-weight:bold;
-border:3px solid #888;
 display:inline-block;
-padding:8px 30px;
+margin-top:12px;
+padding:6px 30px;
+border:3px solid #777;
 border-radius:10px;
-margin-top:10px;
+font-size:42px;
 font-style:italic;
+font-weight:bold;
+color:#b91c1c;
+background:#fff;
 }
 
-.toprow{
+.topline{
+margin-top:15px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-margin-top:15px;
 }
 
-.round{
-width:180px;
-height:180px;
+.sr{
+font-size:28px;
+font-weight:bold;
+}
+
+.gr{
+font-size:28px;
+font-weight:bold;
+}
+
+.circle{
+width:160px;
+height:160px;
 border:5px solid #b91c1c;
 border-radius:50%;
 display:flex;
-justify-content:center;
 align-items:center;
+justify-content:center;
 text-align:center;
 font-size:20px;
 font-weight:bold;
@@ -423,32 +438,42 @@ line-height:1.4;
 table{
 width:100%;
 border-collapse:collapse;
-margin-top:20px;
+margin-top:15px;
 }
 
 td{
-border:2px solid #333;
-padding:10px;
-font-size:22px;
+border:1px solid #444;
+padding:8px;
+font-size:24px;
+vertical-align:top;
 }
 
 .label{
-width:40%;
+width:42%;
 font-weight:bold;
 background:#fef3c7;
 }
 
 .footer{
-margin-top:40px;
+margin-top:30px;
 display:flex;
 justify-content:space-between;
-align-items:center;
+align-items:end;
+}
+
+.sign{
+text-align:center;
+font-size:20px;
+font-weight:bold;
+}
+
+.sign img{
+width:140px;
 }
 
 @media print{
 
 body{
-margin:0;
 padding:0;
 }
 
@@ -464,22 +489,23 @@ padding:0;
 
 <div class="header">
 
-<img src="logo.png" width="90">
+<img src="logo.png">
 
-<h1>Rainbow Public School</h1>
+<div class="school">
+Rainbow Public School
+</div>
 
-<p>
-Shalimar Co-operative Society,
-Muvaliya Road, Rabdal, Dahod
-</p>
+<div class="sub">
+Shalimar Co-operative Society, Muvaliya Road, Rabdal, Dahod
+</div>
 
-<p>
+<div class="sub">
 (Conducted By : Shubhi Education Foundation, Dahod)
-</p>
+</div>
 
-<p>
+<div class="sub">
 (Registered Under Mumbai Public Trust Act.1950)
-</p>
+</div>
 
 <div class="title">
 School Leaving Certificate
@@ -487,157 +513,175 @@ School Leaving Certificate
 
 </div>
 
-<table style="width:100%;margin-top:20px;border:none;">
+<div class="topline">
 
-<tr style="border:none;">
-
-<td style="
-border:none;
-font-size:32px;
-font-weight:bold;
-width:30%;
-text-align:left;
-">
-
+<div class="sr">
 Sr. No. ${a.id}
+</div>
 
-</td>
-
-<td style="
-border:none;
-width:40%;
-text-align:center;
-">
-
-<div style="
-width:170px;
-height:170px;
-border:5px solid #b91c1c;
-border-radius:50%;
-margin:auto;
-display:flex;
-justify-content:center;
-align-items:center;
-font-size:20px;
-font-weight:bold;
-color:#b91c1c;
-line-height:1.5;
-text-align:center;
-">
-
+<div class="circle">
 School Code<br>
 24180105602
+</div>
+
+<div class="gr">
+GR No. ${a.gr_no}
+</div>
 
 </div>
 
+<table>
+
+<tr>
+<td class="label">
+1. Name of pupil in full
 </td>
-
-<td style="
-border:none;
-font-size:32px;
-font-weight:bold;
-width:30%;
-text-align:right;
-">
-
-General Register No. ${a.gr_no}
-
+<td>
+${a.student_name || "-"}
 </td>
-
-</tr>
-
-</table>
-
-<tr>
-<td class="label">1. Name of pupil in full</td>
-<td>${a.student_name}</td>
 </tr>
 
 <tr>
-<td class="label">2. Mother's Name</td>
-<td>${a.mother_name}</td>
+<td class="label">
+2. Mother's Name
+</td>
+<td>
+${a.mother_name || "-"}
+</td>
 </tr>
 
 <tr>
-<td class="label">3. Race and Caste</td>
-<td>${a.caste}</td>
+<td class="label">
+3. Race and Caste
+</td>
+<td>
+${a.caste || "-"}
+</td>
 </tr>
 
 <tr>
-<td class="label">4. Place of Birth</td>
-<td>${a.birth_place}</td>
+<td class="label">
+4. Place of Birth
+</td>
+<td>
+${a.birth_place || "-"}
+</td>
 </tr>
 
 <tr>
-<td class="label">5. Date of Birth</td>
-<td>${formatDate(a.dob)}</td>
+<td class="label">
+5. Date of Birth
+</td>
+<td>
+${formatDate(a.dob)}
+</td>
 </tr>
 
 <tr>
-<td class="label">6. Aadhaar Card No</td>
-<td>${a.aadhaar}</td>
+<td class="label">
+6. Aadhaar Card No.
+</td>
+<td>
+${a.aadhaar || "-"}
+</td>
 </tr>
 
 <tr>
-<td class="label">7. UID Number</td>
-<td>${a.uid}</td>
+<td class="label">
+7. UID Number
+</td>
+<td>
+${a.uid || "-"}
+</td>
 </tr>
 
 <tr>
-<td class="label">8. Last School Attended</td>
-<td>${a.last_school}</td>
+<td class="label">
+8. Last School attended
+</td>
+<td>
+${a.last_school || "-"}
+</td>
 </tr>
 
 <tr>
-<td class="label">9. Date of Admission</td>
-<td>${formatDate(a.admission_date)}</td>
+<td class="label">
+9. Date of admission
+</td>
+<td>
+${formatDate(a.admission_date)}
+</td>
 </tr>
 
 <tr>
-<td class="label">10. Progress</td>
-<td>${a.progress}</td>
+<td class="label">
+10. Progress
+</td>
+<td>
+${a.progress || "-"}
+</td>
 </tr>
 
 <tr>
-<td class="label">11. Conduct</td>
-<td>${a.conduct}</td>
+<td class="label">
+11. Conduct
+</td>
+<td>
+${a.conduct || "-"}
+</td>
 </tr>
 
 <tr>
-<td class="label">12. Date of Leaving School</td>
-<td>${formatDate(a.leaving_date)}</td>
+<td class="label">
+12. Date of leaving School
+</td>
+<td>
+${formatDate(a.leaving_date)}
+</td>
 </tr>
 
 <tr>
-<td class="label">13. Standard in which studying</td>
-<td>${a.standard}</td>
+<td class="label">
+13. Standard in which studying
+</td>
+<td>
+${a.standard || "-"}
+</td>
 </tr>
 
 <tr>
-<td class="label">14. Reason of leaving School</td>
-<td>${a.reason}</td>
+<td class="label">
+14. Reason of leaving School
+</td>
+<td>
+${a.reason || "-"}
+</td>
 </tr>
 
 <tr>
-<td class="label">15. Remarks</td>
-<td>${a.remarks}</td>
+<td class="label">
+15. Remarks
+</td>
+<td>
+${a.remarks || "-"}
+</td>
 </tr>
 
 </table>
 
 <div class="footer">
 
-<div>
+<div style="font-size:22px;font-weight:bold;">
 Date : ${formatDate(new Date())}
 </div>
 
-<div style="text-align:center;">
+<div class="sign">
 
-<img src="signature.png" width="140">
+<img src="signature.png">
 
 <br>
 
-Head Mistress / Principal
+Head Mistress
 
 </div>
 
@@ -655,13 +699,4 @@ window.print();
 
 `);
 
-}
-
-/* START */
-
-loadLC();
-
-</script>
-
-</body>
-</html>
+} 
