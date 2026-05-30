@@ -7,17 +7,19 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; font-family: 'Times New Roman', serif; }
-        body { background: #f0f0f0; padding: 20px; margin: 0; }
-      .container { max-width: 1200px; margin: 0 auto; }
-      .top-bar { background: #343a40; color: white; padding: 12px 20px; margin: -20px -20px 20px -20px; display: flex; justify-content: space-between; align-items: center; }
-      .top-bar h3 { margin: 0; font-size: 18px; }
+        body { background: #f0f0f0; padding: 0; margin: 0; }
+      .admin-header { background: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+      .admin-header h3 { margin: 0; font-size: 20px; }
+      .breadcrumb { background: #ecf0f1; padding: 10px 20px; font-size: 14px; }
+      .breadcrumb a { color: #3498db; text-decoration: none; }
+      .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
       .controls { background: white; padding: 15px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
       .btn { padding: 8px 16px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
-      .btn-primary { background: #007bff; color: white; }
-      .btn-success { background: #28a745; color: white; }
-      .btn-danger { background: #dc3545; color: white; }
-      .btn-warning { background: #ffc107; color: black; }
-      .btn-secondary { background: #6c757d; color: white; }
+      .btn-primary { background: #3498db; color: white; }
+      .btn-success { background: #27ae60; color: white; }
+      .btn-danger { background: #e74c3c; color: white; }
+      .btn-warning { background: #f39c12; color: white; }
+      .btn-secondary { background: #95a5a6; color: white; }
       .btn:hover { opacity: 0.9; }
       .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
@@ -40,44 +42,52 @@
         
       .table-list { width: 100%; background: white; border-collapse: collapse; margin-top: 20px; }
       .table-list th,.table-list td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-      .table-list th { background: #343a40; color: white; }
+      .table-list th { background: #34495e; color: white; }
         
         @media print {
-          .no-print { display: none!important; }
+        .no-print,.admin-header,.breadcrumb { display: none!important; }
             body { background: white; padding: 0; }
-          .certificate { border: 3px double #000; margin: 0; page-break-after: always; }
+        .certificate { border: 3px double #000; margin: 0; page-break-after: always; }
+        .container { max-width: 100%; padding: 0; }
         }
         
       .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: white; padding: 20px; border-radius: 5px; }
       .form-group { display: flex; flex-direction: column; }
-      .form-group label { font-weight: bold; margin-bottom: 5px; }
-      .form-group input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        #searchBox { padding: 8px; width: 300px; border: 1px solid #ccc; border-radius: 4px; }
-      .loader { text-align: center; padding: 20px; font-size: 18px; color: #007bff; }
+      .form-group label { font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
+      .form-group input { padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px; }
+        #searchBox { padding: 8px; width: 300px; border: 1px solid #bdc3c7; border-radius: 4px; }
+      .loader { text-align: center; padding: 20px; font-size: 18px; color: #3498db; }
       .alert { padding: 10px; margin: 10px 0; border-radius: 4px; }
       .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
       .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
     </style>
 </head>
 <body>
-    <!-- Top Bar with Back Button -->
-    <div class="top-bar no-print">
-        <h3>Rainbow Public School - Admin Panel</h3>
-        <a href="admin-dashboard.php" class="btn btn-secondary">← Back to Dashboard</a>
-        <!-- ^^^ Yahan apne admin dashboard ka path daalo -->
+    <!-- Admin Header with Back Button -->
+    <div class="admin-header no-print">
+        <h3>🎓 Rainbow Public School - Admin Panel</h3>
+        <div>
+            <a href="index.html" class="btn btn-secondary">← Back to Dashboard</a>
+            <!-- ^^^ Yahan apne admin dashboard ka HTML file name daalo -->
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb no-print">
+        <a href="index.html">Dashboard</a> > <span>LC Management</span>
     </div>
 
     <div class="container">
         <div class="controls no-print">
-            <h2>School Leaving Certificate Management</h2>
+            <h2 style="color: #2c3e50; margin-top:0;">School Leaving Certificate Management</h2>
             <div id="alertBox"></div>
             <button class="btn btn-primary" onclick="showForm()">+ Add New LC</button>
-            <button class="btn btn-success" onclick="printCurrentLC()" id="printBtn" style="display:none;">Print Current LC</button>
+            <button class="btn btn-success" onclick="printCurrentLC()" id="printBtn" style="display:none;">🖨️ Print Current LC</button>
             <input type="text" id="searchBox" placeholder="Search by GR No. or Student Name..." onkeyup="searchLC()">
         </div>
 
         <div id="lcForm" style="display:none;" class="no-print">
-            <h3 id="formTitle">Add New Leaving Certificate</h3>
+            <h3 id="formTitle" style="color: #2c3e50;">Add New Leaving Certificate</h3>
             <div class="form-grid">
                 <input type="hidden" id="editId">
                 <div class="form-group"><label>Sr. No.</label><input type="text" id="srNo"></div>
@@ -101,15 +111,15 @@
                 <div class="form-group"><label>DISE Code</label><input type="text" id="diseCode" value="24180107544"></div>
             </div>
             <br>
-            <button class="btn btn-success" onclick="saveLC()" id="saveBtn">Save LC</button>
-            <button class="btn btn-danger" onclick="hideForm()">Cancel</button>
+            <button class="btn btn-success" onclick="saveLC()" id="saveBtn">💾 Save LC</button>
+            <button class="btn btn-danger" onclick="hideForm()">✖️ Cancel</button>
         </div>
 
         <div id="loader" class="loader no-print" style="display:none;">Loading...</div>
         <div id="certificateArea"></div>
 
         <div class="no-print">
-            <h3>All Leaving Certificates</h3>
+            <h3 style="color: #2c3e50;">All Leaving Certificates</h3>
             <table class="table-list" id="lcTable">
                 <thead>
                     <tr>
@@ -127,10 +137,10 @@
     </div>
 
 <script>
-// === YAHAN APNI SUPABASE DETAILS DAALO ===
-const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co'; 
-const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY'; 
-// ==========================================
+// === SUPABASE CONFIG - YAHAN APNI DETAILS DAALO ===
+const SUPABASE_URL = 'https://kqahcvaoxnmxfcgyyync.supabase.co'; 
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg'; 
+// ===================================================
 
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -139,8 +149,6 @@ let lcData = [];
 let currentLCId = null;
 
 window.onload = async function() {
-    // Agar aapka admin panel PHP session use karta hai to yahan check laga sakte ho
-    // Example: fetch('check_session.php').then(...)
     await loadLCData();
 }
 
@@ -157,9 +165,9 @@ function showLoader(show) {
 async function loadLCData() {
     showLoader(true);
     const { data, error } = await supabaseClient
-      .from('leaving_certificates')
-      .select('*')
-      .order('created_at', { ascending: false });
+   .from('leaving_certificates')
+   .select('*')
+   .order('created_at', { ascending: false });
     
     if (error) {
         showAlert('Error loading data: ' + error.message, 'error');
@@ -205,6 +213,7 @@ function showForm(id = null) {
         });
         document.getElementById('editId').value = '';
     }
+    window.scrollTo(0, 0);
 }
 
 function hideForm() {
@@ -249,14 +258,14 @@ async function saveLC() {
     let result;
     if(id) {
         result = await supabaseClient
-          .from('leaving_certificates')
-          .update({...lcObj, updated_at: new Date()})
-          .eq('id', id);
+       .from('leaving_certificates')
+       .update({...lcObj, updated_at: new Date()})
+       .eq('id', id);
     } else {
         result = await supabaseClient
-          .from('leaving_certificates')
-          .insert([lcObj])
-          .select();
+       .from('leaving_certificates')
+       .insert([lcObj])
+       .select();
     }
     
     if (result.error) {
@@ -373,9 +382,9 @@ async function deleteLC(id) {
     
     showLoader(true);
     const { error } = await supabaseClient
-      .from('leaving_certificates')
-      .delete()
-      .eq('id', id);
+   .from('leaving_certificates')
+   .delete()
+   .eq('id', id);
     
     if (error) {
         showAlert('Error deleting: ' + error.message, 'error');
