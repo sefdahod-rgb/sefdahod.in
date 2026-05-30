@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LC Management - St. Stephen's Primary School</title>
+    <title>LC Management - Rainbow Public School</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; font-family: 'Times New Roman', serif; }
@@ -27,7 +27,6 @@
 .cert-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; position: relative; }
 .cert-header h1 { color: #b30000; margin: 5px 0; font-size: 26px; font-weight: bold; }
 .cert-header p { margin: 1px 0; font-size: 11px; }
-.school-logo { position: absolute; left: 20px; top: 10px; width: 70px; height: 70px; }
 .school-code-box { position: absolute; top: 10px; right: 20px; border: 2px solid #b30000; border-radius: 50%; width: 75px; height: 75px; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 10px; }
 .school-code-box b { font-size: 9px; }
 .cert-title { text-align: center; font-size: 24px; font-weight: bold; margin: 10px 0; font-family: 'Brush Script MT', cursive; color: #b30000; border: 2px solid #000; display: inline-block; padding: 2px 20px; margin-left: 50%; transform: translateX(-50%); }
@@ -35,9 +34,9 @@
 .sr-gr-row { display: flex; justify-content: space-between; margin: 10px 0; font-weight: bold; font-size: 14px; border-bottom: 2px solid #000; padding-bottom: 5px; }
 
 .cert-body { margin-top: 10px; }
-.cert-row { display: flex; border-bottom: 1px solid #000; padding: 5px 0; align-items: baseline; }
-.cert-row.label { width: 42%; font-weight: normal; font-size: 13px; padding-right: 5px; }
-.cert-row.value { width: 58%; min-height: 18px; padding-left: 10px; font-size: 13px; font-weight: bold; color: #000080; }
+.cert-row { display: flex; border-bottom: 1px solid #000; padding: 6px 0; align-items: baseline; min-height: 28px; }
+.cert-row.label { width: 40%; font-weight: normal; font-size: 13px; padding-right: 10px; }
+.cert-row.value { width: 60%; min-height: 20px; padding-left: 10px; font-size: 13px; font-weight: bold; color: #000080; }
 
 .cert-footer { margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
 .sign-box { text-align: center; width: 30%; font-size: 13px; }
@@ -68,7 +67,7 @@
 </head>
 <body>
     <div class="admin-header no-print">
-        <h3>🎓 St. Stephen's Primary School - Admin Panel</h3>
+        <h3>🎓 Rainbow Public School - Admin Panel</h3>
         <div>
             <a href="index.html" class="btn btn-secondary">← Back to Dashboard</a>
         </div>
@@ -99,19 +98,19 @@
                 <div class="form-group"><label>PEN No.</label><input type="text" id="penNo" placeholder="Student PEN No."></div>
                 <div class="form-group"><label>Race and Caste</label><input type="text" id="caste"></div>
                 <div class="form-group"><label>Place of Birth</label><input type="text" id="birthPlace"></div>
-                <div class="form-group"><label>Date of Birth</label><input type="text" id="dob" placeholder="18.10.2016, EIGHTEENTH OCTOBER TWO THOUSAND SIXTEEN"></div>
+                <div class="form-group"><label>Date of Birth</label><input type="text" id="dob" placeholder="27/06/2018"></div>
                 <div class="form-group"><label>Aadhar Card No.</label><input type="text" id="aadhar"></div>
                 <div class="form-group"><label>UID Number</label><input type="text" id="uid"></div>
                 <div class="form-group"><label>Last School Attended</label><input type="text" id="lastSchool"></div>
-                <div class="form-group"><label>Date of Admission</label><input type="text" id="doa" placeholder="05.06.2023, STD-I (FIRST)"></div>
+                <div class="form-group"><label>Date of Admission</label><input type="text" id="doa"></div>
                 <div class="form-group"><label>Progress</label><input type="text" id="progress" value="GOOD"></div>
                 <div class="form-group"><label>Conduct</label><input type="text" id="conduct" value="GOOD"></div>
                 <div class="form-group"><label>Date of Leaving School</label><input type="text" id="dol"></div>
-                <div class="form-group"><label>Standard in which studying</label><input type="text" id="standard" placeholder="STD-II (SECOND) SINCE JUNE-2024"></div>
+                <div class="form-group"><label>Standard in which studying</label><input type="text" id="standard" placeholder="9th"></div>
                 <div class="form-group"><label>Reason of leaving School</label><input type="text" id="reason"></div>
                 <div class="form-group"><label>Remarks</label><input type="text" id="remarks"></div>
                 <div class="form-group"><label>Issue Date</label><input type="text" id="issueDate"></div>
-                <div class="form-group"><label>School Code</label><input type="text" id="schoolCode" value="24180107544" disabled></div>
+                <div class="form-group"><label>School Code</label><input type="text" id="schoolCode" value="24180105602" disabled></div>
             </div>
             <br>
             <button class="btn btn-success" onclick="saveLC()" id="saveBtn">💾 Save LC</button>
@@ -210,21 +209,21 @@ async function showForm(id = null) {
         document.getElementById('reason').value = lc.reason || '';
         document.getElementById('remarks').value = lc.remarks || '';
         document.getElementById('issueDate').value = lc.issue_date || '';
-        document.getElementById('schoolCode').value = '24180107544';
+        document.getElementById('schoolCode').value = '24180105602';
     } else {
         document.getElementById('formTitle').innerText = 'Add New Leaving Certificate';
         document.getElementById('lcForm').querySelectorAll('input').forEach(i => {
             if(i.id!== 'progress' && i.id!== 'conduct' && i.id!== 'srNo' && i.id!== 'schoolCode') i.value = '';
         });
         document.getElementById('editId').value = '';
-        document.getElementById('schoolCode').value = '24180107544';
+        document.getElementById('schoolCode').value = '24180105602';
 
         showLoader(true);
         const { data, error } = await supabaseClient
-         .from('leaving_certificates')
-         .select('sr_no')
-         .order('sr_no', { ascending: false })
-         .limit(1);
+        .from('leaving_certificates')
+        .select('sr_no')
+        .order('sr_no', { ascending: false })
+        .limit(1);
 
         if (error) {
             document.getElementById('srNo').value = '1';
@@ -274,7 +273,7 @@ async function saveLC() {
         reason: document.getElementById('reason').value,
         remarks: document.getElementById('remarks').value,
         issue_date: document.getElementById('issueDate').value,
-        school_code: '24180107544'
+        school_code: '24180105602'
     };
 
     let result;
@@ -338,16 +337,15 @@ function viewLC(id) {
         <div class="certificate" id="printLC">
             <div class="school-code-box">
                 <b>School</b>
-                <b>${lc.school_code || '24180107544'}</b>
+                <b>${lc.school_code || '24180105602'}</b>
                 <b>Code</b>
             </div>
             <div class="cert-header">
-                <h1>ST. STEPHEN'S PRIMARY SCHOOL</h1>
-                <p>(State Govt. Recognised English Medium School)(Minority Institution)</p>
-                <p><b>FREELANDGUNJ, DAHOD</b></p>
-                <p>(Conducted by : St. Stephen's School Trust - Dahod)</p>
-                <p>(Registered Under Bombay Public Trust Act. 1950)</p>
-                <p>(PTR No. D/1, Panchmahals)</p>
+                <h1>RAINBOW PUBLIC SCHOOL</h1>
+                <p>Shalimar Co-operative Society, Muvaliya Road, Rabdal, Dahod</p>
+                <p>(State Govt. Recognised English Medium School)</p>
+                <p><b>Conduct by: Shubhi Education Foundation, DAHOD</b></p>
+                <p>(Registered under Mumbai Public Trust Act. 1950)</p>
                 <p>(Prescribed by Rule 12-1 Chapter IV of the Grant-in-Aid Code)</p>
             </div>
             <div class="cert-title">School Leaving Certificate</div>
@@ -390,8 +388,8 @@ function viewLC(id) {
                 <div class="sign-box">
                     <div class="sign-line"></div>
                     <b>Principal</b><br>
-                    St. Stephen's Primary School,<br>
-                    Freelandgunj, Dahod
+                    Rainbow Public School,<br>
+                    Dahod
                 </div>
             </div>
         </div>
