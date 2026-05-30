@@ -8,59 +8,59 @@
     <style>
         * { box-sizing: border-box; font-family: 'Times New Roman', serif; }
         body { background: #f0f0f0; padding: 0; margin: 0; }
-    .admin-header { background: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-    .admin-header h3 { margin: 0; font-size: 20px; }
-    .breadcrumb { background: #ecf0f1; padding: 10px 20px; font-size: 14px; }
-    .breadcrumb a { color: #3498db; text-decoration: none; }
-    .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
-    .controls { background: white; padding: 15px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .btn { padding: 8px 16px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
-    .btn-primary { background: #3498db; color: white; }
-    .btn-success { background: #27ae60; color: white; }
-    .btn-danger { background: #e74c3c; color: white; }
-    .btn-warning { background: #f39c12; color: white; }
-    .btn-secondary { background: #95a5a6; color: white; }
-    .btn:hover { opacity: 0.9; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+   .admin-header { background: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+   .admin-header h3 { margin: 0; font-size: 20px; }
+   .breadcrumb { background: #ecf0f1; padding: 10px 20px; font-size: 14px; }
+   .breadcrumb a { color: #3498db; text-decoration: none; }
+   .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+   .controls { background: white; padding: 15px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+   .btn { padding: 8px 16px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
+   .btn-primary { background: #3498db; color: white; }
+   .btn-success { background: #27ae60; color: white; }
+   .btn-danger { background: #e74c3c; color: white; }
+   .btn-warning { background: #f39c12; color: white; }
+   .btn-secondary { background: #95a5a6; color: white; }
+   .btn:hover { opacity: 0.9; }
+   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .certificate { background: #fffef5; border: 3px double #000; padding: 20px; margin: 20px 0; position: relative; }
-    .cert-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; }
-    .cert-header h1 { color: #b30000; margin: 5px 0; font-size: 28px; }
-    .cert-header p { margin: 2px 0; font-size: 12px; }
-    .cert-title { text-align: center; font-size: 24px; font-weight: bold; margin: 10px 0; font-family: 'Brush Script MT', cursive; color: #b30000; }
+   .certificate { background: #fffef5; border: 3px double #000; padding: 20px; margin: 20px 0; position: relative; }
+   .cert-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; }
+   .cert-header h1 { color: #b30000; margin: 5px 0; font-size: 28px; }
+   .cert-header p { margin: 2px 0; font-size: 12px; }
+   .cert-title { text-align: center; font-size: 24px; font-weight: bold; margin: 10px 0; font-family: 'Brush Script MT', cursive; color: #b30000; }
 
-    .cert-body { margin-top: 15px; }
-    .cert-row { display: flex; border-bottom: 1px solid #000; padding: 6px 0; align-items: flex-end; }
-    .cert-row.label { width: 45%; font-weight: bold; font-size: 14px; }
-    .cert-row.value { width: 55%; border-bottom: 1px dotted #000; min-height: 18px; padding-left: 10px; font-size: 14px; word-wrap: break-word; }
+   .cert-body { margin-top: 15px; }
+   .cert-row { display: flex; border-bottom: 1px solid #000; padding: 6px 0; align-items: flex-end; }
+   .cert-row.label { width: 45%; font-weight: bold; font-size: 14px; }
+   .cert-row.value { width: 55%; border-bottom: 1px dotted #000; min-height: 18px; padding-left: 10px; font-size: 14px; word-wrap: break-word; }
 
-    .cert-footer { margin-top: 30px; display: flex; justify-content: space-between; }
-    .sign-box { text-align: center; width: 30%; }
-    .sign-line { border-top: 1px solid #000; margin-top: 40px; }
+   .cert-footer { margin-top: 30px; display: flex; justify-content: space-between; }
+   .sign-box { text-align: center; width: 30%; }
+   .sign-line { border-top: 1px solid #000; margin-top: 40px; }
 
-    .school-code { position: absolute; top: 20px; right: 20px; border: 2px solid #b30000; border-radius: 50%; padding: 10px; text-align: center; font-size: 11px; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+   .pen-no-box { position: absolute; top: 20px; right: 20px; border: 2px solid #b30000; border-radius: 50%; padding: 10px; text-align: center; font-size: 11px; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
 
-    .table-list { width: 100%; background: white; border-collapse: collapse; margin-top: 20px; }
-    .table-list th,.table-list td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    .table-list th { background: #34495e; color: white; }
+   .table-list { width: 100%; background: white; border-collapse: collapse; margin-top: 20px; }
+   .table-list th,.table-list td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+   .table-list th { background: #34495e; color: white; }
 
         @media print {
-      .no-print,.admin-header,.breadcrumb { display: none!important; }
+    .no-print,.admin-header,.breadcrumb { display: none!important; }
             body { background: white; padding: 0; }
-      .certificate { border: 3px double #000; margin: 0; page-break-after: always; }
-      .container { max-width: 100%; padding: 0; }
+    .certificate { border: 3px double #000; margin: 0; page-break-after: always; }
+    .container { max-width: 100%; padding: 0; }
         }
 
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: white; padding: 20px; border-radius: 5px; }
-    .form-group { display: flex; flex-direction: column; }
-    .form-group label { font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
-    .form-group input { padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px; }
-    .form-group input:disabled { background: #ecf0f1; cursor: not-allowed; }
+   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: white; padding: 20px; border-radius: 5px; }
+   .form-group { display: flex; flex-direction: column; }
+   .form-group label { font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
+   .form-group input { padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px; }
+   .form-group input:disabled { background: #ecf0f1; cursor: not-allowed; }
         #searchBox { padding: 8px; width: 300px; border: 1px solid #bdc3c7; border-radius: 4px; }
-    .loader { text-align: center; padding: 20px; font-size: 18px; color: #3498db; }
-    .alert { padding: 10px; margin: 10px 0; border-radius: 4px; }
-    .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-    .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+   .loader { text-align: center; padding: 20px; font-size: 18px; color: #3498db; }
+   .alert { padding: 10px; margin: 10px 0; border-radius: 4px; }
+   .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+   .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
     </style>
 </head>
 <body>
@@ -107,7 +107,7 @@
                 <div class="form-group"><label>Reason of leaving School</label><input type="text" id="reason"></div>
                 <div class="form-group"><label>Remarks</label><input type="text" id="remarks"></div>
                 <div class="form-group"><label>Issue Date</label><input type="text" id="issueDate"></div>
-                <div class="form-group"><label>School Code</label><input type="text" id="diseCode" value="24180105602" disabled></div>
+                <div class="form-group"><label>PEN No.</label><input type="text" id="penNo" placeholder="Enter PEN No."></div>
             </div>
             <br>
             <button class="btn btn-success" onclick="saveLC()" id="saveBtn">💾 Save LC</button>
@@ -162,15 +162,15 @@ function showLoader(show) {
 async function loadLCData() {
     showLoader(true);
     const { data, error } = await supabaseClient
- .from('leaving_certificates')
- .select('*')
- .order('created_at', { ascending: false });
+.from('leaving_certificates')
+.select('*')
+.order('sr_no', { ascending: false });
 
     if (error) {
         showAlert('Error loading data: ' + error.message, 'error');
         console.error(error);
     } else {
-        lcData = data;
+        lcData = data || [];
         renderTable();
     }
     showLoader(false);
@@ -193,7 +193,7 @@ function showForm(id = null) {
         document.getElementById('caste').value = lc.caste || '';
         document.getElementById('birthPlace').value = lc.birth_place || '';
         document.getElementById('dob').value = lc.dob || '';
-        document.getElementById('aadhar').value = lc.aadhar || '';
+        document.getElementById('aadhar').value = lc.aadhaar || '';
         document.getElementById('uid').value = lc.uid || '';
         document.getElementById('lastSchool').value = lc.last_school || '';
         document.getElementById('doa').value = lc.doa || '';
@@ -204,15 +204,14 @@ function showForm(id = null) {
         document.getElementById('reason').value = lc.reason || '';
         document.getElementById('remarks').value = lc.remarks || '';
         document.getElementById('issueDate').value = lc.issue_date || '';
-        document.getElementById('diseCode').value = '24180105602';
+        document.getElementById('penNo').value = lc.pen_no || '';
     } else {
         document.getElementById('formTitle').innerText = 'Add New Leaving Certificate';
         document.getElementById('lcForm').querySelectorAll('input').forEach(i => {
-            if(i.id!== 'diseCode' && i.id!== 'progress' && i.id!== 'conduct' && i.id!== 'srNo') i.value = '';
+            if(i.id!== 'progress' && i.id!== 'conduct' && i.id!== 'srNo') i.value = '';
         });
         document.getElementById('editId').value = '';
-        // Auto Sr No = total records + 1
-        document.getElementById('srNo').value = lcData.length + 1;
+        document.getElementById('srNo').value = 'Auto';
     }
     window.scrollTo(0, 0);
 }
@@ -235,7 +234,6 @@ async function saveLC() {
 
     let id = document.getElementById('editId').value;
     let lcObj = {
-        sr_no: document.getElementById('srNo').value,
         gr_no: grNo,
         student_name: studentName,
         father_name: document.getElementById('fatherName').value,
@@ -243,7 +241,7 @@ async function saveLC() {
         caste: document.getElementById('caste').value,
         birth_place: document.getElementById('birthPlace').value,
         dob: document.getElementById('dob').value,
-        aadhar: document.getElementById('aadhar').value,
+        aadhaar: document.getElementById('aadhar').value,
         uid: document.getElementById('uid').value,
         last_school: document.getElementById('lastSchool').value,
         doa: document.getElementById('doa').value,
@@ -254,20 +252,21 @@ async function saveLC() {
         reason: document.getElementById('reason').value,
         remarks: document.getElementById('remarks').value,
         issue_date: document.getElementById('issueDate').value,
-        dise_code: '24180105602'
+        pen_no: document.getElementById('penNo').value
     };
 
     let result;
     if(id) {
         result = await supabaseClient
-     .from('leaving_certificates')
-     .update({...lcObj, updated_at: new Date()})
-     .eq('id', id);
+   .from('leaving_certificates')
+   .update({...lcObj, updated_at: new Date()})
+   .eq('id', id)
+   .select();
     } else {
         result = await supabaseClient
-     .from('leaving_certificates')
-     .insert([lcObj])
-     .select();
+   .from('leaving_certificates')
+   .insert([lcObj])
+   .select();
     }
 
     if (result.error) {
@@ -314,10 +313,9 @@ function viewLC(id) {
     let lc = lcData.find(x => x.id === id);
     document.getElementById('certificateArea').innerHTML = `
         <div class="certificate" id="printLC">
-            <div class="school-code">
-                <b>School</b><br>
-                ${lc.dise_code}<br>
-                <b>Code</b>
+            <div class="pen-no-box">
+                <b>PEN No.</b><br>
+                ${lc.pen_no || '-'}
             </div>
             <div class="cert-header">
                 <h1>RAINBOW PUBLIC SCHOOL</h1>
@@ -339,7 +337,7 @@ function viewLC(id) {
                 ${createRow('4. Race and Caste (with subcaste)', lc.caste)}
                 ${createRow('5. Place of Birth', lc.birth_place)}
                 ${createRow('6. Date of Birth month and year<br>according to Christian era', lc.dob)}
-                ${createRow('7. Aadhar Card No.', lc.aadhar)}
+                ${createRow('7. Aadhar Card No.', lc.aadhaar)}
                 ${createRow('8. UID Number', lc.uid)}
                 ${createRow('9. Last School attended', lc.last_school)}
                 ${createRow('10. Date of admission', lc.doa)}
@@ -388,9 +386,9 @@ async function deleteLC(id) {
 
     showLoader(true);
     const { error } = await supabaseClient
- .from('leaving_certificates')
- .delete()
- .eq('id', id);
+.from('leaving_certificates')
+.delete()
+.eq('id', id);
 
     if (error) {
         showAlert('Error deleting: ' + error.message, 'error');
