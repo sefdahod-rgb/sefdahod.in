@@ -8,71 +8,69 @@
     <style>
         * { box-sizing: border-box; font-family: 'Times New Roman', serif; }
         body { background: #f0f0f0; padding: 0; margin: 0; }
-     .admin-header { background: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-     .admin-header h3 { margin: 0; font-size: 20px; }
-     .breadcrumb { background: #ecf0f1; padding: 10px 20px; font-size: 14px; }
-     .breadcrumb a { color: #3498db; text-decoration: none; }
-     .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
-     .controls { background: white; padding: 15px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-     .btn { padding: 8px 16px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
-     .btn-primary { background: #3498db; color: white; }
-     .btn-success { background: #27ae60; color: white; }
-     .btn-danger { background: #e74c3c; color: white; }
-     .btn-warning { background: #f39c12; color: white; }
-     .btn-secondary { background: #95a5a6; color: white; }
-     .btn:hover { opacity: 0.9; }
-     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .admin-header { background: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    .admin-header h3 { margin: 0; font-size: 20px; }
+    .breadcrumb { background: #ecf0f1; padding: 10px 20px; font-size: 14px; }
+    .breadcrumb a { color: #3498db; text-decoration: none; }
+    .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+    .controls { background: white; padding: 15px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .btn { padding: 8px 16px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
+    .btn-primary { background: #3498db; color: white; }
+    .btn-success { background: #27ae60; color: white; }
+    .btn-danger { background: #e74c3c; color: white; }
+    .btn-warning { background: #f39c12; color: white; }
+    .btn-secondary { background: #95a5a6; color: white; }
+    .btn:hover { opacity: 0.9; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-     .certificate { background: #fffef5; border: 3px double #000; padding: 20px; margin: 20px 0; position: relative; }
-     .cert-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; }
-     .cert-header h1 { color: #b30000; margin: 5px 0; font-size: 28px; }
-     .cert-header p { margin: 2px 0; font-size: 13px; }
-     .cert-title { text-align: center; font-size: 24px; font-weight: bold; margin: 10px 0; font-family: 'Brush Script MT', cursive; color: #b30000; }
+    .certificate { background: #fffef5; border: 3px double #000; padding: 20px; margin: 20px 0; position: relative; }
+    .cert-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; }
+    .cert-header h1 { color: #b30000; margin: 5px 0; font-size: 28px; }
+    .cert-header p { margin: 2px 0; font-size: 12px; }
+    .cert-title { text-align: center; font-size: 24px; font-weight: bold; margin: 10px 0; font-family: 'Brush Script MT', cursive; color: #b30000; }
 
-     .cert-body { margin-top: 15px; }
-     .cert-row { display: flex; border-bottom: 1px solid #000; padding: 6px 0; }
-     .cert-row.label { width: 45%; font-weight: bold; }
-     .cert-row.value { width: 55%; border-bottom: 1px dotted #000; }
+    .cert-body { margin-top: 15px; }
+    .cert-row { display: flex; border-bottom: 1px solid #000; padding: 6px 0; align-items: flex-end; }
+    .cert-row.label { width: 45%; font-weight: bold; font-size: 14px; }
+    .cert-row.value { width: 55%; border-bottom: 1px dotted #000; min-height: 18px; padding-left: 10px; font-size: 14px; word-wrap: break-word; }
 
-     .cert-footer { margin-top: 30px; display: flex; justify-content: space-between; }
-     .sign-box { text-align: center; width: 30%; }
-     .sign-line { border-top: 1px solid #000; margin-top: 40px; }
+    .cert-footer { margin-top: 30px; display: flex; justify-content: space-between; }
+    .sign-box { text-align: center; width: 30%; }
+    .sign-line { border-top: 1px solid #000; margin-top: 40px; }
 
-     .dise-code { position: absolute; top: 20px; right: 20px; border: 2px solid #b30000; border-radius: 50%; padding: 10px; text-align: center; font-size: 12px; }
+    .school-code { position: absolute; top: 20px; right: 20px; border: 2px solid #b30000; border-radius: 50%; padding: 10px; text-align: center; font-size: 11px; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
 
-     .table-list { width: 100%; background: white; border-collapse: collapse; margin-top: 20px; }
-     .table-list th,.table-list td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-     .table-list th { background: #34495e; color: white; }
+    .table-list { width: 100%; background: white; border-collapse: collapse; margin-top: 20px; }
+    .table-list th,.table-list td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    .table-list th { background: #34495e; color: white; }
 
         @media print {
-       .no-print,.admin-header,.breadcrumb { display: none!important; }
+      .no-print,.admin-header,.breadcrumb { display: none!important; }
             body { background: white; padding: 0; }
-       .certificate { border: 3px double #000; margin: 0; page-break-after: always; }
-       .container { max-width: 100%; padding: 0; }
+      .certificate { border: 3px double #000; margin: 0; page-break-after: always; }
+      .container { max-width: 100%; padding: 0; }
         }
 
-     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: white; padding: 20px; border-radius: 5px; }
-     .form-group { display: flex; flex-direction: column; }
-     .form-group label { font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
-     .form-group input { padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: white; padding: 20px; border-radius: 5px; }
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label { font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
+    .form-group input { padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px; }
+    .form-group input:disabled { background: #ecf0f1; cursor: not-allowed; }
         #searchBox { padding: 8px; width: 300px; border: 1px solid #bdc3c7; border-radius: 4px; }
-     .loader { text-align: center; padding: 20px; font-size: 18px; color: #3498db; }
-     .alert { padding: 10px; margin: 10px 0; border-radius: 4px; }
-     .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-     .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .loader { text-align: center; padding: 20px; font-size: 18px; color: #3498db; }
+    .alert { padding: 10px; margin: 10px 0; border-radius: 4px; }
+    .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
     </style>
 </head>
 <body>
-    <!-- Admin Header with Back Button -->
     <div class="admin-header no-print">
         <h3>🎓 Rainbow Public School - Admin Panel</h3>
         <div>
             <a href="index.html" class="btn btn-secondary">← Back to Dashboard</a>
-            <!-- ^^^ Yahan apne admin dashboard ka HTML file name daalo -->
         </div>
     </div>
 
-    <!-- Breadcrumb -->
     <div class="breadcrumb no-print">
         <a href="index.html">Dashboard</a> > <span>LC Management</span>
     </div>
@@ -90,9 +88,10 @@
             <h3 id="formTitle" style="color: #2c3e50;">Add New Leaving Certificate</h3>
             <div class="form-grid">
                 <input type="hidden" id="editId">
-                <div class="form-group"><label>Sr. No.</label><input type="text" id="srNo"></div>
+                <div class="form-group"><label>Sr. No. (Auto)</label><input type="text" id="srNo" disabled></div>
                 <div class="form-group"><label>General Register No.*</label><input type="text" id="grNo" required></div>
                 <div class="form-group"><label>Name of Pupil in Full*</label><input type="text" id="studentName" required></div>
+                <div class="form-group"><label>Father's Name</label><input type="text" id="fatherName"></div>
                 <div class="form-group"><label>Mother's Name</label><input type="text" id="motherName"></div>
                 <div class="form-group"><label>Race and Caste</label><input type="text" id="caste"></div>
                 <div class="form-group"><label>Place of Birth</label><input type="text" id="birthPlace"></div>
@@ -108,7 +107,7 @@
                 <div class="form-group"><label>Reason of leaving School</label><input type="text" id="reason"></div>
                 <div class="form-group"><label>Remarks</label><input type="text" id="remarks"></div>
                 <div class="form-group"><label>Issue Date</label><input type="text" id="issueDate"></div>
-                <div class="form-group"><label>DISE Code</label><input type="text" id="diseCode" value="24180107544"></div>
+                <div class="form-group"><label>School Code</label><input type="text" id="diseCode" value="24180105602" disabled></div>
             </div>
             <br>
             <button class="btn btn-success" onclick="saveLC()" id="saveBtn">💾 Save LC</button>
@@ -137,10 +136,8 @@
     </div>
 
 <script>
-// === SUPABASE CONFIG - YAHAN APNI DETAILS DAALO ===
 const SUPABASE_URL = 'https://kqahcvaoxnmxfcgyyync.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg';
-// ===================================================
 
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -165,9 +162,9 @@ function showLoader(show) {
 async function loadLCData() {
     showLoader(true);
     const { data, error } = await supabaseClient
-  .from('leaving_certificates')
-  .select('*')
-  .order('created_at', { ascending: false });
+ .from('leaving_certificates')
+ .select('*')
+ .order('created_at', { ascending: false });
 
     if (error) {
         showAlert('Error loading data: ' + error.message, 'error');
@@ -191,6 +188,7 @@ function showForm(id = null) {
         document.getElementById('srNo').value = lc.sr_no || '';
         document.getElementById('grNo').value = lc.gr_no || '';
         document.getElementById('studentName').value = lc.student_name || '';
+        document.getElementById('fatherName').value = lc.father_name || '';
         document.getElementById('motherName').value = lc.mother_name || '';
         document.getElementById('caste').value = lc.caste || '';
         document.getElementById('birthPlace').value = lc.birth_place || '';
@@ -206,13 +204,15 @@ function showForm(id = null) {
         document.getElementById('reason').value = lc.reason || '';
         document.getElementById('remarks').value = lc.remarks || '';
         document.getElementById('issueDate').value = lc.issue_date || '';
-        document.getElementById('diseCode').value = lc.dise_code || '24180107544';
+        document.getElementById('diseCode').value = '24180105602';
     } else {
         document.getElementById('formTitle').innerText = 'Add New Leaving Certificate';
         document.getElementById('lcForm').querySelectorAll('input').forEach(i => {
-            if(i.id!== 'diseCode' && i.id!== 'progress' && i.id!== 'conduct') i.value = '';
+            if(i.id!== 'diseCode' && i.id!== 'progress' && i.id!== 'conduct' && i.id!== 'srNo') i.value = '';
         });
         document.getElementById('editId').value = '';
+        // Auto Sr No = total records + 1
+        document.getElementById('srNo').value = lcData.length + 1;
     }
     window.scrollTo(0, 0);
 }
@@ -238,6 +238,7 @@ async function saveLC() {
         sr_no: document.getElementById('srNo').value,
         gr_no: grNo,
         student_name: studentName,
+        father_name: document.getElementById('fatherName').value,
         mother_name: document.getElementById('motherName').value,
         caste: document.getElementById('caste').value,
         birth_place: document.getElementById('birthPlace').value,
@@ -253,20 +254,20 @@ async function saveLC() {
         reason: document.getElementById('reason').value,
         remarks: document.getElementById('remarks').value,
         issue_date: document.getElementById('issueDate').value,
-        dise_code: document.getElementById('diseCode').value
+        dise_code: '24180105602'
     };
 
     let result;
     if(id) {
         result = await supabaseClient
-      .from('leaving_certificates')
-      .update({...lcObj, updated_at: new Date()})
-      .eq('id', id);
+     .from('leaving_certificates')
+     .update({...lcObj, updated_at: new Date()})
+     .eq('id', id);
     } else {
         result = await supabaseClient
-      .from('leaving_certificates')
-      .insert([lcObj])
-      .select();
+     .from('leaving_certificates')
+     .insert([lcObj])
+     .select();
     }
 
     if (result.error) {
@@ -313,15 +314,17 @@ function viewLC(id) {
     let lc = lcData.find(x => x.id === id);
     document.getElementById('certificateArea').innerHTML = `
         <div class="certificate" id="printLC">
-            <div class="dise-code">
+            <div class="school-code">
                 <b>School</b><br>
                 ${lc.dise_code}<br>
-                <b>Dise Code</b>
+                <b>Code</b>
             </div>
             <div class="cert-header">
                 <h1>RAINBOW PUBLIC SCHOOL</h1>
+                <p>Shalimar Co-operative Society, Muvaliya Road, Rabdal, Dahod</p>
                 <p>(State Govt. Recognised English Medium School)</p>
-                <p><b>Registered under Shubhi Education Foundation, DAHOD</b></p>
+                <p><b>Conduct by: Shubhi Education Foundation, DAHOD</b></p>
+                <p>(Registered under Mumbai Public Trust Act.1950)</p>
                 <p>(Prescribed by Rule 12-1 Chapter IV of the Grant-in-Aid Code)</p>
             </div>
             <div class="cert-title">School Leaving Certificate</div>
@@ -331,21 +334,22 @@ function viewLC(id) {
             </div>
             <div class="cert-body">
                 ${createRow('1. Name of pupil in full', lc.student_name)}
-                ${createRow('2. Mother\'s Name', lc.mother_name)}
-                ${createRow('3. Race and Caste (with subcaste)', lc.caste)}
-                ${createRow('4. Place of Birth', lc.birth_place)}
-                ${createRow('5. Date of Birth month and year<br>according to Christian era', lc.dob)}
-                ${createRow('6. Aadhar Card No.', lc.aadhar)}
-                ${createRow('7. UID Number', lc.uid)}
-                ${createRow('8. Last School attended', lc.last_school)}
-                ${createRow('9. Date of admission', lc.doa)}
-                ${createRow('10. Progress', lc.progress)}
-                ${createRow('11. Conduct', lc.conduct)}
-                ${createRow('12. Date of leaving School', lc.dol)}
-                ${createRow('13. Standard in which studying<br>and since when', lc.standard)}
-                ${createRow('14. Reason of leaving School', lc.reason)}
-                ${createRow('15. Remarks', lc.remarks)}
-                ${createRow('16. Total No. of days present.......... out of Total working days..........', '')}
+                ${createRow('2. Father\'s Name', lc.father_name)}
+                ${createRow('3. Mother\'s Name', lc.mother_name)}
+                ${createRow('4. Race and Caste (with subcaste)', lc.caste)}
+                ${createRow('5. Place of Birth', lc.birth_place)}
+                ${createRow('6. Date of Birth month and year<br>according to Christian era', lc.dob)}
+                ${createRow('7. Aadhar Card No.', lc.aadhar)}
+                ${createRow('8. UID Number', lc.uid)}
+                ${createRow('9. Last School attended', lc.last_school)}
+                ${createRow('10. Date of admission', lc.doa)}
+                ${createRow('11. Progress', lc.progress)}
+                ${createRow('12. Conduct', lc.conduct)}
+                ${createRow('13. Date of leaving School', lc.dol)}
+                ${createRow('14. Standard in which studying<br>and since when', lc.standard)}
+                ${createRow('15. Reason of leaving School', lc.reason)}
+                ${createRow('16. Remarks', lc.remarks)}
+                ${createRow('17. Total No. of days present.......... out of Total working days..........', '')}
             </div>
             <div style="margin-top: 15px; font-size: 14px;">
                 Certified that the above information is in accordance with the School Register.<br>
@@ -384,9 +388,9 @@ async function deleteLC(id) {
 
     showLoader(true);
     const { error } = await supabaseClient
-  .from('leaving_certificates')
-  .delete()
-  .eq('id', id);
+ .from('leaving_certificates')
+ .delete()
+ .eq('id', id);
 
     if (error) {
         showAlert('Error deleting: ' + error.message, 'error');
