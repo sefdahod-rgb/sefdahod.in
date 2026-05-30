@@ -24,23 +24,24 @@
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .certificate { background: #fffef5; border: 3px double #000; padding: 20px; margin: 20px 0; position: relative; }
-.cert-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; position: relative; }
+.cert-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; position: relative; min-height: 100px; }
 .cert-header h1 { color: #b30000; margin: 5px 0; font-size: 26px; font-weight: bold; }
 .cert-header p { margin: 1px 0; font-size: 11px; line-height: 1.3; }
-.school-logo { position: absolute; left: 20px; top: 5px; width: 65px; height: 65px; }
-.school-code-box { position: absolute; top: 5px; right: 20px; border: 2px solid #b30000; border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 9px; line-height: 1.1; }
+.school-logo { position: absolute; left: 15px; top: 5px; width: 70px; height: 70px; object-fit: contain; }
+.school-code-box { position: absolute; top: 5px; right: 20px; border: 2px solid #b30000; border-radius: 50%; width: 75px; height: 75px; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 10px; }
+.school-code-box b { font-size: 9px; }
 .cert-title { text-align: center; font-size: 24px; font-weight: bold; margin: 10px 0; font-family: 'Brush Script MT', cursive; color: #b30000; border: 2px solid #000; display: inline-block; padding: 2px 25px; margin-left: 50%; transform: translateX(-50%); }
 
 .sr-gr-row { display: flex; justify-content: space-between; margin: 10px 0; font-weight: bold; font-size: 14px; border-bottom: 2px solid #000; padding-bottom: 5px; }
 
 .cert-body { margin-top: 5px; }
-.cert-row { display: table; width: 100%; border-bottom: 1px solid #000; padding: 4px 0; }
-.cert-row.label { display: table-cell; width: 45%; font-weight: normal; font-size: 13px; vertical-align: top; padding-right: 8px; }
-.cert-row.value { display: table-cell; width: 55%; font-size: 13px; font-weight: bold; color: #000080; vertical-align: top; padding-left: 5px; }
+.cert-row { display: flex; width: 100%; border-bottom: 1px solid #000; min-height: 32px; }
+.cert-row.label { width: 45%; font-size: 13px; padding: 6px 8px 6px 0; display: flex; align-items: center; }
+.cert-row.value { width: 55%; font-size: 13px; font-weight: bold; color: #000080; padding: 6px 0 6px 10px; display: flex; align-items: flex-end; border-bottom: 1px dotted #000; }
 
-.cert-footer { margin-top: 15px; display: flex; justify-content: space-between; align-items: flex-end; font-size: 13px; }
+.cert-footer { margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; font-size: 13px; }
 .sign-box { text-align: center; width: 30%; }
-.sign-line { border-top: 1px solid #000; margin-top: 35px; margin-bottom: 3px; }
+.sign-line { border-top: 1px solid #000; margin-top: 40px; margin-bottom: 3px; }
 
 .table-list { width: 100%; background: white; border-collapse: collapse; margin-top: 20px; }
 .table-list th,.table-list td { border: 1px solid #ddd; padding: 8px; text-align: left; }
@@ -220,10 +221,10 @@ async function showForm(id = null) {
 
         showLoader(true);
         const { data, error } = await supabaseClient
-        .from('leaving_certificates')
-        .select('sr_no')
-        .order('sr_no', { ascending: false })
-        .limit(1);
+       .from('leaving_certificates')
+       .select('sr_no')
+       .order('sr_no', { ascending: false })
+       .limit(1);
 
         if (error) {
             document.getElementById('srNo').value = '1';
@@ -341,6 +342,7 @@ function viewLC(id) {
                 <b>Code</b>
             </div>
             <div class="cert-header">
+                <img src="logo.png" class="school-logo" alt="School Logo">
                 <h1>ST. STEPHEN'S PRIMARY SCHOOL</h1>
                 <p>(State Govt. Recognised English Medium School)(Minority Institution)</p>
                 <p><b>FREELANDGUNJ, DAHOD</b></p>
@@ -388,9 +390,10 @@ function viewLC(id) {
                 </div>
                 <div class="sign-box">
                     <div class="sign-line"></div>
-                    <b>Principal</b><br>
+                    <b>Head Mistress</b><br>
                     St. Stephen's Primary School,<br>
-                    Freelandgunj, Dahod
+                    Freelandgunj, P.O. Dahod<br>
+                    Gujarat - 389160
                 </div>
             </div>
         </div>
