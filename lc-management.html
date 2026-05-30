@@ -8,58 +8,58 @@
     <style>
         * { box-sizing: border-box; font-family: 'Times New Roman', serif; }
         body { background: #f0f0f0; padding: 0; margin: 0; }
-      .admin-header { background: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-      .admin-header h3 { margin: 0; font-size: 20px; }
-      .breadcrumb { background: #ecf0f1; padding: 10px 20px; font-size: 14px; }
-      .breadcrumb a { color: #3498db; text-decoration: none; }
-      .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
-      .controls { background: white; padding: 15px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-      .btn { padding: 8px 16px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
-      .btn-primary { background: #3498db; color: white; }
-      .btn-success { background: #27ae60; color: white; }
-      .btn-danger { background: #e74c3c; color: white; }
-      .btn-warning { background: #f39c12; color: white; }
-      .btn-secondary { background: #95a5a6; color: white; }
-      .btn:hover { opacity: 0.9; }
-      .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        
-      .certificate { background: #fffef5; border: 3px double #000; padding: 20px; margin: 20px 0; position: relative; }
-      .cert-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; }
-      .cert-header h1 { color: #b30000; margin: 5px 0; font-size: 28px; }
-      .cert-header p { margin: 2px 0; font-size: 13px; }
-      .cert-title { text-align: center; font-size: 24px; font-weight: bold; margin: 10px 0; font-family: 'Brush Script MT', cursive; color: #b30000; }
-        
-      .cert-body { margin-top: 15px; }
-      .cert-row { display: flex; border-bottom: 1px solid #000; padding: 6px 0; }
-      .cert-row.label { width: 45%; font-weight: bold; }
-      .cert-row.value { width: 55%; border-bottom: 1px dotted #000; }
-        
-      .cert-footer { margin-top: 30px; display: flex; justify-content: space-between; }
-      .sign-box { text-align: center; width: 30%; }
-      .sign-line { border-top: 1px solid #000; margin-top: 40px; }
-        
-      .dise-code { position: absolute; top: 20px; right: 20px; border: 2px solid #b30000; border-radius: 50%; padding: 10px; text-align: center; font-size: 12px; }
-        
-      .table-list { width: 100%; background: white; border-collapse: collapse; margin-top: 20px; }
-      .table-list th,.table-list td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-      .table-list th { background: #34495e; color: white; }
-        
+     .admin-header { background: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+     .admin-header h3 { margin: 0; font-size: 20px; }
+     .breadcrumb { background: #ecf0f1; padding: 10px 20px; font-size: 14px; }
+     .breadcrumb a { color: #3498db; text-decoration: none; }
+     .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+     .controls { background: white; padding: 15px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+     .btn { padding: 8px 16px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
+     .btn-primary { background: #3498db; color: white; }
+     .btn-success { background: #27ae60; color: white; }
+     .btn-danger { background: #e74c3c; color: white; }
+     .btn-warning { background: #f39c12; color: white; }
+     .btn-secondary { background: #95a5a6; color: white; }
+     .btn:hover { opacity: 0.9; }
+     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+     .certificate { background: #fffef5; border: 3px double #000; padding: 20px; margin: 20px 0; position: relative; }
+     .cert-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; }
+     .cert-header h1 { color: #b30000; margin: 5px 0; font-size: 28px; }
+     .cert-header p { margin: 2px 0; font-size: 13px; }
+     .cert-title { text-align: center; font-size: 24px; font-weight: bold; margin: 10px 0; font-family: 'Brush Script MT', cursive; color: #b30000; }
+
+     .cert-body { margin-top: 15px; }
+     .cert-row { display: flex; border-bottom: 1px solid #000; padding: 6px 0; }
+     .cert-row.label { width: 45%; font-weight: bold; }
+     .cert-row.value { width: 55%; border-bottom: 1px dotted #000; }
+
+     .cert-footer { margin-top: 30px; display: flex; justify-content: space-between; }
+     .sign-box { text-align: center; width: 30%; }
+     .sign-line { border-top: 1px solid #000; margin-top: 40px; }
+
+     .dise-code { position: absolute; top: 20px; right: 20px; border: 2px solid #b30000; border-radius: 50%; padding: 10px; text-align: center; font-size: 12px; }
+
+     .table-list { width: 100%; background: white; border-collapse: collapse; margin-top: 20px; }
+     .table-list th,.table-list td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+     .table-list th { background: #34495e; color: white; }
+
         @media print {
-        .no-print,.admin-header,.breadcrumb { display: none!important; }
+       .no-print,.admin-header,.breadcrumb { display: none!important; }
             body { background: white; padding: 0; }
-        .certificate { border: 3px double #000; margin: 0; page-break-after: always; }
-        .container { max-width: 100%; padding: 0; }
+       .certificate { border: 3px double #000; margin: 0; page-break-after: always; }
+       .container { max-width: 100%; padding: 0; }
         }
-        
-      .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: white; padding: 20px; border-radius: 5px; }
-      .form-group { display: flex; flex-direction: column; }
-      .form-group label { font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
-      .form-group input { padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px; }
+
+     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: white; padding: 20px; border-radius: 5px; }
+     .form-group { display: flex; flex-direction: column; }
+     .form-group label { font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
+     .form-group input { padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px; }
         #searchBox { padding: 8px; width: 300px; border: 1px solid #bdc3c7; border-radius: 4px; }
-      .loader { text-align: center; padding: 20px; font-size: 18px; color: #3498db; }
-      .alert { padding: 10px; margin: 10px 0; border-radius: 4px; }
-      .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-      .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+     .loader { text-align: center; padding: 20px; font-size: 18px; color: #3498db; }
+     .alert { padding: 10px; margin: 10px 0; border-radius: 4px; }
+     .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+     .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
     </style>
 </head>
 <body>
@@ -82,7 +82,7 @@
             <h2 style="color: #2c3e50; margin-top:0;">School Leaving Certificate Management</h2>
             <div id="alertBox"></div>
             <button class="btn btn-primary" onclick="showForm()">+ Add New LC</button>
-            <button class="btn btn-success" onclick="printCurrentLC()" id="printBtn" style="display:none;">🖨️ Print Current LC</button>
+            <button class="btn btn-success" onclick="printCurrentLC()" id="printBtn" style="display:none;">🖨 Print Current LC</button>
             <input type="text" id="searchBox" placeholder="Search by GR No. or Student Name..." onkeyup="searchLC()">
         </div>
 
@@ -112,7 +112,7 @@
             </div>
             <br>
             <button class="btn btn-success" onclick="saveLC()" id="saveBtn">💾 Save LC</button>
-            <button class="btn btn-danger" onclick="hideForm()">✖️ Cancel</button>
+            <button class="btn btn-danger" onclick="hideForm()">✖ Cancel</button>
         </div>
 
         <div id="loader" class="loader no-print" style="display:none;">Loading...</div>
@@ -138,8 +138,8 @@
 
 <script>
 // === SUPABASE CONFIG - YAHAN APNI DETAILS DAALO ===
-const SUPABASE_URL = 'https://kqahcvaoxnmxfcgyyync.supabase.co'; 
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg'; 
+const SUPABASE_URL = 'https://kqahcvaoxnmxfcgyyync.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg';
 // ===================================================
 
 const { createClient } = supabase;
@@ -154,7 +154,7 @@ window.onload = async function() {
 
 function showAlert(message, type = 'success') {
     const alertBox = document.getElementById('alertBox');
-    alertBox.innerHTML = <div class="alert alert-${type}">${message}</div>;
+    alertBox.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
     setTimeout(() => alertBox.innerHTML = '', 3000);
 }
 
@@ -165,12 +165,13 @@ function showLoader(show) {
 async function loadLCData() {
     showLoader(true);
     const { data, error } = await supabaseClient
-   .from('leaving_certificates')
-   .select('*')
-   .order('created_at', { ascending: false });
-    
+  .from('leaving_certificates')
+  .select('*')
+  .order('created_at', { ascending: false });
+
     if (error) {
         showAlert('Error loading data: ' + error.message, 'error');
+        console.error(error);
     } else {
         lcData = data;
         renderTable();
@@ -182,7 +183,7 @@ function showForm(id = null) {
     document.getElementById('lcForm').style.display = 'block';
     document.getElementById('certificateArea').innerHTML = '';
     document.getElementById('printBtn').style.display = 'none';
-    
+
     if(id) {
         document.getElementById('formTitle').innerText = 'Edit Leaving Certificate';
         let lc = lcData.find(x => x.id === id);
@@ -223,15 +224,15 @@ function hideForm() {
 async function saveLC() {
     const grNo = document.getElementById('grNo').value.trim();
     const studentName = document.getElementById('studentName').value.trim();
-    
+
     if(!grNo ||!studentName) {
         showAlert('GR No. and Student Name are required!', 'error');
         return;
     }
-    
+
     document.getElementById('saveBtn').disabled = true;
     showLoader(true);
-    
+
     let id = document.getElementById('editId').value;
     let lcObj = {
         sr_no: document.getElementById('srNo').value,
@@ -254,29 +255,30 @@ async function saveLC() {
         issue_date: document.getElementById('issueDate').value,
         dise_code: document.getElementById('diseCode').value
     };
-    
+
     let result;
     if(id) {
         result = await supabaseClient
-       .from('leaving_certificates')
-       .update({...lcObj, updated_at: new Date()})
-       .eq('id', id);
+      .from('leaving_certificates')
+      .update({...lcObj, updated_at: new Date()})
+      .eq('id', id);
     } else {
         result = await supabaseClient
-       .from('leaving_certificates')
-       .insert([lcObj])
-       .select();
+      .from('leaving_certificates')
+      .insert([lcObj])
+      .select();
     }
-    
+
     if (result.error) {
         showAlert('Error: ' + result.error.message, 'error');
+        console.error(result.error);
     } else {
         showAlert(id? 'LC Updated Successfully!' : 'LC Saved Successfully!');
         hideForm();
         await loadLCData();
         if (!id && result.data) viewLC(result.data[0].id);
     }
-    
+
     document.getElementById('saveBtn').disabled = false;
     showLoader(false);
 }
@@ -379,15 +381,16 @@ function createRow(label, value) {
 
 async function deleteLC(id) {
     if(!confirm('Are you sure you want to delete this LC? This cannot be undone.')) return;
-    
+
     showLoader(true);
     const { error } = await supabaseClient
-   .from('leaving_certificates')
-   .delete()
-   .eq('id', id);
-    
+  .from('leaving_certificates')
+  .delete()
+  .eq('id', id);
+
     if (error) {
         showAlert('Error deleting: ' + error.message, 'error');
+        console.error(error);
     } else {
         showAlert('LC Deleted Successfully!');
         await loadLCData();
@@ -405,17 +408,17 @@ function searchLC() {
     let search = document.getElementById('searchBox').value.toLowerCase();
     let tbody = document.getElementById('lcTableBody');
     tbody.innerHTML = '';
-    
-    let filtered = lcData.filter(lc => 
-        lc.gr_no.toLowerCase().includes(search) || 
+
+    let filtered = lcData.filter(lc =>
+        lc.gr_no.toLowerCase().includes(search) ||
         lc.student_name.toLowerCase().includes(search)
     );
-    
+
     if(filtered.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No records found</td></tr>';
         return;
     }
-    
+
     filtered.forEach(lc => {
         tbody.innerHTML += `
             <tr>
