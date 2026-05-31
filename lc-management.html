@@ -28,16 +28,16 @@
 .cert-header h1 { color: #002244; margin: 5px 0; font-size: 28px; font-weight: bold; }
 .cert-header p { margin: 1px 0; font-size: 11px; line-height: 1.3; }
 .school-logo { position: absolute; left: 15px; top: 5px; width: 75px; height: 75px; }
-.school-code-box { position: absolute; top: 5px; right: 15px; border: 3px solid #002244; border-radius: 50%; width: 85px; height: 85px; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 11px; font-weight: bold; }
-.school-code-box b { font-size: 10px; line-height: 1.1; }
+.school-code-box { position: absolute; top: 5px; right: 15px; border: 4px solid #002244; border-radius: 50%; width: 95px; height: 95px; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 11px; font-weight: bold; }
+.school-code-box b { font-size: 11px; line-height: 1.1; }
 .cert-title { text-align: center; font-size: 24px; font-weight: bold; margin: 10px 0; font-family: 'Brush Script MT', cursive; color: #b30000; border: 2px solid #000; display: inline-block; padding: 2px 25px; margin-left: 50%; transform: translateX(-50%); }
 
 .sr-gr-row { display: flex; justify-content: space-between; margin: 10px 0; font-weight: bold; font-size: 14px; border-bottom: 2px solid #000; padding-bottom: 5px; }
 
 .cert-body { margin-top: 5px; }
 .cert-row { width: 100%; border-bottom: 1px solid #000; min-height: 32px; display: flex; align-items: center; padding: 4px 0; }
-.cert-row.label { width: 45%; font-size: 13px; padding-right: 15px; color: #003366; font-weight: bold; }
-.cert-row.value { width: 55%; font-size: 13px; font-weight: bold; color: #000000; padding-left: 20px; min-height: 26px; border-bottom: 1px dotted #000; display: flex; align-items: flex-end; }
+.cert-row.label { width: 45%; font-size: 13px; color: #003366; font-weight: bold; padding-right: 10px; }
+.cert-row.value { width: 55%; font-size: 13px; font-weight: bold; color: #000000; padding-left: 25px; border-bottom: 1px dotted #000; }
 
 .cert-footer { margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; font-size: 13px; clear: both; }
 .sign-box { text-align: center; width: 30%; }
@@ -221,10 +221,10 @@ async function showForm(id = null) {
 
         showLoader(true);
         const { data, error } = await supabaseClient
-     .from('leaving_certificates')
-     .select('sr_no')
-     .order('sr_no', { ascending: false })
-     .limit(1);
+   .from('leaving_certificates')
+   .select('sr_no')
+   .order('sr_no', { ascending: false })
+   .limit(1);
 
         if (error) {
             document.getElementById('srNo').value = '1';
