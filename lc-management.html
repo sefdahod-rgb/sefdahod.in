@@ -35,9 +35,9 @@
 .sr-gr-row { display: flex; justify-content: space-between; margin: 10px 0; font-weight: bold; font-size: 14px; border-bottom: 2px solid #000; padding-bottom: 5px; }
 
 .cert-body { margin-top: 5px; }
-.cert-row { width: 100%; border-bottom: 1px solid #000; min-height: 32px; display: flex; align-items: center; padding: 4px 0; }
-.cert-row.label { width: 45%; font-size: 13px; color: #003366; font-weight: bold; padding-right: 10px; }
-.cert-row.value { width: 55%; font-size: 13px; font-weight: bold; color: #000000; padding-left: 25px; border-bottom: 1px dotted #000; }
+.cert-row { width: 100%; border-bottom: 1px solid #000; min-height: 32px; display: table; padding: 4px 0; }
+.cert-row.label { display: table-cell; width: 45%; font-size: 13px; color: #003366; font-weight: bold; vertical-align: middle; padding-right: 10px; }
+.cert-row.value { display: table-cell; width: 55%; font-size: 13px; font-weight: bold; color: #000000; vertical-align: middle; padding-left: 40px; border-bottom: 1px dotted #000; }
 
 .cert-footer { margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; font-size: 13px; clear: both; }
 .sign-box { text-align: center; width: 30%; }
@@ -52,6 +52,8 @@
             body { background: white; padding: 0; }
 .certificate { border: 3px double #000; margin: 0; page-break-after: always; }
 .container { max-width: 100%; padding: 0; }
+.cert-row.label { color: #003366!important; }
+.cert-row.value { color: #000000!important; }
         }
 
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: white; padding: 20px; border-radius: 5px; }
@@ -221,10 +223,10 @@ async function showForm(id = null) {
 
         showLoader(true);
         const { data, error } = await supabaseClient
-   .from('leaving_certificates')
-   .select('sr_no')
-   .order('sr_no', { ascending: false })
-   .limit(1);
+ .from('leaving_certificates')
+ .select('sr_no')
+ .order('sr_no', { ascending: false })
+ .limit(1);
 
         if (error) {
             document.getElementById('srNo').value = '1';
