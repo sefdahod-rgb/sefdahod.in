@@ -25,12 +25,14 @@
 
 .certificate { background: #fffef5; border: 3px double #000; padding: 20px; margin: 20px 0; position: relative; }
 .cert-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; position: relative; min-height: 100px; }
-.cert-header h1 { color: #002244; margin: 5px 0; font-size: 28px; font-weight: bold; }
+.cert-header h1 { color: #b30000; margin: 5px 0; font-size: 28px; font-weight: bold; }
 .cert-header p { margin: 1px 0; font-size: 11px; line-height: 1.3; }
 .school-logo { position: absolute; left: 15px; top: 5px; width: 75px; height: 75px; }
-.school-code-box { position: absolute; top: 5px; right: 15px; border: 4px solid #002244; border-radius: 50%; width: 95px; height: 95px; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 11px; font-weight: bold; }
-.school-code-box b { font-size: 11px; line-height: 1.1; }
-.cert-title { text-align: center; font-size: 24px; font-weight: bold; margin: 10px 0; font-family: 'Brush Script MT', cursive; color: #b30000; border: 2px solid #000; display: inline-block; padding: 2px 25px; margin-left: 50%; transform: translateX(-50%); }
+.school-code-box { position: absolute; top: 5px; right: 15px; border: 3px solid #b30000; border-radius: 50%; width: 95px; height: 95px; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 11px; font-weight: bold; color: #b30000; }
+.school-code-box .top-text { font-size: 10px; margin-bottom: 3px; }
+.school-code-box .code-text { font-size: 13px; font-weight: bold; margin: 2px 0; }
+.school-code-box .bottom-text { font-size: 10px; margin-top: 3px; }
+.cert-title { text-align: center; font-size: 26px; font-weight: bold; margin: 10px 0; font-family: 'Brush Script MT', 'Lucida Handwriting', cursive; color: #b30000; border: 2px solid #000; border-radius: 10px; display: inline-block; padding: 4px 30px; margin-left: 50%; transform: translateX(-50%); }
 
 .sr-gr-row { display: flex; justify-content: space-between; margin: 10px 0; font-weight: bold; font-size: 14px; border-bottom: 2px solid #000; padding-bottom: 5px; }
 
@@ -339,9 +341,9 @@ function viewLC(id) {
     document.getElementById('certificateArea').innerHTML = `
         <div class="certificate" id="printLC">
             <div class="school-code-box">
-                <b>School</b>
-                <b>${lc.school_code || '24180105602'}</b>
-                <b>Code</b>
+                <div class="top-text">School</div>
+                <div class="code-text">${lc.school_code || '24180105602'}</div>
+                <div class="bottom-text">Dise Code</div>
             </div>
             <div class="cert-header">
                 <img src="logo.png" class="school-logo" alt="School Logo">
