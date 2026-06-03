@@ -341,9 +341,20 @@ function viewLC(id) {
     document.getElementById('certificateArea').innerHTML = `
         <div class="certificate" id="printLC">
             <div class="school-code-box">
-                <div class="top-text">School</div>
-                <div class="code-text">${lc.school_code || '24180105602'}</div>
-                <div class="bottom-text">Dise Code</div>
+                <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="47" fill="none" stroke="#b30000" stroke-width="3"/>
+                    <defs>
+                        <path id="topCurve" d="M 15,50 A 35,35 0 0 1 85,50" />
+                        <path id="bottomCurve" d="M 15,50 A 35,35 0 0 0 85,50" />
+                    </defs>
+                    <text fill="#b30000" font-size="11" font-weight="bold" font-family="Times New Roman">
+                        <textPath href="#topCurve" startOffset="50%" text-anchor="middle">School</textPath>
+                    </text>
+                    <text x="50" y="55" fill="#b30000" font-size="13" font-weight="bold" font-family="Times New Roman" text-anchor="middle">${lc.school_code || '24180105602'}</text>
+                    <text fill="#b30000" font-size="11" font-weight="bold" font-family="Times New Roman">
+                        <textPath href="#bottomCurve" startOffset="50%" text-anchor="middle">Dise Code</textPath>
+                    </text>
+                </svg>
             </div>
             <div class="cert-header">
                 <img src="logo.png" class="school-logo" alt="School Logo">
@@ -403,7 +414,6 @@ function viewLC(id) {
     document.getElementById('printBtn').style.display = 'inline-block';
     window.scrollTo(0, 0);
 }
-
 function createRow(label, value) {
     return `<div class="cert-row">
         <div class="label">${label} : -</div>
