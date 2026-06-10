@@ -260,6 +260,11 @@ async function saveLC() {
     showLoader(true);
 
     let id = document.getElementById('editId').value;
+
+    // Ye 2 line change ki hai - parseInt lagaya
+    const totalPresentVal = document.getElementById('totalPresent').value;
+    const totalWorkingDaysVal = document.getElementById('totalWorkingDays').value;
+
     let lcObj = {
         gr_no: grNo,
         student_name: studentName,
@@ -279,8 +284,8 @@ async function saveLC() {
         standard: document.getElementById('standard').value,
         reason: document.getElementById('reason').value,
         remarks: document.getElementById('remarks').value,
-        total_present: document.getElementById('totalPresent').value || null,
-        total_working_days: document.getElementById('totalWorkingDays').value || null,
+        total_present: totalPresentVal? parseInt(totalPresentVal) : null, // <-- Change kiya
+        total_working_days: totalWorkingDaysVal? parseInt(totalWorkingDaysVal) : null, // <-- Change kiya
         issue_date: document.getElementById('issueDate').value,
         school_code: '24180105602'
     };
@@ -329,6 +334,8 @@ function renderTable() {
                 <td>${lc.pen_no || '-'}</td>
                 <td>${lc.standard || '-'}</td>
                 <td>${lc.dol || '-'}</td>
+                <td>${lc.total_present || '0'}</td>
+               <td>${lc.total_working_days || '0'}</td>
                 <td>
                     <button class="btn btn-primary" onclick="viewLC(${lc.id})">View</button>
                     <button class="btn btn-warning" onclick="showForm(${lc.id})">Edit</button>
