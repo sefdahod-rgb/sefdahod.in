@@ -215,6 +215,8 @@ async function showForm(id = null) {
         document.getElementById('remarks').value = lc.remarks || '';
         document.getElementById('issueDate').value = lc.issue_date || '';
         document.getElementById('schoolCode').value = '24180105602';
+        document.getElementById('totalPresent').value = lc.total_present || '';
+        document.getElementById('totalWorkingDays').value = lc.total_working_days || '';
     } else {
         document.getElementById('formTitle').innerText = 'Add New Leaving Certificate';
         document.getElementById('lcForm').querySelectorAll('input').forEach(i => {
@@ -277,6 +279,8 @@ async function saveLC() {
         standard: document.getElementById('standard').value,
         reason: document.getElementById('reason').value,
         remarks: document.getElementById('remarks').value,
+        total_present: document.getElementById('totalPresent').value || null,
+        total_working_days: document.getElementById('totalWorkingDays').value || null,
         issue_date: document.getElementById('issueDate').value,
         school_code: '24180105602'
     };
@@ -388,7 +392,7 @@ function viewLC(id) {
                 ${createRow('15. Standard in which studying<br>and since when', lc.standard)}
                 ${createRow('16. Reason of leaving School', lc.reason)}
                 ${createRow('17. Remarks', lc.remarks)}
-                ${createRow('18. Total No. of days present.......... out of Total working days..........', '')}
+               ${createRow('18. Total No. of days present.......... out of Total working days..........', lc.total_present && lc.total_working_days ? `${lc.total_present} out of ${lc.total_working_days}` : '')}
             </div>
             <div style="margin-top: 15px; font-size: 13px;">
                 Certified that the above information is in accordance with the School Register.<br>
