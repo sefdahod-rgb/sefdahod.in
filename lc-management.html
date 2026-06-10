@@ -261,10 +261,13 @@ async function saveLC() {
 
     let id = document.getElementById('editId').value;
 
-    // Ye 2 line change ki hai - parseInt lagaya
+    // Step 1: Input ki value nikalo
     const totalPresentVal = document.getElementById('totalPresent').value;
     const totalWorkingDaysVal = document.getElementById('totalWorkingDays').value;
 
+    console.log('Step 1 - Input Values:', totalPresentVal, totalWorkingDaysVal); // DEBUGGING
+
+    // Step 2: Object banao
     let lcObj = {
         gr_no: grNo,
         student_name: studentName,
@@ -284,11 +287,14 @@ async function saveLC() {
         standard: document.getElementById('standard').value,
         reason: document.getElementById('reason').value,
         remarks: document.getElementById('remarks').value,
-        total_present: totalPresentVal? parseInt(totalPresentVal) : null, // <-- Change kiya
-        total_working_days: totalWorkingDaysVal? parseInt(totalWorkingDaysVal) : null, // <-- Change kiya
+        total_present: totalPresentVal? parseInt(totalPresentVal) : null,
+        total_working_days: totalWorkingDaysVal? parseInt(totalWorkingDaysVal) : null,
         issue_date: document.getElementById('issueDate').value,
         school_code: '24180105602'
     };
+
+    console.log('Step 2 - Final Object:', lcObj); // DEBUGGING
+    console.log('Step 3 - Present ka type:', typeof lcObj.total_present); // DEBUGGING
 
     let result;
     if(id) {
@@ -303,6 +309,8 @@ async function saveLC() {
 .insert([lcObj])
 .select();
     }
+
+    console.log('Step 4 - Supabase Response:', result); // DEBUGGING
 
     if (result.error) {
         showAlert('Error: ' + result.error.message, 'error');
