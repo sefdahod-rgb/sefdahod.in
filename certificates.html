@@ -171,6 +171,7 @@ style="width:90px;">
   <h1 style="color:#1d4ed8;font-size:58px;margin:0;">
     Shubhi Education Foundation
   </h1>
+  
 
   <p style="font-size:28px;">
     Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD
@@ -192,6 +193,19 @@ style="width:90px;">
     ${name}
   </h2>
 
+<h2>${type}</h2>
+
+${type=="Competition Certificate" ? `
+<div style="
+font-size:30px;
+font-weight:bold;
+color:#dc2626;
+margin-top:10px;
+margin-bottom:20px;">
+🏆 ${competition_name || ""}
+</div>
+` : ""}
+  
   <p style="font-size:32px;">
     In recognition of valuable contribution,
     dedication and support.
@@ -262,6 +276,7 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <option value="Achievement Certificate">Achievement Certificate</option>
 <option value="Volunteer Certificate">Volunteer Certificate</option>
 <option value="Participation Certificate">Participation Certificate</option>
+<option value="Competition Certificate">🏆 Competition Certificate</option>
 </select>
 
 <input type="date" id="issue_date">
@@ -281,7 +296,14 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 
 <table id="table"></table>
 </div>
+<div id="competitionBox" style="display:none; margin-top:10px;">
+<label><b>Competition Name</b></label>
 
+<input
+type="text"
+id="competition_name"
+placeholder="Example: Drawing Competition / Essay Competition / Quiz Competition">
+</div>
 <script>
 const client = supabase.createClient(
 "https://kqahcvaoxnmxfcgyyync.supabase.co",
@@ -346,7 +368,7 @@ function render(data){
       <td>
         <button onclick="editCertificate(${c.id})">Edit</button>
         <button onclick="deleteCertificate(${c.id})">Delete</button>
-        <button onclick="printCertificate('${c.cert_no}','${c.name}','${c.type}','${c.issue_date}','${c.remarks}')">Print</button>
+        <button onclick="printCertificate('${c.cert_no}','${c.name}','${c.type}','${c.issue_date}','${c.remarks,'${c.competition_name || ""}')">Print</button>
       </td>
     </tr>`;
   });
@@ -359,6 +381,8 @@ async function addCertificate(){
   const type = document.getElementById("type").value;
   const issue_date = document.getElementById("issue_date").value;
   const remarks = document.getElementById("remarks").value.trim();
+  const competition_name =
+document.getElementById("competition_name").value.trim();
 
   if(!name){
     alert("Recipient name required");
@@ -388,6 +412,19 @@ async function addCertificate(){
   document.getElementById("name").value="";
   document.getElementById("issue_date").value="";
   document.getElementById("remarks").value="";
+  const type = document.getElementById("type");
+const box = document.getElementById("competitionBox");
+
+type.addEventListener("change", function(){
+
+if(this.value=="Competition Certificate"){
+box.style.display="block";
+}else{
+box.style.display="none";
+document.getElementById("competition_name").value="";
+}
+
+});
 
   load();
 }
@@ -458,7 +495,7 @@ function exportCSV(){
 }
 
 /* PRINT CERTIFICATE */
-function printCertificate(cert_no,name,type,issue_date,remarks){
+function printCertificate(cert_no,name,type,issue_date,remarks,competition_name){
 
   const w = window.open("", "_blank");
 
