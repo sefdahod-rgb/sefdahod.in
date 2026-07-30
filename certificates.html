@@ -4,249 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Certificates Management - SEF Dahod</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-body{
-  margin:0;
-  font-family:Segoe UI;
-  background:#f3f4f6;
-}
-.header{
-  background:#2563eb;
-  color:#fff;
-  text-align:center;
-  padding:15px;
-}
-.header img{
-  width:60px;
-}
-nav{
-  text-align:center;
-  padding:10px;
-  background:#1d4ed8;
-}
-nav a{
-  color:#fff;
-  text-decoration:none;
-  margin:5px;
-  padding:8px 14px;
-  display:inline-block;
-  background:#2563eb;
-  border-radius:6px;
-}
-.card{
-  background:#fff;
-  margin:15px;
-  padding:15px;
-  border-radius:10px;
-}
-input,select,textarea{
-  padding:8px;
-  margin:5px;
-}
-button{
-  padding:8px 12px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  background:#2563eb;
-  color:#fff;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:15px;
-}
-th,td{
-  border:1px solid #ddd;
-  padding:8px;
-  text-align:center;
-}
-th{
-  background:#2563eb;
-  color:#fff;
-}
-.search{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-}
-@media print{
-  nav,.no-print,button,input,select,textarea{
-    display:none;
-  }
-}
-  <!-- ✅ certificate style me .certificate ke andar ye add/replace karo -->
-
-.certificate{
-  width:1000px;
-  height:700px;
-  margin:20px auto;
-  padding:40px;
-  border:12px solid #d4af37;
-  background:white;
-  text-align:center;
-  position:relative;
-  box-shadow:0 0 25px rgba(0,0,0,0.3);
-  overflow:hidden;
-}
-
-/* ✅ WATERMARK LOGO */
-<!-- ✅ printCertificate() function me pura certificate div ko is design se replace karo -->
-
-
-background:
-  linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
-  url('${window.location.origin}/logo.png') center center no-repeat;
-background-size:300px;
-
-
-<!-- FULL EXAMPLE -->
-<!-- ✅ certificates.html me printCertificate() function ke andar
-<div class="certificate" style="..."> ke style section me OLD style replace karo -->
-
-style="
-width:1000px;
-padding:60px;
-margin:auto;
-border:16px double #d4af37;
-text-align:center;
-font-family:Georgia, serif;
-background: linear-gradient(rgba(255,253,245,0.94), rgba(255,253,245,0.94)), 
-url('logo.png') center center no-repeat; background-size:300px;
-position:relative;
-box-shadow:0 0 35px rgba(0,0,0,0.25);
-"
-
-
-<!-- ✅ certificate ke END me (closing </div> se just pehle) ye add karo -->
-
-<img src="logo.png" style="
-position:absolute;
-bottom:40px;
-right:50px;
-width:100px;
-opacity:0.18;
-">
-
-
-<!-- ✅ Heading font improve -->
-<h1 style="color:#1d4ed8;font-size:58px;margin:0;font-family:Georgia,serif;">
-
-<!-- ✅ Signature section -->
-<div style="
-display:flex;
-justify-content:space-between;
-margin-top:80px;
-font-size:24px;
-">
-  <div>
-    ___________________<br>
-    Director Signature
-  </div>
-
-  <div>
-    ___________________<br>
-    Official Seal
-  </div>
-</div><img src="${window.location.origin}/logo.png"
-style="
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-width:400px;
-opacity:0.06;
-z-index:0;
-pointer-events:none;
-">
-
-
-<!-- FRONT TOP LOGO bhi replace karo -->
-
-<img src="${window.location.origin}/logo.png"
-style="width:90px;">
-  <h1 style="color:#1d4ed8;font-size:58px;margin:0;">
-    Shubhi Education Foundation
-  </h1>
-  
-
-  <p style="font-size:28px;">
-    Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD
-  </p>
-
-  <h2 style="color:#d97706;font-size:48px;">
-    Achievement Certificate
-  </h2>
-
-  <p style="font-size:34px;">
-    This is proudly presented to
-  </p>
-
-  <h2 style="
-    color:#16a34a;
-    font-size:56px;
-    text-decoration:underline;
-  ">
-    ${name}
-  </h2>
-
-<h2>${type}</h2>
-
-${type=="Competition Certificate" ? `
-<div style="
-font-size:30px;
-font-weight:bold;
-color:#dc2626;
-margin-top:10px;
-margin-bottom:20px;">
-🏆 ${competition_name || ""}
-</div>
-` : ""}
-  
-  <p style="font-size:32px;">
-    In recognition of valuable contribution,
-    dedication and support.
-  </p>
-
-  <p style="font-size:26px;">
-    ${remarks}
-  </p>
-
-  <p style="font-size:24px;">
-    Issued on: ${issueDate}
-  </p>
-
-  <br><br>
-
-  <div style="
-    display:flex;
-    justify-content:space-between;
-    margin-top:80px;
-    font-size:24px;
-  ">
-    <div>
-      ___________________<br>
-      Director Signature
-    </div>
-
-    <div>
-      ___________________<br>
-      Official Seal
-    </div>
-  </div>
-</div>
-
-</div>
+body{ margin:0; font-family:Segoe UI; background:#f3f4f6; }
+.header{ background:#2563eb; color:#fff; text-align:center; padding:15px; }
+.header img{ width:60px; }
+nav{ text-align:center; padding:10px; background:#1d4ed8; }
+nav a{ color:#fff; text-decoration:none; margin:5px; padding:8px 14px; display:inline-block; background:#2563eb; border-radius:6px; }
+.card{ background:#fff; margin:15px; padding:15px; border-radius:10px; }
+input,select,textarea{ padding:8px; margin:5px; border:1px solid #ccc; border-radius:6px; }
+textarea{ width:95%; }
+button{ padding:8px 12px; border:none; border-radius:6px; cursor:pointer; background:#2563eb; color:#fff; margin:2px; }
+button:hover{ opacity:0.9; }
+table{ width:100%; border-collapse:collapse; margin-top:15px; font-size:14px; }
+th,td{ border:1px solid #ddd; padding:8px; text-align:center; }
+th{ background:#2563eb; color:#fff; }
+.search{ width:98%; padding:10px; margin-top:10px; border:1px solid #ccc; border-radius:6px; }
+@media print{ nav,.no-print,button,input,select,textarea{ display:none; } }
 </style>
-
 </head>
-
 <body>
 
 <script>
+// Login check
 if(localStorage.getItem("isAdmin")!=="yes"){
   localStorage.setItem("redirectAfterLogin","certificates.html");
   location.href="login.html";
@@ -259,18 +39,16 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <p>Certificates Management System</p>
 </div>
 
-<nav>
+<nav class="no-print">
 <a href="admin.html">Admin</a>
 <a href="members.html">Members</a>
 <a href="index.html">Home</a>
 <a href="#" onclick="logout()">Logout</a>
 </nav>
 
-<div class="card">
+<div class="card no-print">
 <h3>Issue New Certificate</h3>
-
-<input type="text" id="name" placeholder="Recipient Name">
-
+<input type="text" id="name" placeholder="Recipient Name" style="width:200px;">
 <select id="type">
 <option value="Membership Certificate">Membership Certificate</option>
 <option value="Achievement Certificate">Achievement Certificate</option>
@@ -278,32 +56,27 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 <option value="Participation Certificate">Participation Certificate</option>
 <option value="Competition Certificate">🏆 Competition Certificate</option>
 </select>
-
 <input type="date" id="issue_date">
-
+<br>
+<div id="competitionBox" style="display:none; margin-top:10px;">
+<label><b>Competition Name</b></label><br>
+<input type="text" id="competition_name" placeholder="Example: Drawing / Essay / Quiz Competition" style="width:300px;">
+</div>
 <textarea id="remarks" placeholder="Remarks / Achievement Details"></textarea>
-
+<br>
 <button onclick="addCertificate()">Issue Certificate</button>
 </div>
 
 <div class="card">
 <h3>Certificates List</h3>
-
-<input type="text" id="search" class="search" placeholder="Search Certificate...">
-
+<input type="text" id="search" class="search no-print" placeholder="Search by Name or Certificate No...">
 <button onclick="exportCSV()" class="no-print">Export CSV</button>
-<button onclick="window.print()" class="no-print">Print</button>
-
+<button onclick="window.print()" class="no-print">Print List</button>
+<button onclick="load()" class="no-print">🔄 Refresh</button>
+<div id="loader" style="text-align:center; padding:20px; display:none;">Loading...</div>
 <table id="table"></table>
 </div>
-<div id="competitionBox" style="display:none; margin-top:10px;">
-<label><b>Competition Name</b></label>
 
-<input
-type="text"
-id="competition_name"
-placeholder="Example: Drawing Competition / Essay Competition / Quiz Competition">
-</div>
 <script>
 const client = supabase.createClient(
 "https://kqahcvaoxnmxfcgyyync.supabase.co",
@@ -312,23 +85,36 @@ const client = supabase.createClient(
 
 let allCertificates=[];
 
-/* DATE FORMAT ONLY */
 function formatDate(dateString){
   if(!dateString) return "-";
-  return new Date(dateString).toLocaleDateString('en-GB');
+  try{
+    return new Date(dateString).toLocaleDateString('en-GB');
+  }catch(e){ return dateString; }
 }
 
-/* LOAD */
-async function load(){
+// FIX 1: Competition Box Show/Hide - Bahar nikala
+document.getElementById("type").addEventListener("change", function(){
+  const box = document.getElementById("competitionBox");
+  if(this.value=="Competition Certificate"){
+    box.style.display="block";
+  }else{
+    box.style.display="none";
+    document.getElementById("competition_name").value="";
+  }
+});
 
+async function load(){
+  document.getElementById("loader").style.display="block";
   const { data, error } = await client
     .from("certificates")
     .select("*")
     .order("id",{ascending:false});
 
+  document.getElementById("loader").style.display="none";
+
   if(error){
     console.log(error);
-    alert("Error loading certificates");
+    alert("Error loading: " + error.message);
     return;
   }
 
@@ -336,53 +122,49 @@ async function load(){
   render(allCertificates);
 }
 
-/* RENDER */
 function render(data){
-
   const table = document.getElementById("table");
-
   table.innerHTML = `
   <tr>
     <th>Certificate No</th>
     <th>Name</th>
     <th>Type</th>
+    <th>Competition</th>
     <th>Issue Date</th>
     <th>Remarks</th>
     <th>Actions</th>
   </tr>`;
 
   if(data.length===0){
-    table.innerHTML += `<tr><td colspan="6">No certificates found</td></tr>`;
+    table.innerHTML += `<tr><td colspan="7">No certificates found</td></tr>`;
     return;
   }
 
   data.forEach(c=>{
-
+    // FIX 2: Print button ka syntax error theek kiya - safe escaping
     table.innerHTML += `
     <tr>
       <td>${c.cert_no || "-"}</td>
       <td>${c.name || "-"}</td>
       <td>${c.type || "-"}</td>
+      <td>${c.competition_name || "-"}</td>
       <td>${formatDate(c.issue_date)}</td>
       <td>${c.remarks || "-"}</td>
       <td>
         <button onclick="editCertificate(${c.id})">Edit</button>
-        <button onclick="deleteCertificate(${c.id})">Delete</button>
-        <button onclick="printCertificate('${c.cert_no}','${c.name}','${c.type}','${c.issue_date}','${c.remarks,'${c.competition_name || ""}')">Print</button>
+        <button onclick="deleteCertificate(${c.id})" style="background:#ef4444;">Delete</button>
+        <button onclick="printCertificate(${c.id})" style="background:#16a34a;">Print</button>
       </td>
     </tr>`;
   });
 }
 
-/* ADD */
 async function addCertificate(){
-
   const name = document.getElementById("name").value.trim();
   const type = document.getElementById("type").value;
   const issue_date = document.getElementById("issue_date").value;
   const remarks = document.getElementById("remarks").value.trim();
-  const competition_name =
-document.getElementById("competition_name").value.trim();
+  const competition_name = document.getElementById("competition_name").value.trim();
 
   if(!name){
     alert("Recipient name required");
@@ -397,296 +179,131 @@ document.getElementById("competition_name").value.trim();
       cert_no,
       name,
       type,
-      issue_date,
-      remarks
+      issue_date: issue_date || new Date().toISOString().split('T')[0],
+      remarks,
+      competition_name
     }]);
 
   if(error){
     console.log(error);
-    alert("Failed to issue certificate");
+    alert("Failed: " + error.message);
     return;
   }
 
   alert("Certificate issued successfully ✅");
-
   document.getElementById("name").value="";
   document.getElementById("issue_date").value="";
   document.getElementById("remarks").value="";
-  const type = document.getElementById("type");
-const box = document.getElementById("competitionBox");
-
-type.addEventListener("change", function(){
-
-if(this.value=="Competition Certificate"){
-box.style.display="block";
-}else{
-box.style.display="none";
-document.getElementById("competition_name").value="";
-}
-
-});
-
+  document.getElementById("competition_name").value="";
+  document.getElementById("competitionBox").style.display="none";
   load();
 }
 
-/* DELETE */
 async function deleteCertificate(id){
-
   if(!confirm("Delete this certificate?")) return;
-
-  await client
-    .from("certificates")
-    .delete()
-    .eq("id",id);
-
+  const { error } = await client.from("certificates").delete().eq("id",id);
+  if(error) alert(error.message);
   load();
 }
 
-/* EDIT */
 async function editCertificate(id){
-
   const cert = allCertificates.find(x=>x.id===id);
-
   let newName = prompt("Recipient Name", cert.name);
+  if(newName===null) return;
   let newRemarks = prompt("Remarks", cert.remarks);
+  if(newRemarks===null) newRemarks = cert.remarks;
+  let newComp = cert.competition_name || "";
+  if(cert.type=="Competition Certificate"){
+    newComp = prompt("Competition Name", cert.competition_name || "") || "";
+  }
 
-  if(!newName) return;
-
-  await client
-    .from("certificates")
-    .update({
+  const { error } = await client.from("certificates").update({
       name:newName,
-      remarks:newRemarks
-    })
-    .eq("id",id);
+      remarks:newRemarks,
+      competition_name:newComp
+    }).eq("id",id);
 
+  if(error) alert(error.message);
   load();
 }
 
-/* SEARCH */
-document.getElementById("search")
-.addEventListener("input", function(){
-
+document.getElementById("search").addEventListener("input", function(){
   const val = this.value.toLowerCase();
-
-  render(
-    allCertificates.filter(c =>
+  render(allCertificates.filter(c =>
       (c.name || "").toLowerCase().includes(val) ||
-      (c.cert_no || "").toLowerCase().includes(val)
-    )
-  );
+      (c.cert_no || "").toLowerCase().includes(val) ||
+      (c.type || "").toLowerCase().includes(val)
+    ));
 });
 
-/* EXPORT CSV */
 function exportCSV(){
-
-  let csv = "Certificate No,Name,Type,Issue Date,Remarks\n";
-
+  let csv = "Certificate No,Name,Type,Competition,Issue Date,Remarks\n";
   allCertificates.forEach(c=>{
-    csv += `${c.cert_no},${c.name},${c.type},${formatDate(c.issue_date)},${c.remarks}\n`;
+    csv += `"${c.cert_no}","${c.name}","${c.type}","${c.competition_name||''}","${formatDate(c.issue_date)}","${(c.remarks||'').replace(/"/g,'""')}"\n`;
   });
-
   const blob = new Blob([csv],{type:"text/csv"});
   const a = document.createElement("a");
-
   a.href = URL.createObjectURL(blob);
   a.download = "certificates.csv";
   a.click();
 }
 
-/* PRINT CERTIFICATE */
-function printCertificate(cert_no,name,type,issue_date,remarks,competition_name){
+function printCertificate(id){
+  const c = allCertificates.find(x=>x.id===id);
+  if(!c) return;
 
   const w = window.open("", "_blank");
-
   w.document.write(`
     <html>
     <head>
-      <title>Certificate</title>
+      <title>Certificate - ${c.name}</title>
       <style>
-        body{
-          margin:0;
-          padding:0;
-          font-family:'Georgia', serif;
-          background:#f8f5e9;
-        }
-
-        .certificate{
-          width:1000px;
-          height:700px;
-          margin:20px auto;
-          padding:40px;
-          border:12px solid #d4af37;
-          background:white;
-          text-align:center;
-          position:relative;
-          box-shadow:0 0 25px rgba(0,0,0,0.3);
-        }
-
-        .logo{
-          width:100px;
-          margin-bottom:10px;
-        }
-
-        h1{
-          font-size:42px;
-          color:#1d4ed8;
-          margin:10px 0;
-        }
-
-        h2{
-          font-size:32px;
-          color:#d97706;
-          margin:15px 0;
-        }
-
-        .cert-no{
-          position:absolute;
-          top:20px;
-          right:30px;
-          font-size:16px;
-          color:#555;
-        }
-
-        .content{
-          margin-top:40px;
-          font-size:24px;
-          line-height:1.8;
-          color:#222;
-        }
-
-        .recipient{
-          font-size:38px;
-          color:#16a34a;
-          font-weight:bold;
-          margin:20px 0;
-          text-decoration:underline;
-        }
-
-        .remarks{
-          margin-top:20px;
-          font-size:20px;
-          color:#444;
-          padding:0 40px;
-        }
-
-        .footer{
-          margin-top:60px;
-          display:flex;
-          justify-content:space-between;
-          padding:0 60px;
-          font-size:18px;
-        }
-
-        .signature{
-          border-top:2px solid #000;
-          padding-top:8px;
-          width:220px;
-          margin:auto;
-        }
-
-        .seal{
-          position:absolute;
-          bottom:40px;
-          right:60px;
-          width:120px;
-          opacity:0.2;
-        }
-
-        .print-btn{
-          margin-top:20px;
-          text-align:center;
-        }
-
-        button{
-          padding:12px 25px;
-          background:#2563eb;
-          color:white;
-          border:none;
-          border-radius:8px;
-          cursor:pointer;
-          font-size:18px;
-        }
-
-        @media print{
-          .print-btn{
-            display:none;
-          }
-        }
+        body{ margin:0; padding:0; font-family:Georgia, serif; background:#f8f5e9; }
+        .certificate{ width:900px; margin:20px auto; padding:60px; border:16px double #d4af37; text-align:center; background: linear-gradient(rgba(255,253,245,0.94), rgba(255,253,245,0.94)), url('logo.png') center center no-repeat; background-size:300px; position:relative; box-shadow:0 0 35px rgba(0,0,0,0.25); }
+        .logo{ width:90px; }
+        .watermark{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:400px; opacity:0.06; z-index:0; pointer-events:none; }
+        h1{ font-size:42px; color:#1d4ed8; margin:10px 0; }
+        .recipient{ font-size:46px; color:#16a34a; font-weight:bold; margin:15px 0; text-decoration:underline; position:relative; z-index:1; }
+        .comp-name{ font-size:28px; font-weight:bold; color:#dc2626; margin:15px 0; }
+        .print-btn{ text-align:center; margin:20px; }
+        .print-btn button{ padding:12px 25px; background:#2563eb; color:white; border:none; border-radius:8px; cursor:pointer; font-size:18px; }
+        @media print{ .print-btn{ display:none; } }
       </style>
     </head>
-
     <body>
-
       <div class="certificate">
-
-        <div class="cert-no">
-          Certificate No: ${cert_no}
-        </div>
-
+        <img src="${window.location.origin}/logo.png" class="watermark">
         <img src="logo.png" class="logo">
-
         <h1>Shubhi Education Foundation</h1>
-
-        <p>
-         Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD
-        </p>
-
-        <h2>${type}</h2>
-
-        <div class="content">
-          This is proudly presented to
+        <p style="font-size:18px;">Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD</p>
+        <h2 style="color:#d97706; font-size:36px;">${c.type}</h2>
+        ${c.type=="Competition Certificate" && c.competition_name ? `<div class="comp-name">🏆 ${c.competition_name}</div>` : ``}
+        <p style="font-size:24px;">This is proudly presented to</p>
+        <div class="recipient">${c.name}</div>
+        <p style="font-size:20px;">In recognition of valuable contribution, dedication and support.</p>
+        <p style="font-size:18px; margin-top:10px;">${c.remarks || ''}</p>
+        <p style="font-size:16px; margin-top:20px;">Issued on: ${new Date(c.issue_date).toLocaleDateString('en-GB')} | Cert No: ${c.cert_no}</p>
+        <div style="display:flex; justify-content:space-between; margin-top:60px; font-size:18px;">
+          <div>___________________<br>Director Signature</div>
+          <div>___________________<br>Official Seal</div>
         </div>
-
-        <div class="recipient">
-          ${name}
-        </div>
-
-        <div class="content">
-          In recognition of valuable contribution,
-          dedication and support.
-        </div>
-
-        <div class="remarks">
-          ${remarks}
-        </div>
-
-        <div class="content">
-          Issued on: ${formatDate(issue_date)}
-        </div>
-
-        <div class="footer">
-          <div>
-            <div class="signature">
-              Director Signature
-            </div>
-          </div>
-
-          <div>
-            <div class="signature">
-              Authorized Signature
-            </div>
-          </div>
-        </div>
-
       </div>
-
-      <div class="print-btn">
-        <button onclick="window.print()">
-          Download / Print Certificate
-        </button>
-      </div>
-
+      <div class="print-btn"><button onclick="window.print()">Download / Print Certificate</button></div>
     </body>
     </html>
   `);
+  w.document.close();
 }
 
-/* LOGOUT */
+// FIX 3: Logout properly
 function logout(){
-  localStorage.clear();
-  location.href="index.html";
+  localStorage.removeItem("isAdmin");
+  localStorage.removeItem("redirectAfterLogin");
+  location.href="login.html";
 }
 
 load();
 </script>
+
+</body>
+</html>
