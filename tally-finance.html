@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tally Prime - Rainbow Public School</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;font-family:Tahoma, Arial, sans-serif;margin:0;padding:0}
+body{background:#a8c0e0;padding:0}
+.top-bar{background:#3a5a8a;color:#fff;padding:8px 15px;display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.top-bar b{color:#ffeb3b}
+.main-box{max-width:1450px;margin:10px auto;background:#d6e3f5;padding:0;border:2px solid #3a5a8a}
+.menu-strip{background:#c0d4f0;padding:6px 10px;display:flex;gap:5px;flex-wrap:wrap;border-bottom:2px solid #3a5a8a}
+.mbtn{padding:6px 14px;background:#e8eef9;border:1px solid #5a7ab5;border-radius:2px;cursor:pointer;font-size:12px;font-weight:bold;color:#1a365d}
+.mbtn.active,.mbtn:hover{background:#3a5a8a;color:#fff}
+.content-area{background:#fff;min-height:600px;padding:15px}
+.panel{display:none}
+.panel.active{display:block}
+.tally-header{background:#3a5a8a;color:#fff;padding:10px;text-align:center;font-size:15px;font-weight:bold;letter-spacing:1px}
+.form-section{background:#eef2f9;border:1px solid #a0b8e0;padding:12px;margin:10px 0}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-bottom:8px}
+label{font-size:11px;font-weight:bold;color:#1a365d;display:block;margin-bottom:2px}
+input,select{width:100%;padding:5px;border:1px solid #5a7ab5;font-size:12px;background:#fffef0}
+input:focus,select:focus{background:#ffffaa;outline:2px solid #3a5a8a}
+.btn{padding:6px 15px;border:1px solid #1a365d;background:#3a5a8a;color:#fff;cursor:pointer;font-size:12px;font-weight:bold;border-radius:2px;margin:2px}
+.btn:hover{background:#1a365d}
+.btn-g{background:#2e7d32;border-color:#1b5e20}
+.btn-g:hover{background:#1b5e20}
+.btn-r{background:#c62828;border-color:#b71c1c}
+.btn-r:hover{background:#b71c1c}
+.btn-y{background:#f9a825;border-color:#f57f17;color:#000}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
+th,td{border:1px solid #5a7ab5;padding:6px 8px;text-align:left}
+th{background:#3a5a8a;color:#fff;font-weight:bold;font-size:11px;text-transform:uppercase}
+tr:nth-child(even){background:#eef2f9}
+tr:hover{background:#ffffcc}
+.total-row{background:#ffeb3b !important;font-weight:bold}
+.dr{color:#0d5302;font-weight:bold}
+.cr{color:#b71c1c;font-weight:bold}
+.alert{padding:8px;margin:8px 0;font-size:12px;border-radius:2px;border:1px solid}
+.alert-s{background:#c8e6c9;color:#1b5e20;border-color:#a5d6a7}
+.alert-e{background:#ffcdd2;color:#b71c1c;border-color:#ef9a9a}
+.tally-title{text-align:center;font-size:18px;font-weight:bold;color:#3a5a8a;padding:10px;background:#eef2f9;border:1px solid #a0b8e0;margin-bottom:10px}
+.reports{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media print{
+.no-print{display:none !important}
+body{background:#fff}
+.main-box{border:none;margin:0}
+.content-area{padding:0}
+table{font-size:11px}
+@page{margin:15mm}
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar no-print">
+<div>Company: <b>Rainbow Public School</b> | Financial Year: 2025-26 | Date: <span id="todayDate"></span></div>
+<div>TallyPrime | Educational Mode</div>
+</div>
+
+<div class="main-box">
+<div class="menu-strip no-print">
+<button class="mbtn active" onclick="showTab('voucher')">F4: Contra</button>
+<button class="mbtn" onclick="showTab('voucher')">F5: Payment</button>
+<button class="mbtn" onclick="showTab('voucher')">F6: Receipt</button>
+<button class="mbtn" onclick="showTab('voucher')">F7: Journal</button>
+<button class="mbtn" onclick="showTab('ledger')">Ledger</button>
+<button class="mbtn" onclick="showTab('trial')">Trial Balance</button>
+<button class="mbtn" onclick="showTab('balance')">Balance Sheet</button>
+<button class="mbtn" onclick="showTab('pnl')">Profit & Loss</button>
+<button class="mbtn" onclick="showTab('daybook')">Day Book</button>
+<button class="mbtn" onclick="window.print()" style="background:#ffeb3b;color:#000;">PRINT</button>
+</div>
+
+<div class="content-area">
+<div id="alertBox"></div>
+
+<!-- VOUCHER -->
+<div id="voucherPanel" class="panel active">
+<div class="tally-header">VOUCHER ENTRY - Gateway of Tally</div>
+<div class="form-section no-print">
+<div class="form-row">
+<div><label>Date (F2)</label><input type="date" id="vDate"></div>
+<div><label>Voucher Type</label><select id="vType"><option>Payment</option><option>Receipt</option><option>Contra</option><option>Journal</option><option>Sales</option><option>Purchase</option></select></div>
+<div><label>Voucher No.</label><input type="text" id="vNo" placeholder="Auto"></div>
+<div><label>Amount Rs.</label><input type="number" id="vAmt" placeholder="0.00" step="0.01"></div>
+</div>
+<div class="form-row">
+<div><label>Debit To (By)</label><select id="vLedgerDr"></select></div>
+<div><label>Credit To (To)</label><select id="vLedgerCr"></select></div>
+<div style="grid-column:span 2"><label>Narration</label><input type="text" id="vNarr" placeholder="Narration"></div>
+</div>
+<button class="btn btn-g" onclick="saveVoucher()">A: Accept Voucher</button>
+<button class="btn" onclick="clearVoucherForm()">Esc: Clear</button>
+<input type="hidden" id="editVoucherId">
+</div>
+
+<table id="voucherTable">
+<thead><tr><th>Date</th><th>Type</th><th>Vch No</th><th>Particulars (Dr & Cr)</th><th>Amount</th><th class="no-print">Actions</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+
+<!-- LEDGER -->
+<div id="ledgerPanel" class="panel">
+<div class="tally-header">LEDGER MASTER - Creation</div>
+<div class="form-section no-print">
+<div class="form-row">
+<div><label>Ledger Name *</label><input type="text" id="ledgerName" placeholder="e.g. Cash, Bank"></div>
+<div><label>Under Group</label><select id="ledgerGroup"><option>Capital Account</option><option>Current Assets</option><option>Current Liabilities</option><option>Fixed Assets</option><option>Cash-in-Hand</option><option>Bank Accounts</option><option>Sales Accounts</option><option>Purchase Accounts</option><option>Direct Incomes</option><option>Indirect Incomes</option><option>Direct Expenses</option><option>Indirect Expenses</option><option>Sundry Debtors</option><option>Sundry Creditors</option></select></div>
+<div><label>Opening Balance</label><input type="number" id="ledgerOB" placeholder="0" step="0.01"></div>
+<div><label>Dr / Cr</label><select id="ledgerOBType"><option>Dr</option><option>Cr</option></select></div>
+</div>
+<button class="btn btn-g" onclick="saveLedger()" id="ledgerBtn">Accept</button>
+<button class="btn" onclick="clearLedgerForm()">Clear</button>
+<input type="hidden" id="editLedgerId">
+</div>
+<table id="ledgerTable">
+<thead><tr><th>Ledger Name</th><th>Under</th><th>Opening</th><th>Current Balance</th><th class="no-print">Actions</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+
+<!-- TRIAL -->
+<div id="trialPanel" class="panel">
+<div class="tally-title">Rainbow Public School - Trial Balance as on <span class="today"></span></div>
+<button class="btn no-print" onclick="generateTrial()">Refresh (F5)</button>
+<table id="trialBalance"><thead><tr><th>Particulars</th><th>Debit</th><th>Credit</th></tr></thead><tbody></tbody></table>
+</div>
+
+<!-- BALANCE SHEET -->
+<div id="balancePanel" class="panel">
+<div class="tally-title">Rainbow Public School - Balance Sheet as on <span class="today"></span></div>
+<button class="btn no-print" onclick="generateBalance()">Refresh</button>
+<table id="balanceSheet"><thead><tr><th>Liabilities</th><th>Amount</th><th>Assets</th><th>Amount</th></tr></thead><tbody></tbody></table>
+</div>
+
+<!-- P&L -->
+<div id="pnlPanel" class="panel">
+<div class="tally-title">Rainbow Public School - Profit & Loss A/c for period ending <span class="today"></span></div>
+<button class="btn no-print" onclick="generatePnL()">Refresh</button>
+<table id="pnlTable"><thead><tr><th>Particulars</th><th>Amount</th><th>Particulars</th><th>Amount</th></tr></thead><tbody></tbody></table>
+</div>
+
+<!-- DAYBOOK -->
+<div id="daybookPanel" class="panel">
+<div class="tally-title">Day Book</div>
+<div class="form-section no-print"><div class="form-row"><div><label>From</label><input type="date" id="dbFrom"></div><div><label>To</label><input type="date" id="dbTo"></div><div><label>&nbsp;</label><button class="btn" onclick="generateDayBook()">Display</button></div></div></div>
+<table id="daybookTable"><thead><tr><th>Date</th><th>Particulars</th><th>Vch Type</th><th>Vch No</th><th>Debit</th><th>Credit</th></tr></thead><tbody></tbody></table>
+</div>
+
+</div>
+</div>
+
+<script>
+const SUPABASE_URL='https://kqahcvaoxnmxfcgyyync.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZ
