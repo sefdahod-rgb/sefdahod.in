@@ -274,8 +274,15 @@ function printCertificate(id){
       <div class="certificate">
         <img src="${window.location.origin}/logo.png" class="watermark">
         <img src="logo.png" class="logo">
-        <h1>Shubhi Education Foundation</h1>
-        <p style="font-size:18px;">Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD</p>
+       <h1 style="color:#b30000; font-size:52px; margin:5px 0; font-weight:bold; letter-spacing:1px;">
+  RAINBOW PUBLIC SCHOOL
+</h1>
+<p style="font-size:14px; color:#333; margin:0;">
+  Conduct by <b>Shubhi Education Foundation</b>
+</p>
+<p style="font-size:13px; color:#555; margin:2px 0;">
+  Under Indian Society Act 1860 Guj./2249/DHD. & Mumbai Public Trust Act 1950 F/2247/DHD
+</p>
         <h2 style="color:#d97706; font-size:36px;">${c.type}</h2>
         ${c.type=="Competition Certificate" && c.competition_name ? `<div class="comp-name">🏆 ${c.competition_name}</div>` : ``}
         <p style="font-size:24px;">This is proudly presented to</p>
