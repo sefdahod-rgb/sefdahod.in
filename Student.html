@@ -6,408 +6,71 @@
 <title>Student Management - Rainbow Public School</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box;font-family:Segoe UI, Tahoma; margin:0; padding:0}
+*{box-sizing:border-box;font-family:Segoe UI; margin:0; padding:0}
 body{background:#eef2f7; padding:10px}
 .header{background:#b30000; color:#fff; text-align:center; padding:12px; border-radius:8px 8px 0 0}
-.header h1{font-size:26px; margin:0}
-.header p{font-size:13px; margin:2px}
+.header h1{font-size:26px}
 .top-nav{background:#7f1d1d; padding:8px; text-align:center; border-radius:0 0 8px 8px; margin-bottom:10px}
 .top-nav a{color:#fff; text-decoration:none; margin:5px; padding:6px 12px; background:#b30000; border-radius:5px; display:inline-block; font-size:13px}
 .card{background:#fff; margin:10px 0; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1)}
 .card h3{background:#1e3a8a; color:#fff; padding:8px 12px; border-radius:6px; margin:-15px -15px 15px -15px; font-size:15px}
 .form-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:10px}
-label{font-size:11px; font-weight:bold; color:#1e293b; display:block; margin-bottom:3px; text-transform:uppercase}
+label{font-size:11px; font-weight:bold; color:#1e293b; display:block; margin-bottom:3px}
 input,select,textarea{width:100%; padding:7px 9px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; background:#fffef0}
-input:focus,select:focus,textarea:focus{background:#ffffcc; outline:2px solid #b30000; border-color:#b30000}
-textarea{resize:vertical}
 .btn{padding:7px 14px; border:none; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold; margin:2px; color:#fff}
-.btn-b{background:#1e3a8a}
-.btn-g{background:#16a34a}
-.btn-r{background:#dc2626}
-.btn-y{background:#d97706}
-.btn:hover{opacity:0.85}
+.btn-b{background:#1e3a8a} .btn-g{background:#16a34a} .btn-r{background:#dc2626} .btn-y{background:#d97706}
 .photo-box{border:2px dashed #b30000; padding:10px; text-align:center; border-radius:8px; background:#fff5f5}
-.photo-box img{width:120px; height:140px; object-fit:cover; border:2px solid #b30000; border-radius:6px; background:#fff}
+.photo-box img{width:120px; height:140px; object-fit:cover; border:2px solid #b30000; border-radius:6px}
 .search-bar{display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap}
-.search-bar input{flex:1; min-width:200px; padding:10px; border:2px solid #b30000; border-radius:8px; font-size:14px; background:#fff}
-table{width:100%; border-collapse:collapse; font-size:12px; margin-top:10px}
-th,td{border:1px solid #cbd5e1; padding:6px 8px; text-align:left; vertical-align:middle}
-th{background:#1e3a8a; color:#fff; font-size:11px; text-transform:uppercase; position:sticky; top:0}
+.search-bar input{flex:1; min-width:200px; padding:10px; border:2px solid #b30000; border-radius:8px; background:#fff}
+table{width:100%; border-collapse:collapse; font-size:12px}
+th,td{border:1px solid #cbd5e1; padding:6px 8px; text-align:left}
+th{background:#1e3a8a; color:#fff; font-size:11px}
 tr:nth-child(even){background:#f8fafc}
-tr:hover{background:#fef9c3}
-.badge{padding:2px 6px; border-radius:4px; font-size:10px; color:#fff; font-weight:bold}
-.badge-class{background:#1e3a8a}
 .s-photo{width:35px; height:35px; border-radius:50%; object-fit:cover; border:1px solid #b30000}
-.action-btn{padding:4px 8px; font-size:10px}
-.stats{display:grid; grid-template-columns:repeat(auto-fit, minmax(130px,1fr)); gap:8px; margin-bottom:10px}
-.stat{background:#fff; padding:10px; border-radius:8px; text-align:center; border-left:4px solid #b30000; box-shadow:0 2px 5px rgba(0,0,0,0.05)}
-.stat b{font-size:20px; color:#b30000; display:block}
-.stat span{font-size:11px; color:#555}
-@media print{
-.no-print{display:none!important}
-.card{box-shadow:none; border:1px solid #ddd}
-table{font-size:10px}
-}
 </style>
 </head>
 <body>
 
-<div class="header">
-<h1>RAINBOW PUBLIC SCHOOL</h1>
-<p>Conduct by Shubhi Education Foundation</p>
-<p style="font-size:11px;">Student Information System - Full Detail with Photo</p>
-</div>
+<div class="header"><h1>RAINBOW PUBLIC SCHOOL</h1><p>Conduct by Shubhi Education Foundation</p></div>
+<div class="top-nav"><a href="admin.html">Admin</a><a href="certificates.html">Certificates</a></div>
 
-<div class="top-nav no-print">
-<a href="admin.html">Admin</a>
-<a href="certificates.html">Certificates</a>
-<a href="tally-finance.html">Tally Finance</a>
-<a href="#" onclick="logout()">Logout</a>
-</div>
-
-<div class="stats no-print">
-<div class="stat"><b id="totalStudents">0</b><span>Total Students</span></div>
-<div class="stat"><b id="totalClass">0</b><span>Classes</span></div>
-<div class="stat"><b id="todayAdmission">0</b><span>Today's Search</span></div>
-<div class="stat"><b id="storageInfo">LC</b><span>Saved In</span></div>
-</div>
-
-<div class="card no-print">
-<h3>🔍 Search - Admission Number Likho Auto Aa Jayega</h3>
+<div class="card">
+<h3>🔍 Search - Admission No. Likho Auto Aa Jayega</h3>
 <div class="search-bar">
-<input type="text" id="searchAdmission" placeholder="Admission No. likho... (ex: RPS001) auto fill ho jayega" oninput="autoSearch(this.value)">
+<input type="text" id="searchAdmission" placeholder="Admission No. likho... auto fill" oninput="autoSearch(this.value)">
 <input type="text" id="searchName" placeholder="Name se search..." oninput="filterTable()">
-<select id="searchClass" onchange="filterTable()"><option value="">All Class</option><option>Nursery</option><option>LKG</option><option>UKG</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select>
 <button class="btn btn-b" onclick="filterTable()">Search</button>
 <button class="btn btn-y" onclick="clearSearch()">Clear</button>
-<button class="btn btn-g" onclick="exportCSV()">Export CSV</button>
-<button class="btn btn-b" onclick="window.print()">Print List</button>
 </div>
 </div>
 
-<div class="card no-print">
-<h3>📝 Student Admission Form - Full Detail with Photo</h3>
+<div class="card">
+<h3>📝 Student Form - Full Detail with Photo (LC Save)</h3>
 <div style="display:grid; grid-template-columns:1fr 220px; gap:15px">
 <div>
 <div class="form-grid">
 <div><label>Admission Number *</label><input type="text" id="admission_no" placeholder="RPS001" onblur="checkAdmission()"></div>
-<div><label>Roll Number</label><input type="text" id="roll_no" placeholder="01"></div>
-<div><label>Admission Date *</label><input type="date" id="admission_date"></div>
-<div><label>Student Name *</label><input type="text" id="student_name" placeholder="Student Full Name"></div>
-<div><label>Father's Name *</label><input type="text" id="father_name" placeholder="Father Name"></div>
-<div><label>Mother's Name</label><input type="text" id="mother_name" placeholder="Mother Name"></div>
-<div><label>Date of Birth *</label><input type="date" id="dob" onchange="calcAge()"></div>
-<div><label>Age</label><input type="text" id="age" placeholder="Auto" readonly></div>
-<div><label>Gender</label><select id="gender"><option>Male</option><option>Female</option><option>Other</option></select></div>
-<div><label>Class *</label><select id="class_name"><option value="">Select</option><option>Nursery</option><option>LKG</option><option>UKG</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div>
-<div><label>Section</label><select id="section"><option>A</option><option>B</option><option>C</option><option>D</option></select></div>
-<div><label>Category</label><select id="category"><option>General</option><option>OBC</option><option>SC</option><option>ST</option><option>Minority</option></select></div>
-<div><label>Religion</label><input type="text" id="religion" placeholder="Hindu/Muslim..."></div>
-<div><label>Mobile Number *</label><input type="text" id="mobile" placeholder="10 digit"></div>
-<div><label>Alternate Mobile</label><input type="text" id="alt_mobile" placeholder="Optional"></div>
-<div><label>Aadhar Number</label><input type="text" id="aadhar" placeholder="12 digit"></div>
-<div><label>SAMAGRA ID</label><input type="text" id="samagra" placeholder="SAMAGRA"></div>
-<div style="grid-column:span 2"><label>Full Address *</label><textarea id="address" rows="2" placeholder="Full Address with Village/City"></textarea></div>
-<div style="grid-column:span 2"><label>Previous School / Remarks</label><textarea id="remarks" rows="2" placeholder="Remarks / Previous School"></textarea></div>
+<div><label>Roll Number</label><input type="text" id="roll_no"></div>
+<div><label>Admission Date</label><input type="date" id="admission_date"></div>
+<div><label>Student Name *</label><input type="text" id="student_name"></div>
+<div><label>Father's Name *</label><input type="text" id="father_name"></div>
+<div><label>Mother's Name</label><input type="text" id="mother_name"></div>
+<div><label>DOB</label><input type="date" id="dob" onchange="calcAge()"></div>
+<div><label>Age</label><input type="text" id="age" readonly></div>
+<div><label>Gender</label><select id="gender"><option>Male</option><option>Female</option></select></div>
+<div><label>Class *</label><select id="class_name"><option value="">Select</option><option>Nursery</option><option>LKG</option><option>UKG</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div>
+<div><label>Section</label><select id="section"><option>A</option><option>B</option><option>C</option></select></div>
+<div><label>Mobile *</label><input type="text" id="mobile"></div>
+<div><label>Aadhar</label><input type="text" id="aadhar"></div>
+<div style="grid-column:span 2"><label>Address</label><textarea id="address" rows="2"></textarea></div>
 </div>
 </div>
-
 <div class="photo-box">
-<label>Student Photo *</label>
-<img id="previewPhoto" src="https://via.placeholder.com/120x140?text=PHOTO" alt="Photo">
+<img id="previewPhoto" src="https://via.placeholder.com/120x140?text=PHOTO">
 <input type="file" id="photoInput" accept="image/*" style="margin-top:8px" onchange="previewImage(event)">
-<br>
-<button class="btn btn-r" style="margin-top:8px; width:100%" onclick="removePhoto()">Remove Photo</button>
-<div style="font-size:10px; color:#666; margin-top:5px">JPG/PNG Max 1MB<br>Auto save in LC</div>
-<input type="hidden" id="photoBase64">
-<input type="hidden" id="editId">
+<button class="btn btn-r" style="margin-top:8px; width:100%" onclick="removePhoto()">Remove</button>
+<input type="hidden" id="photoBase64"><input type="hidden" id="editId">
 </div>
 </div>
-
-<div style="margin-top:15px; text-align:center">
-<button class="btn btn-g" style="padding:10px 30px; font-size:14px" onclick="saveStudent()">💾 Save Student (LC + DB)</button>
-<button class="btn btn-b" style="padding:10px 20px" onclick="clearForm()">Clear Form</button>
-<button class="btn btn-y" style="padding:10px 20px" onclick="loadData()">🔄 Refresh</button>
-</div>
-
-<div id="msgBox" style="margin-top:10px; text-align:center; font-weight:bold; font-size:13px"></div>
-</div>
-
-<div class="card">
-<h3>📋 Student List - Edit / Delete / View</h3>
-<div style="overflow:auto; max-height:500px">
-<table id="studentTable">
-<thead><tr><th>Photo</th><th>Adm No</th><th>Name / Father</th><th>Class-Sec</th><th>DOB/Age</th><th>Mobile</th><th class="no-print">Actions</th></tr></thead>
-<tbody></tbody>
-</table>
-</div>
-</div>
-
-<script>
-const client = window.supabase ? supabase.createClient(
-"https://kqahcvaoxnmxfcgyyync.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
-) : null;
-
-let students = JSON.parse(localStorage.getItem('rps_students') || '[]');
-
-function calcAge(){
- let dob = document.getElementById('dob').value;
- if(!dob) return;
- let diff = new Date() - new Date(dob);
- let age = Math.floor(diff / (1000*60*60*24*365.25));
- document.getElementById('age').value = age + ' Years';
-}
-
-function previewImage(e){
- let file = e.target.files[0];
- if(!file) return;
- if(file.size > 1024*1024){ alert('Photo 1MB se kam rakho'); return; }
- let reader = new FileReader();
- reader.onload = function(ev){
-   document.getElementById('previewPhoto').src = ev.target.result;
-   document.getElementById('photoBase64').value = ev.target.result;
- }
- reader.readAsDataURL(file);
-}
-
-function removePhoto(){
- document.getElementById('previewPhoto').src='https://via.placeholder.com/120x140?text=PHOTO';
- document.getElementById('photoBase64').value='';
- document.getElementById('photoInput').value='';
-}
-
-function showMsg(msg, err=false){
- let b=document.getElementById('msgBox');
- b.style.color=err?'#dc2626':'#16a34a';
- b.innerText=msg;
- setTimeout(()=>b.innerText='',3000);
-}
-
-function clearForm(){
- ['admission_no','roll_no','student_name','father_name','mother_name','dob','age','mobile','alt_mobile','aadhar','samagra','address','remarks','religion','photoBase64','editId'].forEach(id=>{let e=document.getElementById(id); if(e) e.value='';});
- document.getElementById('gender').value='Male';
- document.getElementById('class_name').value='';
- document.getElementById('section').value='A';
- document.getElementById('category').value='General';
- document.getElementById('admission_date').valueAsDate=new Date();
- removePhoto();
-}
-
-function checkAdmission(){
- let adm = document.getElementById('admission_no').value.trim();
- if(!adm) return;
- let found = students.find(s=>s.admission_no.toLowerCase()===adm.toLowerCase());
- if(found){ autoSearch(adm); showMsg('Admission No. already exists - Editing mode'); }
-}
-
-function autoSearch(val){
- if(!val || val.length<2) return;
- let v = val.trim().toLowerCase();
- let found = students.find(s=> s.admission_no.toLowerCase()===v || s.admission_no.toLowerCase().includes(v));
- if(found){
-   document.getElementById('todayAdmission').innerText = found.admission_no;
-   // Auto fill form
-   document.getElementById('editId').value = found.id;
-   document.getElementById('admission_no').value = found.admission_no;
-   document.getElementById('roll_no').value = found.roll_no||'';
-   document.getElementById('student_name').value = found.student_name;
-   document.getElementById('father_name').value = found.father_name;
-   document.getElementById('mother_name').value = found.mother_name||'';
-   document.getElementById('dob').value = found.dob||'';
-   document.getElementById('age').value = found.age||'';
-   document.getElementById('gender').value = found.gender||'Male';
-   document.getElementById('class_name').value = found.class_name||'';
-   document.getElementById('section').value = found.section||'A';
-   document.getElementById('category').value = found.category||'General';
-   document.getElementById('religion').value = found.religion||'';
-   document.getElementById('mobile').value = found.mobile||'';
-   document.getElementById('alt_mobile').value = found.alt_mobile||'';
-   document.getElementById('aadhar').value = found.aadhar||'';
-   document.getElementById('samagra').value = found.samagra||'';
-   document.getElementById('address').value = found.address||'';
-   document.getElementById('remarks').value = found.remarks||'';
-   document.getElementById('admission_date').value = found.admission_date||'';
-   document.getElementById('photoBase64').value = found.photo||'';
-   document.getElementById('previewPhoto').src = found.photo||'https://via.placeholder.com/120x140?text=PHOTO';
-   filterTable(); // highlight
-   showMsg('Auto Filled: '+found.admission_no+' - '+found.student_name);
- }
-}
-
-function saveStudent(){
- let data = {
-  id: document.getElementById('editId').value || Date.now().toString(),
-  admission_no: document.getElementById('admission_no').value.trim(),
-  roll_no: document.getElementById('roll_no').value.trim(),
-  student_name: document.getElementById('student_name').value.trim(),
-  father_name: document.getElementById('father_name').value.trim(),
-  mother_name: document.getElementById('mother_name').value.trim(),
-  dob: document.getElementById('dob').value,
-  age: document.getElementById('age').value,
-  gender: document.getElementById('gender').value,
-  class_name: document.getElementById('class_name').value,
-  section: document.getElementById('section').value,
-  category: document.getElementById('category').value,
-  religion: document.getElementById('religion').value.trim(),
-  mobile: document.getElementById('mobile').value.trim(),
-  alt_mobile: document.getElementById('alt_mobile').value.trim(),
-  aadhar: document.getElementById('aadhar').value.trim(),
-  samagra: document.getElementById('samagra').value.trim(),
-  address: document.getElementById('address').value.trim(),
-  remarks: document.getElementById('remarks').value.trim(),
-  admission_date: document.getElementById('admission_date').value,
-  photo: document.getElementById('photoBase64').value,
-  created_at: new Date().toISOString()
- };
- if(!data.admission_no || !data.student_name || !data.father_name || !data.class_name || !data.mobile){
-   showMsg('Admission No, Name, Father, Class, Mobile required!', true); return;
- }
- let idx = students.findIndex(s=>s.id===data.id || s.admission_no.toLowerCase()===data.admission_no.toLowerCase());
- if(idx>=0 && students[idx].id!==data.id && !document.getElementById('editId').value){
-   showMsg('Admission No already exists! Use Edit', true); return;
- }
- if(idx>=0) students[idx]=data; else students.unshift(data);
- localStorage.setItem('rps_students', JSON.stringify(students));
- showMsg('Saved in LC ✅ '+data.admission_no);
- renderTable();
- updateStats();
- saveToSupabase(data);
- clearForm();
-}
-
-async function saveToSupabase(d){
- if(!client) return;
- try{
-  await client.from('students').upsert({
-   admission_no: d.admission_no, roll_no: d.roll_no, student_name: d.student_name,
-   father_name: d.father_name, mother_name: d.mother_name, dob: d.dob||null,
-   gender: d.gender, class_name: d.class_name, section: d.section, category: d.category,
-   religion: d.religion, mobile: d.mobile, alt_mobile: d.alt_mobile, aadhar: d.aadhar,
-   samagra: d.samagra, address: d.address, remarks: d.remarks, admission_date: d.admission_date||null,
-   photo_url: d.photo ? 'base64' : null
-  }, {onConflict:'admission_no'});
- }catch(e){ console.log('Supabase save error', e.message); }
-}
-
-function renderTable(list=null){
- let data = list || students;
- let tb = document.querySelector('#studentTable tbody');
- tb.innerHTML='';
- if(data.length===0){ tb.innerHTML='<tr><td colspan="7" style="text-align:center">No Students Found</td></tr>'; return; }
- data.forEach(s=>{
-  tb.innerHTML+=`<tr>
-  <td><img src="${s.photo||'https://via.placeholder.com/35?text=P'}" class="s-photo"></td>
-  <td><b>${s.admission_no}</b><br><small>${s.roll_no||''}</small></td>
-  <td><b>${s.student_name}</b><br><small style="color:#666">F: ${s.father_name}</small></td>
-  <td><span class="badge badge-class">${s.class_name}-${s.section}</span></td>
-  <td>${s.dob?new Date(s.dob).toLocaleDateString('en-GB'):''}<br><small>${s.age||''}</small></td>
-  <td>${s.mobile}<br><small>${s.gender||''}</small></td>
-  <td class="no-print">
-  <button class="btn btn-y action-btn" onclick="editStudent('${s.id}')">Edit</button>
-  <button class="btn btn-r action-btn" onclick="deleteStudent('${s.id}')">Delete</button>
-  <button class="btn btn-b action-btn" onclick="printIdCard('${s.id}')">ID</button>
-  </td>
-  </tr>`;
- });
-}
-
-function editStudent(id){
- let s = students.find(x=>x.id===id);
- if(!s) return;
- document.getElementById('searchAdmission').value = s.admission_no;
- autoSearch(s.admission_no);
- window.scrollTo({top:0, behavior:'smooth'});
-}
-
-function deleteStudent(id){
- if(!confirm('Delete this student?')) return;
- students = students.filter(s=>s.id!==id);
- localStorage.setItem('rps_students', JSON.stringify(students));
- renderTable(); updateStats();
- showMsg('Deleted from LC');
- if(client) client.from('students').delete().eq('admission_no', students.find?'' : '').then(()=>{});
-}
-
-function filterTable(){
- let name = document.getElementById('searchName').value.toLowerCase();
- let cls = document.getElementById('searchClass').value;
- let adm = document.getElementById('searchAdmission').value.toLowerCase();
- let filtered = students.filter(s=>{
-  return ( !adm || s.admission_no.toLowerCase().includes(adm) ) &&
-         ( !name || s.student_name.toLowerCase().includes(name) || s.father_name.toLowerCase().includes(name) ) &&
-         ( !cls || s.class_name===cls );
- });
- renderTable(filtered);
- document.getElementById('todayAdmission').innerText = filtered.length;
-}
-
-function clearSearch(){
- document.getElementById('searchAdmission').value='';
- document.getElementById('searchName').value='';
- document.getElementById('searchClass').value='';
- document.getElementById('todayAdmission').innerText='0';
- renderTable();
-}
-
-function updateStats(){
- document.getElementById('totalStudents').innerText = students.length;
- let classes = [...new Set(students.map(s=>s.class_name))];
- document.getElementById('totalClass').innerText = classes.length;
- document.getElementById('storageInfo').innerText = (JSON.stringify(students).length/1024).toFixed(0)+' KB';
-}
-
-function exportCSV(){
- let csv = 'AdmissionNo,RollNo,Name,Father,Mother,DOB,Gender,Class,Section,Mobile,Address,Aadhar\n';
- students.forEach(s=>{ csv+=`"${s.admission_no}","${s.roll_no}","${s.student_name}","${s.father_name}","${s.mother_name}","${s.dob}","${s.gender}","${s.class_name}","${s.section}","${s.mobile}","${s.address}","${s.aadhar}"\n`; });
- let blob=new Blob([csv],{type:'text/csv'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='students_rps.csv'; a.click();
-}
-
-function printIdCard(id){
- let s=students.find(x=>x.id===id); if(!s) return;
- let w=window.open('','_blank');
- w.document.write(`<html><head><style>
- body{font-family:Arial; text-align:center}
- .card{width:350px; border:3px solid #b30000; margin:20px auto; padding:15px; border-radius:10px}
- .card img{width:100px; height:120px; border:2px solid #b30000; object-fit:cover}
- h2{color:#b30000; margin:5px; font-size:18px} p{margin:3px; font-size:13px}
- </style></head><body>
- <div class="card">
- <h2>RAINBOW PUBLIC SCHOOL</h2>
- <img src="${s.photo||''}"><br>
- <b>${s.student_name}</b><br>
- <p>Class: ${s.class_name}-${s.section} | Roll: ${s.roll_no}</p>
- <p>Adm No: ${s.admission_no}</p>
- <p>Father: ${s.father_name}</p>
- <p>Mobile: ${s.mobile}</p>
- <p>DOB: ${s.dob}</p>
- </div>
- <button onclick="window.print()">Print ID Card</button>
- </body></html>`);
-}
-
-async function loadData(){
- // Load from Supabase if available
- if(client){
-  try{
-   let {data} = await client.from('students').select('*').order('admission_no');
-   if(data && data.length>0){
-    // Merge with LC, keep LC as priority
-    console.log('Supabase students:', data.length);
-   }
-  }catch(e){ console.log('Supabase load error'); }
- }
- renderTable(); updateStats();
-}
-
-function logout(){ localStorage.removeItem('isAdmin'); location.href='login.html'; }
-
-window.onload=function(){
- document.getElementById('admission_date').valueAsDate=new Date();
- loadData();
- document.getElementById('searchAdmission').focus();
-}
-</script>
-
-</body>
-</html>
+<div style="margin-top:15px; text
