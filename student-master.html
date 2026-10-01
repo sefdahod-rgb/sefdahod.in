@@ -1603,7 +1603,14 @@ function compressStudentPhoto(file, callback){
 
 function saveStu(){
 
-    if(!checkAdm()) return;
+   const admissionNo =
+    document.getElementById("admission_no").value.trim();
+
+if(!admissionNo){
+    showMsg("Please enter Admission No.", "error");
+    document.getElementById("admission_no").focus();
+    return;
+}
 
     const admissionNo =
         document.getElementById("admission_no")
