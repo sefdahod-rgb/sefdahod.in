@@ -1544,14 +1544,8 @@ function saveStu(){
         document.getElementById("mobile")
             .value.trim();
 
-    const udise =
-        document.getElementById("udise")
-            .value.trim();
 
-    const pen =
-        document.getElementById("pen")
-            .value.trim();
-
+    /* Required fields */
     if(
         !admissionNo ||
         !studentName ||
@@ -1562,17 +1556,7 @@ function saveStu(){
     ){
 
         showMsg(
-            "Please fill all required fields.",
-            "error"
-        );
-
-        return;
-    }
-
-    if(!udise || !pen){
-
-        showMsg(
-            "UDISE and PEN are required.",
+            "Please fill Admission No, Student Name, Father Name, Class, Section and Mobile.",
             "error"
         );
 
@@ -1590,13 +1574,13 @@ function saveStu(){
         );
 
 
+    /* Keep old photo if no new photo selected */
     let photo =
         existing ? existing.photo || "" : "";
 
 
     const file =
-        document.getElementById("photoFile")
-            .files[0];
+        document.getElementById("photoFile").files[0];
 
 
     function finishSave(photoData){
@@ -1611,16 +1595,13 @@ function saveStu(){
                 document.getElementById("session").value,
 
             student_status:
-                document.getElementById(
-                    "student_status"
-                ).value,
+                document.getElementById("student_status").value,
 
             admission_no:
                 admissionNo,
 
             roll_no:
-                document.getElementById("roll_no").value
-                .trim(),
+                document.getElementById("roll_no").value.trim(),
 
             student_name:
                 studentName,
@@ -1629,9 +1610,7 @@ function saveStu(){
                 fatherName,
 
             mother_name:
-                document.getElementById(
-                    "mother_name"
-                ).value.trim(),
+                document.getElementById("mother_name").value.trim(),
 
             dob:
                 document.getElementById("dob").value,
@@ -1652,34 +1631,28 @@ function saveStu(){
                 mobile,
 
             aadhar:
-                document.getElementById("aadhar")
-                    .value.trim(),
+                document.getElementById("aadhar").value.trim(),
 
             udise:
-                udise,
+                document.getElementById("udise").value.trim(),
 
             pen:
-                pen,
+                document.getElementById("pen").value.trim(),
 
             apaar:
-                document.getElementById("apaar")
-                    .value.trim(),
+                document.getElementById("apaar").value.trim(),
 
             blood:
                 document.getElementById("blood").value,
 
             bus:
-                document.getElementById("bus")
-                    .value.trim(),
+                document.getElementById("bus").value.trim(),
 
             address:
-                document.getElementById("address")
-                    .value.trim(),
+                document.getElementById("address").value.trim(),
 
             admission_date:
-                document.getElementById(
-                    "admission_date"
-                ).value,
+                document.getElementById("admission_date").value,
 
             photo:
                 photoData || ""
@@ -1687,6 +1660,31 @@ function saveStu(){
         };
 
 
+        /* Check duplicate admission number */
+        const duplicate =
+            students.find(
+                s =>
+                String(s.admission_no || "")
+                    .trim()
+                    .toLowerCase() ===
+                admissionNo.toLowerCase()
+                &&
+                String(s.id) !== String(data.id)
+            );
+
+
+        if(duplicate){
+
+            showMsg(
+                "Admission No. already exists.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        /* Update existing student */
         const index =
             students.findIndex(
                 s =>
@@ -1705,15 +1703,34 @@ function saveStu(){
         }
 
 
-        localStorage.setItem(
-            "rps_students",
-            JSON.stringify(students)
-        );
+        /* Save to browser */
+        try{
+
+            localStorage.setItem(
+                "rps_students",
+                JSON.stringify(students)
+            );
+
+        }catch(error){
+
+            console.error(error);
+
+            showMsg(
+                "Save failed. Photo may be too large. Try a smaller photo.",
+                "error"
+            );
+
+            return;
+        }
 
 
+        /* Refresh */
         renderStuTable();
+
         updateDash();
+
         clearForm();
+
 
         showMsg(
             index >= 0
@@ -1725,24 +1742,42 @@ function saveStu(){
     }
 
 
+    /* New photo selected */
     if(file){
 
         const reader =
             new FileReader();
 
+
         reader.onload =
-            e => finishSave(e.target.result);
+            function(e){
+
+                finishSave(e.target.result);
+
+            };
+
+
+        reader.onerror =
+            function(){
+
+                showMsg(
+                    "Photo could not be read.",
+                    "error"
+                );
+
+            };
+
 
         reader.readAsDataURL(file);
 
     }else{
 
+        /* No new photo */
         finishSave(photo);
 
     }
 
 }
-
 
 /* =====================================================
    STATUS BADGE
