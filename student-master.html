@@ -1518,21 +1518,104 @@ function clearForm(){
    SAVE STUDENT
 ===================================================== */
 
+<script>
+function compressStudentPhoto(file, callback){
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        const img = new Image();
+
+        img.onload = function(){
+
+            const maxWidth = 500;
+            const maxHeight = 600;
+
+            let width = img.width;
+            let height = img.height;
+
+            if(width > maxWidth){
+
+                height =
+                    height * (maxWidth / width);
+
+                width = maxWidth;
+            }
+
+            if(height > maxHeight){
+
+                width =
+                    width * (maxHeight / height);
+
+                height = maxHeight;
+            }
+
+            const canvas =
+                document.createElement("canvas");
+
+            canvas.width = Math.round(width);
+            canvas.height = Math.round(height);
+
+            const ctx =
+                canvas.getContext("2d");
+
+            ctx.drawImage(
+                img,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+            /* Photo को छोटा करके JPEG में save */
+            const compressed =
+                canvas.toDataURL(
+                    "image/jpeg",
+                    0.70
+                );
+
+            callback(compressed);
+        };
+
+        img.onerror = function(){
+
+            showMsg(
+                "Photo load nahi ho pa rahi hai.",
+                "error"
+            );
+        };
+
+        img.src = e.target.result;
+    };
+
+    reader.onerror = function(){
+
+        showMsg(
+            "Photo read nahi ho pa rahi hai.",
+            "error"
+        );
+    };
+
+    reader.readAsDataURL(file);
+}
+
+
 function saveStu(){
 
     if(!checkAdm()) return;
 
     const admissionNo =
         document.getElementById("admission_no")
-            .value.trim();
+        .value.trim();
 
     const studentName =
         document.getElementById("student_name")
-            .value.trim();
+        .value.trim();
 
     const fatherName =
         document.getElementById("father_name")
-            .value.trim();
+        .value.trim();
 
     const className =
         document.getElementById("class_name").value;
@@ -1542,8 +1625,7 @@ function saveStu(){
 
     const mobile =
         document.getElementById("mobile")
-            .value.trim();
-
+        .value.trim();
 
     /* Required fields */
     if(
@@ -1574,13 +1656,16 @@ function saveStu(){
         );
 
 
-    /* Keep old photo if no new photo selected */
-    let photo =
-        existing ? existing.photo || "" : "";
+    /* पुरानी photo सुरक्षित रखें */
+    let oldPhoto =
+        existing
+        ? (existing.photo || "")
+        : "";
 
 
     const file =
-        document.getElementById("photoFile").files[0];
+        document.getElementById("photoFile")
+        .files[0];
 
 
     function finishSave(photoData){
@@ -1601,7 +1686,8 @@ function saveStu(){
                 admissionNo,
 
             roll_no:
-                document.getElementById("roll_no").value.trim(),
+                document.getElementById("roll_no")
+                .value.trim(),
 
             student_name:
                 studentName,
@@ -1610,7 +1696,8 @@ function saveStu(){
                 fatherName,
 
             mother_name:
-                document.getElementById("mother_name").value.trim(),
+                document.getElementById("mother_name")
+                .value.trim(),
 
             dob:
                 document.getElementById("dob").value,
@@ -1631,45 +1718,51 @@ function saveStu(){
                 mobile,
 
             aadhar:
-                document.getElementById("aadhar").value.trim(),
+                document.getElementById("aadhar")
+                .value.trim(),
 
             udise:
-                document.getElementById("udise").value.trim(),
+                document.getElementById("udise")
+                .value.trim(),
 
             pen:
-                document.getElementById("pen").value.trim(),
+                document.getElementById("pen")
+                .value.trim(),
 
             apaar:
-                document.getElementById("apaar").value.trim(),
+                document.getElementById("apaar")
+                .value.trim(),
 
             blood:
                 document.getElementById("blood").value,
 
             bus:
-                document.getElementById("bus").value.trim(),
+                document.getElementById("bus")
+                .value.trim(),
 
             address:
-                document.getElementById("address").value.trim(),
+                document.getElementById("address")
+                .value.trim(),
 
             admission_date:
                 document.getElementById("admission_date").value,
 
             photo:
                 photoData || ""
-
         };
 
 
-        /* Check duplicate admission number */
+        /* Duplicate Admission No check */
         const duplicate =
             students.find(
                 s =>
                 String(s.admission_no || "")
-                    .trim()
-                    .toLowerCase() ===
+                .trim()
+                .toLowerCase() ===
                 admissionNo.toLowerCase()
                 &&
-                String(s.id) !== String(data.id)
+                String(s.id) !==
+                String(data.id)
             );
 
 
@@ -1684,11 +1777,12 @@ function saveStu(){
         }
 
 
-        /* Update existing student */
+        /* Update / New student */
         const index =
             students.findIndex(
                 s =>
-                String(s.id) === String(data.id)
+                String(s.id) ===
+                String(data.id)
             );
 
 
@@ -1699,11 +1793,10 @@ function saveStu(){
         }else{
 
             students.unshift(data);
-
         }
 
 
-        /* Save to browser */
+        /* Save */
         try{
 
             localStorage.setItem(
@@ -1713,10 +1806,13 @@ function saveStu(){
 
         }catch(error){
 
-            console.error(error);
+            console.error(
+                "Student Save Error:",
+                error
+            );
 
             showMsg(
-                "Save failed. Photo may be too large. Try a smaller photo.",
+                "Student save nahi hua. Browser storage full hai.",
                 "error"
             );
 
@@ -1724,7 +1820,7 @@ function saveStu(){
         }
 
 
-        /* Refresh */
+        /* Refresh table */
         renderStuTable();
 
         updateDash();
@@ -1742,43 +1838,32 @@ function saveStu(){
     }
 
 
-    /* New photo selected */
+    /* अगर नई photo चुनी है */
     if(file){
 
-        const reader =
-            new FileReader();
+        showMsg(
+            "Photo compress ho rahi hai, please wait...",
+            "success"
+        );
 
+        compressStudentPhoto(
+            file,
+            function(compressedPhoto){
 
-        reader.onload =
-            function(e){
+                finishSave(compressedPhoto);
 
-                finishSave(e.target.result);
-
-            };
-
-
-        reader.onerror =
-            function(){
-
-                showMsg(
-                    "Photo could not be read.",
-                    "error"
-                );
-
-            };
-
-
-        reader.readAsDataURL(file);
+            }
+        );
 
     }else{
 
-        /* No new photo */
-        finishSave(photo);
+        /* नई photo नहीं है तो पुरानी photo रखें */
+        finishSave(oldPhoto);
 
     }
 
 }
-
+</script>
 /* =====================================================
    STATUS BADGE
 ===================================================== */
