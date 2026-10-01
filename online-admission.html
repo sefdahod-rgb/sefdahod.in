@@ -1209,21 +1209,135 @@ function startPayment(){
    SAVE APPLICATION
 ===================================================== */
 
+/* =====================================================
+   SAVE APPLICATION + PHOTO STORAGE
+===================================================== */
+
 async function saveApplication(
     applicationNo,
     paymentResponse
 ){
 
     const file =
-        document.getElementById("photo")
-        .files[0];
-
+        document.getElementById("photo").files[0];
 
     const paymentId =
         paymentResponse.razorpay_payment_id;
 
 
-    function finishSave(photoData){
+    /* ================================================
+       PHOTO UPLOAD
+    ================================================= */
+
+    async function uploadPhoto(){
+
+        if(!file){
+            return "";
+        }
+
+
+        try{
+
+            /* Unique file name */
+
+            const extension =
+                file.name
+                .split(".")
+                .pop()
+                .toLowerCase();
+
+
+            const fileName =
+                applicationNo +
+                "-" +
+                Date.now() +
+                "." +
+                extension;
+
+
+            const filePath =
+                fileName;
+
+
+            /* Upload to Supabase Storage */
+
+            const { error } =
+                await client
+                .storage
+                .from("admission-photos")
+                .upload(
+                    filePath,
+                    file,
+                    {
+                        cacheControl: "3600",
+                        upsert: false
+                    }
+                );
+
+
+            if(error){
+
+                console.log(
+                    "Photo Upload Error:",
+                    error
+                );
+
+                throw error;
+
+            }
+
+
+            /* Get Public URL */
+
+            const { data } =
+                client
+                .storage
+                .from("admission-photos")
+                .getPublicUrl(filePath);
+
+
+            return data.publicUrl;
+
+
+        }catch(error){
+
+            console.log(
+                "Photo Upload Failed:",
+                error
+            );
+
+            throw error;
+
+        }
+
+    }
+
+
+    /* ================================================
+       UPLOAD PHOTO FIRST
+    ================================================= */
+
+    let photoUrl = "";
+
+
+    try{
+
+        if(file){
+
+            showMessage(
+                "Photo upload ho rahi hai, please wait...",
+                "info"
+            );
+
+            photoUrl =
+                await uploadPhoto();
+
+        }
+
+
+        /* ============================================
+           APPLICATION DATA
+        ============================================ */
 
         const data = {
 
@@ -1231,82 +1345,117 @@ async function saveApplication(
                 applicationNo,
 
             student_name:
-                document.getElementById("student_name")
-                .value.trim(),
+                document
+                .getElementById("student_name")
+                .value
+                .trim(),
 
             dob:
-                document.getElementById("dob")
+                document
+                .getElementById("dob")
                 .value,
 
             gender:
-                document.getElementById("gender")
+                document
+                .getElementById("gender")
                 .value,
 
             class_name:
-                document.getElementById("class_name")
+                document
+                .getElementById("class_name")
                 .value,
 
             previous_school:
-                document.getElementById("previous_school")
-                .value.trim(),
+                document
+                .getElementById("previous_school")
+                .value
+                .trim(),
 
             previous_class:
-                document.getElementById("previous_class")
-                .value.trim(),
+                document
+                .getElementById("previous_class")
+                .value
+                .trim(),
 
             aadhaar:
-                document.getElementById("aadhaar")
-                .value.trim(),
+                document
+                .getElementById("aadhaar")
+                .value
+                .trim(),
 
             blood_group:
-                document.getElementById("blood")
+                document
+                .getElementById("blood")
                 .value,
 
             father_name:
-                document.getElementById("father_name")
-                .value.trim(),
+                document
+                .getElementById("father_name")
+                .value
+                .trim(),
 
             mother_name:
-                document.getElementById("mother_name")
-                .value.trim(),
+                document
+                .getElementById("mother_name")
+                .value
+                .trim(),
 
             mobile:
-                document.getElementById("mobile")
-                .value.trim(),
+                document
+                .getElementById("mobile")
+                .value
+                .trim(),
 
             email:
-                document.getElementById("email")
-                .value.trim(),
+                document
+                .getElementById("email")
+                .value
+                .trim(),
 
             address:
-                document.getElementById("address")
-                .value.trim(),
+                document
+                .getElementById("address")
+                .value
+                .trim(),
 
             city:
-                document.getElementById("city")
-                .value.trim(),
+                document
+                .getElementById("city")
+                .value
+                .trim(),
 
             pincode:
-                document.getElementById("pincode")
-                .value.trim(),
+                document
+                .getElementById("pincode")
+                .value
+                .trim(),
 
             transport:
-                document.getElementById("transport")
+                document
+                .getElementById("transport")
                 .value,
 
             emergency:
-                document.getElementById("emergency")
-                .value.trim(),
+                document
+                .getElementById("emergency")
+                .value
+                .trim(),
 
             remarks:
-                document.getElementById("remarks")
-                .value.trim(),
+                document
+                .getElementById("remarks")
+                .value
+                .trim(),
+
+            /* IMPORTANT:
+               अब Base64 photo नहीं,
+               केवल Storage URL save होगा */
 
             photo:
-                photoData || "",
+                photoUrl,
 
             amount:
-                APPLICATION_FEE,
+                250,
 
             payment_id:
                 paymentId,
@@ -1323,31 +1472,68 @@ async function saveApplication(
         };
 
 
-        saveToSupabase(data);
+        /* ============================================
+           SAVE TO DATABASE
+        ============================================ */
 
-    }
-
-
-    if(file){
-
-        compressPhoto(
-            file,
-            function(photoData){
-
-                finishSave(photoData);
-
-            }
+        showMessage(
+            "Application save ho rahi hai...",
+            "info"
         );
 
-    }else{
 
-        finishSave("");
+        const { error } =
+            await client
+            .from("online_admissions")
+            .insert([data]);
+
+
+        if(error){
+
+            console.log(
+                "Database Error:",
+                error
+            );
+
+
+            showMessage(
+                "Payment successful, but application save failed: "
+                + error.message,
+                "error"
+            );
+
+
+            return;
+
+        }
+
+
+        /* ============================================
+           SUCCESS
+        ============================================ */
+
+        showConfirmation(
+            applicationNo,
+            paymentId
+        );
+
+
+    }catch(error){
+
+        console.log(
+            "Application Save Error:",
+            error
+        );
+
+
+        showMessage(
+            "Payment successful, but application save nahi ho paya. Please contact school office.",
+            "error"
+        );
 
     }
 
 }
-
-
 /* =====================================================
    SUPABASE SAVE
 ===================================================== */
