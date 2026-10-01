@@ -1,0 +1,1961 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Online Admission Form - Rainbow Public School</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f1f5f9;
+    color:#1e293b;
+}
+
+.header{
+    background:#003b70;
+    color:white;
+    padding:18px;
+    text-align:center;
+}
+
+.header img{
+    width:80px;
+    height:80px;
+    object-fit:contain;
+    background:white;
+    border-radius:50%;
+    padding:5px;
+}
+
+.header h1{
+    margin:10px 0 5px;
+    font-size:25px;
+}
+
+.header p{
+    margin:4px 0;
+    font-size:14px;
+}
+
+.container{
+    max-width:1050px;
+    margin:25px auto;
+    padding:0 15px;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 5px 20px rgba(0,0,0,.10);
+    margin-bottom:20px;
+}
+
+.title{
+    text-align:center;
+    color:#003b70;
+    margin-bottom:20px;
+}
+
+.section-title{
+    background:#003b70;
+    color:white;
+    padding:10px 14px;
+    border-radius:6px;
+    margin:22px 0 15px;
+    font-size:17px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+}
+
+.field.full{
+    grid-column:1 / -1;
+}
+
+label{
+    font-weight:bold;
+    margin-bottom:6px;
+    font-size:14px;
+}
+
+.required{
+    color:red;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:11px;
+    border:1px solid #cbd5e1;
+    border-radius:6px;
+    font-size:14px;
+}
+
+textarea{
+    min-height:90px;
+    resize:vertical;
+}
+
+.photo-box{
+    text-align:center;
+    margin-top:10px;
+}
+
+.photo-preview{
+    display:none;
+    width:130px;
+    height:160px;
+    object-fit:cover;
+    border:2px solid #003b70;
+    border-radius:6px;
+    margin:10px auto;
+}
+
+.payment-box{
+    text-align:center;
+    background:#f8fafc;
+    border:2px solid #003b70;
+    border-radius:10px;
+    padding:20px;
+    margin-top:25px;
+}
+
+.amount{
+    font-size:30px;
+    font-weight:bold;
+    color:#008000;
+    margin:10px;
+}
+
+.pay-btn{
+    background:#16a34a;
+    color:white;
+    border:none;
+    padding:14px 30px;
+    font-size:17px;
+    font-weight:bold;
+    border-radius:7px;
+    cursor:pointer;
+}
+
+.pay-btn:hover{
+    opacity:.9;
+}
+
+.pay-btn:disabled{
+    background:#94a3b8;
+    cursor:not-allowed;
+}
+
+.print-btn{
+    background:#003b70;
+    color:white;
+    border:none;
+    padding:12px 25px;
+    border-radius:6px;
+    cursor:pointer;
+    margin:5px;
+}
+
+.clear-btn{
+    background:#64748b;
+    color:white;
+    border:none;
+    padding:12px 25px;
+    border-radius:6px;
+    cursor:pointer;
+    margin:5px;
+}
+
+.message{
+    display:none;
+    padding:14px;
+    border-radius:7px;
+    margin-bottom:15px;
+    text-align:center;
+    font-weight:bold;
+}
+
+.success{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.error{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.info{
+    background:#dbeafe;
+    color:#1e40af;
+}
+
+.confirmation{
+    display:none;
+    text-align:center;
+}
+
+.confirmation h2{
+    color:#15803d;
+}
+
+.application-number{
+    font-size:24px;
+    font-weight:bold;
+    color:#003b70;
+    margin:15px;
+}
+
+footer{
+    background:#002f60;
+    color:white;
+    text-align:center;
+    padding:15px;
+    margin-top:30px;
+}
+
+@media(max-width:700px){
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .field.full{
+        grid-column:auto;
+    }
+
+    .card{
+        padding:16px;
+    }
+
+    .header h1{
+        font-size:20px;
+    }
+
+}
+
+/* PRINT */
+
+@media print{
+
+    body{
+        background:white;
+    }
+
+    .no-print,
+    footer,
+    .pay-btn,
+    .clear-btn,
+    .print-btn{
+        display:none !important;
+    }
+
+    .card{
+        box-shadow:none;
+        border:none;
+    }
+
+    .container{
+        max-width:100%;
+        margin:0;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+    <img src="logo.png" alt="School Logo">
+
+    <h1>Rainbow Public School</h1>
+
+    <p>Conducted by Shubhi Education Foundation, Dahod</p>
+
+    <p>
+        Shalimar Co-operative Society, Muvaliya Road, Rabdal,
+        Dahod, Gujarat - 389151
+    </p>
+
+</div>
+
+
+<div class="container">
+
+<div id="message" class="message"></div>
+
+
+<!-- ================= FORM ================= -->
+
+<div class="card" id="formCard">
+
+<h2 class="title">ONLINE ADMISSION FORM</h2>
+
+<p style="text-align:center;">
+Please fill all required details carefully.
+</p>
+
+
+<div class="section-title">
+    Student Details
+</div>
+
+<div class="grid">
+
+<div class="field">
+
+<label>
+Student Name <span class="required">*</span>
+</label>
+
+<input
+type="text"
+id="student_name"
+required
+placeholder="Enter Student Name">
+
+</div>
+
+
+<div class="field">
+
+<label>
+Date of Birth <span class="required">*</span>
+</label>
+
+<input
+type="date"
+id="dob"
+required>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Gender <span class="required">*</span>
+</label>
+
+<select id="gender" required>
+
+<option value="">Select Gender</option>
+<option value="Male">Male</option>
+<option value="Female">Female</option>
+<option value="Other">Other</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Applying For Class <span class="required">*</span>
+</label>
+
+<select id="class_name" required>
+
+<option value="">Select Class</option>
+
+<option>Nursery</option>
+<option>LKG</option>
+<option>UKG</option>
+
+<option>1st</option>
+<option>2nd</option>
+<option>3rd</option>
+<option>4th</option>
+<option>5th</option>
+<option>6th</option>
+<option>7th</option>
+<option>8th</option>
+<option>9th</option>
+<option>10th</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Previous School
+</label>
+
+<input
+type="text"
+id="previous_school"
+placeholder="Previous School Name">
+
+</div>
+
+
+<div class="field">
+
+<label>
+Previous Class
+</label>
+
+<input
+type="text"
+id="previous_class"
+placeholder="Previous Class">
+
+</div>
+
+
+<div class="field">
+
+<label>
+Student Aadhaar Number
+</label>
+
+<input
+type="text"
+id="aadhaar"
+maxlength="12"
+placeholder="12 digit Aadhaar">
+
+</div>
+
+
+<div class="field">
+
+<label>
+Blood Group
+</label>
+
+<select id="blood">
+
+<option value="">Select</option>
+<option>A+</option>
+<option>A-</option>
+<option>B+</option>
+<option>B-</option>
+<option>AB+</option>
+<option>AB-</option>
+<option>O+</option>
+<option>O-</option>
+
+</select>
+
+</div>
+
+
+<div class="field full photo-box">
+
+<label>
+Student Photo
+</label>
+
+<input
+type="file"
+id="photo"
+accept="image/*"
+onchange="previewPhoto()">
+
+<img
+id="photoPreview"
+class="photo-preview"
+alt="Student Photo">
+
+</div>
+
+</div>
+
+
+<div class="section-title">
+Parent / Guardian Details
+</div>
+
+<div class="grid">
+
+
+<div class="field">
+
+<label>
+Father's Name <span class="required">*</span>
+</label>
+
+<input
+type="text"
+id="father_name"
+required
+placeholder="Father's Name">
+
+</div>
+
+
+<div class="field">
+
+<label>
+Mother's Name <span class="required">*</span>
+</label>
+
+<input
+type="text"
+id="mother_name"
+required
+placeholder="Mother's Name">
+
+</div>
+
+
+<div class="field">
+
+<label>
+Parent Mobile <span class="required">*</span>
+</label>
+
+<input
+type="tel"
+id="mobile"
+maxlength="10"
+required
+placeholder="10 digit mobile number">
+
+</div>
+
+
+<div class="field">
+
+<label>
+Parent Email
+</label>
+
+<input
+type="email"
+id="email"
+placeholder="Email Address">
+
+</div>
+
+
+<div class="field full">
+
+<label>
+Address <span class="required">*</span>
+</label>
+
+<textarea
+id="address"
+required
+placeholder="Complete Address"></textarea>
+
+</div>
+
+
+<div class="field">
+
+<label>
+City / Village
+</label>
+
+<input
+type="text"
+id="city"
+placeholder="City / Village">
+
+</div>
+
+
+<div class="field">
+
+<label>
+PIN Code
+</label>
+
+<input
+type="text"
+id="pincode"
+maxlength="6"
+placeholder="PIN Code">
+
+</div>
+
+</div>
+
+
+<div class="section-title">
+Other Information
+</div>
+
+<div class="grid">
+
+<div class="field">
+
+<label>
+Transport Required?
+</label>
+
+<select id="transport">
+
+<option value="No">No</option>
+<option value="Yes">Yes</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Emergency Contact
+</label>
+
+<input
+type="tel"
+id="emergency"
+maxlength="10"
+placeholder="Emergency Contact">
+
+</div>
+
+
+<div class="field full">
+
+<label>
+Any Other Information
+</label>
+
+<textarea
+id="remarks"
+placeholder="Any additional information"></textarea>
+
+</div>
+
+</div>
+
+
+<!-- PAYMENT -->
+
+<div class="payment-box">
+
+<h2>Application Confirmation Fee</h2>
+
+<div class="amount">₹250</div>
+
+<p>
+After submitting the form, you will be redirected to
+Razorpay secure payment.
+</p>
+
+<p>
+<strong>Payment of ₹250 is required to confirm the application.</strong>
+</p>
+
+<button
+type="button"
+class="pay-btn"
+id="payButton"
+onclick="startPayment()">
+
+Pay ₹250 & Submit Application
+
+</button>
+
+<br><br>
+
+<button
+type="button"
+class="clear-btn"
+onclick="clearForm()">
+
+Clear Form
+
+</button>
+
+</div>
+
+</div>
+
+
+<!-- ================= CONFIRMATION ================= -->
+
+<div class="card confirmation" id="confirmationCard">
+
+<h2>✓ Application Submitted Successfully</h2>
+
+<p>
+Thank you. Your admission application has been received.
+</p>
+
+<div class="application-number">
+Application No.: <span id="applicationNo"></span>
+</div>
+
+<p>
+Payment Status:
+<strong style="color:green;">PAID</strong>
+</p>
+
+<p>
+Payment ID:
+<span id="paymentId"></span>
+</p>
+
+<p>
+Confirmation Fee:
+<strong>₹250</strong>
+</p>
+
+<br>
+
+<button
+class="print-btn"
+onclick="printApplication()">
+
+Print Application Form
+
+</button>
+
+
+<button
+class="print-btn"
+onclick="printReceipt()">
+
+Print Payment Receipt
+
+</button>
+
+<br><br>
+
+<button
+class="clear-btn"
+onclick="location.reload()">
+
+New Application
+
+</button>
+
+</div>
+
+</div>
+
+
+<footer>
+© Shubhi Education Foundation
+</footer>
+
+
+<script>
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const client = window.supabase.createClient(
+
+    "https://kqahcvaoxnmxfcgyyync.supabase.co",
+
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
+
+);
+
+
+/* =====================================================
+   FIXED PAYMENT
+===================================================== */
+
+const APPLICATION_FEE = 250;
+
+
+/* =====================================================
+   PHOTO PREVIEW
+===================================================== */
+
+function previewPhoto(){
+
+    const file =
+        document.getElementById("photo").files[0];
+
+    const img =
+        document.getElementById("photoPreview");
+
+    if(!file){
+
+        img.style.display = "none";
+        return;
+
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        img.src = e.target.result;
+        img.style.display = "block";
+
+    };
+
+    reader.readAsDataURL(file);
+
+}
+
+
+/* =====================================================
+   COMPRESS PHOTO
+===================================================== */
+
+function compressPhoto(file, callback){
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        const img = new Image();
+
+        img.onload = function(){
+
+            const maxWidth = 500;
+            const maxHeight = 600;
+
+            let width = img.width;
+            let height = img.height;
+
+
+            if(width > maxWidth){
+
+                height =
+                    height * (maxWidth / width);
+
+                width = maxWidth;
+
+            }
+
+
+            if(height > maxHeight){
+
+                width =
+                    width * (maxHeight / height);
+
+                height = maxHeight;
+
+            }
+
+
+            const canvas =
+                document.createElement("canvas");
+
+            canvas.width = Math.round(width);
+            canvas.height = Math.round(height);
+
+
+            const ctx =
+                canvas.getContext("2d");
+
+            ctx.drawImage(
+                img,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+
+            const result =
+                canvas.toDataURL(
+                    "image/jpeg",
+                    0.70
+                );
+
+
+            callback(result);
+
+        };
+
+
+        img.src = e.target.result;
+
+    };
+
+
+    reader.readAsDataURL(file);
+
+}
+
+
+/* =====================================================
+   APPLICATION NUMBER
+===================================================== */
+
+function createApplicationNumber(){
+
+    const date = new Date();
+
+    const year =
+        date.getFullYear();
+
+    const random =
+        Math.floor(
+            10000 +
+            Math.random() * 90000
+        );
+
+    return "RPS-" + year + "-" + random;
+
+}
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+function showMessage(text,type){
+
+    const box =
+        document.getElementById("message");
+
+    box.textContent = text;
+
+    box.className =
+        "message " + type;
+
+    box.style.display = "block";
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =====================================================
+   VALIDATION
+===================================================== */
+
+function validateForm(){
+
+    const name =
+        document.getElementById("student_name")
+        .value.trim();
+
+    const dob =
+        document.getElementById("dob")
+        .value;
+
+    const gender =
+        document.getElementById("gender")
+        .value;
+
+    const className =
+        document.getElementById("class_name")
+        .value;
+
+    const father =
+        document.getElementById("father_name")
+        .value.trim();
+
+    const mother =
+        document.getElementById("mother_name")
+        .value.trim();
+
+    const mobile =
+        document.getElementById("mobile")
+        .value.trim();
+
+    const address =
+        document.getElementById("address")
+        .value.trim();
+
+
+    if(
+        !name ||
+        !dob ||
+        !gender ||
+        !className ||
+        !father ||
+        !mother ||
+        !mobile ||
+        !address
+    ){
+
+        showMessage(
+            "Please fill all required fields.",
+            "error"
+        );
+
+        return false;
+
+    }
+
+
+    if(!/^[0-9]{10}$/.test(mobile)){
+
+        showMessage(
+            "Please enter a valid 10 digit mobile number.",
+            "error"
+        );
+
+        return false;
+
+    }
+
+
+    const aadhaar =
+        document.getElementById("aadhaar")
+        .value.trim();
+
+    if(
+        aadhaar &&
+        !/^[0-9]{12}$/.test(aadhaar)
+    ){
+
+        showMessage(
+            "Aadhaar number must contain 12 digits.",
+            "error"
+        );
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+/* =====================================================
+   START RAZORPAY
+===================================================== */
+
+function startPayment(){
+
+    if(!validateForm()){
+
+        return;
+
+    }
+
+
+    const payButton =
+        document.getElementById("payButton");
+
+    payButton.disabled = true;
+
+    payButton.textContent =
+        "Opening Payment...";
+
+
+    const applicationNo =
+        createApplicationNumber();
+
+
+    const name =
+        document.getElementById("student_name")
+        .value.trim();
+
+    const email =
+        document.getElementById("email")
+        .value.trim();
+
+    const mobile =
+        document.getElementById("mobile")
+        .value.trim();
+
+
+    const options = {
+
+        key:
+        "rzp_live_SeDR91zuvNa9fG",
+
+        amount:
+        APPLICATION_FEE * 100,
+
+        currency:
+        "INR",
+
+        name:
+        "Rainbow Public School",
+
+        description:
+        "Online Admission Application Fee",
+
+        image:
+        "logo.png",
+
+        prefill:{
+
+            name:name,
+
+            email:email,
+
+            contact:mobile
+
+        },
+
+        notes:{
+
+            application_no:
+            applicationNo,
+
+            purpose:
+            "Admission Application"
+
+        },
+
+        theme:{
+
+            color:"#003b70"
+
+        },
+
+
+        handler:
+        async function(response){
+
+            showMessage(
+                "Payment successful. Saving application...",
+                "info"
+            );
+
+
+            await saveApplication(
+                applicationNo,
+                response
+            );
+
+        },
+
+
+        modal:{
+
+            ondismiss:function(){
+
+                payButton.disabled = false;
+
+                payButton.textContent =
+                    "Pay ₹250 & Submit Application";
+
+                showMessage(
+                    "Payment cancelled.",
+                    "error"
+                );
+
+            }
+
+        }
+
+    };
+
+
+    const rzp =
+        new Razorpay(options);
+
+
+    rzp.on(
+        "payment.failed",
+        function(response){
+
+            console.log(
+                "Payment Failed:",
+                response
+            );
+
+            payButton.disabled = false;
+
+            payButton.textContent =
+                "Pay ₹250 & Submit Application";
+
+            showMessage(
+                "Payment failed. Please try again.",
+                "error"
+            );
+
+        }
+    );
+
+
+    rzp.open();
+
+}
+
+
+/* =====================================================
+   SAVE APPLICATION
+===================================================== */
+
+async function saveApplication(
+    applicationNo,
+    paymentResponse
+){
+
+    const file =
+        document.getElementById("photo")
+        .files[0];
+
+
+    const paymentId =
+        paymentResponse.razorpay_payment_id;
+
+
+    function finishSave(photoData){
+
+        const data = {
+
+            application_no:
+                applicationNo,
+
+            student_name:
+                document.getElementById("student_name")
+                .value.trim(),
+
+            dob:
+                document.getElementById("dob")
+                .value,
+
+            gender:
+                document.getElementById("gender")
+                .value,
+
+            class_name:
+                document.getElementById("class_name")
+                .value,
+
+            previous_school:
+                document.getElementById("previous_school")
+                .value.trim(),
+
+            previous_class:
+                document.getElementById("previous_class")
+                .value.trim(),
+
+            aadhaar:
+                document.getElementById("aadhaar")
+                .value.trim(),
+
+            blood_group:
+                document.getElementById("blood")
+                .value,
+
+            father_name:
+                document.getElementById("father_name")
+                .value.trim(),
+
+            mother_name:
+                document.getElementById("mother_name")
+                .value.trim(),
+
+            mobile:
+                document.getElementById("mobile")
+                .value.trim(),
+
+            email:
+                document.getElementById("email")
+                .value.trim(),
+
+            address:
+                document.getElementById("address")
+                .value.trim(),
+
+            city:
+                document.getElementById("city")
+                .value.trim(),
+
+            pincode:
+                document.getElementById("pincode")
+                .value.trim(),
+
+            transport:
+                document.getElementById("transport")
+                .value,
+
+            emergency:
+                document.getElementById("emergency")
+                .value.trim(),
+
+            remarks:
+                document.getElementById("remarks")
+                .value.trim(),
+
+            photo:
+                photoData || "",
+
+            amount:
+                APPLICATION_FEE,
+
+            payment_id:
+                paymentId,
+
+            payment_status:
+                "success",
+
+            confirmation_status:
+                "confirmed",
+
+            submitted_at:
+                new Date().toISOString()
+
+        };
+
+
+        saveToSupabase(data);
+
+    }
+
+
+    if(file){
+
+        compressPhoto(
+            file,
+            function(photoData){
+
+                finishSave(photoData);
+
+            }
+        );
+
+    }else{
+
+        finishSave("");
+
+    }
+
+}
+
+
+/* =====================================================
+   SUPABASE SAVE
+===================================================== */
+
+async function saveToSupabase(data){
+
+    try{
+
+        const { error } =
+            await client
+            .from("online_admissions")
+            .insert([data]);
+
+
+        if(error){
+
+            console.log(error);
+
+            showMessage(
+                "Payment successful, but application save failed: "
+                + error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        showConfirmation(
+            data.application_no,
+            data.payment_id
+        );
+
+
+    }catch(error){
+
+        console.log(error);
+
+        showMessage(
+            "Payment successful, but application could not be saved.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   CONFIRMATION
+===================================================== */
+
+function showConfirmation(
+    applicationNo,
+    paymentId
+){
+
+    document.getElementById(
+        "formCard"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "confirmationCard"
+    ).style.display = "block";
+
+
+    document.getElementById(
+        "applicationNo"
+    ).textContent =
+        applicationNo;
+
+
+    document.getElementById(
+        "paymentId"
+    ).textContent =
+        paymentId;
+
+
+    localStorage.setItem(
+        "lastAdmissionApplication",
+        JSON.stringify({
+
+            applicationNo:
+                applicationNo,
+
+            paymentId:
+                paymentId,
+
+            amount:
+                APPLICATION_FEE,
+
+            date:
+                new Date().toLocaleString("en-IN")
+
+        })
+    );
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =====================================================
+   PRINT APPLICATION
+===================================================== */
+
+function printApplication(){
+
+    const printWindow =
+        window.open(
+            "",
+            "_blank"
+        );
+
+
+    const html = `
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>Admission Application</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    padding:30px;
+}
+
+.header{
+    text-align:center;
+    border-bottom:2px solid #000;
+    padding-bottom:15px;
+}
+
+h1{
+    margin:5px;
+}
+
+h2{
+    text-align:center;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+td{
+    border:1px solid #555;
+    padding:9px;
+}
+
+.label{
+    font-weight:bold;
+    width:30%;
+}
+
+.photo{
+    width:120px;
+    height:150px;
+    object-fit:cover;
+    border:1px solid #000;
+}
+
+.footer{
+    margin-top:40px;
+    display:flex;
+    justify-content:space-between;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+<h1>Rainbow Public School</h1>
+
+<p>
+Conducted by Shubhi Education Foundation, Dahod
+</p>
+
+<p>
+Shalimar Co-operative Society, Muvaliya Road,
+Rabdal, Dahod, Gujarat - 389151
+</p>
+
+</div>
+
+<h2>ONLINE ADMISSION APPLICATION</h2>
+
+<table>
+
+<tr>
+<td class="label">Application No.</td>
+<td>${document.getElementById("applicationNo").textContent}</td>
+</tr>
+
+<tr>
+<td class="label">Student Name</td>
+<td>${escapePrint(document.getElementById("student_name").value)}</td>
+</tr>
+
+<tr>
+<td class="label">Date of Birth</td>
+<td>${formatDatePrint(document.getElementById("dob").value)}</td>
+</tr>
+
+<tr>
+<td class="label">Gender</td>
+<td>${escapePrint(document.getElementById("gender").value)}</td>
+</tr>
+
+<tr>
+<td class="label">Applying For Class</td>
+<td>${escapePrint(document.getElementById("class_name").value)}</td>
+</tr>
+
+<tr>
+<td class="label">Previous School</td>
+<td>${escapePrint(document.getElementById("previous_school").value)}</td>
+</tr>
+
+<tr>
+<td class="label">Previous Class</td>
+<td>${escapePrint(document.getElementById("previous_class").value)}</td>
+</tr>
+
+<tr>
+<td class="label">Father's Name</td>
+<td>${escapePrint(document.getElementById("father_name").value)}</td>
+</tr>
+
+<tr>
+<td class="label">Mother's Name</td>
+<td>${escapePrint(document.getElementById("mother_name").value)}</td>
+</tr>
+
+<tr>
+<td class="label">Mobile</td>
+<td>${escapePrint(document.getElementById("mobile").value)}</td>
+</tr>
+
+<tr>
+<td class="label">Email</td>
+<td>${escapePrint(document.getElementById("email").value)}</td>
+</tr>
+
+<tr>
+<td class="label">Address</td>
+<td>${escapePrint(document.getElementById("address").value)}</td>
+</tr>
+
+<tr>
+<td class="label">City / Village</td>
+<td>${escapePrint(document.getElementById("city").value)}</td>
+</tr>
+
+<tr>
+<td class="label">PIN Code</td>
+<td>${escapePrint(document.getElementById("pincode").value)}</td>
+</tr>
+
+<tr>
+<td class="label">Transport</td>
+<td>${escapePrint(document.getElementById("transport").value)}</td>
+</tr>
+
+<tr>
+<td class="label">Payment Status</td>
+<td>PAID</td>
+</tr>
+
+<tr>
+<td class="label">Confirmation Fee</td>
+<td>₹250</td>
+</tr>
+
+<tr>
+<td class="label">Payment ID</td>
+<td>${escapePrint(document.getElementById("paymentId").textContent)}</td>
+</tr>
+
+</table>
+
+<div class="footer">
+
+<div>
+Parent / Guardian Signature
+</div>
+
+<div>
+School Office
+</div>
+
+</div>
+
+<script>
+
+window.onload=function(){
+    window.print();
+};
+
+<\/script>
+
+</body>
+
+</html>
+
+`;
+
+
+    printWindow.document.write(html);
+
+    printWindow.document.close();
+
+}
+
+
+/* =====================================================
+   PRINT RECEIPT
+===================================================== */
+
+function printReceipt(){
+
+    const applicationNo =
+        document.getElementById(
+            "applicationNo"
+        ).textContent;
+
+
+    const paymentId =
+        document.getElementById(
+            "paymentId"
+        ).textContent;
+
+
+    const studentName =
+        document.getElementById(
+            "student_name"
+        ).value;
+
+
+    const printWindow =
+        window.open(
+            "",
+            "_blank"
+        );
+
+
+    const html = `
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>Payment Receipt</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    padding:30px;
+}
+
+.receipt{
+    max-width:600px;
+    margin:auto;
+    border:2px solid #000;
+    padding:25px;
+}
+
+.center{
+    text-align:center;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+td{
+    border:1px solid #555;
+    padding:10px;
+}
+
+.label{
+    font-weight:bold;
+}
+
+.success{
+    color:green;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="receipt">
+
+<div class="center">
+
+<h1>Rainbow Public School</h1>
+
+<p>
+Shubhi Education Foundation, Dahod
+</p>
+
+<h2>PAYMENT RECEIPT</h2>
+
+</div>
+
+<table>
+
+<tr>
+<td class="label">Application No.</td>
+<td>${escapePrint(applicationNo)}</td>
+</tr>
+
+<tr>
+<td class="label">Student Name</td>
+<td>${escapePrint(studentName)}</td>
+</tr>
+
+<tr>
+<td class="label">Amount Paid</td>
+<td><strong>₹250</strong></td>
+</tr>
+
+<tr>
+<td class="label">Payment ID</td>
+<td>${escapePrint(paymentId)}</td>
+</tr>
+
+<tr>
+<td class="label">Payment Status</td>
+<td class="success">PAID</td>
+</tr>
+
+<tr>
+<td class="label">Date</td>
+<td>${new Date().toLocaleString("en-IN")}</td>
+</tr>
+
+</table>
+
+<br>
+
+<p>
+This receipt confirms payment of the online admission
+application confirmation fee.
+</p>
+
+<p style="text-align:right;margin-top:50px;">
+Authorized Signatory
+</p>
+
+</div>
+
+<script>
+
+window.onload=function(){
+    window.print();
+};
+
+<\/script>
+
+</body>
+
+</html>
+
+`;
+
+
+    printWindow.document.write(html);
+
+    printWindow.document.close();
+
+}
+
+
+/* =====================================================
+   PRINT HELPERS
+===================================================== */
+
+function escapePrint(value){
+
+    return String(value || "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+function formatDatePrint(value){
+
+    if(!value){
+        return "";
+    }
+
+    const parts =
+        value.split("-");
+
+    if(parts.length !== 3){
+        return value;
+    }
+
+    return (
+        parts[2] +
+        "/" +
+        parts[1] +
+        "/" +
+        parts[0]
+    );
+
+}
+
+
+/* =====================================================
+   CLEAR FORM
+===================================================== */
+
+function clearForm(){
+
+    if(
+        !confirm(
+            "Clear all entered information?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    document
+        .querySelectorAll(
+            "#formCard input, #formCard textarea"
+        )
+        .forEach(function(el){
+
+            if(el.type !== "file"){
+                el.value = "";
+            }
+
+        });
+
+
+    document.getElementById(
+        "gender"
+    ).value = "";
+
+
+    document.getElementById(
+        "class_name"
+    ).value = "";
+
+
+    document.getElementById(
+        "blood"
+    ).value = "";
+
+
+    document.getElementById(
+        "transport"
+    ).value = "No";
+
+
+    document.getElementById(
+        "photoPreview"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "photoPreview"
+    ).src = "";
+
+
+    document.getElementById(
+        "message"
+    ).style.display = "none";
+
+}
+
+</script>
+
+</body>
+</html>
+```
