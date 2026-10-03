@@ -1359,7 +1359,9 @@ async function saveApplication(
 
 
         /* ============================================
-           SAVE APPLICATION FIRST
+           SAVE APPLICATION
+           IMPORTANT:
+           NO .select() HERE
         ============================================ */
 
         showMessage(
@@ -1368,12 +1370,10 @@ async function saveApplication(
         );
 
 
-        const { data: savedData, error } =
+        const { error } =
             await client
             .from("online_admissions")
-            .insert([data])
-            .select()
-            .single();
+            .insert([data]);
 
 
         if(error){
@@ -1394,136 +1394,16 @@ async function saveApplication(
 
 
         /* ============================================
-           PHOTO UPLOAD
+           PHOTO
+           TEMPORARILY SKIPPED AFTER DATABASE SAVE
         ============================================ */
 
         if(file){
 
             showMessage(
-                "Application saved. Photo upload ho rahi hai...",
+                "Application saved successfully. Photo upload ka next step baad me karenge.",
                 "info"
             );
-
-            try{
-
-                const extension =
-                    file.name
-                    .split(".")
-                    .pop()
-                    .toLowerCase();
-
-
-                const fileName =
-                    applicationNo +
-                    "-" +
-                    Date.now() +
-                    "." +
-                    extension;
-
-
-                const { error: uploadError } =
-                    await client
-                    .storage
-                    .from("admission-photos")
-                    .upload(
-                        fileName,
-                        file,
-                        {
-                            cacheControl:"3600",
-                            upsert:false
-                        }
-                    );
-
-
-                if(uploadError){
-
-                    console.error(
-                        "PHOTO UPLOAD ERROR:",
-                        uploadError
-                    );
-
-                    showMessage(
-                        "Application saved successfully, but photo upload failed: "
-                        + uploadError.message,
-                        "error"
-                    );
-
-                    showConfirmation(
-                        applicationNo,
-                        paymentId
-                    );
-
-                    return;
-                }
-
-
-                const { data: publicData } =
-                    client
-                    .storage
-                    .from("admission-photos")
-                    .getPublicUrl(fileName);
-
-
-                const photoUrl =
-                    publicData.publicUrl;
-
-
-                /* ====================================
-                   UPDATE PHOTO URL
-                ==================================== */
-
-                const { error: updateError } =
-                    await client
-                    .from("online_admissions")
-                    .update({
-                        photo: photoUrl
-                    })
-                    .eq(
-                        "id",
-                        savedData.id
-                    );
-
-
-                if(updateError){
-
-                    console.error(
-                        "PHOTO URL UPDATE ERROR:",
-                        updateError
-                    );
-
-                    showMessage(
-                        "Application saved, but photo link save nahi ho paya.",
-                        "error"
-                    );
-
-                    showConfirmation(
-                        applicationNo,
-                        paymentId
-                    );
-
-                    return;
-                }
-
-            }catch(photoError){
-
-                console.error(
-                    "PHOTO ERROR:",
-                    photoError
-                );
-
-                showMessage(
-                    "Application saved, but photo upload failed: "
-                    + photoError.message,
-                    "error"
-                );
-
-                showConfirmation(
-                    applicationNo,
-                    paymentId
-                );
-
-                return;
-            }
 
         }
 
@@ -1536,6 +1416,7 @@ async function saveApplication(
             applicationNo,
             paymentId
         );
+
 
     }catch(error){
 
