@@ -1337,6 +1337,7 @@ async function saveApplication(
                 .value
                 .trim(),
 
+            /* Photo URL will be added after upload */
             photo:
                 "",
 
@@ -1359,9 +1360,8 @@ async function saveApplication(
 
 
         /* ============================================
-           SAVE APPLICATION
-           IMPORTANT:
-           NO .select() HERE
+           SAVE APPLICATION FIRST
+           IMPORTANT: NO .select()
         ============================================ */
 
         showMessage(
@@ -1394,16 +1394,152 @@ async function saveApplication(
 
 
         /* ============================================
-           PHOTO
-           TEMPORARILY SKIPPED AFTER DATABASE SAVE
+           PHOTO UPLOAD
         ============================================ */
 
         if(file){
 
             showMessage(
-                "Application saved successfully. Photo upload ka next step baad me karenge.",
+                "Application saved. Photo upload ho rahi hai...",
                 "info"
             );
+
+
+            try{
+
+                const extension =
+                    file.name
+                    .split(".")
+                    .pop()
+                    .toLowerCase();
+
+
+                const fileName =
+                    applicationNo +
+                    "-" +
+                    Date.now() +
+                    "." +
+                    extension;
+
+
+                const { error: uploadError } =
+                    await client
+                    .storage
+                    .from("admission-photos")
+                    .upload(
+                        fileName,
+                        file,
+                        {
+                            cacheControl: "3600",
+                            upsert: false
+                        }
+                    );
+
+
+                if(uploadError){
+
+                    console.error(
+                        "PHOTO UPLOAD ERROR:",
+                        uploadError
+                    );
+
+                    showMessage(
+                        "Application saved successfully, but photo upload failed: "
+                        + uploadError.message,
+                        "error"
+                    );
+
+                    showConfirmation(
+                        applicationNo,
+                        paymentId
+                    );
+
+                    return;
+                }
+
+
+                /* ====================================
+                   GET PUBLIC PHOTO URL
+                ==================================== */
+
+                const { data: publicData } =
+                    client
+                    .storage
+                    .from("admission-photos")
+                    .getPublicUrl(
+                        fileName
+                    );
+
+
+                const photoUrl =
+                    publicData.publicUrl;
+
+
+                /* ====================================
+                   UPDATE PHOTO URL
+                   
+                   NO .select()
+                ==================================== */
+
+                const { error: updateError } =
+                    await client
+                    .from("online_admissions")
+                    .update({
+                        photo: photoUrl
+                    })
+                    .eq(
+                        "application_no",
+                        applicationNo
+                    );
+
+
+                if(updateError){
+
+                    console.error(
+                        "PHOTO URL UPDATE ERROR:",
+                        updateError
+                    );
+
+                    showMessage(
+                        "Application saved, but photo link save nahi ho paya: "
+                        + updateError.message,
+                        "error"
+                    );
+
+                    showConfirmation(
+                        applicationNo,
+                        paymentId
+                    );
+
+                    return;
+                }
+
+
+                console.log(
+                    "PHOTO URL SAVED:",
+                    photoUrl
+                );
+
+            }catch(photoError){
+
+                console.error(
+                    "PHOTO ERROR:",
+                    photoError
+                );
+
+                showMessage(
+                    "Application saved, but photo upload failed: "
+                    + photoError.message,
+                    "error"
+                );
+
+                showConfirmation(
+                    applicationNo,
+                    paymentId
+                );
+
+                return;
+            }
 
         }
 
@@ -1426,7 +1562,7 @@ async function saveApplication(
         );
 
         showMessage(
-            "Payment successful, but application save nahi ho paya: "
+            "Payment successful, but application not save nahi: "
             + (error.message || error),
             "error"
         );
