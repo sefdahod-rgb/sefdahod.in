@@ -700,6 +700,25 @@ Clear Form
 
 </div>
 
+<div class="no-print" style="margin-bottom:15px;">
+    <button
+        type="button"
+        onclick="window.location.href='index.html'"
+        style="
+            background:#64748b;
+            color:white;
+            border:none;
+            padding:11px 22px;
+            border-radius:7px;
+            cursor:pointer;
+            font-weight:bold;
+        "
+    >
+        ← Back to Home
+    </button>
+</div>
+
+
 
 <!-- ================= CONFIRMATION ================= -->
 
@@ -1212,10 +1231,7 @@ function startPayment(){
    SAVE APPLICATION + PHOTO STORAGE
 ===================================================== */
 
-async function saveApplication(
-    applicationNo,
-    paymentResponse
-){
+async function saveApplication(applicationNo, paymentResponse){
 
     const file =
         document.getElementById("photo").files[0];
@@ -1227,18 +1243,16 @@ async function saveApplication(
 
         let photoUrl = "";
 
-
-        /* ============================================
-           PHOTO UPLOAD FIRST
-        ============================================ */
+        /* ===============================
+           PHOTO UPLOAD
+        =============================== */
 
         if(file){
 
             showMessage(
-                "Photo upload ...",
+                "Student photo upload ho rahi hai...",
                 "info"
             );
-
 
             const extension =
                 file.name
@@ -1246,14 +1260,12 @@ async function saveApplication(
                 .pop()
                 .toLowerCase();
 
-
             const fileName =
                 applicationNo +
                 "-" +
                 Date.now() +
                 "." +
                 extension;
-
 
             const { error: uploadError } =
                 await client
@@ -1263,11 +1275,10 @@ async function saveApplication(
                     fileName,
                     file,
                     {
-                        cacheControl: "3600",
-                        upsert: false
+                        cacheControl:"3600",
+                        upsert:false
                     }
                 );
-
 
             if(uploadError){
 
@@ -1277,43 +1288,29 @@ async function saveApplication(
                 );
 
                 showMessage(
-                    "Photo upload failed: "
-                    + uploadError.message,
+                    "Photo upload failed: " +
+                    uploadError.message,
                     "error"
                 );
 
                 return;
             }
 
-
-            /* ========================================
-               GET PHOTO URL
-            ======================================== */
-
             const { data: publicData } =
                 client
                 .storage
                 .from("admission-photos")
-                .getPublicUrl(
-                    fileName
-                );
-
+                .getPublicUrl(fileName);
 
             photoUrl =
                 publicData.publicUrl;
 
-
-            console.log(
-                "PHOTO URL:",
-                photoUrl
-            );
-
         }
 
 
-        /* ============================================
+        /* ===============================
            APPLICATION DATA
-        ============================================ */
+        =============================== */
 
         const data = {
 
@@ -1323,8 +1320,7 @@ async function saveApplication(
             student_name:
                 document
                 .getElementById("student_name")
-                .value
-                .trim(),
+                .value.trim(),
 
             dob:
                 document
@@ -1344,20 +1340,17 @@ async function saveApplication(
             previous_school:
                 document
                 .getElementById("previous_school")
-                .value
-                .trim(),
+                .value.trim(),
 
             previous_class:
                 document
                 .getElementById("previous_class")
-                .value
-                .trim(),
+                .value.trim(),
 
             aadhaar:
                 document
                 .getElementById("aadhaar")
-                .value
-                .trim(),
+                .value.trim(),
 
             blood_group:
                 document
@@ -1367,44 +1360,37 @@ async function saveApplication(
             father_name:
                 document
                 .getElementById("father_name")
-                .value
-                .trim(),
+                .value.trim(),
 
             mother_name:
                 document
                 .getElementById("mother_name")
-                .value
-                .trim(),
+                .value.trim(),
 
             mobile:
                 document
                 .getElementById("mobile")
-                .value
-                .trim(),
+                .value.trim(),
 
             email:
                 document
                 .getElementById("email")
-                .value
-                .trim(),
+                .value.trim(),
 
             address:
                 document
                 .getElementById("address")
-                .value
-                .trim(),
+                .value.trim(),
 
             city:
                 document
                 .getElementById("city")
-                .value
-                .trim(),
+                .value.trim(),
 
             pincode:
                 document
                 .getElementById("pincode")
-                .value
-                .trim(),
+                .value.trim(),
 
             transport:
                 document
@@ -1414,16 +1400,13 @@ async function saveApplication(
             emergency:
                 document
                 .getElementById("emergency")
-                .value
-                .trim(),
+                .value.trim(),
 
             remarks:
                 document
                 .getElementById("remarks")
-                .value
-                .trim(),
+                .value.trim(),
 
-            /* PHOTO URL SAVED DIRECTLY */
             photo:
                 photoUrl,
 
@@ -1441,27 +1424,22 @@ async function saveApplication(
 
             submitted_at:
                 new Date().toISOString()
-
         };
 
 
-        /* ============================================
-           INSERT APPLICATION
-           NO SELECT
-           NO UPDATE
-        ============================================ */
+        /* ===============================
+           SAVE TO SUPABASE
+        =============================== */
 
         showMessage(
-            "Application save ...",
+            "Application save ho rahi hai...",
             "info"
         );
-
 
         const { error } =
             await client
             .from("online_admissions")
             .insert([data]);
-
 
         if(error){
 
@@ -1471,8 +1449,8 @@ async function saveApplication(
             );
 
             showMessage(
-                "Payment successful, but application save failed: "
-                + error.message,
+                "Payment successful, but application save failed: " +
+                error.message,
                 "error"
             );
 
@@ -1480,32 +1458,32 @@ async function saveApplication(
         }
 
 
-        /* ============================================
-           FINAL SUCCESS
-        ============================================ */
+        /* ===============================
+           SUCCESS
+        =============================== */
 
         showConfirmation(
             applicationNo,
             paymentId
         );
 
-
-    }catch(error){
+    }
+    catch(error){
 
         console.error(
-            "APPLICATION SAVE ERROR:",
+            "APPLICATION ERROR:",
             error
         );
 
         showMessage(
-            "Payment successful, but application not save: "
-            + (error.message || error),
+            "Application save failed: " +
+            (error.message || error),
             "error"
         );
-
     }
-
 }
+```
+
 /* =====================================================
    SUPABASE SAVE
 ===================================================== */
@@ -1559,6 +1537,7 @@ async function saveToSupabase(data){
    CONFIRMATION
 ===================================================== */
 
+```javascript
 function showConfirmation(
     applicationNo,
     paymentId
@@ -1568,17 +1547,14 @@ function showConfirmation(
         "formCard"
     ).style.display = "none";
 
-
     document.getElementById(
         "confirmationCard"
     ).style.display = "block";
-
 
     document.getElementById(
         "applicationNo"
     ).textContent =
         applicationNo;
-
 
     document.getElementById(
         "paymentId"
@@ -1586,23 +1562,25 @@ function showConfirmation(
         paymentId;
 
 
-    /* ============================================
-       STUDENT PHOTO SHOW
-    ============================================ */
+    /* ===============================
+       SHOW STUDENT PHOTO
+    =============================== */
 
     const preview =
         document.getElementById(
             "photoPreview"
         );
 
-
-    if(preview && preview.src){
+    if(
+        preview &&
+        preview.src &&
+        preview.src.startsWith("data:image")
+    ){
 
         let photoBox =
             document.getElementById(
                 "confirmationPhotoBox"
             );
-
 
         if(!photoBox){
 
@@ -1618,7 +1596,6 @@ function showConfirmation(
             photoBox.style.margin =
                 "20px 0";
 
-
             const title =
                 document.createElement("div");
 
@@ -1630,7 +1607,6 @@ function showConfirmation(
 
             title.style.marginBottom =
                 "10px";
-
 
             const img =
                 document.createElement("img");
@@ -1648,45 +1624,65 @@ function showConfirmation(
                 "cover";
 
             img.style.border =
-                "2px solid #333";
+                "2px solid #003b70";
 
             img.style.borderRadius =
                 "8px";
 
+            photoBox.appendChild(title);
+            photoBox.appendChild(img);
 
-            photoBox.appendChild(
-                title
-            );
-
-            photoBox.appendChild(
-                img
-            );
-
-
-            const confirmationCard =
-                document.getElementById(
-                    "confirmationCard"
-                );
-
-
-            confirmationCard.insertBefore(
+            document
+            .getElementById(
+                "confirmationCard"
+            )
+            .insertBefore(
                 photoBox,
-                confirmationCard.firstChild
+                document
+                .getElementById(
+                    "confirmationCard"
+                )
+                .firstChild
             );
-
         }
 
-
-        document.getElementById(
+        document
+        .getElementById(
             "confirmationStudentPhoto"
-        ).src =
+        )
+        .src =
             preview.src;
-
 
         photoBox.style.display =
             "block";
-
     }
+
+
+    localStorage.setItem(
+        "lastAdmissionApplication",
+        JSON.stringify({
+
+            applicationNo:
+                applicationNo,
+
+            paymentId:
+                paymentId,
+
+            amount:
+                APPLICATION_FEE,
+
+            date:
+                new Date().toLocaleString(
+                    "en-IN"
+                )
+        })
+    );
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+}
 
 
     /* ============================================
@@ -1726,14 +1722,29 @@ function showConfirmation(
    PRINT APPLICATION
 ===================================================== */
 
+```javascript
 function printApplication(){
+
+    const applicationNo =
+        document.getElementById(
+            "applicationNo"
+        ).textContent;
+
+    const paymentId =
+        document.getElementById(
+            "paymentId"
+        ).textContent;
+
+    const studentPhoto =
+        document.getElementById(
+            "photoPreview"
+        ).src;
 
     const printWindow =
         window.open(
             "",
             "_blank"
         );
-
 
     const html = `
 
@@ -1748,33 +1759,53 @@ function printApplication(){
 <style>
 
 body{
-    font-family:Arial;
-    padding:30px;
+    font-family:Arial,sans-serif;
+    padding:25px;
+    color:#111;
 }
 
 .header{
     text-align:center;
-    border-bottom:2px solid #000;
+    border-bottom:2px solid #003b70;
     padding-bottom:15px;
+}
+
+.logo{
+    width:75px;
+    height:75px;
+    object-fit:contain;
 }
 
 h1{
     margin:5px;
+    color:#003b70;
 }
 
 h2{
     text-align:center;
 }
 
+.photo-area{
+    text-align:right;
+    margin-top:15px;
+}
+
+.student-photo{
+    width:120px;
+    height:150px;
+    object-fit:cover;
+    border:2px solid #003b70;
+}
+
 table{
     width:100%;
     border-collapse:collapse;
-    margin-top:20px;
+    margin-top:15px;
 }
 
 td{
     border:1px solid #555;
-    padding:9px;
+    padding:8px;
 }
 
 .label{
@@ -1782,15 +1813,8 @@ td{
     width:30%;
 }
 
-.photo{
-    width:120px;
-    height:150px;
-    object-fit:cover;
-    border:1px solid #000;
-}
-
 .footer{
-    margin-top:40px;
+    margin-top:50px;
     display:flex;
     justify-content:space-between;
 }
@@ -1802,6 +1826,11 @@ td{
 <body>
 
 <div class="header">
+
+<img
+class="logo"
+src="logo.png"
+alt="School Logo">
 
 <h1>Rainbow Public School</h1>
 
@@ -1818,86 +1847,123 @@ Rabdal, Dahod, Gujarat - 389151
 
 <h2>ONLINE ADMISSION APPLICATION</h2>
 
+<div class="photo-area">
+
+<img
+class="student-photo"
+src="${studentPhoto || ""}"
+alt="Student Photo">
+
+</div>
+
 <table>
 
 <tr>
 <td class="label">Application No.</td>
-<td>${document.getElementById("applicationNo").textContent}</td>
+<td>${escapePrint(applicationNo)}</td>
 </tr>
 
 <tr>
 <td class="label">Student Name</td>
-<td>${escapePrint(document.getElementById("student_name").value)}</td>
+<td>${escapePrint(
+document.getElementById("student_name").value
+)}</td>
 </tr>
 
 <tr>
 <td class="label">Date of Birth</td>
-<td>${formatDatePrint(document.getElementById("dob").value)}</td>
+<td>${formatDatePrint(
+document.getElementById("dob").value
+)}</td>
 </tr>
 
 <tr>
 <td class="label">Gender</td>
-<td>${escapePrint(document.getElementById("gender").value)}</td>
+<td>${escapePrint(
+document.getElementById("gender").value
+)}</td>
 </tr>
 
 <tr>
 <td class="label">Applying For Class</td>
-<td>${escapePrint(document.getElementById("class_name").value)}</td>
+<td>${escapePrint(
+document.getElementById("class_name").value
+)}</td>
 </tr>
 
 <tr>
 <td class="label">Previous School</td>
-<td>${escapePrint(document.getElementById("previous_school").value)}</td>
+<td>${escapePrint(
+document.getElementById("previous_school").value
+)}</td>
 </tr>
 
 <tr>
 <td class="label">Previous Class</td>
-<td>${escapePrint(document.getElementById("previous_class").value)}</td>
+<td>${escapePrint(
+document.getElementById("previous_class").value
+)}</td>
 </tr>
 
 <tr>
 <td class="label">Father's Name</td>
-<td>${escapePrint(document.getElementById("father_name").value)}</td>
+<td>${escapePrint(
+document.getElementById("father_name").value
+)}</td>
 </tr>
 
 <tr>
 <td class="label">Mother's Name</td>
-<td>${escapePrint(document.getElementById("mother_name").value)}</td>
+<td>${escapePrint(
+document.getElementById("mother_name").value
+)}</td>
 </tr>
 
 <tr>
 <td class="label">Mobile</td>
-<td>${escapePrint(document.getElementById("mobile").value)}</td>
+<td>${escapePrint(
+document.getElementById("mobile").value
+)}</td>
 </tr>
 
 <tr>
 <td class="label">Email</td>
-<td>${escapePrint(document.getElementById("email").value)}</td>
+<td>${escapePrint(
+document.getElementById("email").value
+)}</td>
 </tr>
 
 <tr>
 <td class="label">Address</td>
-<td>${escapePrint(document.getElementById("address").value)}</td>
+<td>${escapePrint(
+document.getElementById("address").value
+)}</td>
 </tr>
 
 <tr>
 <td class="label">City / Village</td>
-<td>${escapePrint(document.getElementById("city").value)}</td>
+<td>${escapePrint(
+document.getElementById("city").value
+)}</td>
 </tr>
 
 <tr>
 <td class="label">PIN Code</td>
-<td>${escapePrint(document.getElementById("pincode").value)}</td>
+<td>${escapePrint(
+document.getElementById("pincode").value
+)}</td>
 </tr>
 
 <tr>
 <td class="label">Transport</td>
-<td>${escapePrint(document.getElementById("transport").value)}</td>
+<td>${escapePrint(
+document.getElementById("transport").value
+)}</td>
 </tr>
 
 <tr>
 <td class="label">Payment Status</td>
-<td>PAID</td>
+<td><strong>PAID</strong></td>
 </tr>
 
 <tr>
@@ -1907,7 +1973,7 @@ Rabdal, Dahod, Gujarat - 389151
 
 <tr>
 <td class="label">Payment ID</td>
-<td>${escapePrint(document.getElementById("paymentId").textContent)}</td>
+<td>${escapePrint(paymentId)}</td>
 </tr>
 
 </table>
@@ -1927,7 +1993,11 @@ School Office
 <script>
 
 window.onload=function(){
-    window.print();
+
+    setTimeout(function(){
+        window.print();
+    },500);
+
 };
 
 <\/script>
@@ -1938,18 +2008,17 @@ window.onload=function(){
 
 `;
 
-
     printWindow.document.write(html);
-
     printWindow.document.close();
-
 }
+```
 
 
 /* =====================================================
    PRINT RECEIPT
 ===================================================== */
 
+```javascript
 function printReceipt(){
 
     const applicationNo =
@@ -1957,25 +2026,26 @@ function printReceipt(){
             "applicationNo"
         ).textContent;
 
-
     const paymentId =
         document.getElementById(
             "paymentId"
         ).textContent;
-
 
     const studentName =
         document.getElementById(
             "student_name"
         ).value;
 
+    const studentPhoto =
+        document.getElementById(
+            "photoPreview"
+        ).src;
 
     const printWindow =
         window.open(
             "",
             "_blank"
         );
-
 
     const html = `
 
@@ -1990,19 +2060,39 @@ function printReceipt(){
 <style>
 
 body{
-    font-family:Arial;
+    font-family:Arial,sans-serif;
     padding:30px;
 }
 
 .receipt{
     max-width:600px;
     margin:auto;
-    border:2px solid #000;
+    border:2px solid #003b70;
     padding:25px;
 }
 
 .center{
     text-align:center;
+}
+
+.logo{
+    width:70px;
+    height:70px;
+    object-fit:contain;
+}
+
+.school-name{
+    color:#003b70;
+    margin:5px;
+}
+
+.student-photo{
+    width:90px;
+    height:110px;
+    object-fit:cover;
+    border:2px solid #003b70;
+    display:block;
+    margin:15px auto;
 }
 
 table{
@@ -2035,46 +2125,90 @@ td{
 
 <div class="center">
 
-<h1>Rainbow Public School</h1>
+<img
+class="logo"
+src="logo.png"
+alt="School Logo">
+
+<h1 class="school-name">
+Rainbow Public School
+</h1>
 
 <p>
 Shubhi Education Foundation, Dahod
 </p>
 
-<h2>PAYMENT RECEIPT</h2>
+<h2>
+PAYMENT RECEIPT
+</h2>
+
+<img
+class="student-photo"
+src="${studentPhoto || ""}"
+alt="Student Photo">
 
 </div>
 
 <table>
 
 <tr>
-<td class="label">Application No.</td>
-<td>${escapePrint(applicationNo)}</td>
+<td class="label">
+Application No.
+</td>
+
+<td>
+${escapePrint(applicationNo)}
+</td>
 </tr>
 
 <tr>
-<td class="label">Student Name</td>
-<td>${escapePrint(studentName)}</td>
+<td class="label">
+Student Name
+</td>
+
+<td>
+${escapePrint(studentName)}
+</td>
 </tr>
 
 <tr>
-<td class="label">Amount Paid</td>
-<td><strong>₹10</strong></td>
+<td class="label">
+Amount Paid
+</td>
+
+<td>
+<strong>₹10</strong>
+</td>
 </tr>
 
 <tr>
-<td class="label">Payment ID</td>
-<td>${escapePrint(paymentId)}</td>
+<td class="label">
+Payment ID
+</td>
+
+<td>
+${escapePrint(paymentId)}
+</td>
 </tr>
 
 <tr>
-<td class="label">Payment Status</td>
-<td class="success">PAID</td>
+<td class="label">
+Payment Status
+</td>
+
+<td class="success">
+PAID
+</td>
 </tr>
 
 <tr>
-<td class="label">Date</td>
-<td>${new Date().toLocaleString("en-IN")}</td>
+<td class="label">
+Date
+</td>
+
+<td>
+${new Date().toLocaleString("en-IN")}
+</td>
 </tr>
 
 </table>
@@ -2095,7 +2229,11 @@ Authorized Signatory
 <script>
 
 window.onload=function(){
-    window.print();
+
+    setTimeout(function(){
+        window.print();
+    },500);
+
 };
 
 <\/script>
@@ -2106,12 +2244,11 @@ window.onload=function(){
 
 `;
 
-
     printWindow.document.write(html);
-
     printWindow.document.close();
-
 }
+```
+
 
 
 /* =====================================================
@@ -2224,4 +2361,4 @@ function clearForm(){
 
 </body>
 </html>
-```
+
