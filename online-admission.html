@@ -1173,14 +1173,6 @@ const SUPABASE_URL =
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl";
 
-
-/*
-   IMPORTANT:
-   Supabase client variable is "sb".
-   This avoids any duplicate "supabase"
-   declaration problem.
-*/
-
 const sb =
     window.supabase.createClient(
         SUPABASE_URL,
@@ -1189,10 +1181,11 @@ const sb =
 
 
 /* =====================================================
-   FEE
+   SETTINGS
 ===================================================== */
 
 const APPLICATION_FEE = 10;
+const CURRENT_SESSION = "2026-27";
 
 
 /* =====================================================
@@ -1226,7 +1219,6 @@ function previewPhoto(){
         return;
     }
 
-
     if(!file.type.startsWith("image/")){
 
         showMessage(
@@ -1242,19 +1234,15 @@ function previewPhoto(){
         return;
     }
 
-
     const reader =
         new FileReader();
-
 
     reader.onload = function(e){
 
         img.src = e.target.result;
-
         img.style.display = "block";
 
     };
-
 
     reader.readAsDataURL(file);
 
@@ -1279,6 +1267,50 @@ function createApplicationNumber(){
         );
 
     return "RPS-" + year + "-" + random;
+
+}
+
+
+/* =====================================================
+   STUDENT ADMISSION NUMBER
+===================================================== */
+
+function createAdmissionNumber(){
+
+    const date = new Date();
+
+    const year =
+        date.getFullYear();
+
+    const random =
+        Math.floor(
+            10000 +
+            Math.random() * 90000
+        );
+
+    return "ADM-" + year + "-" + random;
+
+}
+
+
+/* =====================================================
+   FEE RECEIPT NUMBER
+===================================================== */
+
+function createReceiptNumber(){
+
+    const date = new Date();
+
+    const year =
+        date.getFullYear();
+
+    const random =
+        Math.floor(
+            10000 +
+            Math.random() * 90000
+        );
+
+    return "REC-" + year + "-" + random;
 
 }
 
@@ -1345,7 +1377,6 @@ function validateForm(){
         document.getElementById("address")
         .value.trim();
 
-
     if(
         !name ||
         !dob ||
@@ -1366,7 +1397,6 @@ function validateForm(){
 
     }
 
-
     if(!/^[0-9]{10}$/.test(mobile)){
 
         showMessage(
@@ -1378,11 +1408,9 @@ function validateForm(){
 
     }
 
-
     const aadhaar =
         document.getElementById("aadhaar")
         .value.trim();
-
 
     if(
         aadhaar &&
@@ -1398,11 +1426,9 @@ function validateForm(){
 
     }
 
-
     const pincode =
         document.getElementById("pincode")
         .value.trim();
-
 
     if(
         pincode &&
@@ -1418,11 +1444,9 @@ function validateForm(){
 
     }
 
-
     const emergency =
         document.getElementById("emergency")
         .value.trim();
-
 
     if(
         emergency &&
@@ -1437,7 +1461,6 @@ function validateForm(){
         return false;
 
     }
-
 
     return true;
 
@@ -1456,42 +1479,33 @@ function openPreview(){
 
     }
 
-
     fillPreview();
-
 
     document.getElementById(
         "formCard"
     ).style.display = "none";
 
-
     document.getElementById(
         "previewCard"
     ).style.display = "block";
-
 
     document.getElementById(
         "paymentCard"
     ).style.display = "none";
 
-
     document.getElementById(
         "confirmationCard"
     ).style.display = "none";
-
 
     document.getElementById(
         "confirmDetails"
     ).checked = false;
 
-
     toggleConfirmButton();
-
 
     document.getElementById(
         "message"
     ).style.display = "none";
-
 
     window.scrollTo({
         top:0,
@@ -1510,12 +1524,10 @@ function fillPreview(){
     const photo =
         document.getElementById("photoPreview");
 
-
     const photoContainer =
         document.getElementById(
             "previewPhotoContainer"
         );
-
 
     if(
         photo &&
@@ -1543,7 +1555,6 @@ function fillPreview(){
         `;
 
     }
-
 
     const html = `
 
@@ -1679,7 +1690,6 @@ function fillPreview(){
 
     `;
 
-
     document.getElementById(
         "previewContent"
     ).innerHTML = html;
@@ -1703,7 +1713,6 @@ function toggleConfirmButton(){
             "confirmPaymentButton"
         );
 
-
     button.disabled =
         !checkbox.checked;
 
@@ -1720,16 +1729,13 @@ function editApplication(){
         "previewCard"
     ).style.display = "none";
 
-
     document.getElementById(
         "paymentCard"
     ).style.display = "none";
 
-
     document.getElementById(
         "formCard"
     ).style.display = "block";
-
 
     window.scrollTo({
         top:0,
@@ -1740,7 +1746,7 @@ function editApplication(){
 
 
 /* =====================================================
-   CONFIRM AND PROCEED TO PAYMENT
+   CONFIRM AND PROCEED
 ===================================================== */
 
 function confirmAndProceedToPayment(){
@@ -1749,7 +1755,6 @@ function confirmAndProceedToPayment(){
         document.getElementById(
             "confirmDetails"
         );
-
 
     if(!checkbox.checked){
 
@@ -1762,21 +1767,17 @@ function confirmAndProceedToPayment(){
 
     }
 
-
     document.getElementById(
         "previewCard"
     ).style.display = "none";
-
 
     document.getElementById(
         "formCard"
     ).style.display = "none";
 
-
     document.getElementById(
         "paymentCard"
     ).style.display = "block";
-
 
     window.scrollTo({
         top:0,
@@ -1796,11 +1797,9 @@ function backToPreview(){
         "paymentCard"
     ).style.display = "none";
 
-
     document.getElementById(
         "previewCard"
     ).style.display = "block";
-
 
     window.scrollTo({
         top:0,
@@ -1822,35 +1821,28 @@ function startPayment(){
 
     }
 
-
     const payButton =
         document.getElementById("payButton");
-
 
     payButton.disabled = true;
 
     payButton.textContent =
         "Opening Payment...";
 
-
     const applicationNo =
         createApplicationNumber();
-
 
     const name =
         document.getElementById("student_name")
         .value.trim();
 
-
     const email =
         document.getElementById("email")
         .value.trim();
 
-
     const mobile =
         document.getElementById("mobile")
         .value.trim();
-
 
     const options = {
 
@@ -1875,9 +1867,7 @@ function startPayment(){
         prefill:{
 
             name:name,
-
             email:email,
-
             contact:mobile
 
         },
@@ -1898,15 +1888,13 @@ function startPayment(){
 
         },
 
-
         handler:
         async function(response){
 
             showMessage(
-                "Payment successful. Saving application...",
+                "Payment successful. Saving application and creating student record...",
                 "info"
             );
-
 
             await saveApplication(
                 applicationNo,
@@ -1914,7 +1902,6 @@ function startPayment(){
             );
 
         },
-
 
         modal:{
 
@@ -1924,7 +1911,6 @@ function startPayment(){
 
                 payButton.textContent =
                     "Pay ₹10 & Submit Application";
-
 
                 showMessage(
                     "Payment cancelled.",
@@ -1937,10 +1923,8 @@ function startPayment(){
 
     };
 
-
     const rzp =
         new Razorpay(options);
-
 
     rzp.on(
         "payment.failed",
@@ -1951,13 +1935,10 @@ function startPayment(){
                 response
             );
 
-
             payButton.disabled = false;
-
 
             payButton.textContent =
                 "Pay ₹10 & Submit Application";
-
 
             showMessage(
                 "Payment failed. Please try again.",
@@ -1967,14 +1948,340 @@ function startPayment(){
         }
     );
 
-
     rzp.open();
 
 }
 
 
 /* =====================================================
-   SAVE APPLICATION + PHOTO
+   GET TODAY DATE
+===================================================== */
+
+function getTodayISO(){
+
+    const d = new Date();
+
+    const year =
+        d.getFullYear();
+
+    const month =
+        String(d.getMonth() + 1)
+        .padStart(2,"0");
+
+    const day =
+        String(d.getDate())
+        .padStart(2,"0");
+
+    return (
+        year +
+        "-" +
+        month +
+        "-" +
+        day
+    );
+
+}
+
+
+/* =====================================================
+   CALCULATE AGE
+===================================================== */
+
+function calculateAge(dob){
+
+    if(!dob){
+
+        return "";
+
+    }
+
+    const birth =
+        new Date(dob);
+
+    const today =
+        new Date();
+
+    let age =
+        today.getFullYear() -
+        birth.getFullYear();
+
+    const month =
+        today.getMonth() -
+        birth.getMonth();
+
+    if(
+        month < 0 ||
+        (
+            month === 0 &&
+            today.getDate() < birth.getDate()
+        )
+    ){
+
+        age--;
+
+    }
+
+    return age >= 0
+        ? String(age)
+        : "";
+
+}
+
+
+/* =====================================================
+   SAFE FILE NAME
+===================================================== */
+
+function safeFileName(value){
+
+    return String(value || "")
+        .replace(/[^a-zA-Z0-9_-]/g,"-");
+
+}
+
+
+/* =====================================================
+   UPLOAD PHOTO TO STUDENT MASTER BUCKET
+===================================================== */
+
+async function uploadStudentPhoto(
+    file,
+    admissionNo
+){
+
+    if(!file){
+
+        return "";
+
+    }
+
+    const safeAdmission =
+        safeFileName(admissionNo);
+
+    const fileName =
+        "students/" +
+        safeAdmission +
+        "-" +
+        Date.now() +
+        ".jpg";
+
+
+    let uploadFile = file;
+
+
+    /*
+       Compress image before storing.
+       This also makes Student Master
+       photo handling easier.
+    */
+
+    try{
+
+        uploadFile =
+            await compressImage(file);
+
+    }
+    catch(error){
+
+        console.log(
+            "Compression skipped:",
+            error
+        );
+
+    }
+
+
+    const uploadResult =
+        await sb
+        .storage
+        .from("student-photos")
+        .upload(
+            fileName,
+            uploadFile,
+            {
+                cacheControl:"3600",
+                upsert:false,
+                contentType:"image/jpeg"
+            }
+        );
+
+
+    if(uploadResult.error){
+
+        throw new Error(
+            "Student photo upload failed: " +
+            uploadResult.error.message
+        );
+
+    }
+
+
+    const publicData =
+        sb
+        .storage
+        .from("student-photos")
+        .getPublicUrl(fileName);
+
+
+    return (
+        publicData.data.publicUrl
+    );
+
+}
+
+
+/* =====================================================
+   COMPRESS IMAGE
+===================================================== */
+
+function compressImage(file){
+
+    return new Promise(function(resolve,reject){
+
+        if(
+            !file ||
+            !file.type.startsWith("image/")
+        ){
+
+            resolve(file);
+            return;
+
+        }
+
+        const reader =
+            new FileReader();
+
+        reader.onload = function(event){
+
+            const img =
+                new Image();
+
+            img.onload = function(){
+
+                let width =
+                    img.width;
+
+                let height =
+                    img.height;
+
+                const maxWidth = 500;
+                const maxHeight = 600;
+
+
+                if(
+                    width > maxWidth ||
+                    height > maxHeight
+                ){
+
+                    const ratio =
+                        Math.min(
+                            maxWidth / width,
+                            maxHeight / height
+                        );
+
+                    width =
+                        Math.round(width * ratio);
+
+                    height =
+                        Math.round(height * ratio);
+
+                }
+
+
+                const canvas =
+                    document.createElement("canvas");
+
+                canvas.width =
+                    width;
+
+                canvas.height =
+                    height;
+
+
+                const ctx =
+                    canvas.getContext("2d");
+
+                ctx.drawImage(
+                    img,
+                    0,
+                    0,
+                    width,
+                    height
+                );
+
+
+                canvas.toBlob(
+                    function(blob){
+
+                        if(!blob){
+
+                            reject(
+                                new Error(
+                                    "Image compression failed"
+                                )
+                            );
+
+                            return;
+
+                        }
+
+                        resolve(
+                            new File(
+                                [blob],
+                                "student-photo.jpg",
+                                {
+                                    type:"image/jpeg"
+                                }
+                            )
+                        );
+
+                    },
+                    "image/jpeg",
+                    0.75
+                );
+
+            };
+
+
+            img.onerror =
+                function(){
+
+                    reject(
+                        new Error(
+                            "Invalid image"
+                        )
+                    );
+
+                };
+
+
+            img.src =
+                event.target.result;
+
+        };
+
+
+        reader.onerror =
+            function(){
+
+                reject(
+                    new Error(
+                        "Could not read image"
+                    )
+                );
+
+            };
+
+
+        reader.readAsDataURL(file);
+
+    });
+
+}
+
+
+/* =====================================================
+   SAVE APPLICATION
 ===================================================== */
 
 async function saveApplication(
@@ -1985,19 +2292,36 @@ async function saveApplication(
     const file =
         document.getElementById("photo").files[0];
 
-
     const paymentId =
         paymentResponse.razorpay_payment_id;
 
 
+    const payButton =
+        document.getElementById("payButton");
+
+
     try{
 
-        let photoUrl = "";
+        /* =============================================
+           1. CREATE ADMISSION NUMBER
+        ============================================= */
+
+        const admissionNo =
+            createAdmissionNumber();
+
+        console.log(
+            "Admission No:",
+            admissionNo
+        );
 
 
-        /* ===============================
-           PHOTO UPLOAD
-        =============================== */
+        /* =============================================
+           2. PHOTO UPLOAD - ADMISSION BUCKET
+        ============================================= */
+
+        let admissionPhotoUrl = "";
+        let studentPhotoUrl = "";
+
 
         if(file){
 
@@ -2022,12 +2346,6 @@ async function saveApplication(
                 extension;
 
 
-            console.log(
-                "Uploading photo:",
-                fileName
-            );
-
-
             const uploadResult =
                 await sb
                 .storage
@@ -2044,40 +2362,12 @@ async function saveApplication(
 
             if(uploadResult.error){
 
-                console.error(
-                    "PHOTO UPLOAD ERROR:",
-                    uploadResult.error
+                throw new Error(
+                    "Admission photo upload failed: " +
+                    uploadResult.error.message
                 );
-
-
-                showMessage(
-                    "Photo upload failed: " +
-                    uploadResult.error.message,
-                    "error"
-                );
-
-
-                const payButton =
-                    document.getElementById(
-                        "payButton"
-                    );
-
-
-                payButton.disabled = false;
-
-                payButton.textContent =
-                    "Pay ₹10 & Submit Application";
-
-
-                return;
 
             }
-
-
-            console.log(
-                "Photo upload successful:",
-                uploadResult.data
-            );
 
 
             const publicData =
@@ -2087,46 +2377,140 @@ async function saveApplication(
                 .getPublicUrl(fileName);
 
 
-            photoUrl =
+            admissionPhotoUrl =
                 publicData.data.publicUrl;
 
 
-            console.log(
-                "Photo URL:",
-                photoUrl
+            /* =========================================
+               SAME PHOTO TO STUDENT MASTER
+            ========================================= */
+
+            showMessage(
+                "Student Master photo save ho rahi hai...",
+                "info"
             );
+
+
+            studentPhotoUrl =
+                await uploadStudentPhoto(
+                    file,
+                    admissionNo
+                );
 
         }
 
 
-        /* ===============================
-           APPLICATION DATA
-        =============================== */
+        /* =============================================
+           3. APPLICATION DATA
+        ============================================= */
 
-        const data = {
+        const studentName =
+            document
+            .getElementById("student_name")
+            .value.trim();
+
+        const dob =
+            document
+            .getElementById("dob")
+            .value;
+
+        const gender =
+            document
+            .getElementById("gender")
+            .value;
+
+        const className =
+            document
+            .getElementById("class_name")
+            .value;
+
+        const fatherName =
+            document
+            .getElementById("father_name")
+            .value.trim();
+
+        const motherName =
+            document
+            .getElementById("mother_name")
+            .value.trim();
+
+        const mobile =
+            document
+            .getElementById("mobile")
+            .value.trim();
+
+        const email =
+            document
+            .getElementById("email")
+            .value.trim();
+
+        const address =
+            document
+            .getElementById("address")
+            .value.trim();
+
+        const aadhaar =
+            document
+            .getElementById("aadhaar")
+            .value.trim();
+
+        const blood =
+            document
+            .getElementById("blood")
+            .value;
+
+        const transport =
+            document
+            .getElementById("transport")
+            .value;
+
+        const city =
+            document
+            .getElementById("city")
+            .value.trim();
+
+        const pincode =
+            document
+            .getElementById("pincode")
+            .value.trim();
+
+        const emergency =
+            document
+            .getElementById("emergency")
+            .value.trim();
+
+        const remarks =
+            document
+            .getElementById("remarks")
+            .value.trim();
+
+
+        /* =============================================
+           4. SAVE ONLINE ADMISSION
+        ============================================= */
+
+        showMessage(
+            "Online admission save ho rahi hai...",
+            "info"
+        );
+
+
+        const applicationData = {
 
             application_no:
                 applicationNo,
 
             student_name:
-                document
-                .getElementById("student_name")
-                .value.trim(),
+                studentName,
 
             dob:
-                document
-                .getElementById("dob")
-                .value,
+                dob,
 
             gender:
-                document
-                .getElementById("gender")
-                .value,
+                gender,
 
             class_name:
-                document
-                .getElementById("class_name")
-                .value,
+                className,
 
             previous_school:
                 document
@@ -2139,67 +2523,43 @@ async function saveApplication(
                 .value.trim(),
 
             aadhaar:
-                document
-                .getElementById("aadhaar")
-                .value.trim(),
+                aadhaar,
 
             blood_group:
-                document
-                .getElementById("blood")
-                .value,
+                blood,
 
             father_name:
-                document
-                .getElementById("father_name")
-                .value.trim(),
+                fatherName,
 
             mother_name:
-                document
-                .getElementById("mother_name")
-                .value.trim(),
+                motherName,
 
             mobile:
-                document
-                .getElementById("mobile")
-                .value.trim(),
+                mobile,
 
             email:
-                document
-                .getElementById("email")
-                .value.trim(),
+                email,
 
             address:
-                document
-                .getElementById("address")
-                .value.trim(),
+                address,
 
             city:
-                document
-                .getElementById("city")
-                .value.trim(),
+                city,
 
             pincode:
-                document
-                .getElementById("pincode")
-                .value.trim(),
+                pincode,
 
             transport:
-                document
-                .getElementById("transport")
-                .value,
+                transport,
 
             emergency:
-                document
-                .getElementById("emergency")
-                .value.trim(),
+                emergency,
 
             remarks:
-                document
-                .getElementById("remarks")
-                .value.trim(),
+                remarks,
 
             photo:
-                photoUrl,
+                admissionPhotoUrl,
 
             amount:
                 APPLICATION_FEE,
@@ -2219,91 +2579,287 @@ async function saveApplication(
         };
 
 
-        /* ===============================
-           SAVE TO SUPABASE
-        =============================== */
+        const applicationResult =
+            await sb
+            .from("online_admissions")
+            .insert([
+                applicationData
+            ])
+            .select();
+
+
+        if(applicationResult.error){
+
+            throw new Error(
+                "Online admission save failed: " +
+                applicationResult.error.message
+            );
+
+        }
+
+
+        /* =============================================
+           5. CREATE STUDENT MASTER RECORD
+        ============================================= */
 
         showMessage(
-            "Application save ho rahi hai...",
+            "Student Master mein student create ho raha hai...",
             "info"
         );
 
 
-        const result =
+        const studentData = {
+
+            session:
+                CURRENT_SESSION,
+
+            student_status:
+                "Active",
+
+            admission_no:
+                admissionNo,
+
+            roll_no:
+                "",
+
+            admission_date:
+                getTodayISO(),
+
+            student_name:
+                studentName,
+
+            father_name:
+                fatherName,
+
+            mother_name:
+                motherName,
+
+            dob:
+                dob,
+
+            age:
+                calculateAge(dob),
+
+            gender:
+                gender,
+
+            class_name:
+                className,
+
+            section:
+                "",
+
+            mobile:
+                mobile,
+
+            aadhar:
+                aadhaar,
+
+            udise:
+                "",
+
+            pen:
+                "",
+
+            apaar:
+                "",
+
+            blood:
+                blood,
+
+            bus:
+                transport === "Yes"
+                ? "Required"
+                : "No",
+
+            address:
+                address +
+                (
+                    city
+                    ? ", " + city
+                    : ""
+                ) +
+                (
+                    pincode
+                    ? " - " + pincode
+                    : ""
+                ),
+
+            photo_url:
+                studentPhotoUrl,
+
+            source:
+                "online_admission",
+
+            created_at:
+                new Date().toISOString(),
+
+            updated_at:
+                new Date().toISOString()
+
+        };
+
+
+        const studentResult =
             await sb
-            .from("online_admissions")
-            .insert([data]);
+            .from("students")
+            .insert([
+                studentData
+            ])
+            .select()
+            .single();
 
 
-        if(result.error){
+        if(studentResult.error){
 
-            console.error(
-                "DATABASE ERROR:",
-                result.error
+            throw new Error(
+                "Student Master entry failed: " +
+                studentResult.error.message
             );
 
+        }
 
-            showMessage(
-                "Payment successful, but application save failed: " +
-                result.error.message,
-                "error"
+
+        const studentId =
+            studentResult.data.id;
+
+
+        console.log(
+            "Student created:",
+            studentResult.data
+        );
+
+
+        /* =============================================
+           6. CREATE FINANCE / FEES ENTRY
+        ============================================= */
+
+        showMessage(
+            "Finance mein payment entry create ho rahi hai...",
+            "info"
+        );
+
+
+        const receiptNo =
+            createReceiptNumber();
+
+
+        const feeData = {
+
+            receipt_no:
+                receiptNo,
+
+            student_id:
+                studentId,
+
+            admission_no:
+                admissionNo,
+
+            student_name:
+                studentName,
+
+            class_name:
+                className,
+
+            section:
+                "",
+
+            session:
+                CURRENT_SESSION,
+
+            fee_type:
+                "Online Admission Application Fee",
+
+            amount:
+                APPLICATION_FEE,
+
+            discount:
+                0,
+
+            paid:
+                APPLICATION_FEE,
+
+            balance:
+                0,
+
+            mode:
+                "Razorpay",
+
+            date:
+                getTodayISO(),
+
+            transaction_id:
+                paymentId,
+
+            payment_status:
+                "success",
+
+            source:
+                "online_admission",
+
+            created_at:
+                new Date().toISOString()
+
+        };
+
+
+        const feeResult =
+            await sb
+            .from("fees")
+            .insert([
+                feeData
+            ])
+            .select();
+
+
+        if(feeResult.error){
+
+            throw new Error(
+                "Finance entry failed: " +
+                feeResult.error.message
             );
-
-
-            const payButton =
-                document.getElementById(
-                    "payButton"
-                );
-
-
-            payButton.disabled = false;
-
-            payButton.textContent =
-                "Pay ₹10 & Submit Application";
-
-
-            return;
 
         }
 
 
         console.log(
-            "Application saved successfully:",
-            result.data
+            "Finance entry created:",
+            feeResult.data
         );
 
 
-        /* ===============================
-           SUCCESS
-        =============================== */
+        /* =============================================
+           7. FINAL SUCCESS
+        ============================================= */
+
+        showMessage(
+            "Admission + Student Master + Finance successfully saved.",
+            "success"
+        );
+
 
         showConfirmation(
             applicationNo,
-            paymentId
+            paymentId,
+            admissionNo,
+            receiptNo
         );
 
+
     }
-
-
     catch(error){
 
         console.error(
-            "APPLICATION ERROR:",
+            "COMPLETE ADMISSION ERROR:",
             error
         );
 
 
         showMessage(
-            "Application save failed: " +
+            "Payment successful, but data save mein problem aayi: " +
             (error.message || error),
             "error"
         );
-
-
-        const payButton =
-            document.getElementById(
-                "payButton"
-            );
 
 
         if(payButton){
@@ -2326,23 +2882,22 @@ async function saveApplication(
 
 function showConfirmation(
     applicationNo,
-    paymentId
+    paymentId,
+    admissionNo,
+    receiptNo
 ){
 
     document.getElementById(
         "formCard"
     ).style.display = "none";
 
-
     document.getElementById(
         "previewCard"
     ).style.display = "none";
 
-
     document.getElementById(
         "paymentCard"
     ).style.display = "none";
-
 
     document.getElementById(
         "confirmationCard"
@@ -2394,11 +2949,20 @@ function showConfirmation(
             applicationNo:
                 applicationNo,
 
+            admissionNo:
+                admissionNo,
+
+            receiptNo:
+                receiptNo,
+
             paymentId:
                 paymentId,
 
             amount:
                 APPLICATION_FEE,
+
+            session:
+                CURRENT_SESSION,
 
             date:
                 new Date().toLocaleString(
@@ -2545,7 +3109,6 @@ td{
 
 <body>
 
-
 <div class="header">
 
 <img
@@ -2568,11 +3131,9 @@ Rabdal, Dahod, Gujarat - 389151
 
 </div>
 
-
 <h2>
 ONLINE ADMISSION APPLICATION
 </h2>
-
 
 <div class="photo-area">
 
@@ -2589,7 +3150,6 @@ ${
 
 </div>
 
-
 <table>
 
 <tr>
@@ -2602,7 +3162,6 @@ ${escapePrint(applicationNo)}
 </td>
 </tr>
 
-
 <tr>
 <td class="label">
 Student Name
@@ -2612,7 +3171,6 @@ Student Name
 ${escapePrint(studentName)}
 </td>
 </tr>
-
 
 <tr>
 <td class="label">
@@ -2626,7 +3184,6 @@ ${formatDatePrint(
 </td>
 </tr>
 
-
 <tr>
 <td class="label">
 Gender
@@ -2638,7 +3195,6 @@ ${escapePrint(
 )}
 </td>
 </tr>
-
 
 <tr>
 <td class="label">
@@ -2652,7 +3208,6 @@ ${escapePrint(
 </td>
 </tr>
 
-
 <tr>
 <td class="label">
 Previous School
@@ -2664,7 +3219,6 @@ ${escapePrint(
 )}
 </td>
 </tr>
-
 
 <tr>
 <td class="label">
@@ -2678,7 +3232,6 @@ ${escapePrint(
 </td>
 </tr>
 
-
 <tr>
 <td class="label">
 Aadhaar Number
@@ -2690,7 +3243,6 @@ ${escapePrint(
 )}
 </td>
 </tr>
-
 
 <tr>
 <td class="label">
@@ -2704,7 +3256,6 @@ ${escapePrint(
 </td>
 </tr>
 
-
 <tr>
 <td class="label">
 Father's Name
@@ -2716,7 +3267,6 @@ ${escapePrint(
 )}
 </td>
 </tr>
-
 
 <tr>
 <td class="label">
@@ -2730,7 +3280,6 @@ ${escapePrint(
 </td>
 </tr>
 
-
 <tr>
 <td class="label">
 Mobile
@@ -2742,7 +3291,6 @@ ${escapePrint(
 )}
 </td>
 </tr>
-
 
 <tr>
 <td class="label">
@@ -2756,7 +3304,6 @@ ${escapePrint(
 </td>
 </tr>
 
-
 <tr>
 <td class="label">
 Address
@@ -2768,7 +3315,6 @@ ${escapePrint(
 )}
 </td>
 </tr>
-
 
 <tr>
 <td class="label">
@@ -2782,7 +3328,6 @@ ${escapePrint(
 </td>
 </tr>
 
-
 <tr>
 <td class="label">
 PIN Code
@@ -2794,7 +3339,6 @@ ${escapePrint(
 )}
 </td>
 </tr>
-
 
 <tr>
 <td class="label">
@@ -2808,7 +3352,6 @@ ${escapePrint(
 </td>
 </tr>
 
-
 <tr>
 <td class="label">
 Emergency Contact
@@ -2821,7 +3364,6 @@ ${escapePrint(
 </td>
 </tr>
 
-
 <tr>
 <td class="label">
 Payment Status
@@ -2831,7 +3373,6 @@ Payment Status
 <strong>PAID</strong>
 </td>
 </tr>
-
 
 <tr>
 <td class="label">
@@ -2843,7 +3384,6 @@ Confirmation Fee
 </td>
 </tr>
 
-
 <tr>
 <td class="label">
 Payment ID
@@ -2854,9 +3394,7 @@ ${escapePrint(paymentId)}
 </td>
 </tr>
 
-
 </table>
-
 
 <div class="footer">
 
@@ -2869,7 +3407,6 @@ School Office
 </div>
 
 </div>
-
 
 <script>
 
@@ -2885,13 +3422,11 @@ window.onload=function(){
 
 <\/script>
 
-
 </body>
 
 </html>
 
 `;
-
 
     printWindow.document.write(html);
     printWindow.document.close();
@@ -3022,33 +3557,26 @@ td{
 
 <body>
 
-
 <div class="receipt">
 
-
 <div class="center">
-
 
 <img
 class="logo"
 src="logo.png"
 alt="School Logo">
 
-
 <h1 class="school-name">
 Rainbow Public School
 </h1>
-
 
 <p>
 Shubhi Education Foundation, Dahod
 </p>
 
-
 <h2>
 PAYMENT RECEIPT
 </h2>
-
 
 ${
     studentPhoto
@@ -3061,12 +3589,9 @@ ${
     ""
 }
 
-
 </div>
 
-
 <table>
-
 
 <tr>
 
@@ -3080,7 +3605,6 @@ ${escapePrint(applicationNo)}
 
 </tr>
 
-
 <tr>
 
 <td class="label">
@@ -3092,7 +3616,6 @@ ${escapePrint(studentName)}
 </td>
 
 </tr>
-
 
 <tr>
 
@@ -3106,7 +3629,6 @@ Amount Paid
 
 </tr>
 
-
 <tr>
 
 <td class="label">
@@ -3118,7 +3640,6 @@ ${escapePrint(paymentId)}
 </td>
 
 </tr>
-
 
 <tr>
 
@@ -3132,7 +3653,6 @@ PAID
 
 </tr>
 
-
 <tr>
 
 <td class="label">
@@ -3145,26 +3665,20 @@ ${new Date().toLocaleDateString("en-IN")}
 
 </tr>
 
-
 </table>
 
-
 <br>
-
 
 <p>
 This receipt confirms payment of the online admission
 application confirmation fee.
 </p>
 
-
 <p style="text-align:right;margin-top:50px;">
 Authorized Signatory
 </p>
 
-
 </div>
-
 
 <script>
 
@@ -3180,13 +3694,11 @@ window.onload=function(){
 
 <\/script>
 
-
 </body>
 
 </html>
 
 `;
-
 
     printWindow.document.write(html);
     printWindow.document.close();
@@ -3218,17 +3730,14 @@ function formatDatePrint(value){
 
     }
 
-
     const parts =
         value.split("-");
-
 
     if(parts.length !== 3){
 
         return value;
 
     }
-
 
     return (
         parts[2] +
@@ -3256,7 +3765,6 @@ function clearForm(){
         return;
 
     }
-
 
     document
     .querySelectorAll(
