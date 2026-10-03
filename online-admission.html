@@ -1176,12 +1176,14 @@ New Application
    SUPABASE
 ===================================================== */
 
-const client = window.supabase.createClient(
+const SUPABASE_URL = "https://kqahcvaoxnmxfcgyyync.supabase.co";
 
-    "https://kqahcvaoxnmxfcgyyync.supabase.co",
+const SUPABASE_ANON_KEY =
+"sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl";
 
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwiaWF0IjoxNzc0ODg0NzU5LCJleHAiOjIwOTA0NjA3NTl9.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
-
+const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
 );
 
 
