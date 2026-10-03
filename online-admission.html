@@ -389,7 +389,6 @@ textarea{
     line-height:1.6;
 }
 
-
 footer{
     background:#002f60;
     color:white;
@@ -851,10 +850,6 @@ placeholder="Any additional information"></textarea>
 </div>
 
 
-<!-- ================================
-     PREVIEW BUTTON
-================================ -->
-
 <div class="payment-box">
 
 <h2>Review Your Application</h2>
@@ -879,9 +874,7 @@ Preview & Continue
 
 </button>
 
-
 <br><br>
-
 
 <button
 type="button"
@@ -938,17 +931,12 @@ Please carefully check all details before payment.
 
 <div class="preview-photo-box">
 
-<div
-id="previewPhotoContainer">
+<div id="previewPhotoContainer"></div>
 
 </div>
 
-</div>
 
-
-<div id="previewContent">
-
-</div>
+<div id="previewContent"></div>
 
 
 <div class="confirm-box">
@@ -1169,22 +1157,35 @@ New Application
 </footer>
 
 
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
 
-
+<script>
 
 /* =====================================================
    SUPABASE
 ===================================================== */
 
-const SUPABASE_URL = "https://kqahcvaoxnmxfcgyyync.supabase.co";
+const SUPABASE_URL =
+    "https://kqahcvaoxnmxfcgyyync.supabase.co";
 
-const SUPABASE_ANON_KEY =
-"sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl";
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl";
 
-const supabase = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-);
+
+/*
+   IMPORTANT:
+   Supabase client variable is "sb".
+   This avoids any duplicate "supabase"
+   declaration problem.
+*/
+
+const sb =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
 
 
 /* =====================================================
@@ -1555,14 +1556,12 @@ function fillPreview(){
 )}</td>
 </tr>
 
-
 <tr>
 <td>Date of Birth</td>
 <td>${formatDatePrint(
     document.getElementById("dob").value
 )}</td>
 </tr>
-
 
 <tr>
 <td>Gender</td>
@@ -1571,14 +1570,12 @@ function fillPreview(){
 )}</td>
 </tr>
 
-
 <tr>
 <td>Applying For Class</td>
 <td>${escapePrint(
     document.getElementById("class_name").value
 )}</td>
 </tr>
-
 
 <tr>
 <td>Previous School</td>
@@ -1587,14 +1584,12 @@ function fillPreview(){
 )}</td>
 </tr>
 
-
 <tr>
 <td>Previous Class</td>
 <td>${escapePrint(
     document.getElementById("previous_class").value.trim()
 )}</td>
 </tr>
-
 
 <tr>
 <td>Aadhaar Number</td>
@@ -1603,14 +1598,12 @@ function fillPreview(){
 )}</td>
 </tr>
 
-
 <tr>
 <td>Blood Group</td>
 <td>${escapePrint(
     document.getElementById("blood").value
 )}</td>
 </tr>
-
 
 <tr>
 <td>Father's Name</td>
@@ -1619,14 +1612,12 @@ function fillPreview(){
 )}</td>
 </tr>
 
-
 <tr>
 <td>Mother's Name</td>
 <td>${escapePrint(
     document.getElementById("mother_name").value.trim()
 )}</td>
 </tr>
-
 
 <tr>
 <td>Parent Mobile</td>
@@ -1635,14 +1626,12 @@ function fillPreview(){
 )}</td>
 </tr>
 
-
 <tr>
 <td>Parent Email</td>
 <td>${escapePrint(
     document.getElementById("email").value.trim()
 )}</td>
 </tr>
-
 
 <tr>
 <td>Address</td>
@@ -1651,14 +1640,12 @@ function fillPreview(){
 )}</td>
 </tr>
 
-
 <tr>
 <td>City / Village</td>
 <td>${escapePrint(
     document.getElementById("city").value.trim()
 )}</td>
 </tr>
-
 
 <tr>
 <td>PIN Code</td>
@@ -1667,7 +1654,6 @@ function fillPreview(){
 )}</td>
 </tr>
 
-
 <tr>
 <td>Transport Required</td>
 <td>${escapePrint(
@@ -1675,14 +1661,12 @@ function fillPreview(){
 )}</td>
 </tr>
 
-
 <tr>
 <td>Emergency Contact</td>
 <td>${escapePrint(
     document.getElementById("emergency").value.trim()
 )}</td>
 </tr>
-
 
 <tr>
 <td>Other Information</td>
@@ -2038,8 +2022,14 @@ async function saveApplication(
                 extension;
 
 
+            console.log(
+                "Uploading photo:",
+                fileName
+            );
+
+
             const uploadResult =
-                await client
+                await sb
                 .storage
                 .from("admission-photos")
                 .upload(
@@ -2084,8 +2074,14 @@ async function saveApplication(
             }
 
 
+            console.log(
+                "Photo upload successful:",
+                uploadResult.data
+            );
+
+
             const publicData =
-                client
+                sb
                 .storage
                 .from("admission-photos")
                 .getPublicUrl(fileName);
@@ -2093,6 +2089,12 @@ async function saveApplication(
 
             photoUrl =
                 publicData.data.publicUrl;
+
+
+            console.log(
+                "Photo URL:",
+                photoUrl
+            );
 
         }
 
@@ -2228,7 +2230,7 @@ async function saveApplication(
 
 
         const result =
-            await client
+            await sb
             .from("online_admissions")
             .insert([data]);
 
@@ -2263,6 +2265,12 @@ async function saveApplication(
             return;
 
         }
+
+
+        console.log(
+            "Application saved successfully:",
+            result.data
+        );
 
 
         /* ===============================
@@ -2353,10 +2361,6 @@ function showConfirmation(
         paymentId;
 
 
-    /* ===============================
-       SHOW STUDENT PHOTO
-    =============================== */
-
     const preview =
         document.getElementById(
             "photoPreview"
@@ -2382,10 +2386,6 @@ function showConfirmation(
 
     }
 
-
-    /* ===============================
-       SAVE LAST APPLICATION
-    =============================== */
 
     localStorage.setItem(
         "lastAdmissionApplication",
@@ -2452,6 +2452,18 @@ function printApplication(){
             "",
             "_blank"
         );
+
+
+    if(!printWindow){
+
+        showMessage(
+            "Please allow pop-ups in your browser to print the application.",
+            "error"
+        );
+
+        return;
+
+    }
 
 
     const html = `
@@ -2579,7 +2591,6 @@ ${
 
 
 <table>
-
 
 <tr>
 <td class="label">
@@ -2923,6 +2934,18 @@ function printReceipt(){
             "",
             "_blank"
         );
+
+
+    if(!printWindow){
+
+        showMessage(
+            "Please allow pop-ups in your browser to print the receipt.",
+            "error"
+        );
+
+        return;
+
+    }
 
 
     const html = `
@@ -3292,6 +3315,11 @@ function clearForm(){
 
     document.getElementById(
         "paymentCard"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "confirmationCard"
     ).style.display = "none";
 
 
