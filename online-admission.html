@@ -1514,6 +1514,113 @@ function showConfirmation(
         paymentId;
 
 
+    /* ============================================
+       STUDENT PHOTO SHOW
+    ============================================ */
+
+    const preview =
+        document.getElementById(
+            "photoPreview"
+        );
+
+
+    if(preview && preview.src){
+
+        let photoBox =
+            document.getElementById(
+                "confirmationPhotoBox"
+            );
+
+
+        if(!photoBox){
+
+            photoBox =
+                document.createElement("div");
+
+            photoBox.id =
+                "confirmationPhotoBox";
+
+            photoBox.style.textAlign =
+                "center";
+
+            photoBox.style.margin =
+                "20px 0";
+
+
+            const title =
+                document.createElement("div");
+
+            title.textContent =
+                "Student Photo";
+
+            title.style.fontWeight =
+                "bold";
+
+            title.style.marginBottom =
+                "10px";
+
+
+            const img =
+                document.createElement("img");
+
+            img.id =
+                "confirmationStudentPhoto";
+
+            img.style.width =
+                "130px";
+
+            img.style.height =
+                "160px";
+
+            img.style.objectFit =
+                "cover";
+
+            img.style.border =
+                "2px solid #333";
+
+            img.style.borderRadius =
+                "8px";
+
+
+            photoBox.appendChild(
+                title
+            );
+
+            photoBox.appendChild(
+                img
+            );
+
+
+            const confirmationCard =
+                document.getElementById(
+                    "confirmationCard"
+                );
+
+
+            confirmationCard.insertBefore(
+                photoBox,
+                confirmationCard.firstChild
+            );
+
+        }
+
+
+        document.getElementById(
+            "confirmationStudentPhoto"
+        ).src =
+            preview.src;
+
+
+        photoBox.style.display =
+            "block";
+
+    }
+
+
+    /* ============================================
+       SAVE LAST APPLICATION
+    ============================================ */
+
     localStorage.setItem(
         "lastAdmissionApplication",
         JSON.stringify({
@@ -1528,7 +1635,9 @@ function showConfirmation(
                 APPLICATION_FEE,
 
             date:
-                new Date().toLocaleString("en-IN")
+                new Date().toLocaleString(
+                    "en-IN"
+                )
 
         })
     );
@@ -1540,7 +1649,6 @@ function showConfirmation(
     });
 
 }
-
 
 /* =====================================================
    PRINT APPLICATION
