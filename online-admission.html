@@ -664,7 +664,7 @@ placeholder="Any additional information"></textarea>
 
 <h2>Application Confirmation Fee</h2>
 
-<div class="amount">₹250</div>
+<div class="amount">₹10</div>
 
 <p>
 After submitting the form, you will be redirected to
@@ -672,7 +672,7 @@ Razorpay secure payment.
 </p>
 
 <p>
-<strong>Payment of ₹250 is required to confirm the application.</strong>
+<strong>Payment of ₹10 is required to confirm the application.</strong>
 </p>
 
 <button
@@ -681,7 +681,7 @@ class="pay-btn"
 id="payButton"
 onclick="startPayment()">
 
-Pay ₹250 & Submit Application
+Pay ₹10 & Submit Application
 
 </button>
 
@@ -727,7 +727,7 @@ Payment ID:
 
 <p>
 Confirmation Fee:
-<strong>₹250</strong>
+<strong>₹10</strong>
 </p>
 
 <br>
@@ -788,7 +788,7 @@ const client = window.supabase.createClient(
    FIXED PAYMENT
 ===================================================== */
 
-const APPLICATION_FEE = 250;
+const APPLICATION_FEE = 10;
 
 
 /* =====================================================
@@ -1158,7 +1158,7 @@ function startPayment(){
                 payButton.disabled = false;
 
                 payButton.textContent =
-                    "Pay ₹250 & Submit Application";
+                    "Pay ₹10 & Submit Application";
 
                 showMessage(
                     "Payment cancelled.",
@@ -1188,7 +1188,7 @@ function startPayment(){
             payButton.disabled = false;
 
             payButton.textContent =
-                "Pay ₹250 & Submit Application";
+                "Pay ₹10 & Submit Application";
 
             showMessage(
                 "Payment failed. Please try again.",
@@ -1454,7 +1454,7 @@ async function saveApplication(
                 photoUrl,
 
             amount:
-                250,
+                10,
 
             payment_id:
                 paymentId,
@@ -1821,7 +1821,7 @@ Rabdal, Dahod, Gujarat - 389151
 
 <tr>
 <td class="label">Confirmation Fee</td>
-<td>₹250</td>
+<td>₹10</td>
 </tr>
 
 <tr>
@@ -1978,7 +1978,7 @@ Shubhi Education Foundation, Dahod
 
 <tr>
 <td class="label">Amount Paid</td>
-<td><strong>₹250</strong></td>
+<td><strong>₹10</strong></td>
 </tr>
 
 <tr>
