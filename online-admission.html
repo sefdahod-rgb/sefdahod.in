@@ -253,6 +253,143 @@ textarea{
     border-radius:8px;
 }
 
+
+/* ================================
+   PREVIEW
+================================ */
+
+.preview-header{
+    text-align:center;
+    border-bottom:2px solid #003b70;
+    padding-bottom:15px;
+    margin-bottom:20px;
+}
+
+.preview-header img{
+    width:70px;
+    height:70px;
+    object-fit:contain;
+}
+
+.preview-header h2{
+    color:#003b70;
+    margin:6px 0;
+}
+
+.preview-photo-box{
+    text-align:center;
+    margin:20px 0;
+}
+
+.preview-photo{
+    width:130px;
+    height:160px;
+    object-fit:cover;
+    border:2px solid #003b70;
+    border-radius:8px;
+}
+
+.no-photo{
+    width:130px;
+    height:160px;
+    border:2px dashed #94a3b8;
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:auto;
+    color:#64748b;
+    font-size:13px;
+}
+
+.preview-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+.preview-table td{
+    border:1px solid #cbd5e1;
+    padding:10px;
+    vertical-align:top;
+}
+
+.preview-table td:first-child{
+    width:32%;
+    font-weight:bold;
+    background:#f8fafc;
+}
+
+.confirm-box{
+    background:#fefce8;
+    border:1px solid #eab308;
+    border-radius:8px;
+    padding:15px;
+    margin-top:25px;
+}
+
+.confirm-box label{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    cursor:pointer;
+    margin:0;
+    font-weight:bold;
+}
+
+.confirm-box input[type="checkbox"]{
+    width:20px;
+    height:20px;
+    flex-shrink:0;
+}
+
+.preview-buttons{
+    text-align:center;
+    margin-top:20px;
+}
+
+.edit-btn{
+    background:#64748b;
+    color:white;
+    border:none;
+    padding:13px 25px;
+    border-radius:7px;
+    cursor:pointer;
+    font-weight:bold;
+    margin:5px;
+}
+
+.confirm-btn{
+    background:#16a34a;
+    color:white;
+    border:none;
+    padding:13px 25px;
+    border-radius:7px;
+    cursor:pointer;
+    font-weight:bold;
+    margin:5px;
+}
+
+.confirm-btn:disabled{
+    background:#94a3b8;
+    cursor:not-allowed;
+}
+
+
+/* ================================
+   PAYMENT CARD
+================================ */
+
+.payment-card{
+    display:none;
+}
+
+.payment-note{
+    color:#475569;
+    line-height:1.6;
+}
+
+
 footer{
     background:#002f60;
     color:white;
@@ -279,6 +416,16 @@ footer{
         font-size:20px;
     }
 
+    .preview-table td{
+        display:block;
+        width:100% !important;
+    }
+
+    .preview-table tr{
+        display:block;
+        margin-bottom:8px;
+    }
+
 }
 
 @media print{
@@ -291,7 +438,8 @@ footer{
     footer,
     .pay-btn,
     .clear-btn,
-    .print-btn{
+    .print-btn,
+    .preview-buttons{
         display:none !important;
     }
 
@@ -312,6 +460,7 @@ footer{
 </head>
 
 <body>
+
 
 <div class="header">
 
@@ -334,9 +483,10 @@ footer{
 <div id="message" class="message"></div>
 
 
-<!-- BACK TO HOME -->
+<!-- ================= BACK TO HOME ================= -->
 
 <div class="no-print">
+
     <button
         type="button"
         class="home-btn"
@@ -345,10 +495,13 @@ footer{
         ← Back to Home
 
     </button>
+
 </div>
 
 
-<!-- ================= FORM ================= -->
+<!-- ==================================================
+     FORM
+================================================== -->
 
 <div class="card" id="formCard">
 
@@ -362,6 +515,7 @@ Please fill all required details carefully.
 <div class="section-title">
     Student Details
 </div>
+
 
 <div class="grid">
 
@@ -534,6 +688,7 @@ alt="Student Photo">
 Parent / Guardian Details
 </div>
 
+
 <div class="grid">
 
 
@@ -646,6 +801,7 @@ placeholder="PIN Code">
 Other Information
 </div>
 
+
 <div class="grid">
 
 
@@ -695,36 +851,37 @@ placeholder="Any additional information"></textarea>
 </div>
 
 
-<!-- PAYMENT -->
+<!-- ================================
+     PREVIEW BUTTON
+================================ -->
 
 <div class="payment-box">
 
-<h2>Application Confirmation Fee</h2>
-
-<div class="amount">₹10</div>
+<h2>Review Your Application</h2>
 
 <p>
-After submitting the form, you will be redirected to
-Razorpay secure payment.
+Please check your application details before proceeding to payment.
 </p>
 
 <p>
 <strong>
-Payment of ₹10 is required to confirm the application.
+Payment will appear only after you confirm your details.
 </strong>
 </p>
+
 
 <button
 type="button"
 class="pay-btn"
-id="payButton"
-onclick="startPayment()">
+onclick="openPreview()">
 
-Pay ₹10 & Submit Application
+Preview & Continue
 
 </button>
 
+
 <br><br>
+
 
 <button
 type="button"
@@ -740,7 +897,177 @@ Clear Form
 </div>
 
 
-<!-- ================= CONFIRMATION ================= -->
+<!-- ==================================================
+     PREVIEW CARD
+================================================== -->
+
+<div
+class="card"
+id="previewCard"
+style="display:none;">
+
+<div class="preview-header">
+
+<img src="logo.png" alt="School Logo">
+
+<h2>
+Rainbow Public School
+</h2>
+
+<div>
+Conducted by Shubhi Education Foundation, Dahod
+</div>
+
+<div style="font-size:13px;margin-top:5px;">
+Shalimar Co-operative Society, Muvaliya Road,
+Rabdal, Dahod, Gujarat - 389151
+</div>
+
+</div>
+
+
+<h2 class="title">
+APPLICATION PREVIEW
+</h2>
+
+
+<p style="text-align:center;color:#475569;">
+Please carefully check all details before payment.
+</p>
+
+
+<div class="preview-photo-box">
+
+<div
+id="previewPhotoContainer">
+
+</div>
+
+</div>
+
+
+<div id="previewContent">
+
+</div>
+
+
+<div class="confirm-box">
+
+<label>
+
+<input
+type="checkbox"
+id="confirmDetails"
+onchange="toggleConfirmButton()">
+
+<span>
+I have checked all the details above and confirm that
+they are correct.
+</span>
+
+</label>
+
+</div>
+
+
+<div class="preview-buttons">
+
+<button
+type="button"
+class="edit-btn"
+onclick="editApplication()">
+
+← Edit Application
+
+</button>
+
+
+<button
+type="button"
+class="confirm-btn"
+id="confirmPaymentButton"
+onclick="confirmAndProceedToPayment()"
+disabled>
+
+✓ Confirm & Proceed to Payment ₹10
+
+</button>
+
+</div>
+
+</div>
+
+
+<!-- ==================================================
+     PAYMENT CARD
+================================================== -->
+
+<div
+class="card payment-card"
+id="paymentCard">
+
+<div class="payment-box">
+
+<h2>
+Application Confirmation Fee
+</h2>
+
+
+<div class="amount">
+₹10
+</div>
+
+
+<p class="payment-note">
+
+Your application details have been confirmed.
+
+<br>
+
+Complete the secure Razorpay payment to submit
+your admission application.
+
+</p>
+
+
+<p>
+<strong>
+Application will be saved after successful payment.
+</strong>
+</p>
+
+
+<button
+type="button"
+class="pay-btn"
+id="payButton"
+onclick="startPayment()">
+
+Pay ₹10 & Submit Application
+
+</button>
+
+
+<br><br>
+
+
+<button
+type="button"
+class="clear-btn"
+onclick="backToPreview()">
+
+← Back to Preview
+
+</button>
+
+</div>
+
+</div>
+
+
+<!-- ==================================================
+     CONFIRMATION
+================================================== -->
 
 <div
 class="card confirmation"
@@ -844,6 +1171,7 @@ New Application
 
 <script>
 
+
 /* =====================================================
    SUPABASE
 ===================================================== */
@@ -858,7 +1186,7 @@ const client = window.supabase.createClient(
 
 
 /* =====================================================
-   TESTING FEE
+   FEE
 ===================================================== */
 
 const APPLICATION_FEE = 10;
@@ -904,7 +1232,9 @@ function previewPhoto(){
         );
 
         document.getElementById("photo").value = "";
+
         img.style.display = "none";
+        img.src = "";
 
         return;
     }
@@ -913,12 +1243,15 @@ function previewPhoto(){
     const reader =
         new FileReader();
 
+
     reader.onload = function(e){
 
         img.src = e.target.result;
+
         img.style.display = "block";
 
     };
+
 
     reader.readAsDataURL(file);
 
@@ -1063,7 +1396,430 @@ function validateForm(){
     }
 
 
+    const pincode =
+        document.getElementById("pincode")
+        .value.trim();
+
+
+    if(
+        pincode &&
+        !/^[0-9]{6}$/.test(pincode)
+    ){
+
+        showMessage(
+            "Please enter a valid 6 digit PIN Code.",
+            "error"
+        );
+
+        return false;
+
+    }
+
+
+    const emergency =
+        document.getElementById("emergency")
+        .value.trim();
+
+
+    if(
+        emergency &&
+        !/^[0-9]{10}$/.test(emergency)
+    ){
+
+        showMessage(
+            "Please enter a valid 10 digit emergency contact.",
+            "error"
+        );
+
+        return false;
+
+    }
+
+
     return true;
+
+}
+
+
+/* =====================================================
+   OPEN PREVIEW
+===================================================== */
+
+function openPreview(){
+
+    if(!validateForm()){
+
+        return;
+
+    }
+
+
+    fillPreview();
+
+
+    document.getElementById(
+        "formCard"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "previewCard"
+    ).style.display = "block";
+
+
+    document.getElementById(
+        "paymentCard"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "confirmationCard"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "confirmDetails"
+    ).checked = false;
+
+
+    toggleConfirmButton();
+
+
+    document.getElementById(
+        "message"
+    ).style.display = "none";
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =====================================================
+   FILL PREVIEW
+===================================================== */
+
+function fillPreview(){
+
+    const photo =
+        document.getElementById("photoPreview");
+
+
+    const photoContainer =
+        document.getElementById(
+            "previewPhotoContainer"
+        );
+
+
+    if(
+        photo &&
+        photo.src &&
+        photo.src.startsWith("data:image")
+    ){
+
+        photoContainer.innerHTML = `
+
+            <img
+                src="${photo.src}"
+                class="preview-photo"
+                alt="Student Photo">
+
+        `;
+
+    }else{
+
+        photoContainer.innerHTML = `
+
+            <div class="no-photo">
+                No Photo Selected
+            </div>
+
+        `;
+
+    }
+
+
+    const html = `
+
+<table class="preview-table">
+
+<tr>
+<td>Student Name</td>
+<td>${escapePrint(
+    document.getElementById("student_name").value.trim()
+)}</td>
+</tr>
+
+
+<tr>
+<td>Date of Birth</td>
+<td>${formatDatePrint(
+    document.getElementById("dob").value
+)}</td>
+</tr>
+
+
+<tr>
+<td>Gender</td>
+<td>${escapePrint(
+    document.getElementById("gender").value
+)}</td>
+</tr>
+
+
+<tr>
+<td>Applying For Class</td>
+<td>${escapePrint(
+    document.getElementById("class_name").value
+)}</td>
+</tr>
+
+
+<tr>
+<td>Previous School</td>
+<td>${escapePrint(
+    document.getElementById("previous_school").value.trim()
+)}</td>
+</tr>
+
+
+<tr>
+<td>Previous Class</td>
+<td>${escapePrint(
+    document.getElementById("previous_class").value.trim()
+)}</td>
+</tr>
+
+
+<tr>
+<td>Aadhaar Number</td>
+<td>${escapePrint(
+    document.getElementById("aadhaar").value.trim()
+)}</td>
+</tr>
+
+
+<tr>
+<td>Blood Group</td>
+<td>${escapePrint(
+    document.getElementById("blood").value
+)}</td>
+</tr>
+
+
+<tr>
+<td>Father's Name</td>
+<td>${escapePrint(
+    document.getElementById("father_name").value.trim()
+)}</td>
+</tr>
+
+
+<tr>
+<td>Mother's Name</td>
+<td>${escapePrint(
+    document.getElementById("mother_name").value.trim()
+)}</td>
+</tr>
+
+
+<tr>
+<td>Parent Mobile</td>
+<td>${escapePrint(
+    document.getElementById("mobile").value.trim()
+)}</td>
+</tr>
+
+
+<tr>
+<td>Parent Email</td>
+<td>${escapePrint(
+    document.getElementById("email").value.trim()
+)}</td>
+</tr>
+
+
+<tr>
+<td>Address</td>
+<td>${escapePrint(
+    document.getElementById("address").value.trim()
+)}</td>
+</tr>
+
+
+<tr>
+<td>City / Village</td>
+<td>${escapePrint(
+    document.getElementById("city").value.trim()
+)}</td>
+</tr>
+
+
+<tr>
+<td>PIN Code</td>
+<td>${escapePrint(
+    document.getElementById("pincode").value.trim()
+)}</td>
+</tr>
+
+
+<tr>
+<td>Transport Required</td>
+<td>${escapePrint(
+    document.getElementById("transport").value
+)}</td>
+</tr>
+
+
+<tr>
+<td>Emergency Contact</td>
+<td>${escapePrint(
+    document.getElementById("emergency").value.trim()
+)}</td>
+</tr>
+
+
+<tr>
+<td>Other Information</td>
+<td>${escapePrint(
+    document.getElementById("remarks").value.trim()
+)}</td>
+</tr>
+
+</table>
+
+    `;
+
+
+    document.getElementById(
+        "previewContent"
+    ).innerHTML = html;
+
+}
+
+
+/* =====================================================
+   CONFIRM CHECKBOX
+===================================================== */
+
+function toggleConfirmButton(){
+
+    const checkbox =
+        document.getElementById(
+            "confirmDetails"
+        );
+
+    const button =
+        document.getElementById(
+            "confirmPaymentButton"
+        );
+
+
+    button.disabled =
+        !checkbox.checked;
+
+}
+
+
+/* =====================================================
+   EDIT APPLICATION
+===================================================== */
+
+function editApplication(){
+
+    document.getElementById(
+        "previewCard"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "paymentCard"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "formCard"
+    ).style.display = "block";
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =====================================================
+   CONFIRM AND PROCEED TO PAYMENT
+===================================================== */
+
+function confirmAndProceedToPayment(){
+
+    const checkbox =
+        document.getElementById(
+            "confirmDetails"
+        );
+
+
+    if(!checkbox.checked){
+
+        showMessage(
+            "Please confirm that all details are correct.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "previewCard"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "formCard"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "paymentCard"
+    ).style.display = "block";
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =====================================================
+   BACK TO PREVIEW
+===================================================== */
+
+function backToPreview(){
+
+    document.getElementById(
+        "paymentCard"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "previewCard"
+    ).style.display = "block";
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
 
 }
 
@@ -1084,6 +1840,7 @@ function startPayment(){
     const payButton =
         document.getElementById("payButton");
 
+
     payButton.disabled = true;
 
     payButton.textContent =
@@ -1098,9 +1855,11 @@ function startPayment(){
         document.getElementById("student_name")
         .value.trim();
 
+
     const email =
         document.getElementById("email")
         .value.trim();
+
 
     const mobile =
         document.getElementById("mobile")
@@ -1162,6 +1921,7 @@ function startPayment(){
                 "info"
             );
 
+
             await saveApplication(
                 applicationNo,
                 response
@@ -1178,6 +1938,7 @@ function startPayment(){
 
                 payButton.textContent =
                     "Pay ₹10 & Submit Application";
+
 
                 showMessage(
                     "Payment cancelled.",
@@ -1204,10 +1965,13 @@ function startPayment(){
                 response
             );
 
+
             payButton.disabled = false;
+
 
             payButton.textContent =
                 "Pay ₹10 & Submit Application";
+
 
             showMessage(
                 "Payment failed. Please try again.",
@@ -1224,7 +1988,7 @@ function startPayment(){
 
 
 /* =====================================================
-   SAVE APPLICATION + PHOTO STORAGE
+   SAVE APPLICATION + PHOTO
 ===================================================== */
 
 async function saveApplication(
@@ -1234,6 +1998,7 @@ async function saveApplication(
 
     const file =
         document.getElementById("photo").files[0];
+
 
     const paymentId =
         paymentResponse.razorpay_payment_id;
@@ -1292,22 +2057,28 @@ async function saveApplication(
                     uploadResult.error
                 );
 
+
                 showMessage(
                     "Photo upload failed: " +
                     uploadResult.error.message,
                     "error"
                 );
 
-                document.getElementById(
-                    "payButton"
-                ).disabled = false;
 
-                document.getElementById(
-                    "payButton"
-                ).textContent =
+                const payButton =
+                    document.getElementById(
+                        "payButton"
+                    );
+
+
+                payButton.disabled = false;
+
+                payButton.textContent =
                     "Pay ₹10 & Submit Application";
 
+
                 return;
+
             }
 
 
@@ -1467,13 +2238,28 @@ async function saveApplication(
                 result.error
             );
 
+
             showMessage(
                 "Payment successful, but application save failed: " +
                 result.error.message,
                 "error"
             );
 
+
+            const payButton =
+                document.getElementById(
+                    "payButton"
+                );
+
+
+            payButton.disabled = false;
+
+            payButton.textContent =
+                "Pay ₹10 & Submit Application";
+
+
             return;
+
         }
 
 
@@ -1488,6 +2274,7 @@ async function saveApplication(
 
     }
 
+
     catch(error){
 
         console.error(
@@ -1495,11 +2282,28 @@ async function saveApplication(
             error
         );
 
+
         showMessage(
             "Application save failed: " +
             (error.message || error),
             "error"
         );
+
+
+        const payButton =
+            document.getElementById(
+                "payButton"
+            );
+
+
+        if(payButton){
+
+            payButton.disabled = false;
+
+            payButton.textContent =
+                "Pay ₹10 & Submit Application";
+
+        }
 
     }
 
@@ -1517,6 +2321,16 @@ function showConfirmation(
 
     document.getElementById(
         "formCard"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "previewCard"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "paymentCard"
     ).style.display = "none";
 
 
@@ -1977,6 +2791,19 @@ Transport
 <td>
 ${escapePrint(
     document.getElementById("transport").value
+)}
+</td>
+</tr>
+
+
+<tr>
+<td class="label">
+Emergency Contact
+</td>
+
+<td>
+${escapePrint(
+    document.getElementById("emergency").value
 )}
 </td>
 </tr>
@@ -2454,6 +3281,21 @@ function clearForm(){
     document.getElementById(
         "photoPreview"
     ).src = "";
+
+
+    document.getElementById(
+        "previewCard"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "paymentCard"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "formCard"
+    ).style.display = "block";
 
 
     document.getElementById(
