@@ -1223,116 +1223,7 @@ async function saveApplication(
     const paymentId =
         paymentResponse.razorpay_payment_id;
 
-
-    /* ================================================
-       PHOTO UPLOAD
-    ================================================= */
-
-    async function uploadPhoto(){
-
-        if(!file){
-            return "";
-        }
-
-
-        try{
-
-            /* Unique file name */
-
-            const extension =
-                file.name
-                .split(".")
-                .pop()
-                .toLowerCase();
-
-
-            const fileName =
-                applicationNo +
-                "-" +
-                Date.now() +
-                "." +
-                extension;
-
-
-            const filePath =
-                fileName;
-
-
-            /* Upload to Supabase Storage */
-
-            const { error } =
-                await client
-                .storage
-                .from("admission-photos")
-                .upload(
-                    filePath,
-                    file,
-                    {
-                        cacheControl: "3600",
-                        upsert: false
-                    }
-                );
-
-
-            if(error){
-
-                console.log(
-                    "Photo Upload Error:",
-                    error
-                );
-
-                throw error;
-
-            }
-
-
-            /* Get Public URL */
-
-            const { data } =
-                client
-                .storage
-                .from("admission-photos")
-                .getPublicUrl(filePath);
-
-
-            return data.publicUrl;
-
-
-        }catch(error){
-
-            console.log(
-                "Photo Upload Failed:",
-                error
-            );
-
-            throw error;
-
-        }
-
-    }
-
-
-    /* ================================================
-       UPLOAD PHOTO FIRST
-    ================================================= */
-
-    let photoUrl = "";
-
-
     try{
-
-        if(file){
-
-            showMessage(
-                "Photo upload ho rahi hai, please wait...",
-                "info"
-            );
-
-            photoUrl =
-                await uploadPhoto();
-
-        }
-
 
         /* ============================================
            APPLICATION DATA
@@ -1446,12 +1337,8 @@ async function saveApplication(
                 .value
                 .trim(),
 
-            /* IMPORTANT:
-               अब Base64 photo नहीं,
-               केवल Storage URL save होगा */
-
             photo:
-                photoUrl,
+                "",
 
             amount:
                 10,
@@ -1472,7 +1359,7 @@ async function saveApplication(
 
 
         /* ============================================
-           SAVE TO DATABASE
+           SAVE APPLICATION FIRST
         ============================================ */
 
         showMessage(
@@ -1481,19 +1368,20 @@ async function saveApplication(
         );
 
 
-        const { error } =
+        const { data: savedData, error } =
             await client
             .from("online_admissions")
-            .insert([data]);
+            .insert([data])
+            .select()
+            .single();
 
 
         if(error){
 
-            console.log(
-                "Database Error:",
+            console.error(
+                "DATABASE ERROR:",
                 error
             );
-
 
             showMessage(
                 "Payment successful, but application save failed: "
@@ -1501,14 +1389,147 @@ async function saveApplication(
                 "error"
             );
 
-
             return;
+        }
+
+
+        /* ============================================
+           PHOTO UPLOAD
+        ============================================ */
+
+        if(file){
+
+            showMessage(
+                "Application saved. Photo upload ho rahi hai...",
+                "info"
+            );
+
+            try{
+
+                const extension =
+                    file.name
+                    .split(".")
+                    .pop()
+                    .toLowerCase();
+
+
+                const fileName =
+                    applicationNo +
+                    "-" +
+                    Date.now() +
+                    "." +
+                    extension;
+
+
+                const { error: uploadError } =
+                    await client
+                    .storage
+                    .from("admission-photos")
+                    .upload(
+                        fileName,
+                        file,
+                        {
+                            cacheControl:"3600",
+                            upsert:false
+                        }
+                    );
+
+
+                if(uploadError){
+
+                    console.error(
+                        "PHOTO UPLOAD ERROR:",
+                        uploadError
+                    );
+
+                    showMessage(
+                        "Application saved successfully, but photo upload failed: "
+                        + uploadError.message,
+                        "error"
+                    );
+
+                    showConfirmation(
+                        applicationNo,
+                        paymentId
+                    );
+
+                    return;
+                }
+
+
+                const { data: publicData } =
+                    client
+                    .storage
+                    .from("admission-photos")
+                    .getPublicUrl(fileName);
+
+
+                const photoUrl =
+                    publicData.publicUrl;
+
+
+                /* ====================================
+                   UPDATE PHOTO URL
+                ==================================== */
+
+                const { error: updateError } =
+                    await client
+                    .from("online_admissions")
+                    .update({
+                        photo: photoUrl
+                    })
+                    .eq(
+                        "id",
+                        savedData.id
+                    );
+
+
+                if(updateError){
+
+                    console.error(
+                        "PHOTO URL UPDATE ERROR:",
+                        updateError
+                    );
+
+                    showMessage(
+                        "Application saved, but photo link save nahi ho paya.",
+                        "error"
+                    );
+
+                    showConfirmation(
+                        applicationNo,
+                        paymentId
+                    );
+
+                    return;
+                }
+
+            }catch(photoError){
+
+                console.error(
+                    "PHOTO ERROR:",
+                    photoError
+                );
+
+                showMessage(
+                    "Application saved, but photo upload failed: "
+                    + photoError.message,
+                    "error"
+                );
+
+                showConfirmation(
+                    applicationNo,
+                    paymentId
+                );
+
+                return;
+            }
 
         }
 
 
         /* ============================================
-           SUCCESS
+           FINAL SUCCESS
         ============================================ */
 
         showConfirmation(
@@ -1516,17 +1537,16 @@ async function saveApplication(
             paymentId
         );
 
-
     }catch(error){
 
-        console.log(
-            "Application Save Error:",
+        console.error(
+            "APPLICATION SAVE ERROR:",
             error
         );
 
-
         showMessage(
-            "Payment successful, but application save nahi ho paya. Please contact school office.",
+            "Payment successful, but application save nahi ho paya: "
+            + (error.message || error),
             "error"
         );
 
