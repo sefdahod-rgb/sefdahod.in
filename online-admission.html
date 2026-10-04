@@ -1161,6 +1161,7 @@ New Application
      JAVASCRIPT
 ===================================================== -->
 
+```html
 <script>
 
 /* =====================================================
@@ -1272,45 +1273,29 @@ function createApplicationNumber(){
 
 
 /* =====================================================
-   STUDENT ADMISSION NUMBER
+   DETERMINISTIC ADMISSION NUMBER
+   Same application = same admission number
 ===================================================== */
 
-function createAdmissionNumber(){
+function createAdmissionNumberFromApplication(applicationNo){
 
-    const date = new Date();
-
-    const year =
-        date.getFullYear();
-
-    const random =
-        Math.floor(
-            10000 +
-            Math.random() * 90000
-        );
-
-    return "ADM-" + year + "-" + random;
+    return "ADM-" +
+        String(applicationNo)
+        .replace("RPS-","");
 
 }
 
 
 /* =====================================================
-   FEE RECEIPT NUMBER
+   DETERMINISTIC RECEIPT NUMBER
+   Same application = same receipt number
 ===================================================== */
 
-function createReceiptNumber(){
+function createReceiptNumberFromApplication(applicationNo){
 
-    const date = new Date();
-
-    const year =
-        date.getFullYear();
-
-    const random =
-        Math.floor(
-            10000 +
-            Math.random() * 90000
-        );
-
-    return "REC-" + year + "-" + random;
+    return "REC-" +
+        String(applicationNo)
+        .replace("RPS-","");
 
 }
 
@@ -1481,31 +1466,16 @@ function openPreview(){
 
     fillPreview();
 
-    document.getElementById(
-        "formCard"
-    ).style.display = "none";
+    document.getElementById("formCard").style.display = "none";
+    document.getElementById("previewCard").style.display = "block";
+    document.getElementById("paymentCard").style.display = "none";
+    document.getElementById("confirmationCard").style.display = "none";
 
-    document.getElementById(
-        "previewCard"
-    ).style.display = "block";
-
-    document.getElementById(
-        "paymentCard"
-    ).style.display = "none";
-
-    document.getElementById(
-        "confirmationCard"
-    ).style.display = "none";
-
-    document.getElementById(
-        "confirmDetails"
-    ).checked = false;
+    document.getElementById("confirmDetails").checked = false;
 
     toggleConfirmButton();
 
-    document.getElementById(
-        "message"
-    ).style.display = "none";
+    document.getElementById("message").style.display = "none";
 
     window.scrollTo({
         top:0,
@@ -1525,9 +1495,7 @@ function fillPreview(){
         document.getElementById("photoPreview");
 
     const photoContainer =
-        document.getElementById(
-            "previewPhotoContainer"
-        );
+        document.getElementById("previewPhotoContainer");
 
     if(
         photo &&
@@ -1536,159 +1504,71 @@ function fillPreview(){
     ){
 
         photoContainer.innerHTML = `
-
             <img
                 src="${photo.src}"
                 class="preview-photo"
                 alt="Student Photo">
-
         `;
 
     }else{
 
         photoContainer.innerHTML = `
-
             <div class="no-photo">
                 No Photo Selected
             </div>
-
         `;
 
     }
 
-    const html = `
+    const fields = [
 
-<table class="preview-table">
+        ["Student Name","student_name"],
+        ["Date of Birth","dob"],
+        ["Gender","gender"],
+        ["Applying For Class","class_name"],
+        ["Previous School","previous_school"],
+        ["Previous Class","previous_class"],
+        ["Aadhaar Number","aadhaar"],
+        ["Blood Group","blood"],
+        ["Father's Name","father_name"],
+        ["Mother's Name","mother_name"],
+        ["Parent Mobile","mobile"],
+        ["Parent Email","email"],
+        ["Address","address"],
+        ["City / Village","city"],
+        ["PIN Code","pincode"],
+        ["Transport Required","transport"],
+        ["Emergency Contact","emergency"],
+        ["Other Information","remarks"]
 
-<tr>
-<td>Student Name</td>
-<td>${escapePrint(
-    document.getElementById("student_name").value.trim()
-)}</td>
-</tr>
+    ];
 
-<tr>
-<td>Date of Birth</td>
-<td>${formatDatePrint(
-    document.getElementById("dob").value
-)}</td>
-</tr>
+    let html = `<table class="preview-table">`;
 
-<tr>
-<td>Gender</td>
-<td>${escapePrint(
-    document.getElementById("gender").value
-)}</td>
-</tr>
+    fields.forEach(function(item){
 
-<tr>
-<td>Applying For Class</td>
-<td>${escapePrint(
-    document.getElementById("class_name").value
-)}</td>
-</tr>
+        const label = item[0];
+        const id = item[1];
 
-<tr>
-<td>Previous School</td>
-<td>${escapePrint(
-    document.getElementById("previous_school").value.trim()
-)}</td>
-</tr>
+        let value =
+            document.getElementById(id).value.trim();
 
-<tr>
-<td>Previous Class</td>
-<td>${escapePrint(
-    document.getElementById("previous_class").value.trim()
-)}</td>
-</tr>
+        if(id === "dob"){
 
-<tr>
-<td>Aadhaar Number</td>
-<td>${escapePrint(
-    document.getElementById("aadhaar").value.trim()
-)}</td>
-</tr>
+            value = formatDatePrint(value);
 
-<tr>
-<td>Blood Group</td>
-<td>${escapePrint(
-    document.getElementById("blood").value
-)}</td>
-</tr>
+        }
 
-<tr>
-<td>Father's Name</td>
-<td>${escapePrint(
-    document.getElementById("father_name").value.trim()
-)}</td>
-</tr>
+        html += `
+            <tr>
+                <td>${escapePrint(label)}</td>
+                <td>${escapePrint(value)}</td>
+            </tr>
+        `;
 
-<tr>
-<td>Mother's Name</td>
-<td>${escapePrint(
-    document.getElementById("mother_name").value.trim()
-)}</td>
-</tr>
+    });
 
-<tr>
-<td>Parent Mobile</td>
-<td>${escapePrint(
-    document.getElementById("mobile").value.trim()
-)}</td>
-</tr>
-
-<tr>
-<td>Parent Email</td>
-<td>${escapePrint(
-    document.getElementById("email").value.trim()
-)}</td>
-</tr>
-
-<tr>
-<td>Address</td>
-<td>${escapePrint(
-    document.getElementById("address").value.trim()
-)}</td>
-</tr>
-
-<tr>
-<td>City / Village</td>
-<td>${escapePrint(
-    document.getElementById("city").value.trim()
-)}</td>
-</tr>
-
-<tr>
-<td>PIN Code</td>
-<td>${escapePrint(
-    document.getElementById("pincode").value.trim()
-)}</td>
-</tr>
-
-<tr>
-<td>Transport Required</td>
-<td>${escapePrint(
-    document.getElementById("transport").value
-)}</td>
-</tr>
-
-<tr>
-<td>Emergency Contact</td>
-<td>${escapePrint(
-    document.getElementById("emergency").value.trim()
-)}</td>
-</tr>
-
-<tr>
-<td>Other Information</td>
-<td>${escapePrint(
-    document.getElementById("remarks").value.trim()
-)}</td>
-</tr>
-
-</table>
-
-    `;
+    html += `</table>`;
 
     document.getElementById(
         "previewContent"
@@ -1704,14 +1584,10 @@ function fillPreview(){
 function toggleConfirmButton(){
 
     const checkbox =
-        document.getElementById(
-            "confirmDetails"
-        );
+        document.getElementById("confirmDetails");
 
     const button =
-        document.getElementById(
-            "confirmPaymentButton"
-        );
+        document.getElementById("confirmPaymentButton");
 
     button.disabled =
         !checkbox.checked;
@@ -1725,17 +1601,9 @@ function toggleConfirmButton(){
 
 function editApplication(){
 
-    document.getElementById(
-        "previewCard"
-    ).style.display = "none";
-
-    document.getElementById(
-        "paymentCard"
-    ).style.display = "none";
-
-    document.getElementById(
-        "formCard"
-    ).style.display = "block";
+    document.getElementById("previewCard").style.display = "none";
+    document.getElementById("paymentCard").style.display = "none";
+    document.getElementById("formCard").style.display = "block";
 
     window.scrollTo({
         top:0,
@@ -1752,9 +1620,7 @@ function editApplication(){
 function confirmAndProceedToPayment(){
 
     const checkbox =
-        document.getElementById(
-            "confirmDetails"
-        );
+        document.getElementById("confirmDetails");
 
     if(!checkbox.checked){
 
@@ -1767,17 +1633,9 @@ function confirmAndProceedToPayment(){
 
     }
 
-    document.getElementById(
-        "previewCard"
-    ).style.display = "none";
-
-    document.getElementById(
-        "formCard"
-    ).style.display = "none";
-
-    document.getElementById(
-        "paymentCard"
-    ).style.display = "block";
+    document.getElementById("previewCard").style.display = "none";
+    document.getElementById("formCard").style.display = "none";
+    document.getElementById("paymentCard").style.display = "block";
 
     window.scrollTo({
         top:0,
@@ -1793,13 +1651,8 @@ function confirmAndProceedToPayment(){
 
 function backToPreview(){
 
-    document.getElementById(
-        "paymentCard"
-    ).style.display = "none";
-
-    document.getElementById(
-        "previewCard"
-    ).style.display = "block";
+    document.getElementById("paymentCard").style.display = "none";
+    document.getElementById("previewCard").style.display = "block";
 
     window.scrollTo({
         top:0,
@@ -1829,8 +1682,16 @@ function startPayment(){
     payButton.textContent =
         "Opening Payment...";
 
+
+    /*
+       Application number is generated BEFORE payment.
+       It is sent to Razorpay Notes and then reused
+       for all database records.
+    */
+
     const applicationNo =
         createApplicationNumber();
+
 
     const name =
         document.getElementById("student_name")
@@ -1843,6 +1704,7 @@ function startPayment(){
     const mobile =
         document.getElementById("mobile")
         .value.trim();
+
 
     const options = {
 
@@ -1891,8 +1753,13 @@ function startPayment(){
         handler:
         async function(response){
 
+            console.log(
+                "Razorpay payment response:",
+                response
+            );
+
             showMessage(
-                "Payment successful. Saving application and creating student record...",
+                "Payment successful. Saving application...",
                 "info"
             );
 
@@ -1923,14 +1790,16 @@ function startPayment(){
 
     };
 
+
     const rzp =
         new Razorpay(options);
+
 
     rzp.on(
         "payment.failed",
         function(response){
 
-            console.log(
+            console.error(
                 "Payment Failed:",
                 response
             );
@@ -1948,13 +1817,14 @@ function startPayment(){
         }
     );
 
+
     rzp.open();
 
 }
 
 
 /* =====================================================
-   GET TODAY DATE
+   TODAY DATE
 ===================================================== */
 
 function getTodayISO(){
@@ -1972,19 +1842,13 @@ function getTodayISO(){
         String(d.getDate())
         .padStart(2,"0");
 
-    return (
-        year +
-        "-" +
-        month +
-        "-" +
-        day
-    );
+    return year + "-" + month + "-" + day;
 
 }
 
 
 /* =====================================================
-   CALCULATE AGE
+   AGE
 ===================================================== */
 
 function calculateAge(dob){
@@ -2041,96 +1905,6 @@ function safeFileName(value){
 
 
 /* =====================================================
-   UPLOAD PHOTO TO STUDENT MASTER BUCKET
-===================================================== */
-
-async function uploadStudentPhoto(
-    file,
-    admissionNo
-){
-
-    if(!file){
-
-        return "";
-
-    }
-
-    const safeAdmission =
-        safeFileName(admissionNo);
-
-    const fileName =
-        "students/" +
-        safeAdmission +
-        "-" +
-        Date.now() +
-        ".jpg";
-
-
-    let uploadFile = file;
-
-
-    /*
-       Compress image before storing.
-       This also makes Student Master
-       photo handling easier.
-    */
-
-    try{
-
-        uploadFile =
-            await compressImage(file);
-
-    }
-    catch(error){
-
-        console.log(
-            "Compression skipped:",
-            error
-        );
-
-    }
-
-
-    const uploadResult =
-        await sb
-        .storage
-        .from("student-photos")
-        .upload(
-            fileName,
-            uploadFile,
-            {
-                cacheControl:"3600",
-                upsert:false,
-                contentType:"image/jpeg"
-            }
-        );
-
-
-    if(uploadResult.error){
-
-        throw new Error(
-            "Student photo upload failed: " +
-            uploadResult.error.message
-        );
-
-    }
-
-
-    const publicData =
-        sb
-        .storage
-        .from("student-photos")
-        .getPublicUrl(fileName);
-
-
-    return (
-        publicData.data.publicUrl
-    );
-
-}
-
-
-/* =====================================================
    COMPRESS IMAGE
 ===================================================== */
 
@@ -2167,7 +1941,6 @@ function compressImage(file){
                 const maxWidth = 500;
                 const maxHeight = 600;
 
-
                 if(
                     width > maxWidth ||
                     height > maxHeight
@@ -2187,16 +1960,11 @@ function compressImage(file){
 
                 }
 
-
                 const canvas =
                     document.createElement("canvas");
 
-                canvas.width =
-                    width;
-
-                canvas.height =
-                    height;
-
+                canvas.width = width;
+                canvas.height = height;
 
                 const ctx =
                     canvas.getContext("2d");
@@ -2208,7 +1976,6 @@ function compressImage(file){
                     width,
                     height
                 );
-
 
                 canvas.toBlob(
                     function(blob){
@@ -2242,36 +2009,26 @@ function compressImage(file){
 
             };
 
+            img.onerror = function(){
 
-            img.onerror =
-                function(){
+                reject(
+                    new Error("Invalid image")
+                );
 
-                    reject(
-                        new Error(
-                            "Invalid image"
-                        )
-                    );
-
-                };
-
+            };
 
             img.src =
                 event.target.result;
 
         };
 
+        reader.onerror = function(){
 
-        reader.onerror =
-            function(){
+            reject(
+                new Error("Could not read image")
+            );
 
-                reject(
-                    new Error(
-                        "Could not read image"
-                    )
-                );
-
-            };
-
+        };
 
         reader.readAsDataURL(file);
 
@@ -2281,7 +2038,216 @@ function compressImage(file){
 
 
 /* =====================================================
+   UPLOAD STUDENT PHOTO
+===================================================== */
+
+async function uploadStudentPhoto(
+    file,
+    admissionNo
+){
+
+    if(!file){
+
+        return "";
+
+    }
+
+    let uploadFile = file;
+
+    try{
+
+        uploadFile =
+            await compressImage(file);
+
+    }
+    catch(error){
+
+        console.log(
+            "Compression skipped:",
+            error
+        );
+
+    }
+
+    const fileName =
+        "students/" +
+        safeFileName(admissionNo) +
+        "-" +
+        Date.now() +
+        ".jpg";
+
+
+    const uploadResult =
+        await sb
+        .storage
+        .from("student-photos")
+        .upload(
+            fileName,
+            uploadFile,
+            {
+                cacheControl:"3600",
+                upsert:false,
+                contentType:"image/jpeg"
+            }
+        );
+
+
+    if(uploadResult.error){
+
+        throw new Error(
+            "Student photo upload failed: " +
+            uploadResult.error.message
+        );
+
+    }
+
+
+    const publicData =
+        sb
+        .storage
+        .from("student-photos")
+        .getPublicUrl(fileName);
+
+
+    return publicData.data.publicUrl;
+
+}
+
+
+/* =====================================================
+   CHECK EXISTING APPLICATION
+===================================================== */
+
+async function getExistingApplication(
+    applicationNo,
+    paymentId
+){
+
+    let query =
+        sb
+        .from("online_admissions")
+        .select("*")
+        .limit(1);
+
+
+    if(paymentId){
+
+        query =
+            query.eq(
+                "payment_id",
+                paymentId
+            );
+
+    }else{
+
+        query =
+            query.eq(
+                "application_no",
+                applicationNo
+            );
+
+    }
+
+
+    const result =
+        await query;
+
+
+    if(result.error){
+
+        throw new Error(
+            "Application check failed: " +
+            result.error.message
+        );
+
+    }
+
+
+    return result.data &&
+           result.data.length
+           ? result.data[0]
+           : null;
+
+}
+
+
+/* =====================================================
+   CHECK EXISTING STUDENT
+===================================================== */
+
+async function getExistingStudent(
+    admissionNo
+){
+
+    const result =
+        await sb
+        .from("students")
+        .select("*")
+        .eq(
+            "admission_no",
+            admissionNo
+        )
+        .limit(1);
+
+
+    if(result.error){
+
+        throw new Error(
+            "Student check failed: " +
+            result.error.message
+        );
+
+    }
+
+
+    return result.data &&
+           result.data.length
+           ? result.data[0]
+           : null;
+
+}
+
+
+/* =====================================================
+   CHECK EXISTING FEE
+===================================================== */
+
+async function getExistingFee(
+    paymentId
+){
+
+    const result =
+        await sb
+        .from("fees")
+        .select("*")
+        .eq(
+            "transaction_id",
+            paymentId
+        )
+        .limit(1);
+
+
+    if(result.error){
+
+        throw new Error(
+            "Fee check failed: " +
+            result.error.message
+        );
+
+    }
+
+
+    return result.data &&
+           result.data.length
+           ? result.data[0]
+           : null;
+
+}
+
+
+/* =====================================================
    SAVE APPLICATION
+   RETRY-SAFE VERSION
 ===================================================== */
 
 async function saveApplication(
@@ -2302,31 +2268,153 @@ async function saveApplication(
 
     try{
 
+        if(!paymentId){
+
+            throw new Error(
+                "Razorpay payment ID not received."
+            );
+
+        }
+
+
         /* =============================================
-           1. CREATE ADMISSION NUMBER
+           1. DETERMINISTIC NUMBERS
         ============================================= */
 
         const admissionNo =
-            createAdmissionNumber();
+            createAdmissionNumberFromApplication(
+                applicationNo
+            );
 
-        console.log(
-            "Admission No:",
-            admissionNo
-        );
+        const receiptNo =
+            createReceiptNumberFromApplication(
+                applicationNo
+            );
 
 
         /* =============================================
-           2. PHOTO UPLOAD - ADMISSION BUCKET
+           2. READ FORM DATA
+        ============================================= */
+
+        const studentName =
+            document.getElementById("student_name")
+            .value.trim();
+
+        const dob =
+            document.getElementById("dob")
+            .value;
+
+        const gender =
+            document.getElementById("gender")
+            .value;
+
+        const className =
+            document.getElementById("class_name")
+            .value;
+
+        const previousSchool =
+            document.getElementById("previous_school")
+            .value.trim();
+
+        const previousClass =
+            document.getElementById("previous_class")
+            .value.trim();
+
+        const fatherName =
+            document.getElementById("father_name")
+            .value.trim();
+
+        const motherName =
+            document.getElementById("mother_name")
+            .value.trim();
+
+        const mobile =
+            document.getElementById("mobile")
+            .value.trim();
+
+        const email =
+            document.getElementById("email")
+            .value.trim();
+
+        const address =
+            document.getElementById("address")
+            .value.trim();
+
+        const aadhaar =
+            document.getElementById("aadhaar")
+            .value.trim();
+
+        const blood =
+            document.getElementById("blood")
+            .value;
+
+        const transport =
+            document.getElementById("transport")
+            .value;
+
+        const city =
+            document.getElementById("city")
+            .value.trim();
+
+        const pincode =
+            document.getElementById("pincode")
+            .value.trim();
+
+        const emergency =
+            document.getElementById("emergency")
+            .value.trim();
+
+        const remarks =
+            document.getElementById("remarks")
+            .value.trim();
+
+
+        /* =============================================
+           3. CHECK WHETHER PAYMENT WAS ALREADY SAVED
+        ============================================= */
+
+        showMessage(
+            "Payment verify ho raha hai aur application save ho rahi hai...",
+            "info"
+        );
+
+
+        const existingApplication =
+            await getExistingApplication(
+                applicationNo,
+                paymentId
+            );
+
+
+        /* =============================================
+           4. PHOTO
         ============================================= */
 
         let admissionPhotoUrl = "";
+
         let studentPhotoUrl = "";
 
 
-        if(file){
+        if(existingApplication){
+
+            admissionPhotoUrl =
+                existingApplication.photo || "";
+
+        }
+
+
+        /*
+           Photo upload is attempted only if
+           application is not already saved.
+        */
+
+        if(
+            !existingApplication &&
+            file
+        ){
 
             showMessage(
-                "Student photo upload ho rahi hai...",
+                "Student photo save ho rahi hai...",
                 "info"
             );
 
@@ -2339,7 +2427,7 @@ async function saveApplication(
 
 
             const fileName =
-                applicationNo +
+                safeFileName(applicationNo) +
                 "-" +
                 Date.now() +
                 "." +
@@ -2381,455 +2469,457 @@ async function saveApplication(
                 publicData.data.publicUrl;
 
 
-            /* =========================================
-               SAME PHOTO TO STUDENT MASTER
-            ========================================= */
+            try{
+
+                studentPhotoUrl =
+                    await uploadStudentPhoto(
+                        file,
+                        admissionNo
+                    );
+
+            }
+            catch(photoError){
+
+                /*
+                   Admission should not fail completely
+                   only because Student Master photo upload
+                   failed.
+                */
+
+                console.error(
+                    "Student photo upload warning:",
+                    photoError
+                );
+
+                studentPhotoUrl = "";
+
+            }
+
+        }
+
+
+        /* =============================================
+           5. ONLINE ADMISSION
+        ============================================= */
+
+        let applicationRecord =
+            existingApplication;
+
+
+        if(!applicationRecord){
 
             showMessage(
-                "Student Master photo save ho rahi hai...",
+                "Online admission save ho rahi hai...",
                 "info"
             );
 
 
-            studentPhotoUrl =
-                await uploadStudentPhoto(
-                    file,
-                    admissionNo
-                );
+            const applicationData = {
+
+                application_no:
+                    applicationNo,
+
+                student_name:
+                    studentName,
+
+                dob:
+                    dob,
+
+                gender:
+                    gender,
+
+                class_name:
+                    className,
+
+                previous_school:
+                    previousSchool,
+
+                previous_class:
+                    previousClass,
+
+                aadhaar:
+                    aadhaar,
+
+                blood_group:
+                    blood,
+
+                father_name:
+                    fatherName,
+
+                mother_name:
+                    motherName,
+
+                mobile:
+                    mobile,
+
+                email:
+                    email,
+
+                address:
+                    address,
+
+                city:
+                    city,
+
+                pincode:
+                    pincode,
+
+                transport:
+                    transport,
+
+                emergency:
+                    emergency,
+
+                remarks:
+                    remarks,
+
+                photo:
+                    admissionPhotoUrl,
+
+                amount:
+                    APPLICATION_FEE,
+
+                payment_id:
+                    paymentId,
+
+                payment_status:
+                    "success",
+
+                confirmation_status:
+                    "confirmed",
+
+                submitted_at:
+                    new Date().toISOString()
+
+            };
+
+
+            const applicationResult =
+                await sb
+                .from("online_admissions")
+                .insert([
+                    applicationData
+                ])
+                .select()
+                .single();
+
+
+            if(applicationResult.error){
+
+                /*
+                   If another request already inserted
+                   the same payment, check again instead
+                   of creating another payment/record.
+                */
+
+                const retryCheck =
+                    await getExistingApplication(
+                        applicationNo,
+                        paymentId
+                    );
+
+
+                if(retryCheck){
+
+                    applicationRecord =
+                        retryCheck;
+
+                }else{
+
+                    throw new Error(
+                        "Online admission save failed: " +
+                        applicationResult.error.message
+                    );
+
+                }
+
+            }else{
+
+                applicationRecord =
+                    applicationResult.data;
+
+            }
 
         }
 
 
         /* =============================================
-           3. APPLICATION DATA
-        ============================================= */
-
-        const studentName =
-            document
-            .getElementById("student_name")
-            .value.trim();
-
-        const dob =
-            document
-            .getElementById("dob")
-            .value;
-
-        const gender =
-            document
-            .getElementById("gender")
-            .value;
-
-        const className =
-            document
-            .getElementById("class_name")
-            .value;
-
-        const fatherName =
-            document
-            .getElementById("father_name")
-            .value.trim();
-
-        const motherName =
-            document
-            .getElementById("mother_name")
-            .value.trim();
-
-        const mobile =
-            document
-            .getElementById("mobile")
-            .value.trim();
-
-        const email =
-            document
-            .getElementById("email")
-            .value.trim();
-
-        const address =
-            document
-            .getElementById("address")
-            .value.trim();
-
-        const aadhaar =
-            document
-            .getElementById("aadhaar")
-            .value.trim();
-
-        const blood =
-            document
-            .getElementById("blood")
-            .value;
-
-        const transport =
-            document
-            .getElementById("transport")
-            .value;
-
-        const city =
-            document
-            .getElementById("city")
-            .value.trim();
-
-        const pincode =
-            document
-            .getElementById("pincode")
-            .value.trim();
-
-        const emergency =
-            document
-            .getElementById("emergency")
-            .value.trim();
-
-        const remarks =
-            document
-            .getElementById("remarks")
-            .value.trim();
-
-
-        /* =============================================
-           4. SAVE ONLINE ADMISSION
+           6. STUDENT MASTER
         ============================================= */
 
         showMessage(
-            "Online admission save ho rahi hai...",
+            "Student Master record check ho raha hai...",
             "info"
         );
 
 
-        const applicationData = {
-
-            application_no:
-                applicationNo,
-
-            student_name:
-                studentName,
-
-            dob:
-                dob,
-
-            gender:
-                gender,
-
-            class_name:
-                className,
-
-            previous_school:
-                document
-                .getElementById("previous_school")
-                .value.trim(),
-
-            previous_class:
-                document
-                .getElementById("previous_class")
-                .value.trim(),
-
-            aadhaar:
-                aadhaar,
-
-            blood_group:
-                blood,
-
-            father_name:
-                fatherName,
-
-            mother_name:
-                motherName,
-
-            mobile:
-                mobile,
-
-            email:
-                email,
-
-            address:
-                address,
-
-            city:
-                city,
-
-            pincode:
-                pincode,
-
-            transport:
-                transport,
-
-            emergency:
-                emergency,
-
-            remarks:
-                remarks,
-
-            photo:
-                admissionPhotoUrl,
-
-            amount:
-                APPLICATION_FEE,
-
-            payment_id:
-                paymentId,
-
-            payment_status:
-                "success",
-
-            confirmation_status:
-                "confirmed",
-
-            submitted_at:
-                new Date().toISOString()
-
-        };
-
-
-        const applicationResult =
-            await sb
-            .from("online_admissions")
-            .insert([
-                applicationData
-            ])
-            .select();
-
-
-        if(applicationResult.error){
-
-            throw new Error(
-                "Online admission save failed: " +
-                applicationResult.error.message
+        let studentRecord =
+            await getExistingStudent(
+                admissionNo
             );
 
-        }
+
+        if(!studentRecord){
+
+            const studentData = {
+
+                session:
+                    CURRENT_SESSION,
+
+                student_status:
+                    "Active",
+
+                admission_no:
+                    admissionNo,
+
+                roll_no:
+                    "",
+
+                admission_date:
+                    getTodayISO(),
+
+                student_name:
+                    studentName,
+
+                father_name:
+                    fatherName,
+
+                mother_name:
+                    motherName,
+
+                dob:
+                    dob,
+
+                age:
+                    calculateAge(dob),
+
+                gender:
+                    gender,
+
+                class_name:
+                    className,
+
+                section:
+                    "",
+
+                mobile:
+                    mobile,
+
+                aadhar:
+                    aadhaar,
+
+                udise:
+                    "",
+
+                pen:
+                    "",
+
+                apaar:
+                    "",
+
+                blood:
+                    blood,
+
+                bus:
+                    transport === "Yes"
+                    ? "Required"
+                    : "No",
+
+                address:
+                    address +
+                    (
+                        city
+                        ? ", " + city
+                        : ""
+                    ) +
+                    (
+                        pincode
+                        ? " - " + pincode
+                        : ""
+                    ),
+
+                photo_url:
+                    studentPhotoUrl,
+
+                source:
+                    "online_admission",
+
+                created_at:
+                    new Date().toISOString(),
+
+                updated_at:
+                    new Date().toISOString()
+
+            };
 
 
-        /* =============================================
-           5. CREATE STUDENT MASTER RECORD
-        ============================================= */
-
-        showMessage(
-            "Student Master mein student create ho raha hai...",
-            "info"
-        );
-
-
-        const studentData = {
-
-            session:
-                CURRENT_SESSION,
-
-            student_status:
-                "Active",
-
-            admission_no:
-                admissionNo,
-
-            roll_no:
-                "",
-
-            admission_date:
-                getTodayISO(),
-
-            student_name:
-                studentName,
-
-            father_name:
-                fatherName,
-
-            mother_name:
-                motherName,
-
-            dob:
-                dob,
-
-            age:
-                calculateAge(dob),
-
-            gender:
-                gender,
-
-            class_name:
-                className,
-
-            section:
-                "",
-
-            mobile:
-                mobile,
-
-            aadhar:
-                aadhaar,
-
-            udise:
-                "",
-
-            pen:
-                "",
-
-            apaar:
-                "",
-
-            blood:
-                blood,
-
-            bus:
-                transport === "Yes"
-                ? "Required"
-                : "No",
-
-            address:
-                address +
-                (
-                    city
-                    ? ", " + city
-                    : ""
-                ) +
-                (
-                    pincode
-                    ? " - " + pincode
-                    : ""
-                ),
-
-            photo_url:
-                studentPhotoUrl,
-
-            source:
-                "online_admission",
-
-            created_at:
-                new Date().toISOString(),
-
-            updated_at:
-                new Date().toISOString()
-
-        };
+            const studentResult =
+                await sb
+                .from("students")
+                .insert([
+                    studentData
+                ])
+                .select()
+                .single();
 
 
-        const studentResult =
-            await sb
-            .from("students")
-            .insert([
-                studentData
-            ])
-            .select()
-            .single();
+            if(studentResult.error){
+
+                const retryStudent =
+                    await getExistingStudent(
+                        admissionNo
+                    );
 
 
-        if(studentResult.error){
+                if(retryStudent){
 
-            throw new Error(
-                "Student Master entry failed: " +
-                studentResult.error.message
-            );
+                    studentRecord =
+                        retryStudent;
+
+                }else{
+
+                    throw new Error(
+                        "Student Master entry failed: " +
+                        studentResult.error.message
+                    );
+
+                }
+
+            }else{
+
+                studentRecord =
+                    studentResult.data;
+
+            }
 
         }
 
 
         const studentId =
-            studentResult.data.id;
-
-
-        console.log(
-            "Student created:",
-            studentResult.data
-        );
+            studentRecord.id;
 
 
         /* =============================================
-           6. CREATE FINANCE / FEES ENTRY
+           7. FEES
         ============================================= */
 
         showMessage(
-            "Finance mein payment entry create ho rahi hai...",
+            "Finance entry check ho rahi hai...",
             "info"
         );
 
 
-        const receiptNo =
-            createReceiptNumber();
-
-
-        const feeData = {
-
-            receipt_no:
-                receiptNo,
-
-            student_id:
-                studentId,
-
-            admission_no:
-                admissionNo,
-
-            student_name:
-                studentName,
-
-            class_name:
-                className,
-
-            section:
-                "",
-
-            session:
-                CURRENT_SESSION,
-
-            fee_type:
-                "Online Admission Application Fee",
-
-            amount:
-                APPLICATION_FEE,
-
-            discount:
-                0,
-
-            paid:
-                APPLICATION_FEE,
-
-            balance:
-                0,
-
-            mode:
-                "Razorpay",
-
-            date:
-                getTodayISO(),
-
-            transaction_id:
-                paymentId,
-
-            payment_status:
-                "success",
-
-            source:
-                "online_admission",
-
-            created_at:
-                new Date().toISOString()
-
-        };
-
-
-        const feeResult =
-            await sb
-            .from("fees")
-            .insert([
-                feeData
-            ])
-            .select();
-
-
-        if(feeResult.error){
-
-            throw new Error(
-                "Finance entry failed: " +
-                feeResult.error.message
+        let feeRecord =
+            await getExistingFee(
+                paymentId
             );
+
+
+        if(!feeRecord){
+
+            const feeData = {
+
+                receipt_no:
+                    receiptNo,
+
+                student_id:
+                    studentId,
+
+                admission_no:
+                    admissionNo,
+
+                student_name:
+                    studentName,
+
+                class_name:
+                    className,
+
+                section:
+                    "",
+
+                session:
+                    CURRENT_SESSION,
+
+                fee_type:
+                    "Online Admission Application Fee",
+
+                amount:
+                    APPLICATION_FEE,
+
+                discount:
+                    0,
+
+                paid:
+                    APPLICATION_FEE,
+
+                balance:
+                    0,
+
+                mode:
+                    "Razorpay",
+
+                date:
+                    getTodayISO(),
+
+                transaction_id:
+                    paymentId,
+
+                payment_status:
+                    "success",
+
+                source:
+                    "online_admission",
+
+                created_at:
+                    new Date().toISOString()
+
+            };
+
+
+            const feeResult =
+                await sb
+                .from("fees")
+                .insert([
+                    feeData
+                ])
+                .select()
+                .single();
+
+
+            if(feeResult.error){
+
+                const retryFee =
+                    await getExistingFee(
+                        paymentId
+                    );
+
+
+                if(retryFee){
+
+                    feeRecord =
+                        retryFee;
+
+                }else{
+
+                    throw new Error(
+                        "Finance entry failed: " +
+                        feeResult.error.message
+                    );
+
+                }
+
+            }else{
+
+                feeRecord =
+                    feeResult.data;
+
+            }
 
         }
 
 
-        console.log(
-            "Finance entry created:",
-            feeResult.data
-        );
-
-
         /* =============================================
-           7. FINAL SUCCESS
+           8. FINAL SUCCESS
         ============================================= */
 
         showMessage(
@@ -2842,7 +2932,7 @@ async function saveApplication(
             applicationNo,
             paymentId,
             admissionNo,
-            receiptNo
+            feeRecord.receipt_no || receiptNo
         );
 
 
@@ -2855,19 +2945,24 @@ async function saveApplication(
         );
 
 
+        /*
+           IMPORTANT:
+           Payment has already succeeded.
+           Do NOT tell the user to pay again.
+        */
+
         showMessage(
-            "Payment successful, but data save mein problem aayi: " +
-            (error.message || error),
+            "Payment successful hai, lekin data save mein problem aayi. Payment dobara mat karein. School office se application recovery karai ja sakti hai.",
             "error"
         );
 
 
         if(payButton){
 
-            payButton.disabled = false;
+            payButton.disabled = true;
 
             payButton.textContent =
-                "Pay ₹10 & Submit Application";
+                "Payment Already Completed";
 
         }
 
@@ -2887,21 +2982,10 @@ function showConfirmation(
     receiptNo
 ){
 
-    document.getElementById(
-        "formCard"
-    ).style.display = "none";
-
-    document.getElementById(
-        "previewCard"
-    ).style.display = "none";
-
-    document.getElementById(
-        "paymentCard"
-    ).style.display = "none";
-
-    document.getElementById(
-        "confirmationCard"
-    ).style.display = "block";
+    document.getElementById("formCard").style.display = "none";
+    document.getElementById("previewCard").style.display = "none";
+    document.getElementById("paymentCard").style.display = "none";
+    document.getElementById("confirmationCard").style.display = "block";
 
 
     document.getElementById(
@@ -2917,9 +3001,7 @@ function showConfirmation(
 
 
     const preview =
-        document.getElementById(
-            "photoPreview"
-        );
+        document.getElementById("photoPreview");
 
 
     if(
@@ -3028,6 +3110,85 @@ function printApplication(){
         return;
 
     }
+
+
+    const rows = [
+
+        ["Application No.", applicationNo],
+        ["Student Name", studentName],
+        ["Date of Birth",
+            formatDatePrint(
+                document.getElementById("dob").value
+            )
+        ],
+        ["Gender",
+            document.getElementById("gender").value
+        ],
+        ["Applying For Class",
+            document.getElementById("class_name").value
+        ],
+        ["Previous School",
+            document.getElementById("previous_school").value
+        ],
+        ["Previous Class",
+            document.getElementById("previous_class").value
+        ],
+        ["Aadhaar Number",
+            document.getElementById("aadhaar").value
+        ],
+        ["Blood Group",
+            document.getElementById("blood").value
+        ],
+        ["Father's Name",
+            document.getElementById("father_name").value
+        ],
+        ["Mother's Name",
+            document.getElementById("mother_name").value
+        ],
+        ["Mobile",
+            document.getElementById("mobile").value
+        ],
+        ["Email",
+            document.getElementById("email").value
+        ],
+        ["Address",
+            document.getElementById("address").value
+        ],
+        ["City / Village",
+            document.getElementById("city").value
+        ],
+        ["PIN Code",
+            document.getElementById("pincode").value
+        ],
+        ["Transport",
+            document.getElementById("transport").value
+        ],
+        ["Emergency Contact",
+            document.getElementById("emergency").value
+        ],
+        ["Payment Status","PAID"],
+        ["Confirmation Fee","₹10"],
+        ["Payment ID",paymentId]
+
+    ];
+
+
+    let tableRows = "";
+
+    rows.forEach(function(row){
+
+        tableRows += `
+            <tr>
+                <td class="label">
+                    ${escapePrint(row[0])}
+                </td>
+                <td>
+                    ${escapePrint(row[1])}
+                </td>
+            </tr>
+        `;
+
+    });
 
 
     const html = `
@@ -3152,247 +3313,7 @@ ${
 
 <table>
 
-<tr>
-<td class="label">
-Application No.
-</td>
-
-<td>
-${escapePrint(applicationNo)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Student Name
-</td>
-
-<td>
-${escapePrint(studentName)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Date of Birth
-</td>
-
-<td>
-${formatDatePrint(
-    document.getElementById("dob").value
-)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Gender
-</td>
-
-<td>
-${escapePrint(
-    document.getElementById("gender").value
-)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Applying For Class
-</td>
-
-<td>
-${escapePrint(
-    document.getElementById("class_name").value
-)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Previous School
-</td>
-
-<td>
-${escapePrint(
-    document.getElementById("previous_school").value
-)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Previous Class
-</td>
-
-<td>
-${escapePrint(
-    document.getElementById("previous_class").value
-)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Aadhaar Number
-</td>
-
-<td>
-${escapePrint(
-    document.getElementById("aadhaar").value
-)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Blood Group
-</td>
-
-<td>
-${escapePrint(
-    document.getElementById("blood").value
-)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Father's Name
-</td>
-
-<td>
-${escapePrint(
-    document.getElementById("father_name").value
-)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Mother's Name
-</td>
-
-<td>
-${escapePrint(
-    document.getElementById("mother_name").value
-)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Mobile
-</td>
-
-<td>
-${escapePrint(
-    document.getElementById("mobile").value
-)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Email
-</td>
-
-<td>
-${escapePrint(
-    document.getElementById("email").value
-)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Address
-</td>
-
-<td>
-${escapePrint(
-    document.getElementById("address").value
-)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-City / Village
-</td>
-
-<td>
-${escapePrint(
-    document.getElementById("city").value
-)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-PIN Code
-</td>
-
-<td>
-${escapePrint(
-    document.getElementById("pincode").value
-)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Transport
-</td>
-
-<td>
-${escapePrint(
-    document.getElementById("transport").value
-)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Emergency Contact
-</td>
-
-<td>
-${escapePrint(
-    document.getElementById("emergency").value
-)}
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Payment Status
-</td>
-
-<td>
-<strong>PAID</strong>
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Confirmation Fee
-</td>
-
-<td>
-₹10
-</td>
-</tr>
-
-<tr>
-<td class="label">
-Payment ID
-</td>
-
-<td>
-${escapePrint(paymentId)}
-</td>
-</tr>
+${tableRows}
 
 </table>
 
@@ -3421,6 +3342,380 @@ window.onload=function(){
 };
 
 <\/script>
+
+</body>
+
+</html>
+
+`;
+
+
+    printWindow.document.write(html);
+    printWindow.document.close();
+
+}
+
+
+/* =====================================================
+   PRINT RECEIPT
+===================================================== */
+
+function printReceipt(){
+
+    const applicationNo =
+        document.getElementById(
+            "applicationNo"
+        ).textContent;
+
+
+    const paymentId =
+        document.getElementById(
+            "paymentId"
+        ).textContent;
+
+
+    const studentName =
+        document.getElementById(
+            "student_name"
+        ).value;
+
+
+    const studentPhoto =
+        document.getElementById(
+            "photoPreview"
+        ).src;
+
+
+    const printWindow =
+        window.open(
+            "",
+            "_blank"
+        );
+
+
+    if(!printWindow){
+
+        showMessage(
+            "Please allow pop-ups in your browser to print the receipt.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const html = `
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>Payment Receipt</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    padding:30px;
+}
+
+.receipt{
+    max-width:600px;
+    margin:auto;
+    border:2px solid #003b70;
+    padding:25px;
+}
+
+.center{
+    text-align:center;
+}
+
+.logo{
+    width:70px;
+    height:70px;
+    object-fit:contain;
+}
+
+.school-name{
+    color:#003b70;
+    margin:5px;
+}
+
+.student-photo{
+    width:90px;
+    height:110px;
+    object-fit:cover;
+    border:2px solid #003b70;
+    display:block;
+    margin:15px auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+td{
+    border:1px solid #555;
+    padding:10px;
+}
+
+.label{
+    font-weight:bold;
+}
+
+.success{
+    color:green;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="receipt">
+
+<div class="center">
+
+<img
+class="logo"
+src="logo.png"
+alt="School Logo">
+
+<h1 class="school-name">
+Rainbow Public School
+</h1>
+
+<p>
+Shubhi Education Foundation, Dahod
+</p>
+
+<h2>
+PAYMENT RECEIPT
+</h2>
+
+${
+    studentPhoto
+    ?
+    `<img
+    class="student-photo"
+    src="${studentPhoto}"
+    alt="Student Photo">`
+    :
+    ""
+}
+
+</div>
+
+<table>
+
+<tr>
+<td class="label">
+Application No.
+</td>
+<td>
+${escapePrint(applicationNo)}
+</td>
+</tr>
+
+<tr>
+<td class="label">
+Student Name
+</td>
+<td>
+${escapePrint(studentName)}
+</td>
+</tr>
+
+<tr>
+<td class="label">
+Amount Paid
+</td>
+<td>
+<strong>₹10</strong>
+</td>
+</tr>
+
+<tr>
+<td class="label">
+Payment ID
+</td>
+<td>
+${escapePrint(paymentId)}
+</td>
+</tr>
+
+<tr>
+<td class="label">
+Payment Status
+</td>
+<td class="success">
+PAID
+</td>
+</tr>
+
+<tr>
+<td class="label">
+Date
+</td>
+<td>
+${new Date().toLocaleDateString("en-IN")}
+</td>
+</tr>
+
+</table>
+
+<br>
+
+<p>
+This receipt confirms payment of the online admission
+application confirmation fee.
+</p>
+
+<p style="text-align:right;margin-top:50px;">
+Authorized Signatory
+</p>
+
+</div>
+
+<script>
+
+window.onload=function(){
+
+    setTimeout(function(){
+
+        window.print();
+
+    },700);
+
+};
+
+<\/script>
+
+</body>
+
+</html>
+
+`;
+
+
+    printWindow.document.write(html);
+    printWindow.document.close();
+
+}
+
+
+/* =====================================================
+   PRINT HELPERS
+===================================================== */
+
+function escapePrint(value){
+
+    return String(value || "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+function formatDatePrint(value){
+
+    if(!value){
+
+        return "";
+
+    }
+
+    const parts =
+        value.split("-");
+
+    if(parts.length !== 3){
+
+        return value;
+
+    }
+
+    return (
+        parts[2] +
+        "/" +
+        parts[1] +
+        "/" +
+        parts[0]
+    );
+
+}
+
+
+/* =====================================================
+   CLEAR FORM
+===================================================== */
+
+function clearForm(){
+
+    if(
+        !confirm(
+            "Clear all entered information?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    document
+    .querySelectorAll(
+        "#formCard input, #formCard textarea"
+    )
+    .forEach(function(el){
+
+        if(el.type !== "file"){
+
+            el.value = "";
+
+        }
+
+    });
+
+
+    document.getElementById("photo").value = "";
+
+    document.getElementById("gender").value = "";
+
+    document.getElementById("class_name").value = "";
+
+    document.getElementById("blood").value = "";
+
+    document.getElementById("transport").value = "No";
+
+    document.getElementById("photoPreview").style.display = "none";
+
+    document.getElementById("photoPreview").src = "";
+
+    document.getElementById("previewCard").style.display = "none";
+
+    document.getElementById("paymentCard").style.display = "none";
+
+    document.getElementById("confirmationCard").style.display = "none";
+
+    document.getElementById("formCard").style.display = "block";
+
+    document.getElementById("message").style.display = "none";
+
+}
+
+</script>
+```
+
 
 </body>
 
