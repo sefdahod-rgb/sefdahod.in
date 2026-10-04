@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -10,6 +11,7 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <style>
+
 *{
     box-sizing:border-box;
 }
@@ -74,12 +76,6 @@ body{
 .grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
-    gap:16px;
-}
-
-.grid-3{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
     gap:16px;
 }
 
@@ -302,9 +298,136 @@ button:disabled{
     font-size:13px;
 }
 
+
+/* =========================================================
+   PRINT AREA
+========================================================= */
+
+.print-area{
+    display:none;
+}
+
+.print-header{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:20px;
+    text-align:center;
+    border-bottom:2px solid #1d4ed8;
+    padding-bottom:15px;
+    margin-bottom:15px;
+}
+
+.print-header img{
+    width:80px;
+    height:80px;
+    object-fit:contain;
+}
+
+.print-header h1{
+    margin:0 0 5px;
+    font-size:25px;
+}
+
+.print-header p{
+    margin:3px 0;
+}
+
+.print-application-number{
+    text-align:center;
+    font-size:18px;
+    padding:10px;
+    border:1px solid #333;
+    margin-bottom:15px;
+}
+
+.print-student-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:15px;
+}
+
+.print-student-top h2{
+    margin:0 0 10px;
+}
+
+.print-photo{
+    width:100px;
+    height:125px;
+    object-fit:cover;
+    border:1px solid #333;
+}
+
+.print-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:18px;
+}
+
+.print-table td,
+.print-table th{
+    border:1px solid #555;
+    padding:7px;
+    font-size:12px;
+}
+
+.print-table td:first-child{
+    width:30%;
+    font-weight:bold;
+}
+
+.print-table th{
+    background:#e5e7eb;
+    text-align:left;
+    font-size:13px;
+}
+
+.receipt-box{
+    border:2px solid #222;
+    padding:12px;
+    margin-top:20px;
+}
+
+.receipt-box h2{
+    text-align:center;
+    margin:0 0 10px;
+}
+
+.print-declaration{
+    margin-top:20px;
+    font-size:12px;
+}
+
+.signature-area{
+    display:flex;
+    justify-content:space-between;
+    margin-top:60px;
+}
+
+.signature-area div{
+    width:220px;
+    border-top:1px solid #333;
+    text-align:center;
+    padding-top:5px;
+}
+
+.print-footer{
+    text-align:center;
+    border-top:1px solid #aaa;
+    margin-top:30px;
+    padding-top:10px;
+    font-size:11px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
 @media(max-width:700px){
-    .grid,
-    .grid-3{
+
+    .grid{
         grid-template-columns:1fr;
     }
 
@@ -315,659 +438,1730 @@ button:disabled{
     .header h1{
         font-size:22px;
     }
+
 }
 
+
+/* =========================================================
+   PRINT
+========================================================= */
+
 @media print{
+
     body{
         background:white;
     }
 
-    .header{
-        box-shadow:none;
+    body *{
+        visibility:hidden !important;
     }
 
-    .no-print{
-        display:none !important;
+    #printArea,
+    #printArea *{
+        visibility:visible !important;
     }
 
-    .card{
-        box-shadow:none;
-        border:1px solid #ddd;
+    #printArea{
+        display:block !important;
+        position:absolute;
+        left:0;
+        top:0;
+        width:100%;
+        padding:15px;
+        background:white;
     }
+
+    @page{
+        size:A4;
+        margin:10mm;
+    }
+
 }
+
 </style>
+
 </head>
 
 <body>
 
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
 <div class="header">
+
     <img src="logo.png" alt="Rainbow Public School Logo">
+
     <h1>Rainbow Public School</h1>
+
     <p>Conducted by Shubhi Education Foundation</p>
-    <p><b>Online Admission Form - Session 2026-27</b></p>
+
+    <p>
+        <b>Online Admission Form - Session 2026-27</b>
+    </p>
+
 </div>
+
 
 <div class="container">
 
-<!-- FORM -->
+
+<!-- =========================================================
+     FORM
+========================================================= -->
+
 <div id="formBox">
 
 <div class="card">
 
 <div class="info">
-    <b>Important:</b> Please fill all required details carefully.
-    After confirmation, an application fee of <b>₹10</b> will be charged through Razorpay.
+
+<b>Important:</b>
+
+Please fill all required details carefully.
+
+After confirmation, an application fee of
+<b>₹10</b> will be charged through Razorpay.
+
 </div>
 
-<div class="section-title">1. Admission Details</div>
+
+<div class="section-title">
+1. Admission Details
+</div>
+
 
 <div class="grid">
 
-<div class="field">
-<label>Session <span class="required">*</span></label>
-<select id="session">
-    <option value="2026-27">2026-27</option>
-</select>
-</div>
 
 <div class="field">
-<label>Class Applied For <span class="required">*</span></label>
-<select id="className">
-    <option value="">Select Class</option>
-    <option>Nursery</option>
-    <option>LKG</option>
-    <option>UKG</option>
-    <option>1</option>
-    <option>2</option>
-    <option>3</option>
-    <option>4</option>
-    <option>5</option>
-    <option>6</option>
-    <option>7</option>
-    <option>8</option>
-</select>
-</div>
 
-<div class="field">
-<label>Previous School</label>
-<input type="text" id="previousSchool">
-</div>
-
-<div class="field">
-<label>Previous Class</label>
-<input type="text" id="previousClass">
-</div>
-
-</div>
-</div>
-
-<div class="card">
-
-<div class="section-title">2. Student Details</div>
-
-<div class="grid">
-
-<div class="field">
-<label>Student Full Name <span class="required">*</span></label>
-<input type="text" id="studentName" required>
-</div>
-
-<div class="field">
-<label>Date of Birth <span class="required">*</span></label>
-<input type="date" id="dob" required onchange="calculateAge()">
-</div>
-
-<div class="field">
-<label>Age</label>
-<input type="text" id="age" readonly>
-</div>
-
-<div class="field">
-<label>Gender <span class="required">*</span></label>
-<select id="gender">
-    <option value="">Select Gender</option>
-    <option>Male</option>
-    <option>Female</option>
-    <option>Other</option>
-</select>
-</div>
-
-<div class="field">
-<label>Blood Group</label>
-<select id="blood">
-    <option value="">Select</option>
-    <option>A+</option>
-    <option>A-</option>
-    <option>B+</option>
-    <option>B-</option>
-    <option>AB+</option>
-    <option>AB-</option>
-    <option>O+</option>
-    <option>O-</option>
-</select>
-</div>
-
-<div class="field">
-<label>Aadhaar Number</label>
-<input type="text" id="aadhaar" maxlength="12" inputmode="numeric">
-</div>
-
-<div class="field">
-<label>PEN Number</label>
-<input type="text" id="pen">
-</div>
-
-<div class="field">
-<label>APAAR ID</label>
-<input type="text" id="apaar">
-</div>
-
-<div class="field">
-<label>UDISE Student ID</label>
-<input type="text" id="udise">
-</div>
-
-<div class="field full">
-<label>Student Photo</label>
-
-<div class="photo-box">
-
-<input
-    type="file"
-    id="photoFile"
-    accept="image/*"
-    onchange="previewPhoto(event)"
->
-
-<img id="photoPreview" class="photo-preview" alt="Student Photo Preview">
-
-<div class="small">
-    JPG / PNG recommended
-</div>
-
-</div>
-</div>
-
-</div>
-</div>
-
-<div class="card">
-
-<div class="section-title">3. Father's Details</div>
-
-<div class="grid">
-
-<div class="field">
-<label>Father's Full Name <span class="required">*</span></label>
-<input type="text" id="fatherName">
-</div>
-
-<div class="field">
-<label>Father's Mobile Number <span class="required">*</span></label>
-<input type="text" id="fatherMobile" maxlength="10" inputmode="numeric">
-</div>
-
-<div class="field">
-<label>Father's Occupation</label>
-<input type="text" id="fatherOccupation">
-</div>
-
-<div class="field">
-<label>Father's Qualification</label>
-<input type="text" id="fatherQualification">
-</div>
-
-</div>
-</div>
-
-<div class="card">
-
-<div class="section-title">4. Mother's Details</div>
-
-<div class="grid">
-
-<div class="field">
-<label>Mother's Full Name <span class="required">*</span></label>
-<input type="text" id="motherName">
-</div>
-
-<div class="field">
-<label>Mother's Mobile Number</label>
-<input type="text" id="motherMobile" maxlength="10" inputmode="numeric">
-</div>
-
-<div class="field">
-<label>Mother's Occupation</label>
-<input type="text" id="motherOccupation">
-</div>
-
-<div class="field">
-<label>Mother's Qualification</label>
-<input type="text" id="motherQualification">
-</div>
-
-</div>
-</div>
-
-<div class="card">
-
-<div class="section-title">5. Guardian Details</div>
-
-<div class="grid">
-
-<div class="field">
-<label>Guardian Name</label>
-<input type="text" id="guardianName">
-</div>
-
-<div class="field">
-<label>Relationship with Student</label>
-<input type="text" id="guardianRelation">
-</div>
-
-<div class="field">
-<label>Guardian Mobile</label>
-<input type="text" id="guardianMobile" maxlength="10" inputmode="numeric">
-</div>
-
-<div class="field">
-<label>Guardian Occupation</label>
-<input type="text" id="guardianOccupation">
-</div>
-
-</div>
-</div>
-
-<div class="card">
-
-<div class="section-title">6. Contact & Address Details</div>
-
-<div class="grid">
-
-<div class="field">
-<label>Primary Mobile Number <span class="required">*</span></label>
-<input type="text" id="mobile" maxlength="10" inputmode="numeric">
-</div>
-
-<div class="field">
-<label>Email Address</label>
-<input type="email" id="email">
-</div>
-
-<div class="field full">
-<label>Complete Address <span class="required">*</span></label>
-<textarea id="address"></textarea>
-</div>
-
-<div class="field">
-<label>City</label>
-<input type="text" id="city">
-</div>
-
-<div class="field">
-<label>State</label>
-<input type="text" id="state" value="Gujarat">
-</div>
-
-<div class="field">
-<label>PIN Code</label>
-<input type="text" id="pincode" maxlength="6" inputmode="numeric">
-</div>
-
-</div>
-</div>
-
-<div class="card">
-
-<div class="section-title">7. Transport Details</div>
-
-<div class="grid">
-
-<div class="field">
-<label>School Transport Required?</label>
-<select id="transport">
-    <option value="">Select</option>
-    <option value="Yes">Yes</option>
-    <option value="No">No</option>
-</select>
-</div>
-
-<div class="field">
-<label>Bus Route / Area</label>
-<input type="text" id="busRoute">
-</div>
-
-</div>
-</div>
-
-<div class="card">
-
-<div class="section-title">8. Emergency Contact</div>
-
-<div class="grid">
-
-<div class="field">
-<label>Emergency Contact Name</label>
-<input type="text" id="emergencyName">
-</div>
-
-<div class="field">
-<label>Emergency Contact Number</label>
-<input type="text" id="emergencyMobile" maxlength="10" inputmode="numeric">
-</div>
-
-<div class="field">
-<label>Relationship</label>
-<input type="text" id="emergencyRelation">
-</div>
-
-</div>
-</div>
-
-<div class="card">
-
-<div class="section-title">9. Other Information</div>
-
-<div class="grid">
-
-<div class="field full">
-<label>Medical / Special Information</label>
-<textarea id="medicalInfo"></textarea>
-</div>
-
-<div class="field full">
-<label>Any Other Remarks</label>
-<textarea id="remarks"></textarea>
-</div>
-
-</div>
-</div>
-
-<div class="card">
-
-<div class="section-title">10. Declaration</div>
-
-<div class="declaration">
-
-I hereby declare that the information provided in this admission form is
-true and correct to the best of my knowledge. I understand that providing
-incorrect information may affect the admission of the student.
-
-<div class="checkbox-row">
-<input type="checkbox" id="declaration">
-<label for="declaration">
-I agree with the above declaration.
-<span class="required">*</span>
+<label>
+Session <span class="required">*</span>
 </label>
-</div>
 
-</div>
+<select id="session">
 
-</div>
+<option value="2026-27">
+2026-27
+</option>
 
-<div class="card">
-
-<div class="fee-box">
-    <div>Online Admission Application Fee</div>
-    <div class="amount">₹10</div>
-    <div>Pay securely through Razorpay</div>
-</div>
-
-<div id="formMessage"
-     style="margin-top:15px;text-align:center;font-weight:bold;color:#dc2626;">
-</div>
-
-<div class="buttons no-print">
-
-<button class="btn-secondary" onclick="goHome()">
-    ← Back to Home
-</button>
-
-<button class="btn-primary" onclick="showPreview()">
-    Preview Application →
-</button>
-
-</div>
-
-</div>
+</select>
 
 </div>
 
 
-<!-- PREVIEW -->
-<div id="previewBox">
+<div class="field">
+
+<label>
+Class Applied For <span class="required">*</span>
+</label>
+
+<select id="className">
+
+<option value="">
+Select Class
+</option>
+
+<option>Nursery</option>
+<option>LKG</option>
+<option>UKG</option>
+<option>1</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+<option>5</option>
+<option>6</option>
+<option>7</option>
+<option>8</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Previous School
+</label>
+
+<input type="text" id="previousSchool">
+
+</div>
+
+
+<div class="field">
+
+<label>
+Previous Class
+</label>
+
+<input type="text" id="previousClass">
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     STUDENT
+========================================================= -->
 
 <div class="card">
 
 <div class="section-title">
-    Application Preview
+2. Student Details
 </div>
+
+
+<div class="grid">
+
+
+<div class="field">
+
+<label>
+Student Full Name <span class="required">*</span>
+</label>
+
+<input type="text" id="studentName">
+
+</div>
+
+
+<div class="field">
+
+<label>
+Date of Birth <span class="required">*</span>
+</label>
+
+<input
+type="date"
+id="dob"
+onchange="calculateAge()"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Age
+</label>
+
+<input
+type="text"
+id="age"
+readonly
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Gender <span class="required">*</span>
+</label>
+
+<select id="gender">
+
+<option value="">
+Select Gender
+</option>
+
+<option>Male</option>
+<option>Female</option>
+<option>Other</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Blood Group
+</label>
+
+<select id="blood">
+
+<option value="">
+Select
+</option>
+
+<option>A+</option>
+<option>A-</option>
+<option>B+</option>
+<option>B-</option>
+<option>AB+</option>
+<option>AB-</option>
+<option>O+</option>
+<option>O-</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Aadhaar Number
+</label>
+
+<input
+type="text"
+id="aadhaar"
+maxlength="12"
+inputmode="numeric"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+PEN Number
+</label>
+
+<input
+type="text"
+id="pen"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+APAAR ID
+</label>
+
+<input
+type="text"
+id="apaar"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+UDISE Student ID
+</label>
+
+<input
+type="text"
+id="udise"
+>
+
+</div>
+
+
+<div class="field full">
+
+<label>
+Student Photo
+</label>
+
+
+<div class="photo-box">
+
+<input
+type="file"
+id="photoFile"
+accept="image/*"
+onchange="previewPhoto(event)"
+>
+
+
+<img
+id="photoPreview"
+class="photo-preview"
+alt="Student Photo Preview"
+>
+
+
+<div class="small">
+JPG / PNG recommended
+</div>
+
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     FATHER
+========================================================= -->
+
+<div class="card">
+
+<div class="section-title">
+3. Father's Details
+</div>
+
+
+<div class="grid">
+
+
+<div class="field">
+
+<label>
+Father's Full Name <span class="required">*</span>
+</label>
+
+<input
+type="text"
+id="fatherName"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Father's Mobile Number <span class="required">*</span>
+</label>
+
+<input
+type="text"
+id="fatherMobile"
+maxlength="10"
+inputmode="numeric"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Father's Occupation
+</label>
+
+<input
+type="text"
+id="fatherOccupation"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Father's Qualification
+</label>
+
+<input
+type="text"
+id="fatherQualification"
+>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     MOTHER
+========================================================= -->
+
+<div class="card">
+
+<div class="section-title">
+4. Mother's Details
+</div>
+
+
+<div class="grid">
+
+
+<div class="field">
+
+<label>
+Mother's Full Name <span class="required">*</span>
+</label>
+
+<input
+type="text"
+id="motherName"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Mother's Mobile Number
+</label>
+
+<input
+type="text"
+id="motherMobile"
+maxlength="10"
+inputmode="numeric"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Mother's Occupation
+</label>
+
+<input
+type="text"
+id="motherOccupation"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Mother's Qualification
+</label>
+
+<input
+type="text"
+id="motherQualification"
+>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     GUARDIAN
+========================================================= -->
+
+<div class="card">
+
+<div class="section-title">
+5. Guardian Details
+</div>
+
+
+<div class="grid">
+
+
+<div class="field">
+
+<label>
+Guardian Name
+</label>
+
+<input
+type="text"
+id="guardianName"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Relationship with Student
+</label>
+
+<input
+type="text"
+id="guardianRelation"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Guardian Mobile
+</label>
+
+<input
+type="text"
+id="guardianMobile"
+maxlength="10"
+inputmode="numeric"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Guardian Occupation
+</label>
+
+<input
+type="text"
+id="guardianOccupation"
+>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     CONTACT
+========================================================= -->
+
+<div class="card">
+
+<div class="section-title">
+6. Contact & Address Details
+</div>
+
+
+<div class="grid">
+
+
+<div class="field">
+
+<label>
+Primary Mobile Number <span class="required">*</span>
+</label>
+
+<input
+type="text"
+id="mobile"
+maxlength="10"
+inputmode="numeric"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Email Address
+</label>
+
+<input
+type="email"
+id="email"
+>
+
+</div>
+
+
+<div class="field full">
+
+<label>
+Complete Address <span class="required">*</span>
+</label>
+
+<textarea id="address"></textarea>
+
+</div>
+
+
+<div class="field">
+
+<label>
+City
+</label>
+
+<input
+type="text"
+id="city"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+State
+</label>
+
+<input
+type="text"
+id="state"
+value="Gujarat"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+PIN Code
+</label>
+
+<input
+type="text"
+id="pincode"
+maxlength="6"
+inputmode="numeric"
+>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     TRANSPORT
+========================================================= -->
+
+<div class="card">
+
+<div class="section-title">
+7. Transport Details
+</div>
+
+
+<div class="grid">
+
+
+<div class="field">
+
+<label>
+School Transport Required?
+</label>
+
+<select id="transport">
+
+<option value="">
+Select
+</option>
+
+<option value="Yes">
+Yes
+</option>
+
+<option value="No">
+No
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Bus Route / Area
+</label>
+
+<input
+type="text"
+id="busRoute"
+>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     EMERGENCY
+========================================================= -->
+
+<div class="card">
+
+<div class="section-title">
+8. Emergency Contact
+</div>
+
+
+<div class="grid">
+
+
+<div class="field">
+
+<label>
+Emergency Contact Name
+</label>
+
+<input
+type="text"
+id="emergencyName"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Emergency Contact Number
+</label>
+
+<input
+type="text"
+id="emergencyMobile"
+maxlength="10"
+inputmode="numeric"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+Relationship
+</label>
+
+<input
+type="text"
+id="emergencyRelation"
+>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     OTHER
+========================================================= -->
+
+<div class="card">
+
+<div class="section-title">
+9. Other Information
+</div>
+
+
+<div class="grid">
+
+
+<div class="field full">
+
+<label>
+Medical / Special Information
+</label>
+
+<textarea id="medicalInfo"></textarea>
+
+</div>
+
+
+<div class="field full">
+
+<label>
+Any Other Remarks
+</label>
+
+<textarea id="remarks"></textarea>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     DECLARATION
+========================================================= -->
+
+<div class="card">
+
+<div class="section-title">
+10. Declaration
+</div>
+
+
+<div class="declaration">
+
+I hereby declare that the information provided in this
+admission form is true and correct to the best of my knowledge.
+I understand that providing incorrect information may affect
+the admission of the student.
+
+
+<div class="checkbox-row">
+
+<input
+type="checkbox"
+id="declaration"
+>
+
+
+<label for="declaration">
+
+I agree with the above declaration.
+
+<span class="required">*</span>
+
+</label>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+     PAYMENT
+========================================================= -->
+
+<div class="card">
+
+<div class="fee-box">
+
+<div>
+Online Admission Application Fee
+</div>
+
+<div class="amount">
+₹10
+</div>
+
+<div>
+Pay securely through Razorpay
+</div>
+
+</div>
+
+
+<div
+id="formMessage"
+style="margin-top:15px;text-align:center;font-weight:bold;color:#dc2626;"
+>
+</div>
+
+
+<div class="buttons no-print">
+
+
+<button
+class="btn-secondary"
+onclick="goHome()"
+>
+← Back to Home
+</button>
+
+
+<button
+class="btn-primary"
+onclick="showPreview()"
+>
+Preview Application →
+</button>
+
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<!-- =========================================================
+     PREVIEW
+========================================================= -->
+
+<div id="previewBox">
+
+<div class="card">
+
+
+<div class="section-title">
+Application Preview
+</div>
+
 
 <div style="text-align:center;margin-bottom:20px;">
-    <img id="confirmPhoto"
-         class="confirm-photo"
-         style="display:none;"
-         alt="Student Photo">
 
-    <h2 id="previewStudentName"></h2>
 
-    <p>
-        Rainbow Public School<br>
-        Session 2026-27
-    </p>
+<img
+id="confirmPhoto"
+class="confirm-photo"
+style="display:none;"
+alt="Student Photo"
+>
+
+
+<h2 id="previewStudentName"></h2>
+
+
+<p>
+
+Rainbow Public School<br>
+
+Session 2026-27
+
+</p>
+
+
 </div>
 
+
 <table class="preview-table">
+
 
 <tr>
 <td>Class Applied For</td>
 <td id="pClass"></td>
 </tr>
 
+
 <tr>
 <td>Date of Birth</td>
 <td id="pDob"></td>
 </tr>
+
 
 <tr>
 <td>Age</td>
 <td id="pAge"></td>
 </tr>
 
+
 <tr>
 <td>Gender</td>
 <td id="pGender"></td>
 </tr>
+
 
 <tr>
 <td>Blood Group</td>
 <td id="pBlood"></td>
 </tr>
 
+
 <tr>
 <td>Aadhaar</td>
 <td id="pAadhaar"></td>
 </tr>
+
 
 <tr>
 <td>PEN</td>
 <td id="pPen"></td>
 </tr>
 
+
 <tr>
 <td>APAAR</td>
 <td id="pApaar"></td>
 </tr>
+
 
 <tr>
 <td>UDISE</td>
 <td id="pUdise"></td>
 </tr>
 
+
 <tr>
 <td>Father's Name</td>
 <td id="pFather"></td>
 </tr>
+
 
 <tr>
 <td>Father's Mobile</td>
 <td id="pFatherMobile"></td>
 </tr>
 
+
 <tr>
 <td>Mother's Name</td>
 <td id="pMother"></td>
 </tr>
+
 
 <tr>
 <td>Mother's Mobile</td>
 <td id="pMotherMobile"></td>
 </tr>
 
+
 <tr>
 <td>Guardian</td>
 <td id="pGuardian"></td>
 </tr>
+
 
 <tr>
 <td>Mobile</td>
 <td id="pMobile"></td>
 </tr>
 
+
 <tr>
 <td>Email</td>
 <td id="pEmail"></td>
 </tr>
+
 
 <tr>
 <td>Address</td>
 <td id="pAddress"></td>
 </tr>
 
+
 <tr>
 <td>City</td>
 <td id="pCity"></td>
 </tr>
+
 
 <tr>
 <td>State</td>
 <td id="pState"></td>
 </tr>
 
+
 <tr>
 <td>PIN</td>
 <td id="pPincode"></td>
 </tr>
+
 
 <tr>
 <td>Transport</td>
 <td id="pTransport"></td>
 </tr>
 
+
 <tr>
 <td>Bus Route</td>
 <td id="pBus"></td>
 </tr>
+
 
 <tr>
 <td>Emergency Contact</td>
 <td id="pEmergency"></td>
 </tr>
 
+
 <tr>
 <td>Previous School</td>
 <td id="pPreviousSchool"></td>
 </tr>
+
 
 <tr>
 <td>Previous Class</td>
 <td id="pPreviousClass"></td>
 </tr>
 
+
 <tr>
 <td>Medical / Special Information</td>
 <td id="pMedical"></td>
 </tr>
+
 
 <tr>
 <td>Remarks</td>
 <td id="pRemarks"></td>
 </tr>
 
+
 </table>
 
-<div class="fee-box" style="margin-top:20px;">
-    Application Fee: <b>₹10</b>
+
+<div
+class="fee-box"
+style="margin-top:20px;"
+>
+
+Application Fee:
+<b>₹10</b>
+
 </div>
+
 
 <div class="buttons no-print">
 
-<button class="btn-warning" onclick="editApplication()">
-    ← Edit Application
+
+<button
+class="btn-warning"
+onclick="editApplication()"
+>
+← Edit Application
 </button>
 
-<button id="payButton" class="btn-success" onclick="startPayment()">
-    Confirm & Pay ₹10
+
+<button
+id="payButton"
+class="btn-success"
+onclick="startPayment()"
+>
+Confirm & Pay ₹10
 </button>
 
-</div>
-
-<div id="paymentMessage"
-     style="text-align:center;margin-top:15px;font-weight:bold;">
-</div>
-
-</div>
 
 </div>
 
 
-<!-- SUCCESS -->
-<div id="successBox" class="status-box">
+<div
+id="paymentMessage"
+style="text-align:center;margin-top:15px;font-weight:bold;"
+>
+</div>
 
-<div class="status-icon">✅</div>
 
-<h2>Application Submitted Successfully</h2>
+</div>
 
-<p>Your online admission application has been successfully submitted.</p>
+</div>
 
-<div class="application-number" id="successApplicationNo"></div>
+
+<!-- =========================================================
+     SUCCESS
+========================================================= -->
+
+<div
+id="successBox"
+class="status-box"
+>
+
+
+<div class="status-icon">
+✅
+</div>
+
+
+<h2>
+Application Submitted Successfully
+</h2>
+
 
 <p>
+Your online admission application has been successfully submitted.
+</p>
+
+
+<div
+class="application-number"
+id="successApplicationNo"
+>
+</div>
+
+
+<p>
+
 <b>Payment ID:</b>
+
 <span id="successPaymentId"></span>
+
 </p>
 
+
 <p>
+
 <b>Student:</b>
+
 <span id="successStudentName"></span>
+
 </p>
 
+
 <p>
-<b>Application Fee:</b> ₹10
+
+<b>Application Fee:</b>
+₹10
+
 </p>
+
 
 <div class="buttons no-print">
 
-<button class="btn-primary" onclick="window.print()">
-    🖨 Print Application
+
+<button
+class="btn-primary"
+onclick="printAdmissionApplication()"
+>
+🖨 Print Application & Receipt
 </button>
 
-<button class="btn-secondary" onclick="goHome()">
-    ← Back to Home
+
+<button
+class="btn-secondary"
+onclick="goHome()"
+>
+← Back to Home
 </button>
 
+
 </div>
+
+
+</div>
+
+
+<!-- =========================================================
+     PRINT AREA
+========================================================= -->
+
+<div id="printArea">
+
+
+<div class="print-header">
+
+<img
+src="logo.png"
+alt="School Logo"
+>
+
+
+<div>
+
+<h1>
+Rainbow Public School
+</h1>
+
+
+<p>
+Conducted by Shubhi Education Foundation
+</p>
+
+
+<p>
+<b>Online Admission Application</b>
+</p>
+
+
+<p>
+Session 2026-27
+</p>
 
 </div>
 
 </div>
+
+
+<div class="print-application-number">
+
+Application No:
+<b id="printApplicationNo"></b>
+
+</div>
+
+
+<div class="print-student-top">
+
+
+<div>
+
+<h2 id="printStudentName">
+</h2>
+
+
+<p>
+
+<b>Class Applied For:</b>
+
+<span id="printClass"></span>
+
+</p>
+
+
+<p>
+
+<b>Date of Birth:</b>
+
+<span id="printDob"></span>
+
+</p>
+
+
+<p>
+
+<b>Gender:</b>
+
+<span id="printGender"></span>
+
+</p>
+
+
+</div>
+
+
+<img
+id="printStudentPhoto"
+class="print-photo"
+alt="Student Photo"
+>
+
+</div>
+
+
+<table class="print-table">
+
+
+<tr>
+<th colspan="2">
+Student Details
+</th>
+</tr>
+
+
+<tr>
+<td>Student Name</td>
+<td id="printStudentName2"></td>
+</tr>
+
+
+<tr>
+<td>Date of Birth</td>
+<td id="printDob2"></td>
+</tr>
+
+
+<tr>
+<td>Age</td>
+<td id="printAge"></td>
+</tr>
+
+
+<tr>
+<td>Gender</td>
+<td id="printGender2"></td>
+</tr>
+
+
+<tr>
+<td>Blood Group</td>
+<td id="printBlood"></td>
+</tr>
+
+
+<tr>
+<td>Aadhaar</td>
+<td id="printAadhaar"></td>
+</tr>
+
+
+<tr>
+<td>PEN</td>
+<td id="printPen"></td>
+</tr>
+
+
+<tr>
+<td>APAAR ID</td>
+<td id="printApaar"></td>
+</tr>
+
+
+<tr>
+<td>UDISE Student ID</td>
+<td id="printUdise"></td>
+</tr>
+
+
+<tr>
+<th colspan="2">
+Parent Details
+</th>
+</tr>
+
+
+<tr>
+<td>Father's Name</td>
+<td id="printFather"></td>
+</tr>
+
+
+<tr>
+<td>Father's Mobile</td>
+<td id="printFatherMobile"></td>
+</tr>
+
+
+<tr>
+<td>Mother's Name</td>
+<td id="printMother"></td>
+</tr>
+
+
+<tr>
+<td>Mother's Mobile</td>
+<td id="printMotherMobile"></td>
+</tr>
+
+
+<tr>
+<th colspan="2">
+Contact Details
+</th>
+</tr>
+
+
+<tr>
+<td>Mobile</td>
+<td id="printMobile"></td>
+</tr>
+
+
+<tr>
+<td>Email</td>
+<td id="printEmail"></td>
+</tr>
+
+
+<tr>
+<td>Address</td>
+<td id="printAddress"></td>
+</tr>
+
+
+<tr>
+<td>City</td>
+<td id="printCity"></td>
+</tr>
+
+
+<tr>
+<td>State</td>
+<td id="printState"></td>
+</tr>
+
+
+<tr>
+<td>PIN Code</td>
+<td id="printPincode"></td>
+</tr>
+
+
+<tr>
+<th colspan="2">
+Other Details
+</th>
+</tr>
+
+
+<tr>
+<td>Previous School</td>
+<td id="printPreviousSchool"></td>
+</tr>
+
+
+<tr>
+<td>Previous Class</td>
+<td id="printPreviousClass"></td>
+</tr>
+
+
+<tr>
+<td>Transport Required</td>
+<td id="printTransport"></td>
+</tr>
+
+
+<tr>
+<td>Bus Route / Area</td>
+<td id="printBus"></td>
+</tr>
+
+
+<tr>
+<td>Emergency Contact</td>
+<td id="printEmergency"></td>
+</tr>
+
+
+<tr>
+<td>Medical / Special Information</td>
+<td id="printMedical"></td>
+</tr>
+
+
+<tr>
+<td>Remarks</td>
+<td id="printRemarks"></td>
+</tr>
+
+
+</table>
+
+
+<!-- PAYMENT RECEIPT -->
+
+<div class="receipt-box">
+
+
+<h2>
+PAYMENT RECEIPT
+</h2>
+
+
+<table class="print-table">
+
+
+<tr>
+<td>Receipt No.</td>
+<td id="printReceiptNo"></td>
+</tr>
+
+
+<tr>
+<td>Application No.</td>
+<td id="printReceiptApplicationNo"></td>
+</tr>
+
+
+<tr>
+<td>Student Name</td>
+<td id="printReceiptStudent"></td>
+</tr>
+
+
+<tr>
+<td>Session</td>
+<td>2026-27</td>
+</tr>
+
+
+<tr>
+<td>Fee Type</td>
+<td>
+Online Admission Application Fee
+</td>
+</tr>
+
+
+<tr>
+<td>Amount Paid</td>
+<td>
+<b>₹10</b>
+</td>
+</tr>
+
+
+<tr>
+<td>Payment Status</td>
+<td>
+<b>SUCCESS</b>
+</td>
+</tr>
+
+
+<tr>
+<td>Payment ID</td>
+<td id="printReceiptPaymentId"></td>
+</tr>
+
+
+<tr>
+<td>Date</td>
+<td id="printReceiptDate"></td>
+</tr>
+
+
+</table>
+
+</div>
+
+
+<div class="print-declaration">
+
+
+<p>
+
+I hereby declare that the information provided in this
+admission application is true and correct to the best of
+my knowledge.
+
+</p>
+
+
+<div class="signature-area">
+
+
+<div>
+Parent / Guardian Signature
+</div>
+
+
+<div>
+School Office
+</div>
+
+
+</div>
+
+</div>
+
+
+<div class="print-footer">
+
+Rainbow Public School<br>
+
+Conducted by Shubhi Education Foundation<br>
+
+Online Admission Application - Session 2026-27
+
+</div>
+
+
+</div>
+
+
+</div>
+
 
 <div class="footer">
-    Rainbow Public School | Conducted by Shubhi Education Foundation
+
+Rainbow Public School |
+Conducted by Shubhi Education Foundation
+
 </div>
 
 
 <script>
+
 
 /* =========================================================
    SUPABASE
@@ -976,10 +2170,13 @@ I agree with the above declaration.
 const SUPABASE_URL =
 "https://kqahcvaoxnmxfcgyyync.supabase.co";
 
+
 const SUPABASE_KEY =
 "sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl";
 
-const client = window.supabase.createClient(
+
+const client =
+window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
@@ -991,15 +2188,17 @@ const client = window.supabase.createClient(
 
 const APPLICATION_FEE = 10;
 
+
 const RAZORPAY_KEY =
 "rzp_test_Siqao4x4VAkl63";
 
 
 /* =========================================================
-   GLOBAL DATA
+   GLOBAL
 ========================================================= */
 
 let currentApplication = null;
+
 let selectedPhotoFile = null;
 
 
@@ -1009,7 +2208,8 @@ let selectedPhotoFile = null;
 
 function goHome(){
 
-    window.location.href = "index.html";
+    window.location.href =
+        "index.html";
 
 }
 
@@ -1021,23 +2221,39 @@ function goHome(){
 function calculateAge(){
 
     const dobValue =
-        document.getElementById("dob").value;
+        document.getElementById(
+            "dob"
+        ).value;
+
 
     if(!dobValue){
 
-        document.getElementById("age").value = "";
+        document.getElementById(
+            "age"
+        ).value = "";
 
         return;
+
     }
 
-    const dob = new Date(dobValue);
-    const today = new Date();
+
+    const dob =
+        new Date(dobValue);
+
+
+    const today =
+        new Date();
+
 
     let years =
-        today.getFullYear() - dob.getFullYear();
+        today.getFullYear() -
+        dob.getFullYear();
+
 
     let months =
-        today.getMonth() - dob.getMonth();
+        today.getMonth() -
+        dob.getMonth();
+
 
     if(
         months < 0 ||
@@ -1051,7 +2267,10 @@ function calculateAge(){
 
     }
 
-    document.getElementById("age").value =
+
+    document.getElementById(
+        "age"
+    ).value =
         years + " Years";
 
 }
@@ -1066,57 +2285,90 @@ function previewPhoto(event){
     const file =
         event.target.files[0];
 
+
     if(!file){
 
-        selectedPhotoFile = null;
+        selectedPhotoFile =
+            null;
 
         return;
+
     }
 
-    selectedPhotoFile = file;
 
-    const reader = new FileReader();
+    selectedPhotoFile =
+        file;
 
-    reader.onload = function(e){
 
-        const img =
-            document.getElementById("photoPreview");
+    const reader =
+        new FileReader();
 
-        img.src = e.target.result;
 
-        img.style.display = "block";
+    reader.onload =
+        function(e){
 
-        const confirmImg =
-            document.getElementById("confirmPhoto");
+            const img =
+                document.getElementById(
+                    "photoPreview"
+                );
 
-        confirmImg.src = e.target.result;
 
-        confirmImg.style.display = "inline-block";
+            img.src =
+                e.target.result;
 
-    };
 
-    reader.readAsDataURL(file);
+            img.style.display =
+                "block";
+
+
+            const confirmImg =
+                document.getElementById(
+                    "confirmPhoto"
+                );
+
+
+            confirmImg.src =
+                e.target.result;
+
+
+            confirmImg.style.display =
+                "inline-block";
+
+        };
+
+
+    reader.readAsDataURL(
+        file
+    );
 
 }
 
 
 /* =========================================================
-   DATE FORMAT
+   DATE
 ========================================================= */
 
-function formatDateIndian(dateString){
+function formatDateIndian(
+    dateString
+){
 
-    if(!dateString) return "";
+    if(!dateString)
+        return "";
+
 
     const parts =
         dateString.split("-");
 
+
     if(parts.length !== 3)
         return dateString;
 
+
     return (
-        parts[2] + "/" +
-        parts[1] + "/" +
+        parts[2] +
+        "/" +
+        parts[1] +
+        "/" +
         parts[0]
     );
 
@@ -1124,7 +2376,7 @@ function formatDateIndian(dateString){
 
 
 /* =========================================================
-   GET FORM DATA
+   FORM DATA
 ========================================================= */
 
 function getFormData(){
@@ -1132,118 +2384,194 @@ function getFormData(){
     return {
 
         session:
-            document.getElementById("session").value,
+            document.getElementById(
+                "session"
+            ).value,
 
         className:
-            document.getElementById("className").value,
+            document.getElementById(
+                "className"
+            ).value,
 
         previousSchool:
-            document.getElementById("previousSchool").value.trim(),
+            document.getElementById(
+                "previousSchool"
+            ).value.trim(),
 
         previousClass:
-            document.getElementById("previousClass").value.trim(),
+            document.getElementById(
+                "previousClass"
+            ).value.trim(),
 
         studentName:
-            document.getElementById("studentName").value.trim(),
+            document.getElementById(
+                "studentName"
+            ).value.trim(),
 
         dob:
-            document.getElementById("dob").value,
+            document.getElementById(
+                "dob"
+            ).value,
 
         age:
-            document.getElementById("age").value,
+            document.getElementById(
+                "age"
+            ).value,
 
         gender:
-            document.getElementById("gender").value,
+            document.getElementById(
+                "gender"
+            ).value,
 
         blood:
-            document.getElementById("blood").value,
+            document.getElementById(
+                "blood"
+            ).value,
 
         aadhaar:
-            document.getElementById("aadhaar").value.trim(),
+            document.getElementById(
+                "aadhaar"
+            ).value.trim(),
 
         pen:
-            document.getElementById("pen").value.trim(),
+            document.getElementById(
+                "pen"
+            ).value.trim(),
 
         apaar:
-            document.getElementById("apaar").value.trim(),
+            document.getElementById(
+                "apaar"
+            ).value.trim(),
 
         udise:
-            document.getElementById("udise").value.trim(),
+            document.getElementById(
+                "udise"
+            ).value.trim(),
 
         fatherName:
-            document.getElementById("fatherName").value.trim(),
+            document.getElementById(
+                "fatherName"
+            ).value.trim(),
 
         fatherMobile:
-            document.getElementById("fatherMobile").value.trim(),
+            document.getElementById(
+                "fatherMobile"
+            ).value.trim(),
 
         fatherOccupation:
-            document.getElementById("fatherOccupation").value.trim(),
+            document.getElementById(
+                "fatherOccupation"
+            ).value.trim(),
 
         fatherQualification:
-            document.getElementById("fatherQualification").value.trim(),
+            document.getElementById(
+                "fatherQualification"
+            ).value.trim(),
 
         motherName:
-            document.getElementById("motherName").value.trim(),
+            document.getElementById(
+                "motherName"
+            ).value.trim(),
 
         motherMobile:
-            document.getElementById("motherMobile").value.trim(),
+            document.getElementById(
+                "motherMobile"
+            ).value.trim(),
 
         motherOccupation:
-            document.getElementById("motherOccupation").value.trim(),
+            document.getElementById(
+                "motherOccupation"
+            ).value.trim(),
 
         motherQualification:
-            document.getElementById("motherQualification").value.trim(),
+            document.getElementById(
+                "motherQualification"
+            ).value.trim(),
 
         guardianName:
-            document.getElementById("guardianName").value.trim(),
+            document.getElementById(
+                "guardianName"
+            ).value.trim(),
 
         guardianRelation:
-            document.getElementById("guardianRelation").value.trim(),
+            document.getElementById(
+                "guardianRelation"
+            ).value.trim(),
 
         guardianMobile:
-            document.getElementById("guardianMobile").value.trim(),
+            document.getElementById(
+                "guardianMobile"
+            ).value.trim(),
 
         guardianOccupation:
-            document.getElementById("guardianOccupation").value.trim(),
+            document.getElementById(
+                "guardianOccupation"
+            ).value.trim(),
 
         mobile:
-            document.getElementById("mobile").value.trim(),
+            document.getElementById(
+                "mobile"
+            ).value.trim(),
 
         email:
-            document.getElementById("email").value.trim(),
+            document.getElementById(
+                "email"
+            ).value.trim(),
 
         address:
-            document.getElementById("address").value.trim(),
+            document.getElementById(
+                "address"
+            ).value.trim(),
 
         city:
-            document.getElementById("city").value.trim(),
+            document.getElementById(
+                "city"
+            ).value.trim(),
 
         state:
-            document.getElementById("state").value.trim(),
+            document.getElementById(
+                "state"
+            ).value.trim(),
 
         pincode:
-            document.getElementById("pincode").value.trim(),
+            document.getElementById(
+                "pincode"
+            ).value.trim(),
 
         transport:
-            document.getElementById("transport").value,
+            document.getElementById(
+                "transport"
+            ).value,
 
         busRoute:
-            document.getElementById("busRoute").value.trim(),
+            document.getElementById(
+                "busRoute"
+            ).value.trim(),
 
         emergencyName:
-            document.getElementById("emergencyName").value.trim(),
+            document.getElementById(
+                "emergencyName"
+            ).value.trim(),
 
         emergencyMobile:
-            document.getElementById("emergencyMobile").value.trim(),
+            document.getElementById(
+                "emergencyMobile"
+            ).value.trim(),
 
         emergencyRelation:
-            document.getElementById("emergencyRelation").value.trim(),
+            document.getElementById(
+                "emergencyRelation"
+            ).value.trim(),
 
         medicalInfo:
-            document.getElementById("medicalInfo").value.trim(),
+            document.getElementById(
+                "medicalInfo"
+            ).value.trim(),
 
         remarks:
-            document.getElementById("remarks").value.trim()
+            document.getElementById(
+                "remarks"
+            ).value.trim()
 
     };
 
@@ -1256,12 +2584,18 @@ function getFormData(){
 
 function validateForm(){
 
-    const data = getFormData();
+    const data =
+        getFormData();
+
 
     const message =
-        document.getElementById("formMessage");
+        document.getElementById(
+            "formMessage"
+        );
+
 
     message.textContent = "";
+
 
     if(!data.studentName){
 
@@ -1269,7 +2603,9 @@ function validateForm(){
             "Please enter Student Name.";
 
         return false;
+
     }
+
 
     if(!data.dob){
 
@@ -1277,7 +2613,9 @@ function validateForm(){
             "Please select Date of Birth.";
 
         return false;
+
     }
+
 
     if(!data.gender){
 
@@ -1285,7 +2623,9 @@ function validateForm(){
             "Please select Gender.";
 
         return false;
+
     }
+
 
     if(!data.className){
 
@@ -1293,7 +2633,9 @@ function validateForm(){
             "Please select Class.";
 
         return false;
+
     }
+
 
     if(!data.fatherName){
 
@@ -1301,7 +2643,9 @@ function validateForm(){
             "Please enter Father's Name.";
 
         return false;
+
     }
+
 
     if(!data.motherName){
 
@@ -1309,7 +2653,9 @@ function validateForm(){
             "Please enter Mother's Name.";
 
         return false;
+
     }
+
 
     if(!data.mobile){
 
@@ -1317,15 +2663,21 @@ function validateForm(){
             "Please enter Mobile Number.";
 
         return false;
+
     }
 
-    if(!/^[0-9]{10}$/.test(data.mobile)){
+
+    if(!/^[0-9]{10}$/.test(
+        data.mobile
+    )){
 
         message.textContent =
             "Please enter valid 10 digit Mobile Number.";
 
         return false;
+
     }
+
 
     if(!data.address){
 
@@ -1333,15 +2685,21 @@ function validateForm(){
             "Please enter Complete Address.";
 
         return false;
+
     }
 
-    if(!document.getElementById("declaration").checked){
+
+    if(!document.getElementById(
+        "declaration"
+    ).checked){
 
         message.textContent =
             "Please accept the declaration.";
 
         return false;
+
     }
+
 
     return true;
 
@@ -1357,59 +2715,116 @@ function showPreview(){
     if(!validateForm())
         return;
 
-    const data = getFormData();
 
-    currentApplication = data;
+    const data =
+        getFormData();
 
-    document.getElementById("formBox").style.display =
+
+    currentApplication =
+        data;
+
+
+    document.getElementById(
+        "formBox"
+    ).style.display =
         "none";
 
-    document.getElementById("previewBox").style.display =
+
+    document.getElementById(
+        "previewBox"
+    ).style.display =
         "block";
 
-    document.getElementById("previewStudentName").textContent =
+
+    document.getElementById(
+        "previewStudentName"
+    ).textContent =
         data.studentName;
 
-    document.getElementById("pClass").textContent =
+
+    document.getElementById(
+        "pClass"
+    ).textContent =
         data.className;
 
-    document.getElementById("pDob").textContent =
-        formatDateIndian(data.dob);
 
-    document.getElementById("pAge").textContent =
+    document.getElementById(
+        "pDob"
+    ).textContent =
+        formatDateIndian(
+            data.dob
+        );
+
+
+    document.getElementById(
+        "pAge"
+    ).textContent =
         data.age;
 
-    document.getElementById("pGender").textContent =
+
+    document.getElementById(
+        "pGender"
+    ).textContent =
         data.gender;
 
-    document.getElementById("pBlood").textContent =
+
+    document.getElementById(
+        "pBlood"
+    ).textContent =
         data.blood || "-";
 
-    document.getElementById("pAadhaar").textContent =
+
+    document.getElementById(
+        "pAadhaar"
+    ).textContent =
         data.aadhaar || "-";
 
-    document.getElementById("pPen").textContent =
+
+    document.getElementById(
+        "pPen"
+    ).textContent =
         data.pen || "-";
 
-    document.getElementById("pApaar").textContent =
+
+    document.getElementById(
+        "pApaar"
+    ).textContent =
         data.apaar || "-";
 
-    document.getElementById("pUdise").textContent =
+
+    document.getElementById(
+        "pUdise"
+    ).textContent =
         data.udise || "-";
 
-    document.getElementById("pFather").textContent =
+
+    document.getElementById(
+        "pFather"
+    ).textContent =
         data.fatherName;
 
-    document.getElementById("pFatherMobile").textContent =
+
+    document.getElementById(
+        "pFatherMobile"
+    ).textContent =
         data.fatherMobile || "-";
 
-    document.getElementById("pMother").textContent =
+
+    document.getElementById(
+        "pMother"
+    ).textContent =
         data.motherName;
 
-    document.getElementById("pMotherMobile").textContent =
+
+    document.getElementById(
+        "pMotherMobile"
+    ).textContent =
         data.motherMobile || "-";
 
-    document.getElementById("pGuardian").textContent =
+
+    document.getElementById(
+        "pGuardian"
+    ).textContent =
         data.guardianName
         ? data.guardianName +
           " (" +
@@ -1417,31 +2832,58 @@ function showPreview(){
           ")"
         : "-";
 
-    document.getElementById("pMobile").textContent =
+
+    document.getElementById(
+        "pMobile"
+    ).textContent =
         data.mobile;
 
-    document.getElementById("pEmail").textContent =
+
+    document.getElementById(
+        "pEmail"
+    ).textContent =
         data.email || "-";
 
-    document.getElementById("pAddress").textContent =
+
+    document.getElementById(
+        "pAddress"
+    ).textContent =
         data.address;
 
-    document.getElementById("pCity").textContent =
+
+    document.getElementById(
+        "pCity"
+    ).textContent =
         data.city || "-";
 
-    document.getElementById("pState").textContent =
+
+    document.getElementById(
+        "pState"
+    ).textContent =
         data.state || "-";
 
-    document.getElementById("pPincode").textContent =
+
+    document.getElementById(
+        "pPincode"
+    ).textContent =
         data.pincode || "-";
 
-    document.getElementById("pTransport").textContent =
+
+    document.getElementById(
+        "pTransport"
+    ).textContent =
         data.transport || "-";
 
-    document.getElementById("pBus").textContent =
+
+    document.getElementById(
+        "pBus"
+    ).textContent =
         data.busRoute || "-";
 
-    document.getElementById("pEmergency").textContent =
+
+    document.getElementById(
+        "pEmergency"
+    ).textContent =
         data.emergencyName
         ? data.emergencyName +
           " / " +
@@ -1450,16 +2892,28 @@ function showPreview(){
           (data.emergencyRelation || "-")
         : "-";
 
-    document.getElementById("pPreviousSchool").textContent =
+
+    document.getElementById(
+        "pPreviousSchool"
+    ).textContent =
         data.previousSchool || "-";
 
-    document.getElementById("pPreviousClass").textContent =
+
+    document.getElementById(
+        "pPreviousClass"
+    ).textContent =
         data.previousClass || "-";
 
-    document.getElementById("pMedical").textContent =
+
+    document.getElementById(
+        "pMedical"
+    ).textContent =
         data.medicalInfo || "-";
 
-    document.getElementById("pRemarks").textContent =
+
+    document.getElementById(
+        "pRemarks"
+    ).textContent =
         data.remarks || "-";
 
 }
@@ -1471,11 +2925,17 @@ function showPreview(){
 
 function editApplication(){
 
-    document.getElementById("previewBox").style.display =
+    document.getElementById(
+        "previewBox"
+    ).style.display =
         "none";
 
-    document.getElementById("formBox").style.display =
+
+    document.getElementById(
+        "formBox"
+    ).style.display =
         "block";
+
 
     window.scrollTo({
         top:0,
@@ -1492,7 +2952,12 @@ function editApplication(){
 function generateApplicationNo(){
 
     const random =
-        Math.floor(10000 + Math.random() * 90000);
+        Math.floor(
+            10000 +
+            Math.random() *
+            90000
+        );
+
 
     return "RPS-2026-" + random;
 
@@ -1503,83 +2968,173 @@ function generateApplicationNo(){
    UPLOAD PHOTO
 ========================================================= */
 
-async function uploadPhoto(applicationNo){
+async function uploadPhoto(
+    applicationNo
+){
 
-    if(!selectedPhotoFile)
-        return null;
-
-    const extension =
-        selectedPhotoFile.name
-            .split(".")
-            .pop()
-            .toLowerCase();
-
-    const filePath =
-        applicationNo + "." + extension;
-
-    const result =
-        await client
-            .storage
-            .from("admission-photos")
-            .upload(
-                filePath,
-                selectedPhotoFile,
-                {
-                    upsert:true,
-                    contentType:selectedPhotoFile.type
-                }
-            );
-
-    if(result.error){
+    if(!selectedPhotoFile){
 
         console.log(
-            "Photo upload failed:",
-            result.error
+            "No student photo selected."
         );
 
         return null;
+
     }
 
-    const publicData =
-        client
-            .storage
-            .from("admission-photos")
-            .getPublicUrl(filePath);
 
-    return publicData.data.publicUrl;
+    try{
+
+        const extension =
+            selectedPhotoFile.name
+                .split(".")
+                .pop()
+                .toLowerCase();
+
+
+        const safeExtension =
+            [
+                "jpg",
+                "jpeg",
+                "png",
+                "webp"
+            ].includes(extension)
+            ? extension
+            : "jpg";
+
+
+        const filePath =
+            "online/" +
+            applicationNo +
+            "." +
+            safeExtension;
+
+
+        console.log(
+            "Uploading student photo:",
+            filePath
+        );
+
+
+        const result =
+            await client
+                .storage
+                .from(
+                    "admission-photos"
+                )
+                .upload(
+                    filePath,
+                    selectedPhotoFile,
+                    {
+                        upsert:true,
+                        contentType:
+                            selectedPhotoFile.type ||
+                            "image/jpeg",
+                        cacheControl:"3600"
+                    }
+                );
+
+
+        if(result.error){
+
+            console.error(
+                "PHOTO UPLOAD ERROR:",
+                result.error
+            );
+
+
+            throw new Error(
+                "Student photo upload failed: " +
+                result.error.message
+            );
+
+        }
+
+
+        const publicData =
+            client
+                .storage
+                .from(
+                    "admission-photos"
+                )
+                .getPublicUrl(
+                    filePath
+                );
+
+
+        const photoUrl =
+            publicData.data.publicUrl;
+
+
+        console.log(
+            "Student Photo URL:",
+            photoUrl
+        );
+
+
+        return photoUrl;
+
+
+    }catch(error){
+
+        console.error(
+            "PHOTO ERROR:",
+            error
+        );
+
+
+        throw error;
+
+    }
 
 }
 
 
 /* =========================================================
-   CREATE EMERGENCY TEXT
+   EMERGENCY
 ========================================================= */
 
 function buildEmergency(data){
 
     const parts = [];
 
+
     if(data.emergencyName)
-        parts.push("Name: " + data.emergencyName);
+        parts.push(
+            "Name: " +
+            data.emergencyName
+        );
+
 
     if(data.emergencyMobile)
-        parts.push("Mobile: " + data.emergencyMobile);
+        parts.push(
+            "Mobile: " +
+            data.emergencyMobile
+        );
+
 
     if(data.emergencyRelation)
-        parts.push("Relation: " + data.emergencyRelation);
+        parts.push(
+            "Relation: " +
+            data.emergencyRelation
+        );
 
-    return parts.join(" | ");
+
+    return parts.join(
+        " | "
+    );
 
 }
 
 
 /* =========================================================
-   CREATE REMARKS
+   REMARKS
 ========================================================= */
 
 function buildRemarks(data){
 
     const parts = [];
+
 
     if(data.previousSchool)
         parts.push(
@@ -1587,11 +3142,13 @@ function buildRemarks(data){
             data.previousSchool
         );
 
+
     if(data.previousClass)
         parts.push(
             "Previous Class: " +
             data.previousClass
         );
+
 
     if(data.fatherOccupation)
         parts.push(
@@ -1599,11 +3156,13 @@ function buildRemarks(data){
             data.fatherOccupation
         );
 
+
     if(data.fatherQualification)
         parts.push(
             "Father Qualification: " +
             data.fatherQualification
         );
+
 
     if(data.motherOccupation)
         parts.push(
@@ -1611,11 +3170,13 @@ function buildRemarks(data){
             data.motherOccupation
         );
 
+
     if(data.motherQualification)
         parts.push(
             "Mother Qualification: " +
             data.motherQualification
         );
+
 
     if(data.guardianName)
         parts.push(
@@ -1623,11 +3184,13 @@ function buildRemarks(data){
             data.guardianName
         );
 
+
     if(data.guardianRelation)
         parts.push(
             "Guardian Relation: " +
             data.guardianRelation
         );
+
 
     if(data.guardianMobile)
         parts.push(
@@ -1635,11 +3198,13 @@ function buildRemarks(data){
             data.guardianMobile
         );
 
+
     if(data.guardianOccupation)
         parts.push(
             "Guardian Occupation: " +
             data.guardianOccupation
         );
+
 
     if(data.medicalInfo)
         parts.push(
@@ -1647,19 +3212,23 @@ function buildRemarks(data){
             data.medicalInfo
         );
 
+
     if(data.remarks)
         parts.push(
             "Remarks: " +
             data.remarks
         );
 
-    return parts.join("\n");
+
+    return parts.join(
+        "\n"
+    );
 
 }
 
 
 /* =========================================================
-   CHECK EXISTING APPLICATION
+   EXISTING APPLICATION
 ========================================================= */
 
 async function getExistingApplication(
@@ -1669,9 +3238,12 @@ async function getExistingApplication(
 
     let query =
         client
-            .from("online_admissions")
+            .from(
+                "online_admissions"
+            )
             .select("*")
             .limit(1);
+
 
     if(paymentId){
 
@@ -1691,8 +3263,13 @@ async function getExistingApplication(
 
     }
 
-    const {data,error} =
+
+    const {
+        data,
+        error
+    } =
         await query.maybeSingle();
+
 
     if(error){
 
@@ -1701,8 +3278,11 @@ async function getExistingApplication(
             error
         );
 
+
         return null;
+
     }
+
 
     return data;
 
@@ -1710,31 +3290,40 @@ async function getExistingApplication(
 
 
 /* =========================================================
-   SAVE ONLINE ADMISSION
+   SAVE APPLICATION
 ========================================================= */
 
-async function saveApplication(paymentId){
+async function saveApplication(
+    paymentId
+){
 
     const data =
-        currentApplication || getFormData();
+        currentApplication ||
+        getFormData();
+
 
     const paymentMessage =
-        document.getElementById("paymentMessage");
+        document.getElementById(
+            "paymentMessage"
+        );
+
 
     paymentMessage.style.color =
         "#2563eb";
 
+
     paymentMessage.textContent =
         "Saving application... Please wait.";
+
 
     const applicationNo =
         generateApplicationNo();
 
+
     try{
 
-        /* ---------------------------------------------
-           DUPLICATE PAYMENT CHECK
-        --------------------------------------------- */
+
+        /* DUPLICATE */
 
         const existing =
             await getExistingApplication(
@@ -1742,23 +3331,30 @@ async function saveApplication(paymentId){
                 paymentId
             );
 
+
         if(existing){
+
+            currentApplication =
+                data;
+
 
             showSuccess(
                 existing.application_no,
-                existing.payment_id || paymentId,
+                existing.payment_id ||
+                    paymentId,
                 existing.student_name
             );
 
+
             return;
+
         }
 
 
-        /* ---------------------------------------------
-           PHOTO
-        --------------------------------------------- */
+        /* PHOTO */
 
         let photoUrl = null;
+
 
         try{
 
@@ -1767,21 +3363,29 @@ async function saveApplication(paymentId){
                     applicationNo
                 );
 
+
         }catch(photoError){
 
-            console.log(
+            console.error(
                 "Photo upload error:",
                 photoError
             );
 
+
             photoUrl = null;
+
+
+            paymentMessage.style.color =
+                "#dc2626";
+
+
+            paymentMessage.textContent =
+                "Payment successful, but student photo upload failed. Application is being saved without photo.";
 
         }
 
 
-        /* ---------------------------------------------
-           ONLINE ADMISSION
-        --------------------------------------------- */
+        /* ONLINE ADMISSION */
 
         const admissionData = {
 
@@ -1801,16 +3405,20 @@ async function saveApplication(paymentId){
                 data.className,
 
             previous_school:
-                data.previousSchool || null,
+                data.previousSchool ||
+                null,
 
             previous_class:
-                data.previousClass || null,
+                data.previousClass ||
+                null,
 
             aadhaar:
-                data.aadhaar || null,
+                data.aadhaar ||
+                null,
 
             blood_group:
-                data.blood || null,
+                data.blood ||
+                null,
 
             father_name:
                 data.fatherName,
@@ -1822,28 +3430,35 @@ async function saveApplication(paymentId){
                 data.mobile,
 
             email:
-                data.email || null,
+                data.email ||
+                null,
 
             address:
                 data.address,
 
             city:
-                data.city || null,
+                data.city ||
+                null,
 
             pincode:
-                data.pincode || null,
+                data.pincode ||
+                null,
 
             transport:
-                data.transport || null,
+                data.transport ||
+                null,
 
             emergency:
-                buildEmergency(data) || null,
+                buildEmergency(data) ||
+                null,
 
             remarks:
-                buildRemarks(data) || null,
+                buildRemarks(data) ||
+                null,
 
             photo:
-                photoUrl || null,
+                photoUrl ||
+                null,
 
             amount:
                 APPLICATION_FEE,
@@ -1868,7 +3483,9 @@ async function saveApplication(paymentId){
 
         const admissionResult =
             await client
-                .from("online_admissions")
+                .from(
+                    "online_admissions"
+                )
                 .insert([
                     admissionData
                 ])
@@ -1886,11 +3503,12 @@ async function saveApplication(paymentId){
         }
 
 
-        /* ---------------------------------------------
-           STUDENT MASTER DUPLICATE CHECK
-        --------------------------------------------- */
+        /* =================================================
+           STUDENT MASTER
+        ================================================= */
 
         let student = null;
+
 
         const studentCheck =
             await client
@@ -1912,13 +3530,11 @@ async function saveApplication(paymentId){
 
         }
 
+
         student =
-            studentCheck.data || null;
+            studentCheck.data ||
+            null;
 
-
-        /* ---------------------------------------------
-           STUDENT MASTER
-        --------------------------------------------- */
 
         if(!student){
 
@@ -1954,7 +3570,8 @@ async function saveApplication(paymentId){
                     data.dob,
 
                 age:
-                    data.age || null,
+                    data.age ||
+                    null,
 
                 gender:
                     data.gender,
@@ -1969,28 +3586,35 @@ async function saveApplication(paymentId){
                     data.mobile,
 
                 aadhar:
-                    data.aadhaar || null,
+                    data.aadhaar ||
+                    null,
 
                 udise:
-                    data.udise || null,
+                    data.udise ||
+                    null,
 
                 pen:
-                    data.pen || null,
+                    data.pen ||
+                    null,
 
                 apaar:
-                    data.apaar || null,
+                    data.apaar ||
+                    null,
 
                 blood:
-                    data.blood || null,
+                    data.blood ||
+                    null,
 
                 bus:
-                    data.busRoute || null,
+                    data.busRoute ||
+                    null,
 
                 address:
                     data.address,
 
                 photo_url:
-                    photoUrl || null,
+                    photoUrl ||
+                    null,
 
                 source:
                     "Online Admission",
@@ -2023,17 +3647,19 @@ async function saveApplication(paymentId){
 
             }
 
+
             student =
                 studentResult.data;
 
         }
 
 
-        /* ---------------------------------------------
-           FEES DUPLICATE CHECK
-        --------------------------------------------- */
+        /* =================================================
+           FEES
+        ================================================= */
 
         let existingFee = null;
+
 
         const feeCheck =
             await client
@@ -2049,20 +3675,18 @@ async function saveApplication(paymentId){
         if(!feeCheck.error){
 
             existingFee =
-                feeCheck.data || null;
+                feeCheck.data ||
+                null;
 
         }
 
-
-        /* ---------------------------------------------
-           FEES
-        --------------------------------------------- */
 
         if(!existingFee){
 
             const receiptNo =
                 "ADM-" +
                 Date.now();
+
 
             const feeData = {
 
@@ -2147,9 +3771,9 @@ async function saveApplication(paymentId){
         }
 
 
-        /* ---------------------------------------------
+        /* =================================================
            FINANCE INCOME
-        --------------------------------------------- */
+        ================================================= */
 
         const incomeNote =
             "Online Admission Fee | " +
@@ -2171,7 +3795,8 @@ async function saveApplication(paymentId){
 
         if(
             incomeCheck.error &&
-            incomeCheck.error.code !== "PGRST116"
+            incomeCheck.error.code !==
+            "PGRST116"
         ){
 
             console.log(
@@ -2221,15 +3846,18 @@ async function saveApplication(paymentId){
         }
 
 
-        /* ---------------------------------------------
-           SUCCESS
-        --------------------------------------------- */
+        /* SUCCESS */
+
+        currentApplication =
+            data;
+
 
         showSuccess(
             applicationNo,
             paymentId,
             data.studentName
         );
+
 
     }catch(error){
 
@@ -2238,12 +3866,15 @@ async function saveApplication(paymentId){
             error
         );
 
+
         paymentMessage.style.color =
             "#dc2626";
+
 
         paymentMessage.innerHTML =
             "❌ " +
             error.message;
+
 
         alert(
             "Payment successful, but application save failed.\n\n" +
@@ -2265,29 +3896,41 @@ function showSuccess(
     studentName
 ){
 
-    document.getElementById("formBox")
-        .style.display = "none";
+    document.getElementById(
+        "formBox"
+    ).style.display =
+        "none";
 
-    document.getElementById("previewBox")
-        .style.display = "none";
 
-    document.getElementById("successBox")
-        .style.display = "block";
+    document.getElementById(
+        "previewBox"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "successBox"
+    ).style.display =
+        "block";
+
 
     document.getElementById(
         "successApplicationNo"
     ).textContent =
         applicationNo;
 
+
     document.getElementById(
         "successPaymentId"
     ).textContent =
         paymentId;
 
+
     document.getElementById(
         "successStudentName"
     ).textContent =
         studentName;
+
 
     window.scrollTo({
         top:0,
@@ -2306,28 +3949,42 @@ async function startPayment(){
     if(!validateForm())
         return;
 
+
     const data =
         getFormData();
+
 
     currentApplication =
         data;
 
+
     const payButton =
-        document.getElementById("payButton");
+        document.getElementById(
+            "payButton"
+        );
+
 
     const paymentMessage =
-        document.getElementById("paymentMessage");
+        document.getElementById(
+            "paymentMessage"
+        );
 
-    payButton.disabled = true;
+
+    payButton.disabled =
+        true;
+
 
     payButton.textContent =
         "Opening Payment...";
 
+
     paymentMessage.style.color =
         "#2563eb";
 
+
     paymentMessage.textContent =
         "Please wait... Razorpay is opening.";
+
 
     try{
 
@@ -2338,7 +3995,8 @@ async function startPayment(){
 
             amount:
                 Math.round(
-                    APPLICATION_FEE * 100
+                    APPLICATION_FEE *
+                    100
                 ),
 
             currency:
@@ -2392,8 +4050,10 @@ async function startPayment(){
                     paymentMessage.style.color =
                         "#16a34a";
 
+
                     paymentMessage.textContent =
                         "Payment successful. Saving application...";
+
 
                     await saveApplication(
                         response.razorpay_payment_id
@@ -2401,23 +4061,28 @@ async function startPayment(){
 
                 },
 
+
             modal:{
 
-                ondismiss:function(){
+                ondismiss:
+                    function(){
 
-                    payButton.disabled =
-                        false;
+                        payButton.disabled =
+                            false;
 
-                    payButton.textContent =
-                        "Confirm & Pay ₹10";
 
-                    paymentMessage.style.color =
-                        "#dc2626";
+                        payButton.textContent =
+                            "Confirm & Pay ₹10";
 
-                    paymentMessage.textContent =
-                        "Payment cancelled.";
 
-                }
+                        paymentMessage.style.color =
+                            "#dc2626";
+
+
+                        paymentMessage.textContent =
+                            "Payment cancelled.";
+
+                    }
 
             }
 
@@ -2425,7 +4090,9 @@ async function startPayment(){
 
 
         const rzp =
-            new Razorpay(options);
+            new Razorpay(
+                options
+            );
 
 
         rzp.on(
@@ -2437,14 +4104,18 @@ async function startPayment(){
                     response
                 );
 
+
                 payButton.disabled =
                     false;
+
 
                 payButton.textContent =
                     "Confirm & Pay ₹10";
 
+
                 paymentMessage.style.color =
                     "#dc2626";
+
 
                 paymentMessage.textContent =
                     "Payment failed. Please try again.";
@@ -2463,14 +4134,18 @@ async function startPayment(){
             error
         );
 
+
         payButton.disabled =
             false;
+
 
         payButton.textContent =
             "Confirm & Pay ₹10";
 
+
         paymentMessage.style.color =
             "#dc2626";
+
 
         paymentMessage.textContent =
             error.message;
@@ -2481,7 +4156,357 @@ async function startPayment(){
 
 
 /* =========================================================
-   MOBILE NUMBER CLEANUP
+   PRINT APPLICATION + RECEIPT
+========================================================= */
+
+function printAdmissionApplication(){
+
+    const data =
+        currentApplication ||
+        getFormData();
+
+
+    const applicationNo =
+        document.getElementById(
+            "successApplicationNo"
+        ).textContent;
+
+
+    const paymentId =
+        document.getElementById(
+            "successPaymentId"
+        ).textContent;
+
+
+    document.getElementById(
+        "printApplicationNo"
+    ).textContent =
+        applicationNo || "-";
+
+
+    document.getElementById(
+        "printStudentName"
+    ).textContent =
+        data.studentName || "-";
+
+
+    document.getElementById(
+        "printStudentName2"
+    ).textContent =
+        data.studentName || "-";
+
+
+    document.getElementById(
+        "printClass"
+    ).textContent =
+        data.className || "-";
+
+
+    document.getElementById(
+        "printDob"
+    ).textContent =
+        formatDateIndian(
+            data.dob
+        ) || "-";
+
+
+    document.getElementById(
+        "printDob2"
+    ).textContent =
+        formatDateIndian(
+            data.dob
+        ) || "-";
+
+
+    document.getElementById(
+        "printAge"
+    ).textContent =
+        data.age || "-";
+
+
+    document.getElementById(
+        "printGender"
+    ).textContent =
+        data.gender || "-";
+
+
+    document.getElementById(
+        "printGender2"
+    ).textContent =
+        data.gender || "-";
+
+
+    document.getElementById(
+        "printBlood"
+    ).textContent =
+        data.blood || "-";
+
+
+    document.getElementById(
+        "printAadhaar"
+    ).textContent =
+        data.aadhaar || "-";
+
+
+    document.getElementById(
+        "printPen"
+    ).textContent =
+        data.pen || "-";
+
+
+    document.getElementById(
+        "printApaar"
+    ).textContent =
+        data.apaar || "-";
+
+
+    document.getElementById(
+        "printUdise"
+    ).textContent =
+        data.udise || "-";
+
+
+    document.getElementById(
+        "printFather"
+    ).textContent =
+        data.fatherName || "-";
+
+
+    document.getElementById(
+        "printFatherMobile"
+    ).textContent =
+        data.fatherMobile || "-";
+
+
+    document.getElementById(
+        "printMother"
+    ).textContent =
+        data.motherName || "-";
+
+
+    document.getElementById(
+        "printMotherMobile"
+    ).textContent =
+        data.motherMobile || "-";
+
+
+    document.getElementById(
+        "printMobile"
+    ).textContent =
+        data.mobile || "-";
+
+
+    document.getElementById(
+        "printEmail"
+    ).textContent =
+        data.email || "-";
+
+
+    document.getElementById(
+        "printAddress"
+    ).textContent =
+        data.address || "-";
+
+
+    document.getElementById(
+        "printCity"
+    ).textContent =
+        data.city || "-";
+
+
+    document.getElementById(
+        "printState"
+    ).textContent =
+        data.state || "-";
+
+
+    document.getElementById(
+        "printPincode"
+    ).textContent =
+        data.pincode || "-";
+
+
+    document.getElementById(
+        "printPreviousSchool"
+    ).textContent =
+        data.previousSchool || "-";
+
+
+    document.getElementById(
+        "printPreviousClass"
+    ).textContent =
+        data.previousClass || "-";
+
+
+    document.getElementById(
+        "printTransport"
+    ).textContent =
+        data.transport || "-";
+
+
+    document.getElementById(
+        "printBus"
+    ).textContent =
+        data.busRoute || "-";
+
+
+    document.getElementById(
+        "printEmergency"
+    ).textContent =
+        data.emergencyName
+        ? data.emergencyName +
+          " / " +
+          (data.emergencyMobile || "-") +
+          " / " +
+          (data.emergencyRelation || "-")
+        : "-";
+
+
+    document.getElementById(
+        "printMedical"
+    ).textContent =
+        data.medicalInfo || "-";
+
+
+    document.getElementById(
+        "printRemarks"
+    ).textContent =
+        data.remarks || "-";
+
+
+    /* PHOTO */
+
+    const printPhoto =
+        document.getElementById(
+            "printStudentPhoto"
+        );
+
+
+    if(selectedPhotoFile){
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function(e){
+
+                printPhoto.src =
+                    e.target.result;
+
+
+                printPhoto.style.display =
+                    "block";
+
+
+                preparePrintReceipt(
+                    applicationNo,
+                    paymentId,
+                    data
+                );
+
+            };
+
+
+        reader.readAsDataURL(
+            selectedPhotoFile
+        );
+
+
+    }else{
+
+        printPhoto.style.display =
+            "none";
+
+
+        preparePrintReceipt(
+            applicationNo,
+            paymentId,
+            data
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   PREPARE RECEIPT
+========================================================= */
+
+function preparePrintReceipt(
+    applicationNo,
+    paymentId,
+    data
+){
+
+    document.getElementById(
+        "printReceiptNo"
+    ).textContent =
+        "ADM-" +
+        (
+            applicationNo ||
+            ""
+        ).replace(
+            "RPS-2026-",
+            ""
+        );
+
+
+    document.getElementById(
+        "printReceiptApplicationNo"
+    ).textContent =
+        applicationNo || "-";
+
+
+    document.getElementById(
+        "printReceiptStudent"
+    ).textContent =
+        data.studentName || "-";
+
+
+    document.getElementById(
+        "printReceiptPaymentId"
+    ).textContent =
+        paymentId || "-";
+
+
+    const today =
+        new Date();
+
+
+    const indianDate =
+        String(
+            today.getDate()
+        ).padStart(2,"0") +
+        "/" +
+        String(
+            today.getMonth()+1
+        ).padStart(2,"0") +
+        "/" +
+        today.getFullYear();
+
+
+    document.getElementById(
+        "printReceiptDate"
+    ).textContent =
+        indianDate;
+
+
+    setTimeout(
+        function(){
+
+            window.print();
+
+        },
+        300
+    );
+
+}
+
+
+/* =========================================================
+   MOBILE / NUMBER CLEANUP
 ========================================================= */
 
 [
@@ -2492,28 +4517,34 @@ async function startPayment(){
     "emergencyMobile",
     "aadhaar",
     "pincode"
-].forEach(function(id){
+].forEach(
+    function(id){
 
-    const element =
-        document.getElementById(id);
+        const element =
+            document.getElementById(
+                id
+            );
 
-    if(!element)
-        return;
 
-    element.addEventListener(
-        "input",
-        function(){
+        if(!element)
+            return;
 
-            this.value =
-                this.value.replace(
-                    /[^0-9]/g,
-                    ""
-                );
 
-        }
-    );
+        element.addEventListener(
+            "input",
+            function(){
 
-});
+                this.value =
+                    this.value.replace(
+                        /[^0-9]/g,
+                        ""
+                    );
+
+            }
+        );
+
+    }
+);
 
 
 /* =========================================================
