@@ -1,17 +1,17 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Online Admission - Rainbow Public School</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <style>
-
 *{
     box-sizing:border-box;
 }
@@ -19,64 +19,86 @@
 body{
     margin:0;
     font-family:Arial,Helvetica,sans-serif;
-    background:#f1f5f9;
-    color:#1e293b;
+    background:#f3f6fb;
+    color:#222;
+}
+
+.container{
+    width:95%;
+    max-width:1100px;
+    margin:25px auto;
 }
 
 .header{
-    background:linear-gradient(135deg,#1d4ed8,#2563eb,#0ea5e9);
-    color:white;
+    background:#ffffff;
+    border-radius:15px;
     padding:20px;
+    box-shadow:0 4px 18px rgba(0,0,0,.10);
     text-align:center;
-    box-shadow:0 3px 12px rgba(0,0,0,.15);
+    margin-bottom:20px;
 }
 
 .header img{
     width:80px;
     height:80px;
     object-fit:contain;
-    background:white;
-    border-radius:50%;
-    padding:5px;
+    margin-bottom:8px;
 }
 
 .header h1{
-    margin:8px 0 3px;
-    font-size:27px;
+    margin:4px 0;
+    color:#173b72;
+    font-size:28px;
+}
+
+.header h2{
+    margin:4px 0;
+    color:#333;
+    font-size:18px;
 }
 
 .header p{
-    margin:3px 0;
+    margin:5px 0;
+    color:#666;
 }
 
-.container{
-    max-width:1100px;
-    margin:25px auto;
-    padding:0 15px;
+.session-badge{
+    display:inline-block;
+    margin-top:10px;
+    padding:7px 16px;
+    border-radius:20px;
+    background:#173b72;
+    color:white;
+    font-weight:bold;
 }
 
 .card{
-    background:white;
+    background:#fff;
     border-radius:15px;
-    padding:25px;
+    padding:22px;
     margin-bottom:20px;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
+    box-shadow:0 4px 18px rgba(0,0,0,.08);
 }
 
 .section-title{
-    background:linear-gradient(135deg,#1d4ed8,#2563eb);
+    background:#173b72;
     color:white;
-    padding:12px 15px;
-    border-radius:9px;
-    margin:-5px 0 20px;
+    padding:11px 15px;
+    border-radius:8px;
+    margin:0 0 18px;
     font-size:18px;
-    font-weight:bold;
 }
 
 .grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
-    gap:16px;
+    gap:15px;
+}
+
+.grid-3{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
 }
 
 .field{
@@ -90,12 +112,8 @@ body{
 
 label{
     font-weight:bold;
-    font-size:14px;
     margin-bottom:6px;
-}
-
-.required{
-    color:#dc2626;
+    color:#333;
 }
 
 input,
@@ -103,9 +121,9 @@ select,
 textarea{
     width:100%;
     padding:11px 12px;
-    border:1px solid #cbd5e1;
+    border:1px solid #ccd4df;
     border-radius:8px;
-    font-size:14px;
+    font-size:15px;
     outline:none;
     background:white;
 }
@@ -113,78 +131,35 @@ textarea{
 input:focus,
 select:focus,
 textarea:focus{
-    border-color:#2563eb;
-    box-shadow:0 0 0 2px rgba(37,99,235,.12);
+    border-color:#173b72;
+    box-shadow:0 0 0 2px rgba(23,59,114,.10);
 }
 
 textarea{
-    min-height:85px;
+    min-height:90px;
     resize:vertical;
 }
 
+.required{
+    color:red;
+}
+
 .photo-box{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    border:2px dashed #94a3b8;
-    border-radius:12px;
-    padding:18px;
-    min-height:220px;
-    background:#f8fafc;
+    border:2px dashed #b9c4d4;
+    border-radius:10px;
+    padding:15px;
+    text-align:center;
+    background:#fafcff;
 }
 
 .photo-preview{
     width:130px;
-    height:160px;
+    height:150px;
+    border:1px solid #ccc;
     object-fit:cover;
-    border-radius:8px;
-    border:1px solid #cbd5e1;
-    margin-top:10px;
     display:none;
-}
-
-.info{
-    background:#eff6ff;
-    border-left:5px solid #2563eb;
-    padding:12px 15px;
-    border-radius:7px;
-    margin-bottom:18px;
-    line-height:1.6;
-}
-
-.fee-box{
-    text-align:center;
-    background:#ecfdf5;
-    border:2px solid #22c55e;
-    border-radius:12px;
-    padding:20px;
-}
-
-.fee-box .amount{
-    font-size:32px;
-    font-weight:bold;
-    color:#15803d;
-}
-
-.declaration{
-    background:#f8fafc;
-    border:1px solid #cbd5e1;
-    padding:15px;
-    border-radius:10px;
-    line-height:1.6;
-}
-
-.checkbox-row{
-    display:flex;
-    align-items:flex-start;
-    gap:10px;
-    margin-top:12px;
-}
-
-.checkbox-row input{
-    width:auto;
-    margin-top:4px;
+    margin:10px auto;
+    border-radius:8px;
 }
 
 .buttons{
@@ -192,87 +167,76 @@ textarea{
     gap:12px;
     flex-wrap:wrap;
     justify-content:center;
-    margin-top:25px;
+    margin-top:20px;
 }
 
 button{
     border:none;
-    border-radius:9px;
-    padding:13px 24px;
+    padding:12px 22px;
+    border-radius:8px;
+    cursor:pointer;
     font-size:15px;
     font-weight:bold;
-    cursor:pointer;
 }
 
 .btn-primary{
-    background:#2563eb;
+    background:#173b72;
     color:white;
 }
 
+.btn-primary:hover{
+    background:#0f2c57;
+}
+
 .btn-success{
-    background:#16a34a;
+    background:#198754;
     color:white;
 }
 
 .btn-warning{
-    background:#f59e0b;
+    background:#f39c12;
+    color:white;
+}
+
+.btn-danger{
+    background:#dc3545;
     color:white;
 }
 
 .btn-secondary{
-    background:#64748b;
+    background:#6c757d;
     color:white;
 }
 
-button:hover{
-    opacity:.92;
+.fee-box{
+    background:#eef5ff;
+    border:1px solid #c9ddfa;
+    padding:18px;
+    border-radius:10px;
+    text-align:center;
 }
 
-button:disabled{
-    opacity:.6;
-    cursor:not-allowed;
-}
-
-.hidden{
-    display:none !important;
-}
-
-#previewBox{
-    display:none;
-}
-
-.preview-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:10px;
-}
-
-.preview-table td{
-    border:1px solid #cbd5e1;
-    padding:9px;
-}
-
-.preview-table td:first-child{
-    width:32%;
+.fee-box .amount{
+    font-size:28px;
     font-weight:bold;
-    background:#f8fafc;
+    color:#173b72;
 }
 
-.confirm-photo{
-    width:120px;
-    height:150px;
-    object-fit:cover;
-    border:1px solid #94a3b8;
-    border-radius:8px;
+.declaration{
+    background:#fff9e8;
+    border:1px solid #f0d78c;
+    padding:15px;
+    border-radius:10px;
+    line-height:1.6;
 }
 
 .status-box{
     display:none;
-    text-align:center;
-    padding:30px;
     background:white;
     border-radius:15px;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
+    padding:35px;
+    text-align:center;
+    box-shadow:0 4px 20px rgba(0,0,0,.12);
 }
 
 .status-icon{
@@ -280,2800 +244,1857 @@ button:disabled{
 }
 
 .application-number{
-    font-size:25px;
+    display:inline-block;
+    margin:15px 0;
+    padding:12px 20px;
+    background:#eef5ff;
+    border-radius:8px;
+    color:#173b72;
+    font-size:22px;
     font-weight:bold;
-    color:#2563eb;
-    margin:12px 0;
 }
 
-.small{
-    font-size:12px;
-    color:#64748b;
-}
-
-.footer{
-    text-align:center;
-    padding:25px;
-    color:#64748b;
-    font-size:13px;
-}
-
-
-/* =========================================================
-   PRINT AREA
-========================================================= */
-
-.print-area{
+.preview-box{
     display:none;
 }
 
-.print-header{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:20px;
-    text-align:center;
-    border-bottom:2px solid #1d4ed8;
-    padding-bottom:15px;
-    margin-bottom:15px;
-}
-
-.print-header img{
-    width:80px;
-    height:80px;
-    object-fit:contain;
-}
-
-.print-header h1{
-    margin:0 0 5px;
-    font-size:25px;
-}
-
-.print-header p{
-    margin:3px 0;
-}
-
-.print-application-number{
-    text-align:center;
-    font-size:18px;
-    padding:10px;
-    border:1px solid #333;
-    margin-bottom:15px;
-}
-
-.print-student-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    margin-bottom:15px;
-}
-
-.print-student-top h2{
-    margin:0 0 10px;
-}
-
-.print-photo{
-    width:100px;
-    height:125px;
-    object-fit:cover;
-    border:1px solid #333;
-}
-
-.print-table{
+.preview-table{
     width:100%;
     border-collapse:collapse;
-    margin-bottom:18px;
 }
 
-.print-table td,
-.print-table th{
-    border:1px solid #555;
-    padding:7px;
-    font-size:12px;
+.preview-table td{
+    border:1px solid #ddd;
+    padding:9px;
+    vertical-align:top;
 }
 
-.print-table td:first-child{
+.preview-table td:first-child{
     width:30%;
+    font-weight:bold;
+    background:#f6f8fb;
+}
+
+.loader{
+    display:none;
+    text-align:center;
+    padding:20px;
+}
+
+.spinner{
+    width:42px;
+    height:42px;
+    border:4px solid #ddd;
+    border-top-color:#173b72;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+    margin:auto;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg);}
+}
+
+.message{
+    display:none;
+    padding:12px;
+    border-radius:8px;
+    margin:15px 0;
     font-weight:bold;
 }
 
-.print-table th{
-    background:#e5e7eb;
-    text-align:left;
-    font-size:13px;
+.error{
+    background:#ffe7e7;
+    color:#a30000;
+    border:1px solid #ffb5b5;
 }
 
-.receipt-box{
-    border:2px solid #222;
-    padding:12px;
-    margin-top:20px;
+.success{
+    background:#e5f8eb;
+    color:#146c2e;
+    border:1px solid #9dd9ad;
 }
 
-.receipt-box h2{
-    text-align:center;
-    margin:0 0 10px;
+.info{
+    background:#e8f3ff;
+    color:#14548a;
+    border:1px solid #afd5f5;
 }
 
-.print-declaration{
-    margin-top:20px;
-    font-size:12px;
+.print-area{
+    display:none !important;
 }
 
-.signature-area{
-    display:flex;
-    justify-content:space-between;
-    margin-top:60px;
+/* PRINT APPLICATION */
+@media print{
+
+    body.print-application > *{
+        display:none !important;
+    }
+
+    body.print-application #printApplication{
+        display:block !important;
+    }
+
+    body.print-receipt > *{
+        display:none !important;
+    }
+
+    body.print-receipt #printReceipt{
+        display:block !important;
+    }
+
+    #printApplication,
+    #printReceipt{
+        background:white !important;
+        color:#000 !important;
+        width:100% !important;
+        margin:0 !important;
+        padding:15px !important;
+    }
+
+    .print-header{
+        text-align:center;
+        border-bottom:2px solid #000;
+        padding-bottom:12px;
+        margin-bottom:15px;
+    }
+
+    .print-header img{
+        width:70px;
+        height:70px;
+        object-fit:contain;
+    }
+
+    .print-header h1{
+        margin:3px 0;
+        font-size:22px;
+    }
+
+    .print-header h2{
+        margin:3px 0;
+        font-size:16px;
+    }
+
+    .print-title{
+        text-align:center;
+        font-size:20px;
+        font-weight:bold;
+        margin:12px 0;
+        border:1px solid #000;
+        padding:8px;
+    }
+
+    .print-grid{
+        display:grid;
+        grid-template-columns:1fr 160px;
+        gap:15px;
+    }
+
+    .print-section{
+        margin-top:14px;
+    }
+
+    .print-section-title{
+        background:#eee;
+        border:1px solid #999;
+        padding:6px 8px;
+        font-weight:bold;
+    }
+
+    .print-table{
+        width:100%;
+        border-collapse:collapse;
+    }
+
+    .print-table td,
+    .print-table th{
+        border:1px solid #999;
+        padding:6px;
+        font-size:12px;
+        vertical-align:top;
+    }
+
+    .print-table td:first-child{
+        font-weight:bold;
+        width:25%;
+    }
+
+    .print-photo{
+        width:120px;
+        height:145px;
+        object-fit:cover;
+        border:1px solid #000;
+        display:block;
+        margin:auto;
+    }
+
+    .print-declaration{
+        margin-top:15px;
+        border:1px solid #999;
+        padding:10px;
+        font-size:11px;
+        line-height:1.5;
+    }
+
+    .signature-row{
+        display:flex;
+        justify-content:space-between;
+        margin-top:55px;
+        font-size:12px;
+    }
+
+    .receipt-box{
+        max-width:750px;
+        margin:auto;
+        border:2px solid #000;
+        padding:20px;
+    }
+
+    .receipt-amount{
+        text-align:center;
+        font-size:24px;
+        font-weight:bold;
+        margin:15px;
+    }
+
+    @page{
+        size:A4;
+        margin:12mm;
+    }
 }
 
-.signature-area div{
-    width:220px;
-    border-top:1px solid #333;
-    text-align:center;
-    padding-top:5px;
-}
+@media(max-width:750px){
 
-.print-footer{
-    text-align:center;
-    border-top:1px solid #aaa;
-    margin-top:30px;
-    padding-top:10px;
-    font-size:11px;
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media(max-width:700px){
-
-    .grid{
+    .grid,
+    .grid-3{
         grid-template-columns:1fr;
     }
 
-    .card{
-        padding:17px;
+    .container{
+        width:96%;
     }
 
     .header h1{
         font-size:22px;
     }
 
-}
-
-
-/* =========================================================
-   PRINT
-========================================================= */
-
-@media print{
-
-    body{
-        background:white;
-    }
-
-    body *{
-        visibility:hidden !important;
-    }
-
-    #printArea,
-    #printArea *{
-        visibility:visible !important;
-    }
-
-    #printArea{
-        display:block !important;
-        position:absolute;
-        left:0;
-        top:0;
-        width:100%;
+    .card{
         padding:15px;
-        background:white;
     }
 
-    @page{
-        size:A4;
-        margin:10mm;
+    .buttons button{
+        width:100%;
     }
-
 }
-
 </style>
 
 </head>
 
 <body>
 
+<div class="container">
 
-<!-- =========================================================
-     HEADER
-========================================================= -->
-
+```
+<!-- HEADER -->
 <div class="header">
+    <img src="logo.png" alt="School Logo">
+    <h1>Rainbow Public School</h1>
+    <h2>Conducted by Shubhi Education Foundation</h2>
+    <p>Online Admission Application</p>
+    <span class="session-badge">Session 2026-27</span>
+</div>
 
-    <img src="logo.png" alt="Rainbow Public School Logo">
+<!-- FORM -->
+<div id="formBox">
+
+    <!-- ADMISSION DETAILS -->
+    <div class="card">
+        <div class="section-title">1. Admission Details</div>
+
+        <div class="grid">
+            <div class="field">
+                <label>Session</label>
+                <select id="session">
+                    <option value="2026-27" selected>2026-27</option>
+                    <option value="2027-28">2027-28</option>
+                    <option value="2028-29">2028-29</option>
+                    <option value="2029-30">2029-30</option>
+                    <option value="2030-31">2030-31</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Class Applying For <span class="required">*</span></label>
+                <select id="className" required>
+                    <option value="">Select Class</option>
+                    <option>Nursery</option>
+                    <option>LKG</option>
+                    <option>UKG</option>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                    <option>6</option>
+                    <option>7</option>
+                    <option>8</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Previous School</label>
+                <input type="text" id="previousSchool">
+            </div>
+
+            <div class="field">
+                <label>Previous Class</label>
+                <input type="text" id="previousClass">
+            </div>
+        </div>
+    </div>
+
+    <!-- STUDENT DETAILS -->
+    <div class="card">
+        <div class="section-title">2. Student Details</div>
+
+        <div class="grid">
+
+            <div class="field">
+                <label>Student Name <span class="required">*</span></label>
+                <input type="text" id="studentName" required>
+            </div>
+
+            <div class="field">
+                <label>Date of Birth <span class="required">*</span></label>
+                <input type="date" id="dob" required onchange="calculateAge()">
+            </div>
+
+            <div class="field">
+                <label>Age</label>
+                <input type="text" id="age" readonly>
+            </div>
+
+            <div class="field">
+                <label>Gender <span class="required">*</span></label>
+                <select id="gender" required>
+                    <option value="">Select Gender</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Blood Group</label>
+                <select id="bloodGroup">
+                    <option value="">Select</option>
+                    <option>A+</option>
+                    <option>A-</option>
+                    <option>B+</option>
+                    <option>B-</option>
+                    <option>AB+</option>
+                    <option>AB-</option>
+                    <option>O+</option>
+                    <option>O-</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Aadhaar Number</label>
+                <input type="text" id="aadhaar" maxlength="12" inputmode="numeric">
+            </div>
+
+            <div class="field">
+                <label>PEN Number</label>
+                <input type="text" id="pen">
+            </div>
+
+            <div class="field">
+                <label>APAAR ID</label>
+                <input type="text" id="apaar">
+            </div>
+
+            <div class="field">
+                <label>UDISE Number</label>
+                <input type="text" id="udise">
+            </div>
+
+            <div class="field full">
+                <label>Student Photo</label>
+
+                <div class="photo-box">
+                    <input
+                        type="file"
+                        id="photoFile"
+                        accept="image/jpeg,image/png,image/webp"
+                        onchange="previewPhoto(event)"
+                    >
+
+                    <img
+                        id="photoPreview"
+                        class="photo-preview"
+                        alt="Student Photo Preview"
+                    >
+
+                    <small>
+                        JPG / PNG / WEBP | Maximum 2 MB
+                    </small>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FATHER -->
+    <div class="card">
+        <div class="section-title">3. Father's Details</div>
+
+        <div class="grid">
+            <div class="field">
+                <label>Father's Name <span class="required">*</span></label>
+                <input type="text" id="fatherName" required>
+            </div>
+
+            <div class="field">
+                <label>Father's Mobile <span class="required">*</span></label>
+                <input type="tel" id="fatherMobile" maxlength="10" inputmode="numeric" required>
+            </div>
+
+            <div class="field">
+                <label>Occupation</label>
+                <input type="text" id="fatherOccupation">
+            </div>
+
+            <div class="field">
+                <label>Qualification</label>
+                <input type="text" id="fatherQualification">
+            </div>
+        </div>
+    </div>
+
+    <!-- MOTHER -->
+    <div class="card">
+        <div class="section-title">4. Mother's Details</div>
+
+        <div class="grid">
+            <div class="field">
+                <label>Mother's Name <span class="required">*</span></label>
+                <input type="text" id="motherName" required>
+            </div>
+
+            <div class="field">
+                <label>Mother's Mobile</label>
+                <input type="tel" id="motherMobile" maxlength="10" inputmode="numeric">
+            </div>
+
+            <div class="field">
+                <label>Occupation</label>
+                <input type="text" id="motherOccupation">
+            </div>
+
+            <div class="field">
+                <label>Qualification</label>
+                <input type="text" id="motherQualification">
+            </div>
+        </div>
+    </div>
+
+    <!-- GUARDIAN -->
+    <div class="card">
+        <div class="section-title">5. Guardian Details</div>
+
+        <div class="grid">
+            <div class="field">
+                <label>Guardian Name</label>
+                <input type="text" id="guardianName">
+            </div>
+
+            <div class="field">
+                <label>Relationship</label>
+                <input type="text" id="guardianRelationship">
+            </div>
+
+            <div class="field">
+                <label>Guardian Mobile</label>
+                <input type="tel" id="guardianMobile" maxlength="10" inputmode="numeric">
+            </div>
+
+            <div class="field">
+                <label>Occupation</label>
+                <input type="text" id="guardianOccupation">
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="card">
+        <div class="section-title">6. Contact & Address</div>
+
+        <div class="grid">
+            <div class="field">
+                <label>Primary Mobile <span class="required">*</span></label>
+                <input type="tel" id="mobile" maxlength="10" inputmode="numeric" required>
+            </div>
+
+            <div class="field">
+                <label>Email</label>
+                <input type="email" id="email">
+            </div>
+
+            <div class="field full">
+                <label>Address <span class="required">*</span></label>
+                <textarea id="address" required></textarea>
+            </div>
+
+            <div class="field">
+                <label>City</label>
+                <input type="text" id="city">
+            </div>
+
+            <div class="field">
+                <label>State</label>
+                <input type="text" id="state" value="Gujarat">
+            </div>
+
+            <div class="field">
+                <label>PIN Code</label>
+                <input type="text" id="pincode" maxlength="6" inputmode="numeric">
+            </div>
+        </div>
+    </div>
+
+    <!-- TRANSPORT -->
+    <div class="card">
+        <div class="section-title">7. Transport Details</div>
+
+        <div class="grid">
+            <div class="field">
+                <label>Transport Required?</label>
+                <select id="transportRequired" onchange="toggleBusRoute()">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
+
+            <div class="field" id="busRouteBox">
+                <label>Bus Route</label>
+                <input type="text" id="busRoute">
+            </div>
+        </div>
+    </div>
+
+    <!-- EMERGENCY -->
+    <div class="card">
+        <div class="section-title">8. Emergency Contact</div>
+
+        <div class="grid">
+            <div class="field">
+                <label>Name</label>
+                <input type="text" id="emergencyName">
+            </div>
+
+            <div class="field">
+                <label>Contact Number</label>
+                <input type="tel" id="emergencyNumber" maxlength="10" inputmode="numeric">
+            </div>
+
+            <div class="field">
+                <label>Relationship</label>
+                <input type="text" id="emergencyRelationship">
+            </div>
+        </div>
+    </div>
+
+    <!-- OTHER -->
+    <div class="card">
+        <div class="section-title">9. Other Information</div>
+
+        <div class="grid">
+
+            <div class="field full">
+                <label>Medical / Special Information</label>
+                <textarea id="medicalInfo"></textarea>
+            </div>
+
+            <div class="field full">
+                <label>Remarks</label>
+                <textarea id="remarks"></textarea>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- DECLARATION -->
+    <div class="card">
+        <div class="section-title">10. Declaration</div>
+
+        <div class="declaration">
+            <label style="display:block;font-weight:normal;">
+                <input type="checkbox" id="declaration" style="width:auto;margin-right:8px;">
+                I hereby declare that the information provided by me in this
+                admission application is true and correct to the best of my
+                knowledge. I understand that incorrect information may result
+                in cancellation of admission.
+            </label>
+        </div>
+    </div>
+
+    <!-- FEE -->
+    <div class="card">
+
+        <div class="section-title">Application Fee</div>
+
+        <div class="fee-box">
+            <div>Online Admission Application Fee</div>
+            <div class="amount">₹10</div>
+            <p>Payment will be processed securely through Razorpay.</p>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <div id="loader" class="loader">
+            <div class="spinner"></div>
+            <p>Please wait...</p>
+        </div>
+
+        <div class="buttons">
+            <button type="button" class="btn-primary" onclick="showPreview()">
+                Preview Application
+            </button>
+
+            <button type="button" class="btn-secondary" onclick="goHome()">
+                ← Back to Home
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- PREVIEW -->
+<div id="previewBox" class="card preview-box">
+
+    <div class="section-title">Application Preview</div>
+
+    <div id="previewContent"></div>
+
+    <div class="buttons">
+        <button type="button" class="btn-warning" onclick="backToForm()">
+            ← Edit Application
+        </button>
+
+        <button type="button" class="btn-success" onclick="startPayment()">
+            Confirm & Pay ₹10
+        </button>
+    </div>
+
+</div>
+
+
+<!-- SUCCESS -->
+<div id="successBox" class="status-box">
+
+    <div class="status-icon">✅</div>
+
+    <h2>Application Submitted Successfully</h2>
+
+    <p>Your online admission application has been successfully submitted.</p>
+
+    <div class="application-number" id="successApplicationNo"></div>
+
+    <p>
+        <b>Receipt No:</b>
+        <span id="successReceiptNo"></span>
+    </p>
+
+    <p>
+        <b>Payment ID:</b>
+        <span id="successPaymentId"></span>
+    </p>
+
+    <p>
+        <b>Student:</b>
+        <span id="successStudentName"></span>
+    </p>
+
+    <p>
+        <b>Application Fee:</b> ₹10
+    </p>
+
+    <div class="buttons">
+
+        <button class="btn-primary" onclick="printApplication()">
+            🖨 Print Application
+        </button>
+
+        <button class="btn-success" onclick="printReceipt()">
+            🧾 Print Fee Receipt
+        </button>
+
+        <button class="btn-secondary" onclick="goHome()">
+            ← Back to Home
+        </button>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+<!-- ===================================================== -->
+
+<!-- PRINT APPLICATION -->
+
+<!-- ===================================================== -->
+
+<div id="printApplication" class="print-area">
+
+```
+<div class="print-header">
+
+    <img src="logo.png" alt="School Logo">
 
     <h1>Rainbow Public School</h1>
 
-    <p>Conducted by Shubhi Education Foundation</p>
+    <h2>Conducted by Shubhi Education Foundation</h2>
 
-    <p>
-        <b>Online Admission Form - Session 2026-27</b>
-    </p>
+    <div>Online Admission Application</div>
 
 </div>
 
-
-<div class="container">
-
-
-<!-- =========================================================
-     FORM
-========================================================= -->
-
-<div id="formBox">
-
-<div class="card">
-
-<div class="info">
-
-<b>Important:</b>
-
-Please fill all required details carefully.
-
-After confirmation, an application fee of
-<b>₹10</b> will be charged through Razorpay.
-
-</div>
-
-
-<div class="section-title">
-1. Admission Details
-</div>
-
-
-<div class="grid">
-
-
-<div class="field">
-
-<label>
-Session <span class="required">*</span>
-</label>
-
-<select id="session">
-
-<option value="2026-27">
-2026-27
-</option>
-
-</select>
-
-</div>
-
-
-<div class="field">
-
-<label>
-Class Applied For <span class="required">*</span>
-</label>
-
-<select id="className">
-
-<option value="">
-Select Class
-</option>
-
-<option>Nursery</option>
-<option>LKG</option>
-<option>UKG</option>
-<option>1</option>
-<option>2</option>
-<option>3</option>
-<option>4</option>
-<option>5</option>
-<option>6</option>
-<option>7</option>
-<option>8</option>
-
-</select>
-
-</div>
-
-
-<div class="field">
-
-<label>
-Previous School
-</label>
-
-<input type="text" id="previousSchool">
-
-</div>
-
-
-<div class="field">
-
-<label>
-Previous Class
-</label>
-
-<input type="text" id="previousClass">
-
-</div>
-
-
-</div>
-
-</div>
-
-
-<!-- =========================================================
-     STUDENT
-========================================================= -->
-
-<div class="card">
-
-<div class="section-title">
-2. Student Details
-</div>
-
-
-<div class="grid">
-
-
-<div class="field">
-
-<label>
-Student Full Name <span class="required">*</span>
-</label>
-
-<input type="text" id="studentName">
-
-</div>
-
-
-<div class="field">
-
-<label>
-Date of Birth <span class="required">*</span>
-</label>
-
-<input
-type="date"
-id="dob"
-onchange="calculateAge()"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-Age
-</label>
-
-<input
-type="text"
-id="age"
-readonly
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-Gender <span class="required">*</span>
-</label>
-
-<select id="gender">
-
-<option value="">
-Select Gender
-</option>
-
-<option>Male</option>
-<option>Female</option>
-<option>Other</option>
-
-</select>
-
-</div>
-
-
-<div class="field">
-
-<label>
-Blood Group
-</label>
-
-<select id="blood">
-
-<option value="">
-Select
-</option>
-
-<option>A+</option>
-<option>A-</option>
-<option>B+</option>
-<option>B-</option>
-<option>AB+</option>
-<option>AB-</option>
-<option>O+</option>
-<option>O-</option>
-
-</select>
-
-</div>
-
-
-<div class="field">
-
-<label>
-Aadhaar Number
-</label>
-
-<input
-type="text"
-id="aadhaar"
-maxlength="12"
-inputmode="numeric"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-PEN Number
-</label>
-
-<input
-type="text"
-id="pen"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-APAAR ID
-</label>
-
-<input
-type="text"
-id="apaar"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-UDISE Student ID
-</label>
-
-<input
-type="text"
-id="udise"
->
-
-</div>
-
-
-<div class="field full">
-
-<label>
-Student Photo
-</label>
-
-
-<div class="photo-box">
-
-<input
-type="file"
-id="photoFile"
-accept="image/*"
-onchange="previewPhoto(event)"
->
-
-
-<img
-id="photoPreview"
-class="photo-preview"
-alt="Student Photo Preview"
->
-
-
-<div class="small">
-JPG / PNG recommended
-</div>
-
-</div>
-
-</div>
-
-
-</div>
-
-</div>
-
-
-<!-- =========================================================
-     FATHER
-========================================================= -->
-
-<div class="card">
-
-<div class="section-title">
-3. Father's Details
-</div>
-
-
-<div class="grid">
-
-
-<div class="field">
-
-<label>
-Father's Full Name <span class="required">*</span>
-</label>
-
-<input
-type="text"
-id="fatherName"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-Father's Mobile Number <span class="required">*</span>
-</label>
-
-<input
-type="text"
-id="fatherMobile"
-maxlength="10"
-inputmode="numeric"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-Father's Occupation
-</label>
-
-<input
-type="text"
-id="fatherOccupation"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-Father's Qualification
-</label>
-
-<input
-type="text"
-id="fatherQualification"
->
-
-</div>
-
-
-</div>
-
-</div>
-
-
-<!-- =========================================================
-     MOTHER
-========================================================= -->
-
-<div class="card">
-
-<div class="section-title">
-4. Mother's Details
-</div>
-
-
-<div class="grid">
-
-
-<div class="field">
-
-<label>
-Mother's Full Name <span class="required">*</span>
-</label>
-
-<input
-type="text"
-id="motherName"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-Mother's Mobile Number
-</label>
-
-<input
-type="text"
-id="motherMobile"
-maxlength="10"
-inputmode="numeric"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-Mother's Occupation
-</label>
-
-<input
-type="text"
-id="motherOccupation"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-Mother's Qualification
-</label>
-
-<input
-type="text"
-id="motherQualification"
->
-
-</div>
-
-
-</div>
-
-</div>
-
-
-<!-- =========================================================
-     GUARDIAN
-========================================================= -->
-
-<div class="card">
-
-<div class="section-title">
-5. Guardian Details
-</div>
-
-
-<div class="grid">
-
-
-<div class="field">
-
-<label>
-Guardian Name
-</label>
-
-<input
-type="text"
-id="guardianName"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-Relationship with Student
-</label>
-
-<input
-type="text"
-id="guardianRelation"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-Guardian Mobile
-</label>
-
-<input
-type="text"
-id="guardianMobile"
-maxlength="10"
-inputmode="numeric"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-Guardian Occupation
-</label>
-
-<input
-type="text"
-id="guardianOccupation"
->
-
-</div>
-
-
-</div>
-
-</div>
-
-
-<!-- =========================================================
-     CONTACT
-========================================================= -->
-
-<div class="card">
-
-<div class="section-title">
-6. Contact & Address Details
-</div>
-
-
-<div class="grid">
-
-
-<div class="field">
-
-<label>
-Primary Mobile Number <span class="required">*</span>
-</label>
-
-<input
-type="text"
-id="mobile"
-maxlength="10"
-inputmode="numeric"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-Email Address
-</label>
-
-<input
-type="email"
-id="email"
->
-
-</div>
-
-
-<div class="field full">
-
-<label>
-Complete Address <span class="required">*</span>
-</label>
-
-<textarea id="address"></textarea>
-
-</div>
-
-
-<div class="field">
-
-<label>
-City
-</label>
-
-<input
-type="text"
-id="city"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-State
-</label>
-
-<input
-type="text"
-id="state"
-value="Gujarat"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-PIN Code
-</label>
-
-<input
-type="text"
-id="pincode"
-maxlength="6"
-inputmode="numeric"
->
-
-</div>
-
-
-</div>
-
-</div>
-
-
-<!-- =========================================================
-     TRANSPORT
-========================================================= -->
-
-<div class="card">
-
-<div class="section-title">
-7. Transport Details
-</div>
-
-
-<div class="grid">
-
-
-<div class="field">
-
-<label>
-School Transport Required?
-</label>
-
-<select id="transport">
-
-<option value="">
-Select
-</option>
-
-<option value="Yes">
-Yes
-</option>
-
-<option value="No">
-No
-</option>
-
-</select>
-
-</div>
-
-
-<div class="field">
-
-<label>
-Bus Route / Area
-</label>
-
-<input
-type="text"
-id="busRoute"
->
-
-</div>
-
-
-</div>
-
-</div>
-
-
-<!-- =========================================================
-     EMERGENCY
-========================================================= -->
-
-<div class="card">
-
-<div class="section-title">
-8. Emergency Contact
-</div>
-
-
-<div class="grid">
-
-
-<div class="field">
-
-<label>
-Emergency Contact Name
-</label>
-
-<input
-type="text"
-id="emergencyName"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-Emergency Contact Number
-</label>
-
-<input
-type="text"
-id="emergencyMobile"
-maxlength="10"
-inputmode="numeric"
->
-
-</div>
-
-
-<div class="field">
-
-<label>
-Relationship
-</label>
-
-<input
-type="text"
-id="emergencyRelation"
->
-
-</div>
-
-
-</div>
-
-</div>
-
-
-<!-- =========================================================
-     OTHER
-========================================================= -->
-
-<div class="card">
-
-<div class="section-title">
-9. Other Information
-</div>
-
-
-<div class="grid">
-
-
-<div class="field full">
-
-<label>
-Medical / Special Information
-</label>
-
-<textarea id="medicalInfo"></textarea>
-
-</div>
-
-
-<div class="field full">
-
-<label>
-Any Other Remarks
-</label>
-
-<textarea id="remarks"></textarea>
-
-</div>
-
-
-</div>
-
-</div>
-
-
-<!-- =========================================================
-     DECLARATION
-========================================================= -->
-
-<div class="card">
-
-<div class="section-title">
-10. Declaration
-</div>
-
-
-<div class="declaration">
-
-I hereby declare that the information provided in this
-admission form is true and correct to the best of my knowledge.
-I understand that providing incorrect information may affect
-the admission of the student.
-
-
-<div class="checkbox-row">
-
-<input
-type="checkbox"
-id="declaration"
->
-
-
-<label for="declaration">
-
-I agree with the above declaration.
-
-<span class="required">*</span>
-
-</label>
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- =========================================================
-     PAYMENT
-========================================================= -->
-
-<div class="card">
-
-<div class="fee-box">
-
-<div>
-Online Admission Application Fee
-</div>
-
-<div class="amount">
-₹10
-</div>
-
-<div>
-Pay securely through Razorpay
-</div>
-
-</div>
-
-
-<div
-id="formMessage"
-style="margin-top:15px;text-align:center;font-weight:bold;color:#dc2626;"
->
-</div>
-
-
-<div class="buttons no-print">
-
-
-<button
-class="btn-secondary"
-onclick="goHome()"
->
-← Back to Home
-</button>
-
-
-<button
-class="btn-primary"
-onclick="showPreview()"
->
-Preview Application →
-</button>
-
-
-</div>
-
-</div>
-
-
-</div>
-
-
-<!-- =========================================================
-     PREVIEW
-========================================================= -->
-
-<div id="previewBox">
-
-<div class="card">
-
-
-<div class="section-title">
-Application Preview
-</div>
-
-
-<div style="text-align:center;margin-bottom:20px;">
-
-
-<img
-id="confirmPhoto"
-class="confirm-photo"
-style="display:none;"
-alt="Student Photo"
->
-
-
-<h2 id="previewStudentName"></h2>
-
-
-<p>
-
-Rainbow Public School<br>
-
-Session 2026-27
-
-</p>
-
-
+<div class="print-title">
+    ADMISSION APPLICATION
 </div>
-
-
-<table class="preview-table">
-
-
-<tr>
-<td>Class Applied For</td>
-<td id="pClass"></td>
-</tr>
-
-
-<tr>
-<td>Date of Birth</td>
-<td id="pDob"></td>
-</tr>
-
-
-<tr>
-<td>Age</td>
-<td id="pAge"></td>
-</tr>
-
-
-<tr>
-<td>Gender</td>
-<td id="pGender"></td>
-</tr>
-
-
-<tr>
-<td>Blood Group</td>
-<td id="pBlood"></td>
-</tr>
-
-
-<tr>
-<td>Aadhaar</td>
-<td id="pAadhaar"></td>
-</tr>
-
-
-<tr>
-<td>PEN</td>
-<td id="pPen"></td>
-</tr>
-
-
-<tr>
-<td>APAAR</td>
-<td id="pApaar"></td>
-</tr>
-
-
-<tr>
-<td>UDISE</td>
-<td id="pUdise"></td>
-</tr>
-
-
-<tr>
-<td>Father's Name</td>
-<td id="pFather"></td>
-</tr>
-
-
-<tr>
-<td>Father's Mobile</td>
-<td id="pFatherMobile"></td>
-</tr>
-
-
-<tr>
-<td>Mother's Name</td>
-<td id="pMother"></td>
-</tr>
-
-
-<tr>
-<td>Mother's Mobile</td>
-<td id="pMotherMobile"></td>
-</tr>
-
-
-<tr>
-<td>Guardian</td>
-<td id="pGuardian"></td>
-</tr>
-
-
-<tr>
-<td>Mobile</td>
-<td id="pMobile"></td>
-</tr>
-
-
-<tr>
-<td>Email</td>
-<td id="pEmail"></td>
-</tr>
-
-
-<tr>
-<td>Address</td>
-<td id="pAddress"></td>
-</tr>
-
-
-<tr>
-<td>City</td>
-<td id="pCity"></td>
-</tr>
-
-
-<tr>
-<td>State</td>
-<td id="pState"></td>
-</tr>
-
-
-<tr>
-<td>PIN</td>
-<td id="pPincode"></td>
-</tr>
-
-
-<tr>
-<td>Transport</td>
-<td id="pTransport"></td>
-</tr>
-
-
-<tr>
-<td>Bus Route</td>
-<td id="pBus"></td>
-</tr>
-
-
-<tr>
-<td>Emergency Contact</td>
-<td id="pEmergency"></td>
-</tr>
-
 
-<tr>
-<td>Previous School</td>
-<td id="pPreviousSchool"></td>
-</tr>
+<div class="print-grid">
 
+    <div>
 
-<tr>
-<td>Previous Class</td>
-<td id="pPreviousClass"></td>
-</tr>
+        <table class="print-table">
 
+            <tr>
+                <td>Application No.</td>
+                <td id="paApplicationNo"></td>
+            </tr>
 
-<tr>
-<td>Medical / Special Information</td>
-<td id="pMedical"></td>
-</tr>
+            <tr>
+                <td>Application Date</td>
+                <td id="paDate"></td>
+            </tr>
 
+            <tr>
+                <td>Session</td>
+                <td id="paSession"></td>
+            </tr>
 
-<tr>
-<td>Remarks</td>
-<td id="pRemarks"></td>
-</tr>
+            <tr>
+                <td>Class Applying For</td>
+                <td id="paClass"></td>
+            </tr>
 
+            <tr>
+                <td>Student Name</td>
+                <td id="paStudentName"></td>
+            </tr>
 
-</table>
+            <tr>
+                <td>Date of Birth</td>
+                <td id="paDob"></td>
+            </tr>
 
+            <tr>
+                <td>Age</td>
+                <td id="paAge"></td>
+            </tr>
 
-<div
-class="fee-box"
-style="margin-top:20px;"
->
+            <tr>
+                <td>Gender</td>
+                <td id="paGender"></td>
+            </tr>
 
-Application Fee:
-<b>₹10</b>
+            <tr>
+                <td>Blood Group</td>
+                <td id="paBlood"></td>
+            </tr>
 
-</div>
-
-
-<div class="buttons no-print">
-
-
-<button
-class="btn-warning"
-onclick="editApplication()"
->
-← Edit Application
-</button>
-
-
-<button
-id="payButton"
-class="btn-success"
-onclick="startPayment()"
->
-Confirm & Pay ₹10
-</button>
-
+        </table>
 
-</div>
-
-
-<div
-id="paymentMessage"
-style="text-align:center;margin-top:15px;font-weight:bold;"
->
-</div>
+    </div>
 
+    <div>
+        <img id="paPhoto" class="print-photo" alt="Student Photo">
+    </div>
 
 </div>
 
-</div>
 
+<div class="print-section">
 
-<!-- =========================================================
-     SUCCESS
-========================================================= -->
+    <div class="print-section-title">
+        Student Information
+    </div>
 
-<div
-id="successBox"
-class="status-box"
->
+    <table class="print-table">
 
+        <tr>
+            <td>Aadhaar</td>
+            <td id="paAadhaar"></td>
 
-<div class="status-icon">
-✅
-</div>
+            <td>PEN</td>
+            <td id="paPen"></td>
+        </tr>
 
+        <tr>
+            <td>APAAR</td>
+            <td id="paApaar"></td>
 
-<h2>
-Application Submitted Successfully
-</h2>
+            <td>UDISE</td>
+            <td id="paUdise"></td>
+        </tr>
 
+        <tr>
+            <td>Previous School</td>
+            <td id="paPreviousSchool"></td>
 
-<p>
-Your online admission application has been successfully submitted.
-</p>
+            <td>Previous Class</td>
+            <td id="paPreviousClass"></td>
+        </tr>
 
+    </table>
 
-<div
-class="application-number"
-id="successApplicationNo"
->
 </div>
-
-
-<p>
 
-<b>Payment ID:</b>
 
-<span id="successPaymentId"></span>
+<div class="print-section">
 
-</p>
+    <div class="print-section-title">
+        Parent Details
+    </div>
 
+    <table class="print-table">
 
-<p>
+        <tr>
+            <td>Father's Name</td>
+            <td id="paFather"></td>
 
-<b>Student:</b>
+            <td>Father's Mobile</td>
+            <td id="paFatherMobile"></td>
+        </tr>
 
-<span id="successStudentName"></span>
+        <tr>
+            <td>Father's Occupation</td>
+            <td id="paFatherOccupation"></td>
 
-</p>
+            <td>Father's Qualification</td>
+            <td id="paFatherQualification"></td>
+        </tr>
 
+        <tr>
+            <td>Mother's Name</td>
+            <td id="paMother"></td>
 
-<p>
+            <td>Mother's Mobile</td>
+            <td id="paMotherMobile"></td>
+        </tr>
 
-<b>Application Fee:</b>
-₹10
+        <tr>
+            <td>Mother's Occupation</td>
+            <td id="paMotherOccupation"></td>
 
-</p>
+            <td>Mother's Qualification</td>
+            <td id="paMotherQualification"></td>
+        </tr>
 
+        <tr>
+            <td>Guardian</td>
+            <td id="paGuardian"></td>
 
-<div class="buttons no-print">
+            <td>Relationship</td>
+            <td id="paGuardianRelationship"></td>
+        </tr>
 
+        <tr>
+            <td>Guardian Mobile</td>
+            <td id="paGuardianMobile"></td>
 
-<button
-class="btn-primary"
-onclick="printAdmissionApplication()"
->
-🖨 Print Application & Receipt
-</button>
+            <td>Guardian Occupation</td>
+            <td id="paGuardianOccupation"></td>
+        </tr>
 
+    </table>
 
-<button
-class="btn-secondary"
-onclick="goHome()"
->
-← Back to Home
-</button>
-
-
-</div>
-
-
 </div>
-
-
-<!-- =========================================================
-     PRINT AREA
-========================================================= -->
-
-<div id="printArea">
 
 
-<div class="print-header">
+<div class="print-section">
 
-<img
-src="logo.png"
-alt="School Logo"
->
+    <div class="print-section-title">
+        Contact & Address
+    </div>
 
+    <table class="print-table">
 
-<div>
+        <tr>
+            <td>Primary Mobile</td>
+            <td id="paMobile"></td>
 
-<h1>
-Rainbow Public School
-</h1>
+            <td>Email</td>
+            <td id="paEmail"></td>
+        </tr>
 
+        <tr>
+            <td>Address</td>
+            <td colspan="3" id="paAddress"></td>
+        </tr>
 
-<p>
-Conducted by Shubhi Education Foundation
-</p>
+        <tr>
+            <td>City</td>
+            <td id="paCity"></td>
 
+            <td>State</td>
+            <td id="paState"></td>
+        </tr>
 
-<p>
-<b>Online Admission Application</b>
-</p>
+        <tr>
+            <td>PIN Code</td>
+            <td id="paPincode"></td>
 
+            <td>Transport</td>
+            <td id="paTransport"></td>
+        </tr>
 
-<p>
-Session 2026-27
-</p>
+        <tr>
+            <td>Bus Route</td>
+            <td id="paBusRoute"></td>
 
-</div>
-
-</div>
-
+            <td>Emergency Contact</td>
+            <td id="paEmergency"></td>
+        </tr>
 
-<div class="print-application-number">
+    </table>
 
-Application No:
-<b id="printApplicationNo"></b>
-
 </div>
-
-
-<div class="print-student-top">
-
 
-<div>
 
-<h2 id="printStudentName">
-</h2>
+<div class="print-section">
 
+    <div class="print-section-title">
+        Payment Details
+    </div>
 
-<p>
+    <table class="print-table">
 
-<b>Class Applied For:</b>
+        <tr>
+            <td>Application Fee</td>
+            <td>₹10</td>
 
-<span id="printClass"></span>
+            <td>Payment Status</td>
+            <td>PAID</td>
+        </tr>
 
-</p>
+        <tr>
+            <td>Payment ID</td>
+            <td id="paPaymentId"></td>
 
+            <td>Receipt No.</td>
+            <td id="paReceiptNo"></td>
+        </tr>
 
-<p>
+    </table>
 
-<b>Date of Birth:</b>
-
-<span id="printDob"></span>
-
-</p>
-
-
-<p>
-
-<b>Gender:</b>
-
-<span id="printGender"></span>
-
-</p>
-
-
-</div>
-
-
-<img
-id="printStudentPhoto"
-class="print-photo"
-alt="Student Photo"
->
-
 </div>
-
-
-<table class="print-table">
-
-
-<tr>
-<th colspan="2">
-Student Details
-</th>
-</tr>
-
-
-<tr>
-<td>Student Name</td>
-<td id="printStudentName2"></td>
-</tr>
-
-
-<tr>
-<td>Date of Birth</td>
-<td id="printDob2"></td>
-</tr>
-
-
-<tr>
-<td>Age</td>
-<td id="printAge"></td>
-</tr>
-
-
-<tr>
-<td>Gender</td>
-<td id="printGender2"></td>
-</tr>
-
-
-<tr>
-<td>Blood Group</td>
-<td id="printBlood"></td>
-</tr>
-
-
-<tr>
-<td>Aadhaar</td>
-<td id="printAadhaar"></td>
-</tr>
-
-
-<tr>
-<td>PEN</td>
-<td id="printPen"></td>
-</tr>
-
-
-<tr>
-<td>APAAR ID</td>
-<td id="printApaar"></td>
-</tr>
-
-
-<tr>
-<td>UDISE Student ID</td>
-<td id="printUdise"></td>
-</tr>
-
-
-<tr>
-<th colspan="2">
-Parent Details
-</th>
-</tr>
-
-
-<tr>
-<td>Father's Name</td>
-<td id="printFather"></td>
-</tr>
-
-
-<tr>
-<td>Father's Mobile</td>
-<td id="printFatherMobile"></td>
-</tr>
-
-
-<tr>
-<td>Mother's Name</td>
-<td id="printMother"></td>
-</tr>
-
-
-<tr>
-<td>Mother's Mobile</td>
-<td id="printMotherMobile"></td>
-</tr>
-
-
-<tr>
-<th colspan="2">
-Contact Details
-</th>
-</tr>
-
-
-<tr>
-<td>Mobile</td>
-<td id="printMobile"></td>
-</tr>
-
-
-<tr>
-<td>Email</td>
-<td id="printEmail"></td>
-</tr>
-
-
-<tr>
-<td>Address</td>
-<td id="printAddress"></td>
-</tr>
-
-
-<tr>
-<td>City</td>
-<td id="printCity"></td>
-</tr>
-
-
-<tr>
-<td>State</td>
-<td id="printState"></td>
-</tr>
-
-
-<tr>
-<td>PIN Code</td>
-<td id="printPincode"></td>
-</tr>
-
-
-<tr>
-<th colspan="2">
-Other Details
-</th>
-</tr>
-
-
-<tr>
-<td>Previous School</td>
-<td id="printPreviousSchool"></td>
-</tr>
-
-
-<tr>
-<td>Previous Class</td>
-<td id="printPreviousClass"></td>
-</tr>
-
-
-<tr>
-<td>Transport Required</td>
-<td id="printTransport"></td>
-</tr>
-
-
-<tr>
-<td>Bus Route / Area</td>
-<td id="printBus"></td>
-</tr>
-
-
-<tr>
-<td>Emergency Contact</td>
-<td id="printEmergency"></td>
-</tr>
-
-
-<tr>
-<td>Medical / Special Information</td>
-<td id="printMedical"></td>
-</tr>
-
-
-<tr>
-<td>Remarks</td>
-<td id="printRemarks"></td>
-</tr>
-
-
-</table>
-
-
-<!-- PAYMENT RECEIPT -->
-
-<div class="receipt-box">
-
-
-<h2>
-PAYMENT RECEIPT
-</h2>
-
-
-<table class="print-table">
-
-
-<tr>
-<td>Receipt No.</td>
-<td id="printReceiptNo"></td>
-</tr>
-
-
-<tr>
-<td>Application No.</td>
-<td id="printReceiptApplicationNo"></td>
-</tr>
-
-
-<tr>
-<td>Student Name</td>
-<td id="printReceiptStudent"></td>
-</tr>
-
-
-<tr>
-<td>Session</td>
-<td>2026-27</td>
-</tr>
-
-
-<tr>
-<td>Fee Type</td>
-<td>
-Online Admission Application Fee
-</td>
-</tr>
-
-
-<tr>
-<td>Amount Paid</td>
-<td>
-<b>₹10</b>
-</td>
-</tr>
-
 
-<tr>
-<td>Payment Status</td>
-<td>
-<b>SUCCESS</b>
-</td>
-</tr>
 
+<div class="print-section">
 
-<tr>
-<td>Payment ID</td>
-<td id="printReceiptPaymentId"></td>
-</tr>
+    <div class="print-section-title">
+        Other Information
+    </div>
 
+    <table class="print-table">
 
-<tr>
-<td>Date</td>
-<td id="printReceiptDate"></td>
-</tr>
+        <tr>
+            <td>Medical / Special Information</td>
+            <td id="paMedical"></td>
+        </tr>
 
+        <tr>
+            <td>Remarks</td>
+            <td id="paRemarks"></td>
+        </tr>
 
-</table>
+    </table>
 
 </div>
 
 
 <div class="print-declaration">
 
+    <b>Declaration:</b>
 
-<p>
-
-I hereby declare that the information provided in this
-admission application is true and correct to the best of
-my knowledge.
-
-</p>
-
-
-<div class="signature-area">
-
-
-<div>
-Parent / Guardian Signature
-</div>
-
-
-<div>
-School Office
-</div>
-
-
-</div>
+    I hereby declare that the information provided in this application
+    is true and correct to the best of my knowledge. I understand that
+    providing incorrect information may result in cancellation of admission.
 
 </div>
 
 
-<div class="print-footer">
+<div class="signature-row">
 
-Rainbow Public School<br>
+    <div>
+        Parent / Guardian Signature
+    </div>
 
-Conducted by Shubhi Education Foundation<br>
+    <div>
+        School Office
+    </div>
 
-Online Admission Application - Session 2026-27
+</div>
+```
 
 </div>
 
+<!-- ===================================================== -->
+
+<!-- PRINT RECEIPT -->
+
+<!-- ===================================================== -->
+
+<div id="printReceipt" class="print-area">
+
+```
+<div class="receipt-box">
+
+    <div class="print-header">
+
+        <img src="logo.png" alt="School Logo">
+
+        <h1>Rainbow Public School</h1>
+
+        <h2>Conducted by Shubhi Education Foundation</h2>
+
+    </div>
+
+    <div class="print-title">
+        ONLINE ADMISSION FEE RECEIPT
+    </div>
+
+    <table class="print-table">
+
+        <tr>
+            <td>Receipt No.</td>
+            <td id="prReceiptNo"></td>
+        </tr>
+
+        <tr>
+            <td>Date</td>
+            <td id="prDate"></td>
+        </tr>
+
+        <tr>
+            <td>Application No.</td>
+            <td id="prApplicationNo"></td>
+        </tr>
+
+        <tr>
+            <td>Student Name</td>
+            <td id="prStudentName"></td>
+        </tr>
+
+        <tr>
+            <td>Class</td>
+            <td id="prClass"></td>
+        </tr>
+
+        <tr>
+            <td>Session</td>
+            <td id="prSession"></td>
+        </tr>
+
+        <tr>
+            <td>Fee Type</td>
+            <td>Online Admission Application Fee</td>
+        </tr>
+
+        <tr>
+            <td>Payment Mode</td>
+            <td>Online / Razorpay</td>
+        </tr>
+
+        <tr>
+            <td>Payment ID</td>
+            <td id="prPaymentId"></td>
+        </tr>
+
+        <tr>
+            <td>Payment Status</td>
+            <td>PAID</td>
+        </tr>
+
+    </table>
+
+    <div class="receipt-amount">
+        Amount Paid: ₹10
+    </div>
+
+    <p style="text-align:center;font-size:12px;">
+        This is a computer generated receipt and does not require a stamp.
+    </p>
+
+    <div class="signature-row">
+
+        <div>
+            Parent / Guardian
+        </div>
+
+        <div>
+            Authorized Signatory
+        </div>
+
+    </div>
 
 </div>
-
-
-</div>
-
-
-<div class="footer">
-
-Rainbow Public School |
-Conducted by Shubhi Education Foundation
+```
 
 </div>
-
 
 <script>
 
-
-/* =========================================================
-   SUPABASE
-========================================================= */
+/* =====================================================
+   CONFIGURATION
+===================================================== */
 
 const SUPABASE_URL =
-"https://kqahcvaoxnmxfcgyyync.supabase.co";
-
+    "https://kqahcvaoxnmxfcgyyync.supabase.co";
 
 const SUPABASE_KEY =
-"sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl";
-
-
-const client =
-window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
-
-/* =========================================================
-   SETTINGS
-========================================================= */
-
-const APPLICATION_FEE = 10;
-
+    "sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl";
 
 const RAZORPAY_KEY =
-"rzp_test_Siqao4x4VAkl63";
+    "rzp_test_Siqao4x4VAkl63";
+
+const APPLICATION_FEE = 10;
+const SESSION = "2026-27";
+
+const client =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
 
-/* =========================================================
-   GLOBAL
-========================================================= */
-
-let currentApplication = null;
+/* =====================================================
+   GLOBAL VARIABLES
+===================================================== */
 
 let selectedPhotoFile = null;
 
+let lastApplicationNo = "";
+let lastReceiptNo = "";
+let lastPaymentId = "";
+let lastPhotoUrl = "";
 
-/* =========================================================
-   HOME
-========================================================= */
+let currentApplication = null;
 
-function goHome(){
 
-    window.location.href =
-        "index.html";
+/* =====================================================
+   HELPER
+===================================================== */
 
+function el(id){
+    return document.getElementById(id);
 }
 
 
-/* =========================================================
+function value(id){
+    return el(id)?.value?.trim() || "";
+}
+
+
+function formatDateIndian(dateValue){
+
+    if(!dateValue) return "";
+
+    const d = new Date(dateValue);
+
+    if(isNaN(d.getTime())) return dateValue;
+
+    const day = String(d.getDate()).padStart(2,"0");
+    const month = String(d.getMonth()+1).padStart(2,"0");
+    const year = d.getFullYear();
+
+    return `${day}/${month}/${year}`;
+}
+
+
+function todayIndian(){
+
+    const d = new Date();
+
+    const day = String(d.getDate()).padStart(2,"0");
+    const month = String(d.getMonth()+1).padStart(2,"0");
+    const year = d.getFullYear();
+
+    return `${day}/${month}/${year}`;
+}
+
+
+function showMessage(message,type="error"){
+
+    const box = el("message");
+
+    box.className = "message " + type;
+    box.innerHTML = message;
+    box.style.display = "block";
+
+    window.scrollTo({
+        top:box.offsetTop - 50,
+        behavior:"smooth"
+    });
+}
+
+
+function hideMessage(){
+
+    el("message").style.display = "none";
+}
+
+
+function setLoading(show){
+
+    el("loader").style.display =
+        show ? "block" : "none";
+}
+
+
+/* =====================================================
    AGE
-========================================================= */
+===================================================== */
 
 function calculateAge(){
 
-    const dobValue =
-        document.getElementById(
-            "dob"
-        ).value;
+    const dob = value("dob");
 
-
-    if(!dobValue){
-
-        document.getElementById(
-            "age"
-        ).value = "";
-
+    if(!dob){
+        el("age").value = "";
         return;
-
     }
 
-
-    const dob =
-        new Date(dobValue);
-
-
-    const today =
-        new Date();
-
+    const birth = new Date(dob);
+    const today = new Date();
 
     let years =
         today.getFullYear() -
-        dob.getFullYear();
-
+        birth.getFullYear();
 
     let months =
         today.getMonth() -
-        dob.getMonth();
-
+        birth.getMonth();
 
     if(
         months < 0 ||
         (
             months === 0 &&
-            today.getDate() < dob.getDate()
+            today.getDate() < birth.getDate()
         )
     ){
-
         years--;
-
     }
 
+    if(years < 0){
+        el("age").value = "";
+        return;
+    }
 
-    document.getElementById(
-        "age"
-    ).value =
+    el("age").value =
         years + " Years";
-
 }
 
 
-/* =========================================================
+/* =====================================================
    PHOTO PREVIEW
-========================================================= */
+===================================================== */
 
 function previewPhoto(event){
 
     const file =
         event.target.files[0];
 
+    selectedPhotoFile = null;
 
     if(!file){
 
-        selectedPhotoFile =
-            null;
-
+        el("photoPreview").style.display = "none";
         return;
-
     }
 
+    if(!file.type.startsWith("image/")){
 
-    selectedPhotoFile =
-        file;
+        event.target.value = "";
 
+        showMessage(
+            "Please select a valid image file.",
+            "error"
+        );
 
-    const reader =
-        new FileReader();
+        return;
+    }
 
+    if(file.size > 2 * 1024 * 1024){
 
-    reader.onload =
-        function(e){
+        event.target.value = "";
 
-            const img =
-                document.getElementById(
-                    "photoPreview"
-                );
+        showMessage(
+            "Student photo must be maximum 2 MB.",
+            "error"
+        );
 
+        return;
+    }
 
-            img.src =
-                e.target.result;
+    selectedPhotoFile = file;
 
+    const reader = new FileReader();
 
-            img.style.display =
-                "block";
+    reader.onload = function(e){
 
+        el("photoPreview").src =
+            e.target.result;
 
-            const confirmImg =
-                document.getElementById(
-                    "confirmPhoto"
-                );
-
-
-            confirmImg.src =
-                e.target.result;
-
-
-            confirmImg.style.display =
-                "inline-block";
-
-        };
-
-
-    reader.readAsDataURL(
-        file
-    );
-
-}
-
-
-/* =========================================================
-   DATE
-========================================================= */
-
-function formatDateIndian(
-    dateString
-){
-
-    if(!dateString)
-        return "";
-
-
-    const parts =
-        dateString.split("-");
-
-
-    if(parts.length !== 3)
-        return dateString;
-
-
-    return (
-        parts[2] +
-        "/" +
-        parts[1] +
-        "/" +
-        parts[0]
-    );
-
-}
-
-
-/* =========================================================
-   FORM DATA
-========================================================= */
-
-function getFormData(){
-
-    return {
-
-        session:
-            document.getElementById(
-                "session"
-            ).value,
-
-        className:
-            document.getElementById(
-                "className"
-            ).value,
-
-        previousSchool:
-            document.getElementById(
-                "previousSchool"
-            ).value.trim(),
-
-        previousClass:
-            document.getElementById(
-                "previousClass"
-            ).value.trim(),
-
-        studentName:
-            document.getElementById(
-                "studentName"
-            ).value.trim(),
-
-        dob:
-            document.getElementById(
-                "dob"
-            ).value,
-
-        age:
-            document.getElementById(
-                "age"
-            ).value,
-
-        gender:
-            document.getElementById(
-                "gender"
-            ).value,
-
-        blood:
-            document.getElementById(
-                "blood"
-            ).value,
-
-        aadhaar:
-            document.getElementById(
-                "aadhaar"
-            ).value.trim(),
-
-        pen:
-            document.getElementById(
-                "pen"
-            ).value.trim(),
-
-        apaar:
-            document.getElementById(
-                "apaar"
-            ).value.trim(),
-
-        udise:
-            document.getElementById(
-                "udise"
-            ).value.trim(),
-
-        fatherName:
-            document.getElementById(
-                "fatherName"
-            ).value.trim(),
-
-        fatherMobile:
-            document.getElementById(
-                "fatherMobile"
-            ).value.trim(),
-
-        fatherOccupation:
-            document.getElementById(
-                "fatherOccupation"
-            ).value.trim(),
-
-        fatherQualification:
-            document.getElementById(
-                "fatherQualification"
-            ).value.trim(),
-
-        motherName:
-            document.getElementById(
-                "motherName"
-            ).value.trim(),
-
-        motherMobile:
-            document.getElementById(
-                "motherMobile"
-            ).value.trim(),
-
-        motherOccupation:
-            document.getElementById(
-                "motherOccupation"
-            ).value.trim(),
-
-        motherQualification:
-            document.getElementById(
-                "motherQualification"
-            ).value.trim(),
-
-        guardianName:
-            document.getElementById(
-                "guardianName"
-            ).value.trim(),
-
-        guardianRelation:
-            document.getElementById(
-                "guardianRelation"
-            ).value.trim(),
-
-        guardianMobile:
-            document.getElementById(
-                "guardianMobile"
-            ).value.trim(),
-
-        guardianOccupation:
-            document.getElementById(
-                "guardianOccupation"
-            ).value.trim(),
-
-        mobile:
-            document.getElementById(
-                "mobile"
-            ).value.trim(),
-
-        email:
-            document.getElementById(
-                "email"
-            ).value.trim(),
-
-        address:
-            document.getElementById(
-                "address"
-            ).value.trim(),
-
-        city:
-            document.getElementById(
-                "city"
-            ).value.trim(),
-
-        state:
-            document.getElementById(
-                "state"
-            ).value.trim(),
-
-        pincode:
-            document.getElementById(
-                "pincode"
-            ).value.trim(),
-
-        transport:
-            document.getElementById(
-                "transport"
-            ).value,
-
-        busRoute:
-            document.getElementById(
-                "busRoute"
-            ).value.trim(),
-
-        emergencyName:
-            document.getElementById(
-                "emergencyName"
-            ).value.trim(),
-
-        emergencyMobile:
-            document.getElementById(
-                "emergencyMobile"
-            ).value.trim(),
-
-        emergencyRelation:
-            document.getElementById(
-                "emergencyRelation"
-            ).value.trim(),
-
-        medicalInfo:
-            document.getElementById(
-                "medicalInfo"
-            ).value.trim(),
-
-        remarks:
-            document.getElementById(
-                "remarks"
-            ).value.trim()
-
+        el("photoPreview").style.display =
+            "block";
     };
 
+    reader.readAsDataURL(file);
 }
 
 
-/* =========================================================
+/* =====================================================
+   TRANSPORT
+===================================================== */
+
+function toggleBusRoute(){
+
+    if(value("transportRequired") === "Yes"){
+
+        el("busRouteBox").style.display = "flex";
+
+    }else{
+
+        el("busRouteBox").style.display = "flex";
+        el("busRoute").value = "";
+    }
+}
+
+
+/* =====================================================
    VALIDATION
-========================================================= */
+===================================================== */
 
 function validateForm(){
 
-    const data =
-        getFormData();
+    hideMessage();
+
+    const required = [
+        ["className","Please select the class."],
+        ["studentName","Please enter student name."],
+        ["dob","Please enter date of birth."],
+        ["gender","Please select gender."],
+        ["fatherName","Please enter father's name."],
+        ["fatherMobile","Please enter father's mobile number."],
+        ["motherName","Please enter mother's name."],
+        ["mobile","Please enter primary mobile number."],
+        ["address","Please enter address."]
+    ];
+
+    for(const item of required){
+
+        if(!value(item[0])){
+
+            showMessage(item[1],"error");
+
+            el(item[0]).focus();
+
+            return false;
+        }
+    }
 
 
-    const message =
-        document.getElementById(
-            "formMessage"
+    const mobile =
+        value("mobile");
+
+    if(!/^[0-9]{10}$/.test(mobile)){
+
+        showMessage(
+            "Please enter a valid 10 digit primary mobile number.",
+            "error"
         );
 
-
-    message.textContent = "";
-
-
-    if(!data.studentName){
-
-        message.textContent =
-            "Please enter Student Name.";
+        el("mobile").focus();
 
         return false;
-
     }
 
 
-    if(!data.dob){
+    const fatherMobile =
+        value("fatherMobile");
 
-        message.textContent =
-            "Please select Date of Birth.";
+    if(!/^[0-9]{10}$/.test(fatherMobile)){
+
+        showMessage(
+            "Please enter a valid 10 digit father's mobile number.",
+            "error"
+        );
+
+        el("fatherMobile").focus();
 
         return false;
-
     }
 
 
-    if(!data.gender){
+    const motherMobile =
+        value("motherMobile");
 
-        message.textContent =
-            "Please select Gender.";
+    if(
+        motherMobile &&
+        !/^[0-9]{10}$/.test(motherMobile)
+    ){
+
+        showMessage(
+            "Please enter a valid 10 digit mother's mobile number.",
+            "error"
+        );
+
+        el("motherMobile").focus();
 
         return false;
-
     }
 
 
-    if(!data.className){
+    const guardianMobile =
+        value("guardianMobile");
 
-        message.textContent =
-            "Please select Class.";
+    if(
+        guardianMobile &&
+        !/^[0-9]{10}$/.test(guardianMobile)
+    ){
+
+        showMessage(
+            "Please enter a valid 10 digit guardian mobile number.",
+            "error"
+        );
+
+        el("guardianMobile").focus();
 
         return false;
-
     }
 
 
-    if(!data.fatherName){
+    const emergencyNumber =
+        value("emergencyNumber");
 
-        message.textContent =
-            "Please enter Father's Name.";
+    if(
+        emergencyNumber &&
+        !/^[0-9]{10}$/.test(emergencyNumber)
+    ){
+
+        showMessage(
+            "Please enter a valid 10 digit emergency number.",
+            "error"
+        );
+
+        el("emergencyNumber").focus();
 
         return false;
-
     }
 
 
-    if(!data.motherName){
+    const aadhaar =
+        value("aadhaar");
 
-        message.textContent =
-            "Please enter Mother's Name.";
+    if(
+        aadhaar &&
+        !/^[0-9]{12}$/.test(aadhaar)
+    ){
+
+        showMessage(
+            "Aadhaar number must contain 12 digits.",
+            "error"
+        );
+
+        el("aadhaar").focus();
 
         return false;
-
     }
 
 
-    if(!data.mobile){
+    const pincode =
+        value("pincode");
 
-        message.textContent =
-            "Please enter Mobile Number.";
+    if(
+        pincode &&
+        !/^[0-9]{6}$/.test(pincode)
+    ){
+
+        showMessage(
+            "PIN code must contain 6 digits.",
+            "error"
+        );
+
+        el("pincode").focus();
 
         return false;
-
     }
 
 
-    if(!/^[0-9]{10}$/.test(
-        data.mobile
-    )){
+    if(!el("declaration").checked){
 
-        message.textContent =
-            "Please enter valid 10 digit Mobile Number.";
-
-        return false;
-
-    }
-
-
-    if(!data.address){
-
-        message.textContent =
-            "Please enter Complete Address.";
+        showMessage(
+            "Please accept the declaration before continuing.",
+            "error"
+        );
 
         return false;
-
     }
-
-
-    if(!document.getElementById(
-        "declaration"
-    ).checked){
-
-        message.textContent =
-            "Please accept the declaration.";
-
-        return false;
-
-    }
-
 
     return true;
-
 }
 
 
-/* =========================================================
+/* =====================================================
+   BUILD APPLICATION OBJECT
+===================================================== */
+
+function collectApplication(){
+
+    return {
+
+        session:value("session") || SESSION,
+
+        class_name:value("className"),
+
+        previous_school:value("previousSchool"),
+
+        previous_class:value("previousClass"),
+
+        student_name:value("studentName"),
+
+        dob:value("dob"),
+
+        age:value("age"),
+
+        gender:value("gender"),
+
+        blood_group:value("bloodGroup"),
+
+        aadhaar:value("aadhaar"),
+
+        pen:value("pen"),
+
+        apaar:value("apaar"),
+
+        udise:value("udise"),
+
+        father_name:value("fatherName"),
+
+        father_mobile:value("fatherMobile"),
+
+        father_occupation:value("fatherOccupation"),
+
+        father_qualification:value("fatherQualification"),
+
+        mother_name:value("motherName"),
+
+        mother_mobile:value("motherMobile"),
+
+        mother_occupation:value("motherOccupation"),
+
+        mother_qualification:value("motherQualification"),
+
+        guardian_name:value("guardianName"),
+
+        guardian_relationship:value("guardianRelationship"),
+
+        guardian_mobile:value("guardianMobile"),
+
+        guardian_occupation:value("guardianOccupation"),
+
+        mobile:value("mobile"),
+
+        email:value("email"),
+
+        address:value("address"),
+
+        city:value("city"),
+
+        state:value("state"),
+
+        pincode:value("pincode"),
+
+        transport:value("transportRequired"),
+
+        bus_route:value("busRoute"),
+
+        emergency_name:value("emergencyName"),
+
+        emergency_number:value("emergencyNumber"),
+
+        emergency_relationship:value("emergencyRelationship"),
+
+        medical_info:value("medicalInfo"),
+
+        remarks:value("remarks")
+    };
+}
+
+
+/* =====================================================
    PREVIEW
-========================================================= */
+===================================================== */
 
 function showPreview(){
 
-    if(!validateForm())
-        return;
-
-
-    const data =
-        getFormData();
-
+    if(!validateForm()) return;
 
     currentApplication =
-        data;
+        collectApplication();
 
+    const a =
+        currentApplication;
 
-    document.getElementById(
-        "formBox"
-    ).style.display =
+    const rows = [
+
+        ["Session",a.session],
+        ["Class",a.class_name],
+        ["Student Name",a.student_name],
+        ["Date of Birth",formatDateIndian(a.dob)],
+        ["Age",a.age],
+        ["Gender",a.gender],
+        ["Blood Group",a.blood_group],
+        ["Aadhaar",a.aadhaar],
+        ["PEN",a.pen],
+        ["APAAR",a.apaar],
+        ["UDISE",a.udise],
+        ["Father's Name",a.father_name],
+        ["Father's Mobile",a.father_mobile],
+        ["Mother's Name",a.mother_name],
+        ["Mother's Mobile",a.mother_mobile],
+        ["Guardian",a.guardian_name],
+        ["Guardian Mobile",a.guardian_mobile],
+        ["Primary Mobile",a.mobile],
+        ["Email",a.email],
+        ["Address",a.address],
+        ["City",a.city],
+        ["State",a.state],
+        ["PIN Code",a.pincode],
+        ["Transport",a.transport],
+        ["Bus Route",a.bus_route],
+        ["Emergency Contact",a.emergency_name + (a.emergency_number ? " - " + a.emergency_number : "")],
+        ["Previous School",a.previous_school],
+        ["Previous Class",a.previous_class]
+    ];
+
+    let html =
+        '<table class="preview-table">';
+
+    rows.forEach(row=>{
+
+        html +=
+            `<tr>
+                <td>${escapeHtml(row[0])}</td>
+                <td>${escapeHtml(row[1] || "-")}</td>
+            </tr>`;
+    });
+
+    html +=
+        "</table>";
+
+    html +=
+        `<div style="margin-top:15px;background:#eef5ff;padding:15px;border-radius:8px;">
+            <b>Application Fee: ₹10</b>
+        </div>`;
+
+    el("previewContent").innerHTML =
+        html;
+
+    el("formBox").style.display =
         "none";
 
-
-    document.getElementById(
-        "previewBox"
-    ).style.display =
+    el("previewBox").style.display =
         "block";
-
-
-    document.getElementById(
-        "previewStudentName"
-    ).textContent =
-        data.studentName;
-
-
-    document.getElementById(
-        "pClass"
-    ).textContent =
-        data.className;
-
-
-    document.getElementById(
-        "pDob"
-    ).textContent =
-        formatDateIndian(
-            data.dob
-        );
-
-
-    document.getElementById(
-        "pAge"
-    ).textContent =
-        data.age;
-
-
-    document.getElementById(
-        "pGender"
-    ).textContent =
-        data.gender;
-
-
-    document.getElementById(
-        "pBlood"
-    ).textContent =
-        data.blood || "-";
-
-
-    document.getElementById(
-        "pAadhaar"
-    ).textContent =
-        data.aadhaar || "-";
-
-
-    document.getElementById(
-        "pPen"
-    ).textContent =
-        data.pen || "-";
-
-
-    document.getElementById(
-        "pApaar"
-    ).textContent =
-        data.apaar || "-";
-
-
-    document.getElementById(
-        "pUdise"
-    ).textContent =
-        data.udise || "-";
-
-
-    document.getElementById(
-        "pFather"
-    ).textContent =
-        data.fatherName;
-
-
-    document.getElementById(
-        "pFatherMobile"
-    ).textContent =
-        data.fatherMobile || "-";
-
-
-    document.getElementById(
-        "pMother"
-    ).textContent =
-        data.motherName;
-
-
-    document.getElementById(
-        "pMotherMobile"
-    ).textContent =
-        data.motherMobile || "-";
-
-
-    document.getElementById(
-        "pGuardian"
-    ).textContent =
-        data.guardianName
-        ? data.guardianName +
-          " (" +
-          (data.guardianRelation || "-") +
-          ")"
-        : "-";
-
-
-    document.getElementById(
-        "pMobile"
-    ).textContent =
-        data.mobile;
-
-
-    document.getElementById(
-        "pEmail"
-    ).textContent =
-        data.email || "-";
-
-
-    document.getElementById(
-        "pAddress"
-    ).textContent =
-        data.address;
-
-
-    document.getElementById(
-        "pCity"
-    ).textContent =
-        data.city || "-";
-
-
-    document.getElementById(
-        "pState"
-    ).textContent =
-        data.state || "-";
-
-
-    document.getElementById(
-        "pPincode"
-    ).textContent =
-        data.pincode || "-";
-
-
-    document.getElementById(
-        "pTransport"
-    ).textContent =
-        data.transport || "-";
-
-
-    document.getElementById(
-        "pBus"
-    ).textContent =
-        data.busRoute || "-";
-
-
-    document.getElementById(
-        "pEmergency"
-    ).textContent =
-        data.emergencyName
-        ? data.emergencyName +
-          " / " +
-          (data.emergencyMobile || "-") +
-          " / " +
-          (data.emergencyRelation || "-")
-        : "-";
-
-
-    document.getElementById(
-        "pPreviousSchool"
-    ).textContent =
-        data.previousSchool || "-";
-
-
-    document.getElementById(
-        "pPreviousClass"
-    ).textContent =
-        data.previousClass || "-";
-
-
-    document.getElementById(
-        "pMedical"
-    ).textContent =
-        data.medicalInfo || "-";
-
-
-    document.getElementById(
-        "pRemarks"
-    ).textContent =
-        data.remarks || "-";
-
-}
-
-
-/* =========================================================
-   EDIT
-========================================================= */
-
-function editApplication(){
-
-    document.getElementById(
-        "previewBox"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "formBox"
-    ).style.display =
-        "block";
-
 
     window.scrollTo({
         top:0,
         behavior:"smooth"
     });
-
 }
 
 
-/* =========================================================
+function escapeHtml(text){
+
+    return String(text ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+
+function backToForm(){
+
+    el("previewBox").style.display =
+        "none";
+
+    el("formBox").style.display =
+        "block";
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+}
+
+
+/* =====================================================
    APPLICATION NUMBER
-========================================================= */
+===================================================== */
 
-function generateApplicationNo(){
+async function generateApplicationNo(){
 
-    const random =
-        Math.floor(
-            10000 +
-            Math.random() *
-            90000
-        );
+    for(let i=0;i<10;i++){
 
+        const random =
+            Math.floor(10000 + Math.random()*90000);
 
-    return "RPS-2026-" + random;
+        const applicationNo =
+            "RPS-2026-" + random;
 
+        const {data,error} =
+            await client
+                .from("online_admissions")
+                .select("id")
+                .eq("application_no",applicationNo)
+                .limit(1);
+
+        if(error){
+
+            console.warn(
+                "Application number check:",
+                error
+            );
+        }
+
+        if(!data || data.length === 0){
+
+            return applicationNo;
+        }
+    }
+
+    return "RPS-2026-" + Date.now().toString().slice(-8);
 }
 
 
-/* =========================================================
-   UPLOAD PHOTO
-========================================================= */
+/* =====================================================
+   PHOTO UPLOAD
+===================================================== */
 
-async function uploadPhoto(
-    applicationNo
-){
+async function uploadPhoto(applicationNo){
 
     if(!selectedPhotoFile){
 
-        console.log(
-            "No student photo selected."
-        );
-
-        return null;
-
+        return "";
     }
-
 
     try{
 
-        const extension =
-            selectedPhotoFile.name
-                .split(".")
-                .pop()
-                .toLowerCase();
+        const originalName =
+            selectedPhotoFile.name || "";
 
+        const parts =
+            originalName.split(".");
 
-        const safeExtension =
-            [
-                "jpg",
-                "jpeg",
-                "png",
-                "webp"
-            ].includes(extension)
-            ? extension
-            : "jpg";
+        let ext =
+            parts.length > 1
+                ? parts.pop().toLowerCase()
+                : "jpg";
 
+        if(ext === "jpeg"){
+            ext = "jpg";
+        }
 
         const filePath =
             "online/" +
             applicationNo +
+            "_" +
+            Date.now() +
             "." +
-            safeExtension;
+            ext;
 
 
         console.log(
-            "Uploading student photo:",
+            "Uploading photo:",
             filePath
         );
 
 
-        const result =
-            await client
-                .storage
-                .from(
-                    "admission-photos"
-                )
+        const {data,error} =
+            await client.storage
+                .from("admission-photos")
                 .upload(
                     filePath,
                     selectedPhotoFile,
                     {
-                        upsert:true,
+                        upsert:false,
                         contentType:
                             selectedPhotoFile.type ||
-                            "image/jpeg",
-                        cacheControl:"3600"
+                            "image/jpeg"
                     }
                 );
 
 
-        if(result.error){
+        if(error){
 
             console.error(
                 "PHOTO UPLOAD ERROR:",
-                result.error
+                error
             );
-
 
             throw new Error(
                 "Student photo upload failed: " +
-                result.error.message
+                error.message
             );
-
         }
 
 
         const publicData =
-            client
-                .storage
-                .from(
-                    "admission-photos"
-                )
-                .getPublicUrl(
-                    filePath
-                );
+            client.storage
+                .from("admission-photos")
+                .getPublicUrl(filePath);
 
 
-        const photoUrl =
-            publicData.data.publicUrl;
+        const publicUrl =
+            publicData?.data?.publicUrl || "";
+
+
+        if(!publicUrl){
+
+            throw new Error(
+                "Photo uploaded but public photo URL could not be generated."
+            );
+        }
 
 
         console.log(
-            "Student Photo URL:",
-            photoUrl
+            "Photo uploaded successfully:",
+            publicUrl
         );
 
 
-        return photoUrl;
-
+        return publicUrl;
 
     }catch(error){
 
@@ -3082,780 +2103,496 @@ async function uploadPhoto(
             error
         );
 
-
         throw error;
-
     }
-
 }
 
 
-/* =========================================================
-   EMERGENCY
-========================================================= */
-
-function buildEmergency(data){
-
-    const parts = [];
-
-
-    if(data.emergencyName)
-        parts.push(
-            "Name: " +
-            data.emergencyName
-        );
-
-
-    if(data.emergencyMobile)
-        parts.push(
-            "Mobile: " +
-            data.emergencyMobile
-        );
-
-
-    if(data.emergencyRelation)
-        parts.push(
-            "Relation: " +
-            data.emergencyRelation
-        );
-
-
-    return parts.join(
-        " | "
-    );
-
-}
-
-
-/* =========================================================
-   REMARKS
-========================================================= */
-
-function buildRemarks(data){
-
-    const parts = [];
-
-
-    if(data.previousSchool)
-        parts.push(
-            "Previous School: " +
-            data.previousSchool
-        );
-
-
-    if(data.previousClass)
-        parts.push(
-            "Previous Class: " +
-            data.previousClass
-        );
-
-
-    if(data.fatherOccupation)
-        parts.push(
-            "Father Occupation: " +
-            data.fatherOccupation
-        );
-
-
-    if(data.fatherQualification)
-        parts.push(
-            "Father Qualification: " +
-            data.fatherQualification
-        );
-
-
-    if(data.motherOccupation)
-        parts.push(
-            "Mother Occupation: " +
-            data.motherOccupation
-        );
-
-
-    if(data.motherQualification)
-        parts.push(
-            "Mother Qualification: " +
-            data.motherQualification
-        );
-
-
-    if(data.guardianName)
-        parts.push(
-            "Guardian: " +
-            data.guardianName
-        );
-
-
-    if(data.guardianRelation)
-        parts.push(
-            "Guardian Relation: " +
-            data.guardianRelation
-        );
-
-
-    if(data.guardianMobile)
-        parts.push(
-            "Guardian Mobile: " +
-            data.guardianMobile
-        );
-
-
-    if(data.guardianOccupation)
-        parts.push(
-            "Guardian Occupation: " +
-            data.guardianOccupation
-        );
-
-
-    if(data.medicalInfo)
-        parts.push(
-            "Medical/Special Info: " +
-            data.medicalInfo
-        );
-
-
-    if(data.remarks)
-        parts.push(
-            "Remarks: " +
-            data.remarks
-        );
-
-
-    return parts.join(
-        "\n"
-    );
-
-}
-
-
-/* =========================================================
-   EXISTING APPLICATION
-========================================================= */
-
-async function getExistingApplication(
-    applicationNo,
-    paymentId
-){
-
-    let query =
-        client
-            .from(
-                "online_admissions"
-            )
-            .select("*")
-            .limit(1);
-
-
-    if(paymentId){
-
-        query =
-            query.eq(
-                "payment_id",
-                paymentId
-            );
-
-    }else{
-
-        query =
-            query.eq(
-                "application_no",
-                applicationNo
-            );
-
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await query.maybeSingle();
-
-
-    if(error){
-
-        console.log(
-            "Existing application check:",
-            error
-        );
-
-
-        return null;
-
-    }
-
-
-    return data;
-
-}
-
-
-/* =========================================================
+/* =====================================================
    SAVE APPLICATION
-========================================================= */
+===================================================== */
 
-async function saveApplication(
-    paymentId
-){
-
-    const data =
-        currentApplication ||
-        getFormData();
-
-
-    const paymentMessage =
-        document.getElementById(
-            "paymentMessage"
-        );
-
-
-    paymentMessage.style.color =
-        "#2563eb";
-
-
-    paymentMessage.textContent =
-        "Saving application... Please wait.";
-
-
-    const applicationNo =
-        generateApplicationNo();
-
+async function saveApplication(paymentId){
 
     try{
 
+        setLoading(true);
+        hideMessage();
 
-        /* DUPLICATE */
-
-        const existing =
-            await getExistingApplication(
-                applicationNo,
-                paymentId
-            );
-
-
-        if(existing){
+        if(!currentApplication){
 
             currentApplication =
-                data;
-
-
-            showSuccess(
-                existing.application_no,
-                existing.payment_id ||
-                    paymentId,
-                existing.student_name
-            );
-
-
-            return;
-
+                collectApplication();
         }
 
-
-        /* PHOTO */
-
-        let photoUrl = null;
+        const a =
+            currentApplication;
 
 
-        try{
+        /* ---------------------------------------------
+           GENERATE APPLICATION NUMBER
+        --------------------------------------------- */
+
+        const applicationNo =
+            await generateApplicationNo();
+
+
+        lastApplicationNo =
+            applicationNo;
+
+
+        /* ---------------------------------------------
+           PHOTO UPLOAD
+        --------------------------------------------- */
+
+        let photoUrl = "";
+
+        if(selectedPhotoFile){
 
             photoUrl =
-                await uploadPhoto(
-                    applicationNo
-                );
+                await uploadPhoto(applicationNo);
 
-
-        }catch(photoError){
-
-            console.error(
-                "Photo upload error:",
-                photoError
-            );
-
-
-            photoUrl = null;
-
-
-            paymentMessage.style.color =
-                "#dc2626";
-
-
-            paymentMessage.textContent =
-                "Payment successful, but student photo upload failed. Application is being saved without photo.";
-
+            lastPhotoUrl =
+                photoUrl;
         }
 
 
-        /* ONLINE ADMISSION */
+        /* ---------------------------------------------
+           EXTRA INFORMATION
+        --------------------------------------------- */
 
-        const admissionData = {
+        const extraInformation = {
 
-            application_no:
-                applicationNo,
+            father_occupation:
+                a.father_occupation,
 
-            student_name:
-                data.studentName,
+            father_qualification:
+                a.father_qualification,
 
-            dob:
-                data.dob,
+            mother_occupation:
+                a.mother_occupation,
 
-            gender:
-                data.gender,
+            mother_qualification:
+                a.mother_qualification,
 
-            class_name:
-                data.className,
+            guardian_name:
+                a.guardian_name,
 
-            previous_school:
-                data.previousSchool ||
-                null,
+            guardian_relationship:
+                a.guardian_relationship,
 
-            previous_class:
-                data.previousClass ||
-                null,
+            guardian_mobile:
+                a.guardian_mobile,
 
-            aadhaar:
-                data.aadhaar ||
-                null,
+            guardian_occupation:
+                a.guardian_occupation,
 
-            blood_group:
-                data.blood ||
-                null,
+            state:
+                a.state,
 
-            father_name:
-                data.fatherName,
+            bus_route:
+                a.bus_route,
 
-            mother_name:
-                data.motherName,
+            emergency_name:
+                a.emergency_name,
 
-            mobile:
-                data.mobile,
+            emergency_number:
+                a.emergency_number,
 
-            email:
-                data.email ||
-                null,
+            emergency_relationship:
+                a.emergency_relationship,
 
-            address:
-                data.address,
-
-            city:
-                data.city ||
-                null,
-
-            pincode:
-                data.pincode ||
-                null,
-
-            transport:
-                data.transport ||
-                null,
-
-            emergency:
-                buildEmergency(data) ||
-                null,
+            medical_info:
+                a.medical_info,
 
             remarks:
-                buildRemarks(data) ||
-                null,
-
-            photo:
-                photoUrl ||
-                null,
-
-            amount:
-                APPLICATION_FEE,
-
-            payment_id:
-                paymentId,
-
-            payment_status:
-                "success",
-
-            confirmation_status:
-                "confirmed",
-
-            submitted_at:
-                new Date().toISOString(),
-
-            created_at:
-                new Date().toISOString()
-
+                a.remarks
         };
 
 
-        const admissionResult =
+        /* ---------------------------------------------
+           ONLINE ADMISSION
+        --------------------------------------------- */
+
+        const {data:admission,error:admissionError} =
             await client
-                .from(
-                    "online_admissions"
-                )
-                .insert([
-                    admissionData
-                ])
+                .from("online_admissions")
+                .insert([{
+
+                    application_no:
+                        applicationNo,
+
+                    student_name:
+                        a.student_name,
+
+                    dob:
+                        a.dob,
+
+                    gender:
+                        a.gender,
+
+                    class_name:
+                        a.class_name,
+
+                    previous_school:
+                        a.previous_school || null,
+
+                    previous_class:
+                        a.previous_class || null,
+
+                    aadhaar:
+                        a.aadhaar || null,
+
+                    blood_group:
+                        a.blood_group || null,
+
+                    father_name:
+                        a.father_name,
+
+                    mother_name:
+                        a.mother_name,
+
+                    mobile:
+                        a.mobile,
+
+                    email:
+                        a.email || null,
+
+                    address:
+                        a.address,
+
+                    city:
+                        a.city || null,
+
+                    pincode:
+                        a.pincode || null,
+
+                    transport:
+                        a.transport || null,
+
+                    emergency:
+                        a.emergency_name ||
+                        a.emergency_number ||
+                        a.emergency_relationship
+                            ? JSON.stringify({
+                                name:a.emergency_name,
+                                number:a.emergency_number,
+                                relationship:a.emergency_relationship
+                            })
+                            : null,
+
+                    remarks:
+                        JSON.stringify(extraInformation),
+
+                    photo:
+                        photoUrl || null,
+
+                    amount:
+                        APPLICATION_FEE,
+
+                    payment_id:
+                        paymentId,
+
+                    payment_status:
+                        "paid",
+
+                    confirmation_status:
+                        "confirmed",
+
+                    submitted_at:
+                        new Date().toISOString(),
+
+                    created_at:
+                        new Date().toISOString()
+
+                }])
                 .select()
                 .single();
 
 
-        if(admissionResult.error){
+        if(admissionError){
+
+            console.error(
+                "ONLINE ADMISSION ERROR:",
+                admissionError
+            );
 
             throw new Error(
-                "Online Admission Save Failed: " +
-                admissionResult.error.message
+                "Application save failed: " +
+                admissionError.message
             );
-
         }
 
 
-        /* =================================================
+        /* ---------------------------------------------
            STUDENT MASTER
-        ================================================= */
+        --------------------------------------------- */
 
-        let student = null;
+        const admissionDate =
+            new Date()
+                .toISOString()
+                .split("T")[0];
 
 
-        const studentCheck =
+        const {data:student,error:studentError} =
             await client
                 .from("students")
-                .select("*")
-                .eq(
-                    "admission_no",
-                    applicationNo
-                )
-                .maybeSingle();
+                .insert([{
+
+                    session:
+                        a.session,
+
+                    student_status:
+                        "Active",
+
+                    admission_no:
+                        applicationNo,
+
+                    roll_no:
+                        null,
+
+                    admission_date:
+                        admissionDate,
+
+                    student_name:
+                        a.student_name,
+
+                    father_name:
+                        a.father_name,
+
+                    mother_name:
+                        a.mother_name,
+
+                    dob:
+                        a.dob,
+
+                    age:
+                        a.age || null,
+
+                    gender:
+                        a.gender,
+
+                    class_name:
+                        a.class_name,
+
+                    section:
+                        "A",
+
+                    mobile:
+                        a.mobile,
+
+                    aadhar:
+                        a.aadhaar || null,
+
+                    udise:
+                        a.udise || null,
+
+                    pen:
+                        a.pen || null,
+
+                    apaar:
+                        a.apaar || null,
+
+                    blood:
+                        a.blood_group || null,
+
+                    bus:
+                        a.bus_route || a.transport || null,
+
+                    address:
+                        a.address,
+
+                    photo_url:
+                        photoUrl || null,
+
+                    source:
+                        "Online Admission",
+
+                    created_at:
+                        new Date().toISOString(),
+
+                    updated_at:
+                        new Date().toISOString()
+
+                }])
+                .select()
+                .single();
 
 
-        if(studentCheck.error){
+        if(studentError){
 
-            console.log(
-                "Student check:",
-                studentCheck.error
+            console.error(
+                "STUDENT MASTER ERROR:",
+                studentError
             );
 
+            throw new Error(
+                "Student Master save failed: " +
+                studentError.message
+            );
         }
 
 
-        student =
-            studentCheck.data ||
-            null;
+        console.log(
+            "Student Master saved:",
+            student
+        );
 
 
-        if(!student){
+        /* ---------------------------------------------
+           RECEIPT NUMBER
+        --------------------------------------------- */
 
-            const studentData = {
-
-                session:
-                    data.session,
-
-                student_status:
-                    "Active",
-
-                admission_no:
-                    applicationNo,
-
-                roll_no:
-                    null,
-
-                admission_date:
-                    new Date()
-                        .toISOString()
-                        .split("T")[0],
-
-                student_name:
-                    data.studentName,
-
-                father_name:
-                    data.fatherName,
-
-                mother_name:
-                    data.motherName,
-
-                dob:
-                    data.dob,
-
-                age:
-                    data.age ||
-                    null,
-
-                gender:
-                    data.gender,
-
-                class_name:
-                    data.className,
-
-                section:
-                    null,
-
-                mobile:
-                    data.mobile,
-
-                aadhar:
-                    data.aadhaar ||
-                    null,
-
-                udise:
-                    data.udise ||
-                    null,
-
-                pen:
-                    data.pen ||
-                    null,
-
-                apaar:
-                    data.apaar ||
-                    null,
-
-                blood:
-                    data.blood ||
-                    null,
-
-                bus:
-                    data.busRoute ||
-                    null,
-
-                address:
-                    data.address,
-
-                photo_url:
-                    photoUrl ||
-                    null,
-
-                source:
-                    "Online Admission",
-
-                created_at:
-                    new Date().toISOString(),
-
-                updated_at:
-                    new Date().toISOString()
-
-            };
+        lastReceiptNo =
+            "ADM-" +
+            new Date()
+                .toISOString()
+                .slice(0,10)
+                .replace(/-/g,"") +
+            "-" +
+            Date.now()
+                .toString()
+                .slice(-6);
 
 
-            const studentResult =
-                await client
-                    .from("students")
-                    .insert([
-                        studentData
-                    ])
-                    .select()
-                    .single();
-
-
-            if(studentResult.error){
-
-                throw new Error(
-                    "Student Master Save Failed: " +
-                    studentResult.error.message
-                );
-
-            }
-
-
-            student =
-                studentResult.data;
-
-        }
-
-
-        /* =================================================
+        /* ---------------------------------------------
            FEES
-        ================================================= */
+        --------------------------------------------- */
 
-        let existingFee = null;
-
-
-        const feeCheck =
+        const {error:feeError} =
             await client
                 .from("fees")
-                .select("*")
-                .eq(
-                    "transaction_id",
-                    paymentId
-                )
-                .maybeSingle();
+                .insert([{
+
+                    receipt_no:
+                        lastReceiptNo,
+
+                    student_id:
+                        student?.id || null,
+
+                    admission_no:
+                        applicationNo,
+
+                    student_name:
+                        a.student_name,
+
+                    class_name:
+                        a.class_name,
+
+                    section:
+                        "A",
+
+                    session:
+                        a.session,
+
+                    fee_type:
+                        "Online Admission Application Fee",
+
+                    amount:
+                        APPLICATION_FEE,
+
+                    discount:
+                        0,
+
+                    paid:
+                        APPLICATION_FEE,
+
+                    balance:
+                        0,
+
+                    mode:
+                        "online",
+
+                    date:
+                        admissionDate,
+
+                    transaction_id:
+                        paymentId,
+
+                    payment_status:
+                        "paid",
+
+                    source:
+                        "Online Admission",
+
+                    created_at:
+                        new Date().toISOString()
+
+                }]);
 
 
-        if(!feeCheck.error){
+        if(feeError){
 
-            existingFee =
-                feeCheck.data ||
-                null;
-
-        }
-
-
-        if(!existingFee){
-
-            const receiptNo =
-                "ADM-" +
-                Date.now();
-
-
-            const feeData = {
-
-                receipt_no:
-                    receiptNo,
-
-                student_id:
-                    student.id,
-
-                admission_no:
-                    applicationNo,
-
-                student_name:
-                    data.studentName,
-
-                class_name:
-                    data.className,
-
-                section:
-                    null,
-
-                session:
-                    data.session,
-
-                fee_type:
-                    "Online Admission Application Fee",
-
-                amount:
-                    APPLICATION_FEE,
-
-                discount:
-                    0,
-
-                paid:
-                    APPLICATION_FEE,
-
-                balance:
-                    0,
-
-                mode:
-                    "online",
-
-                date:
-                    new Date()
-                        .toISOString()
-                        .split("T")[0],
-
-                transaction_id:
-                    paymentId,
-
-                payment_status:
-                    "success",
-
-                source:
-                    "Online Admission",
-
-                created_at:
-                    new Date().toISOString()
-
-            };
-
-
-            const feeResult =
-                await client
-                    .from("fees")
-                    .insert([
-                        feeData
-                    ])
-                    .select()
-                    .single();
-
-
-            if(feeResult.error){
-
-                throw new Error(
-                    "Fees Save Failed: " +
-                    feeResult.error.message
-                );
-
-            }
-
-        }
-
-
-        /* =================================================
-           FINANCE INCOME
-        ================================================= */
-
-        const incomeNote =
-            "Online Admission Fee | " +
-            paymentId +
-            " | " +
-            applicationNo;
-
-
-        const incomeCheck =
-            await client
-                .from("income")
-                .select("*")
-                .eq(
-                    "note",
-                    incomeNote
-                )
-                .maybeSingle();
-
-
-        if(
-            incomeCheck.error &&
-            incomeCheck.error.code !==
-            "PGRST116"
-        ){
-
-            console.log(
-                "Income check:",
-                incomeCheck.error
+            console.error(
+                "FEES ERROR:",
+                feeError
             );
 
+            throw new Error(
+                "Fee receipt save failed: " +
+                feeError.message
+            );
         }
 
 
-        if(!incomeCheck.data){
+        /* ---------------------------------------------
+           FINANCE INCOME
+           BOB MODE = EXISTING FINANCE PAGE
+        --------------------------------------------- */
 
-            const incomeData = {
+        const {error:incomeError} =
+            await client
+                .from("income")
+                .insert([{
 
-                amount:
-                    APPLICATION_FEE,
+                    amount:
+                        APPLICATION_FEE,
 
-                note:
-                    incomeNote,
+                    note:
+                        "Online Admission Fee - " +
+                        a.student_name +
+                        " - " +
+                        applicationNo +
+                        " - Payment ID: " +
+                        paymentId,
 
-                mode:
-                    "bob",
+                    mode:
+                        "bob",
 
-                created_at:
-                    new Date().toISOString()
+                    created_at:
+                        new Date().toISOString()
 
-            };
-
-
-            const incomeResult =
-                await client
-                    .from("income")
-                    .insert([
-                        incomeData
-                    ]);
+                }]);
 
 
-            if(incomeResult.error){
+        if(incomeError){
 
-                throw new Error(
-                    "Finance Income Save Failed: " +
-                    incomeResult.error.message
-                );
+            console.error(
+                "INCOME ERROR:",
+                incomeError
+            );
 
-            }
-
+            throw new Error(
+                "Finance income save failed: " +
+                incomeError.message
+            );
         }
 
 
-        /* SUCCESS */
+        lastPaymentId =
+            paymentId;
 
-        currentApplication =
-            data;
 
+        /* ---------------------------------------------
+           SUCCESS
+        --------------------------------------------- */
 
         showSuccess(
             applicationNo,
+            lastReceiptNo,
             paymentId,
-            data.studentName
+            a.student_name,
+            photoUrl
         );
 
 
@@ -3866,701 +2603,516 @@ async function saveApplication(
             error
         );
 
-
-        paymentMessage.style.color =
-            "#dc2626";
-
-
-        paymentMessage.innerHTML =
-            "❌ " +
-            error.message;
-
-
-        alert(
-            "Payment successful, but application save failed.\n\n" +
-            error.message
+        showMessage(
+            error.message ||
+            "Something went wrong while saving the application.",
+            "error"
         );
 
-    }
+        throw error;
 
+    }finally{
+
+        setLoading(false);
+    }
 }
 
 
-/* =========================================================
-   SUCCESS
-========================================================= */
+/* =====================================================
+   SHOW SUCCESS
+===================================================== */
 
 function showSuccess(
     applicationNo,
+    receiptNo,
     paymentId,
-    studentName
+    studentName,
+    photoUrl
 ){
 
-    document.getElementById(
-        "formBox"
-    ).style.display =
+    lastApplicationNo =
+        applicationNo;
+
+    lastReceiptNo =
+        receiptNo;
+
+    lastPaymentId =
+        paymentId;
+
+    lastPhotoUrl =
+        photoUrl || "";
+
+
+    el("successApplicationNo").textContent =
+        applicationNo;
+
+    el("successReceiptNo").textContent =
+        receiptNo;
+
+    el("successPaymentId").textContent =
+        paymentId;
+
+    el("successStudentName").textContent =
+        studentName;
+
+
+    el("formBox").style.display =
         "none";
 
-
-    document.getElementById(
-        "previewBox"
-    ).style.display =
+    el("previewBox").style.display =
         "none";
 
-
-    document.getElementById(
-        "successBox"
-    ).style.display =
+    el("successBox").style.display =
         "block";
 
 
-    document.getElementById(
-        "successApplicationNo"
-    ).textContent =
-        applicationNo;
-
-
-    document.getElementById(
-        "successPaymentId"
-    ).textContent =
-        paymentId;
-
-
-    document.getElementById(
-        "successStudentName"
-    ).textContent =
-        studentName;
+    preparePrintApplication();
+    preparePrintReceipt();
 
 
     window.scrollTo({
         top:0,
         behavior:"smooth"
     });
-
 }
 
 
-/* =========================================================
-   RAZORPAY
-========================================================= */
+/* =====================================================
+   PREPARE PRINT APPLICATION
+===================================================== */
 
-async function startPayment(){
+function preparePrintApplication(){
 
-    if(!validateForm())
+    const a =
+        currentApplication;
+
+    if(!a) return;
+
+
+    el("paApplicationNo").textContent =
+        lastApplicationNo;
+
+    el("paDate").textContent =
+        todayIndian();
+
+    el("paSession").textContent =
+        a.session;
+
+    el("paClass").textContent =
+        a.class_name;
+
+    el("paStudentName").textContent =
+        a.student_name;
+
+    el("paDob").textContent =
+        formatDateIndian(a.dob);
+
+    el("paAge").textContent =
+        a.age;
+
+    el("paGender").textContent =
+        a.gender;
+
+    el("paBlood").textContent =
+        a.blood_group || "-";
+
+    el("paAadhaar").textContent =
+        a.aadhaar || "-";
+
+    el("paPen").textContent =
+        a.pen || "-";
+
+    el("paApaar").textContent =
+        a.apaar || "-";
+
+    el("paUdise").textContent =
+        a.udise || "-";
+
+    el("paPreviousSchool").textContent =
+        a.previous_school || "-";
+
+    el("paPreviousClass").textContent =
+        a.previous_class || "-";
+
+    el("paFather").textContent =
+        a.father_name;
+
+    el("paFatherMobile").textContent =
+        a.father_mobile;
+
+    el("paFatherOccupation").textContent =
+        a.father_occupation || "-";
+
+    el("paFatherQualification").textContent =
+        a.father_qualification || "-";
+
+    el("paMother").textContent =
+        a.mother_name;
+
+    el("paMotherMobile").textContent =
+        a.mother_mobile || "-";
+
+    el("paMotherOccupation").textContent =
+        a.mother_occupation || "-";
+
+    el("paMotherQualification").textContent =
+        a.mother_qualification || "-";
+
+    el("paGuardian").textContent =
+        a.guardian_name || "-";
+
+    el("paGuardianRelationship").textContent =
+        a.guardian_relationship || "-";
+
+    el("paGuardianMobile").textContent =
+        a.guardian_mobile || "-";
+
+    el("paGuardianOccupation").textContent =
+        a.guardian_occupation || "-";
+
+    el("paMobile").textContent =
+        a.mobile;
+
+    el("paEmail").textContent =
+        a.email || "-";
+
+    el("paAddress").textContent =
+        a.address || "-";
+
+    el("paCity").textContent =
+        a.city || "-";
+
+    el("paState").textContent =
+        a.state || "-";
+
+    el("paPincode").textContent =
+        a.pincode || "-";
+
+    el("paTransport").textContent =
+        a.transport || "-";
+
+    el("paBusRoute").textContent =
+        a.bus_route || "-";
+
+    el("paEmergency").textContent =
+        [
+            a.emergency_name,
+            a.emergency_number,
+            a.emergency_relationship
+        ]
+        .filter(Boolean)
+        .join(" - ") || "-";
+
+    el("paPaymentId").textContent =
+        lastPaymentId;
+
+    el("paReceiptNo").textContent =
+        lastReceiptNo;
+
+    el("paMedical").textContent =
+        a.medical_info || "-";
+
+    el("paRemarks").textContent =
+        a.remarks || "-";
+
+
+    const photo =
+        el("paPhoto");
+
+    if(lastPhotoUrl){
+
+        photo.src =
+            lastPhotoUrl;
+
+        photo.style.display =
+            "block";
+
+    }else{
+
+        photo.removeAttribute("src");
+
+        photo.style.display =
+            "none";
+    }
+}
+
+
+/* =====================================================
+   PREPARE PRINT RECEIPT
+===================================================== */
+
+function preparePrintReceipt(){
+
+    const a =
+        currentApplication;
+
+    if(!a) return;
+
+
+    el("prReceiptNo").textContent =
+        lastReceiptNo;
+
+    el("prDate").textContent =
+        todayIndian();
+
+    el("prApplicationNo").textContent =
+        lastApplicationNo;
+
+    el("prStudentName").textContent =
+        a.student_name;
+
+    el("prClass").textContent =
+        a.class_name;
+
+    el("prSession").textContent =
+        a.session;
+
+    el("prPaymentId").textContent =
+        lastPaymentId;
+}
+
+
+/* =====================================================
+   PRINT APPLICATION
+===================================================== */
+
+function printApplication(){
+
+    preparePrintApplication();
+
+    document.body.classList.remove(
+        "print-receipt"
+    );
+
+    document.body.classList.add(
+        "print-application"
+    );
+
+    setTimeout(function(){
+
+        window.print();
+
+    },150);
+}
+
+
+/* =====================================================
+   PRINT RECEIPT
+===================================================== */
+
+function printReceipt(){
+
+    preparePrintReceipt();
+
+    document.body.classList.remove(
+        "print-application"
+    );
+
+    document.body.classList.add(
+        "print-receipt"
+    );
+
+    setTimeout(function(){
+
+        window.print();
+
+    },150);
+}
+
+
+/* =====================================================
+   AFTER PRINT
+===================================================== */
+
+window.addEventListener(
+    "afterprint",
+    function(){
+
+        document.body.classList.remove(
+            "print-application",
+            "print-receipt"
+        );
+    }
+);
+
+
+/* =====================================================
+   RAZORPAY PAYMENT
+===================================================== */
+
+function startPayment(){
+
+    if(!validateForm()){
+
+        backToForm();
+
         return;
+    }
 
 
-    const data =
-        getFormData();
+    if(!currentApplication){
+
+        currentApplication =
+            collectApplication();
+    }
 
 
-    currentApplication =
-        data;
+    hideMessage();
 
 
-    const payButton =
-        document.getElementById(
-            "payButton"
-        );
+    const options = {
 
+        key:
+            RAZORPAY_KEY,
 
-    const paymentMessage =
-        document.getElementById(
-            "paymentMessage"
-        );
+        amount:
+            APPLICATION_FEE * 100,
 
+        currency:
+            "INR",
 
-    payButton.disabled =
-        true;
+        name:
+            "Rainbow Public School",
 
+        description:
+            "Online Admission Application Fee",
 
-    payButton.textContent =
-        "Opening Payment...";
+        image:
+            "logo.png",
 
+        handler:
+            async function(response){
 
-    paymentMessage.style.color =
-        "#2563eb";
+                try{
 
-
-    paymentMessage.textContent =
-        "Please wait... Razorpay is opening.";
-
-
-    try{
-
-        const options = {
-
-            key:
-                RAZORPAY_KEY,
-
-            amount:
-                Math.round(
-                    APPLICATION_FEE *
-                    100
-                ),
-
-            currency:
-                "INR",
-
-            name:
-                "Rainbow Public School",
-
-            description:
-                "Online Admission Application Fee",
-
-            image:
-                "logo.png",
-
-            prefill:{
-
-                name:
-                    data.studentName,
-
-                email:
-                    data.email,
-
-                contact:
-                    data.mobile
-
-            },
-
-            notes:{
-
-                student_name:
-                    data.studentName,
-
-                class_name:
-                    data.className,
-
-                session:
-                    data.session
-
-            },
-
-            theme:{
-
-                color:
-                    "#2563eb"
-
-            },
-
-            handler:
-                async function(response){
-
-                    paymentMessage.style.color =
-                        "#16a34a";
-
-
-                    paymentMessage.textContent =
-                        "Payment successful. Saving application...";
-
+                    console.log(
+                        "Razorpay success:",
+                        response
+                    );
 
                     await saveApplication(
                         response.razorpay_payment_id
                     );
 
-                },
-
-
-            modal:{
-
-                ondismiss:
-                    function(){
-
-                        payButton.disabled =
-                            false;
-
-
-                        payButton.textContent =
-                            "Confirm & Pay ₹10";
-
-
-                        paymentMessage.style.color =
-                            "#dc2626";
-
-
-                        paymentMessage.textContent =
-                            "Payment cancelled.";
-
-                    }
-
-            }
-
-        };
-
-
-        const rzp =
-            new Razorpay(
-                options
-            );
-
-
-        rzp.on(
-            "payment.failed",
-            function(response){
-
-                console.log(
-                    "Payment failed:",
-                    response
-                );
-
-
-                payButton.disabled =
-                    false;
-
-
-                payButton.textContent =
-                    "Confirm & Pay ₹10";
-
-
-                paymentMessage.style.color =
-                    "#dc2626";
-
-
-                paymentMessage.textContent =
-                    "Payment failed. Please try again.";
-
-            }
-        );
-
-
-        rzp.open();
-
-
-    }catch(error){
-
-        console.error(
-            "Razorpay Error:",
-            error
-        );
-
-
-        payButton.disabled =
-            false;
-
-
-        payButton.textContent =
-            "Confirm & Pay ₹10";
-
-
-        paymentMessage.style.color =
-            "#dc2626";
-
-
-        paymentMessage.textContent =
-            error.message;
-
-    }
-
-}
-
-
-/* =========================================================
-   PRINT APPLICATION + RECEIPT
-========================================================= */
-
-function printAdmissionApplication(){
-
-    const data =
-        currentApplication ||
-        getFormData();
-
-
-    const applicationNo =
-        document.getElementById(
-            "successApplicationNo"
-        ).textContent;
-
-
-    const paymentId =
-        document.getElementById(
-            "successPaymentId"
-        ).textContent;
-
-
-    document.getElementById(
-        "printApplicationNo"
-    ).textContent =
-        applicationNo || "-";
-
-
-    document.getElementById(
-        "printStudentName"
-    ).textContent =
-        data.studentName || "-";
-
-
-    document.getElementById(
-        "printStudentName2"
-    ).textContent =
-        data.studentName || "-";
-
-
-    document.getElementById(
-        "printClass"
-    ).textContent =
-        data.className || "-";
-
-
-    document.getElementById(
-        "printDob"
-    ).textContent =
-        formatDateIndian(
-            data.dob
-        ) || "-";
-
-
-    document.getElementById(
-        "printDob2"
-    ).textContent =
-        formatDateIndian(
-            data.dob
-        ) || "-";
-
-
-    document.getElementById(
-        "printAge"
-    ).textContent =
-        data.age || "-";
-
-
-    document.getElementById(
-        "printGender"
-    ).textContent =
-        data.gender || "-";
-
-
-    document.getElementById(
-        "printGender2"
-    ).textContent =
-        data.gender || "-";
-
-
-    document.getElementById(
-        "printBlood"
-    ).textContent =
-        data.blood || "-";
-
-
-    document.getElementById(
-        "printAadhaar"
-    ).textContent =
-        data.aadhaar || "-";
-
-
-    document.getElementById(
-        "printPen"
-    ).textContent =
-        data.pen || "-";
-
-
-    document.getElementById(
-        "printApaar"
-    ).textContent =
-        data.apaar || "-";
-
-
-    document.getElementById(
-        "printUdise"
-    ).textContent =
-        data.udise || "-";
-
-
-    document.getElementById(
-        "printFather"
-    ).textContent =
-        data.fatherName || "-";
-
-
-    document.getElementById(
-        "printFatherMobile"
-    ).textContent =
-        data.fatherMobile || "-";
-
-
-    document.getElementById(
-        "printMother"
-    ).textContent =
-        data.motherName || "-";
-
-
-    document.getElementById(
-        "printMotherMobile"
-    ).textContent =
-        data.motherMobile || "-";
-
-
-    document.getElementById(
-        "printMobile"
-    ).textContent =
-        data.mobile || "-";
-
-
-    document.getElementById(
-        "printEmail"
-    ).textContent =
-        data.email || "-";
-
-
-    document.getElementById(
-        "printAddress"
-    ).textContent =
-        data.address || "-";
-
-
-    document.getElementById(
-        "printCity"
-    ).textContent =
-        data.city || "-";
-
-
-    document.getElementById(
-        "printState"
-    ).textContent =
-        data.state || "-";
-
-
-    document.getElementById(
-        "printPincode"
-    ).textContent =
-        data.pincode || "-";
-
-
-    document.getElementById(
-        "printPreviousSchool"
-    ).textContent =
-        data.previousSchool || "-";
-
-
-    document.getElementById(
-        "printPreviousClass"
-    ).textContent =
-        data.previousClass || "-";
-
-
-    document.getElementById(
-        "printTransport"
-    ).textContent =
-        data.transport || "-";
-
-
-    document.getElementById(
-        "printBus"
-    ).textContent =
-        data.busRoute || "-";
-
-
-    document.getElementById(
-        "printEmergency"
-    ).textContent =
-        data.emergencyName
-        ? data.emergencyName +
-          " / " +
-          (data.emergencyMobile || "-") +
-          " / " +
-          (data.emergencyRelation || "-")
-        : "-";
-
-
-    document.getElementById(
-        "printMedical"
-    ).textContent =
-        data.medicalInfo || "-";
-
-
-    document.getElementById(
-        "printRemarks"
-    ).textContent =
-        data.remarks || "-";
-
-
-    /* PHOTO */
-
-    const printPhoto =
-        document.getElementById(
-            "printStudentPhoto"
-        );
-
-
-    if(selectedPhotoFile){
-
-        const reader =
-            new FileReader();
-
-
-        reader.onload =
-            function(e){
-
-                printPhoto.src =
-                    e.target.result;
-
-
-                printPhoto.style.display =
-                    "block";
-
-
-                preparePrintReceipt(
-                    applicationNo,
-                    paymentId,
-                    data
-                );
-
-            };
-
-
-        reader.readAsDataURL(
-            selectedPhotoFile
-        );
-
-
-    }else{
-
-        printPhoto.style.display =
-            "none";
-
-
-        preparePrintReceipt(
-            applicationNo,
-            paymentId,
-            data
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   PREPARE RECEIPT
-========================================================= */
-
-function preparePrintReceipt(
-    applicationNo,
-    paymentId,
-    data
-){
-
-    document.getElementById(
-        "printReceiptNo"
-    ).textContent =
-        "ADM-" +
-        (
-            applicationNo ||
-            ""
-        ).replace(
-            "RPS-2026-",
-            ""
-        );
-
-
-    document.getElementById(
-        "printReceiptApplicationNo"
-    ).textContent =
-        applicationNo || "-";
-
-
-    document.getElementById(
-        "printReceiptStudent"
-    ).textContent =
-        data.studentName || "-";
-
-
-    document.getElementById(
-        "printReceiptPaymentId"
-    ).textContent =
-        paymentId || "-";
-
-
-    const today =
-        new Date();
-
-
-    const indianDate =
-        String(
-            today.getDate()
-        ).padStart(2,"0") +
-        "/" +
-        String(
-            today.getMonth()+1
-        ).padStart(2,"0") +
-        "/" +
-        today.getFullYear();
-
-
-    document.getElementById(
-        "printReceiptDate"
-    ).textContent =
-        indianDate;
-
-
-    setTimeout(
-        function(){
-
-            window.print();
-
-        },
-        300
-    );
-
-}
-
-
-/* =========================================================
-   MOBILE / NUMBER CLEANUP
-========================================================= */
-
-[
-    "mobile",
-    "fatherMobile",
-    "motherMobile",
-    "guardianMobile",
-    "emergencyMobile",
-    "aadhaar",
-    "pincode"
-].forEach(
-    function(id){
-
-        const element =
-            document.getElementById(
-                id
-            );
-
-
-        if(!element)
-            return;
-
-
-        element.addEventListener(
-            "input",
-            function(){
-
-                this.value =
-                    this.value.replace(
-                        /[^0-9]/g,
-                        ""
+                }catch(error){
+
+                    console.error(
+                        "Payment save error:",
+                        error
                     );
 
+                    setLoading(false);
+
+                    showMessage(
+                        "Payment was successful, but application saving encountered an error. Payment ID: " +
+                        response.razorpay_payment_id +
+                        "<br><br>" +
+                        error.message,
+                        "error"
+                    );
+                }
+            },
+
+        prefill:{
+
+            name:
+                value("studentName"),
+
+            email:
+                value("email"),
+
+            contact:
+                value("mobile")
+        },
+
+        notes:{
+
+            session:
+                value("session") || SESSION,
+
+            class:
+                value("className")
+        },
+
+        theme:{
+
+            color:
+                "#173b72"
+        },
+
+        modal:{
+
+            ondismiss:function(){
+
+                setLoading(false);
             }
-        );
+        }
+    };
+
+
+    const rzp =
+        new Razorpay(options);
+
+
+    rzp.on(
+        "payment.failed",
+        function(response){
+
+            console.error(
+                "Razorpay payment failed:",
+                response
+            );
+
+            showMessage(
+                "Payment failed. Please try again.",
+                "error"
+            );
+
+            setLoading(false);
+        }
+    );
+
+
+    rzp.open();
+}
+
+
+/* =====================================================
+   HOME
+===================================================== */
+
+function goHome(){
+
+    window.location.href =
+        "index.html";
+}
+
+
+/* =====================================================
+   INITIALIZATION
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        toggleBusRoute();
+
+        const dob =
+            el("dob");
+
+        if(dob){
+
+            dob.max =
+                new Date()
+                    .toISOString()
+                    .split("T")[0];
+        }
 
     }
-);
-
-
-/* =========================================================
-   PAGE START
-========================================================= */
-
-console.log(
-    "Online Admission Page Loaded"
-);
-
-console.log(
-    "Razorpay Test Mode Enabled"
 );
 
 </script>
 
 </body>
 </html>
-
