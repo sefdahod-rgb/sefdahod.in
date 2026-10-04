@@ -1908,23 +1908,18 @@ async function saveApplication(
 
 
         await supabaseRequest(
-            "/rest/v1/online_admissions",
-            {
-                method:"POST",
+    "/rest/v1/online_admissions",
+    {
+        method:"POST",
 
-                headers:{
-                    "Prefer":
-                        "return=minimal"
-                },
+        headers:{
+            "Prefer":"return=representation"
+        },
 
-                body:
-                    JSON.stringify(
-                        admissionRecord
-                    )
-            }
-        );
+        body:
+            JSON.stringify(admissionRecord)
     }
-
+);
 
     /* -------------------------------------------------
        STUDENT MASTER
@@ -2000,25 +1995,19 @@ async function saveApplication(
                 studentPhotoUrl || null
         };
 
+await supabaseRequest(
+    "/rest/v1/students",
+    {
+        method:"POST",
 
-        await supabaseRequest(
-            "/rest/v1/students",
-            {
-                method:"POST",
+        headers:{
+            "Prefer":"return=representation"
+        },
 
-                headers:{
-                    "Prefer":
-                        "return=minimal"
-                },
-
-                body:
-                    JSON.stringify(
-                        studentRecord
-                    )
-            }
-        );
+        body:
+            JSON.stringify(studentRecord)
     }
-
+);
 
     /* -------------------------------------------------
        FINANCE / FEES
@@ -2065,24 +2054,18 @@ async function saveApplication(
 
 
         await supabaseRequest(
-            "/rest/v1/fees",
-            {
-                method:"POST",
+    "/rest/v1/fees",
+    {
+        method:"POST",
 
-                headers:{
-                    "Prefer":
-                        "return=minimal"
-                },
+        headers:{
+            "Prefer":"return=representation"
+        },
 
-                body:
-                    JSON.stringify(
-                        feeRecord
-                    )
-            }
-        );
+        body:
+            JSON.stringify(feeRecord)
     }
-
-
+);
     /* -------------------------------------------------
        SHOW CONFIRMATION
     ------------------------------------------------- */
@@ -2100,178 +2083,93 @@ async function saveApplication(
    START PAYMENT
 ===================================================== */
 
-function startPayment(){
+catch(error){
 
-    if(!validateForm()){
-        return;
+    console.error("SAVE ERROR:", error);
+
+    let errorMessage = "Unknown error";
+
+    if(error){
+        if(error.message){
+            errorMessage = error.message;
+        }else{
+            errorMessage = String(error);
+        }
     }
 
+    showMessage(
+        "paymentMessage",
+        `
+        <div style="
+            text-align:left;
+            line-height:1.6;
+            background:#fff3cd;
+            border:1px solid #ffe69c;
+            padding:15px;
+            border-radius:8px;
+        ">
 
-    const payButton =
-        document.getElementById("payButton");
+            <div style="
+                font-size:18px;
+                font-weight:bold;
+                color:#856404;
+                margin-bottom:10px;
+            ">
+                ⚠️ Payment Successful
+            </div>
 
+            <div style="color:#856404;">
+                Payment successful ho gaya hai,
+                lekin database mein data save karte waqt problem aayi.
+            </div>
+
+            <hr style="margin:12px 0;border:0;border-top:1px solid #e5c76b;">
+
+            <div style="
+                font-weight:bold;
+                color:#721c24;
+                margin-bottom:5px;
+            ">
+                Actual Error:
+            </div>
+
+            <div style="
+                background:white;
+                color:#721c24;
+                padding:10px;
+                border-radius:6px;
+                word-break:break-word;
+                font-family:monospace;
+                font-size:13px;
+            ">
+                ${escapeHtml(errorMessage)}
+            </div>
+
+            <div style="
+                margin-top:12px;
+                font-weight:bold;
+                color:#856404;
+            ">
+                Payment dobara mat karein.
+            </div>
+
+            <div style="
+                margin-top:5px;
+                color:#856404;
+            ">
+                Is error ka screenshot mujhe bhej dena.
+            </div>
+
+        </div>
+        `,
+        "warning"
+    );
 
     payButton.disabled = true;
 
     payButton.innerHTML =
-        '<span class="loading"></span>Processing...';
-
-
-    const applicationNo =
-        createApplicationNumber();
-
-
-    const options = {
-
-        key:
-            RAZORPAY_KEY,
-
-        amount:
-            APPLICATION_FEE * 100,
-
-        currency:
-            "INR",
-
-        name:
-            "Rainbow Public School",
-
-        description:
-            "Online Admission Application Fee",
-
-        image:
-            "logo.png",
-
-        handler:
-            async function(response){
-
-                try{
-
-                    payButton.innerHTML =
-                        '<span class="loading"></span>Saving...';
-
-
-                    await saveApplication(
-                        applicationNo,
-                        response
-                    );
-
-                }catch(error){
-
-                    console.error(
-                        "SAVE ERROR:",
-                        error
-                    );
-
-
-                    showMessage(
-                        "paymentMessage",
-                        "Payment successful hai, lekin data save mein problem aayi. Payment dobara mat karein. School office se application recovery karai ja sakti hai.",
-                        "warning"
-                    );
-
-
-                    payButton.disabled = true;
-
-                    payButton.innerHTML =
-                        "Payment Already Completed";
-                }
-            },
-
-
-        prefill:{
-
-            name:
-                document.getElementById(
-                    "father_name"
-                ).value,
-
-            email:
-                document.getElementById(
-                    "email"
-                ).value,
-
-            contact:
-                document.getElementById(
-                    "mobile"
-                ).value
-        },
-
-
-        notes:{
-
-            application_no:
-                applicationNo,
-
-            session:
-                SESSION
-        },
-
-
-        theme:{
-
-            color:"#1769aa"
-        },
-
-
-        modal:{
-
-            ondismiss:function(){
-
-                payButton.disabled = false;
-
-                payButton.innerHTML =
-                    "Pay ₹10";
-
-                showMessage(
-                    "paymentMessage",
-                    "Payment cancelled. Aap dobara try kar sakte hain.",
-                    "warning"
-                );
-            }
-        }
-    };
-
-
-    const razorpay =
-        new Razorpay(options);
-
-
-    razorpay.on(
-        "payment.failed",
-        function(response){
-
-            console.error(
-                "PAYMENT FAILED:",
-                response
-            );
-
-
-            payButton.disabled = false;
-
-            payButton.innerHTML =
-                "Pay ₹10";
-
-
-            const reason =
-                response.error &&
-                response.error.description
-                ? response.error.description
-                : "Payment failed";
-
-
-            showMessage(
-                "paymentMessage",
-                reason,
-                "error"
-            );
-        }
-    );
-
-
-    razorpay.open();
+        "Payment Already Completed";
 }
-
-
 /* =====================================================
    SHOW CONFIRMATION
 ===================================================== */
