@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Online Admission - Rainbow Public School</title>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <style>
+
 *{
     box-sizing:border-box;
     margin:0;
@@ -107,6 +110,10 @@ label{
     font-size:14px;
 }
 
+.required{
+    color:red;
+}
+
 input,
 select,
 textarea{
@@ -128,10 +135,6 @@ textarea:focus{
 textarea{
     min-height:90px;
     resize:vertical;
-}
-
-.required{
-    color:red;
 }
 
 .photo-box{
@@ -335,10 +338,13 @@ footer{
 }
 
 @keyframes spin{
-    to{transform:rotate(360deg);}
+    to{
+        transform:rotate(360deg);
+    }
 }
 
 @media(max-width:700px){
+
     .form-grid{
         grid-template-columns:1fr;
     }
@@ -366,6 +372,7 @@ footer{
 }
 
 @media print{
+
     header,
     footer,
     .no-print,
@@ -388,59 +395,135 @@ footer{
         border:none;
     }
 }
+
 </style>
+
 </head>
 
 <body>
 
 <header>
+
     <div class="header-inner">
-        <img src="logo.png" class="logo" alt="School Logo">
+
+        <img
+            src="logo.png"
+            class="logo"
+            alt="School Logo"
+        >
 
         <div>
+
             <h1>Rainbow Public School</h1>
-            <p><strong>Conducted by Shubhi Education Foundation, Dahod</strong></p>
-            <p>Shalimar Co-operative Society, Muvaliya Road, Rabdal, Dahod, Gujarat - 389151</p>
+
+            <p>
+                <strong>
+                    Conducted by Shubhi Education Foundation, Dahod
+                </strong>
+            </p>
+
+            <p>
+                Shalimar Co-operative Society, Muvaliya Road,
+                Rabdal, Dahod, Gujarat - 389151
+            </p>
+
         </div>
+
     </div>
+
 </header>
 
 
 <div class="container">
 
-    <!-- FORM -->
+
+    <!-- =================================================
+         FORM
+    ================================================== -->
+
     <div class="card" id="formCard">
 
         <h2>Online Admission Form</h2>
 
-        <div class="section-title">Student Information</div>
+
+        <div class="section-title">
+            Student Information
+        </div>
+
 
         <div class="form-grid">
 
-            <div class="form-group">
-                <label>Student Name <span class="required">*</span></label>
-                <input type="text" id="student_name">
-            </div>
 
             <div class="form-group">
-                <label>Date of Birth <span class="required">*</span></label>
-                <input type="date" id="dob">
+
+                <label>
+                    Student Name
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="student_name"
+                >
+
             </div>
 
+
             <div class="form-group">
+
+                <label>
+                    Date of Birth
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="date"
+                    id="dob"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
                 <label>Gender</label>
+
                 <select id="gender">
-                    <option value="">Select Gender</option>
-                    <option>Male</option>
-                    <option>Female</option>
-                    <option>Other</option>
+
+                    <option value="">
+                        Select Gender
+                    </option>
+
+                    <option>
+                        Male
+                    </option>
+
+                    <option>
+                        Female
+                    </option>
+
+                    <option>
+                        Other
+                    </option>
+
                 </select>
+
             </div>
 
+
             <div class="form-group">
-                <label>Class Applied For <span class="required">*</span></label>
+
+                <label>
+                    Class Applied For
+                    <span class="required">*</span>
+                </label>
+
                 <select id="class_name">
-                    <option value="">Select Class</option>
+
+                    <option value="">
+                        Select Class
+                    </option>
+
                     <option>Nursery</option>
                     <option>LKG</option>
                     <option>UKG</option>
@@ -452,28 +535,67 @@ footer{
                     <option>6th</option>
                     <option>7th</option>
                     <option>8th</option>
+
                 </select>
+
             </div>
 
-            <div class="form-group">
-                <label>Previous School</label>
-                <input type="text" id="previous_school">
-            </div>
 
             <div class="form-group">
-                <label>Previous Class</label>
-                <input type="text" id="previous_class">
+
+                <label>
+                    Previous School
+                </label>
+
+                <input
+                    type="text"
+                    id="previous_school"
+                >
+
             </div>
 
-            <div class="form-group">
-                <label>Aadhaar Number</label>
-                <input type="text" id="aadhaar" maxlength="12">
-            </div>
 
             <div class="form-group">
-                <label>Blood Group</label>
+
+                <label>
+                    Previous Class
+                </label>
+
+                <input
+                    type="text"
+                    id="previous_class"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Aadhaar Number
+                </label>
+
+                <input
+                    type="text"
+                    id="aadhaar"
+                    maxlength="12"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Blood Group
+                </label>
+
                 <select id="blood">
-                    <option value="">Select</option>
+
+                    <option value="">
+                        Select
+                    </option>
+
                     <option>A+</option>
                     <option>A-</option>
                     <option>B+</option>
@@ -482,131 +604,286 @@ footer{
                     <option>AB-</option>
                     <option>O+</option>
                     <option>O-</option>
+
                 </select>
+
             </div>
 
+
             <div class="form-group full">
-                <label>Student Photo</label>
+
+                <label>
+                    Student Photo
+                </label>
 
                 <div class="photo-box">
+
                     <div>
-                        <input type="file"
-                               id="photo"
-                               accept="image/*"
-                               onchange="previewPhoto(event)">
+
+                        <input
+                            type="file"
+                            id="photo"
+                            accept="image/*"
+                            onchange="previewPhoto(event)"
+                        >
+
                         <div class="small-note">
                             JPG/PNG photo recommended.
                         </div>
+
                     </div>
 
-                    <div class="photo-preview" id="photoPreview">
+
+                    <div
+                        class="photo-preview"
+                        id="photoPreview"
+                    >
                         Photo Preview
                     </div>
+
                 </div>
+
             </div>
 
         </div>
 
 
-        <div class="section-title">Parent / Guardian Information</div>
+        <div class="section-title">
+            Parent / Guardian Information
+        </div>
+
 
         <div class="form-grid">
 
-            <div class="form-group">
-                <label>Father's Name <span class="required">*</span></label>
-                <input type="text" id="father_name">
-            </div>
 
             <div class="form-group">
-                <label>Mother's Name <span class="required">*</span></label>
-                <input type="text" id="mother_name">
+
+                <label>
+                    Father's Name
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="father_name"
+                >
+
             </div>
 
-            <div class="form-group">
-                <label>Mobile Number <span class="required">*</span></label>
-                <input type="tel" id="mobile" maxlength="10">
-            </div>
 
             <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="email">
+
+                <label>
+                    Mother's Name
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="mother_name"
+                >
+
             </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Mobile Number
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="tel"
+                    id="mobile"
+                    maxlength="10"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                >
+
+            </div>
+
 
             <div class="form-group full">
-                <label>Address <span class="required">*</span></label>
+
+                <label>
+                    Address
+                    <span class="required">*</span>
+                </label>
+
                 <textarea id="address"></textarea>
+
             </div>
 
-            <div class="form-group">
-                <label>City</label>
-                <input type="text" id="city">
-            </div>
 
             <div class="form-group">
-                <label>Pincode</label>
-                <input type="text" id="pincode" maxlength="6">
+
+                <label>
+                    City
+                </label>
+
+                <input
+                    type="text"
+                    id="city"
+                >
+
             </div>
 
+
             <div class="form-group">
-                <label>Transport Required</label>
+
+                <label>
+                    Pincode
+                </label>
+
+                <input
+                    type="text"
+                    id="pincode"
+                    maxlength="6"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Transport Required
+                </label>
+
                 <select id="transport">
-                    <option value="No">No</option>
-                    <option value="Yes">Yes</option>
+
+                    <option value="No">
+                        No
+                    </option>
+
+                    <option value="Yes">
+                        Yes
+                    </option>
+
                 </select>
+
             </div>
 
+
             <div class="form-group">
-                <label>Emergency Contact</label>
-                <input type="tel" id="emergency" maxlength="10">
+
+                <label>
+                    Emergency Contact
+                </label>
+
+                <input
+                    type="tel"
+                    id="emergency"
+                    maxlength="10"
+                >
+
             </div>
+
 
             <div class="form-group full">
-                <label>Remarks</label>
+
+                <label>
+                    Remarks
+                </label>
+
                 <textarea id="remarks"></textarea>
+
             </div>
 
         </div>
 
 
-        <div id="formMessage" class="message"></div>
+        <div
+            id="formMessage"
+            class="message"
+        ></div>
+
 
         <div class="buttons">
-            <button class="btn-secondary" onclick="goHome()">
+
+            <button
+                class="btn-secondary"
+                onclick="goHome()"
+            >
                 Back to Home
             </button>
 
-            <button class="btn-danger" onclick="clearForm()">
+
+            <button
+                class="btn-danger"
+                onclick="clearForm()"
+            >
                 Clear Form
             </button>
 
-            <button class="btn-primary" onclick="openPreview()">
+
+            <button
+                class="btn-primary"
+                onclick="openPreview()"
+            >
                 Preview & Continue
             </button>
+
         </div>
 
     </div>
 
 
-    <!-- PREVIEW -->
-    <div class="card hidden" id="previewCard">
+    <!-- =================================================
+         PREVIEW
+    ================================================== -->
 
-        <h2>Application Preview</h2>
+    <div
+        class="card hidden"
+        id="previewCard"
+    >
+
+        <h2>
+            Application Preview
+        </h2>
 
         <p class="small-note">
-            Please check all details carefully before proceeding to payment.
+            Please check all details carefully before
+            proceeding to payment.
         </p>
+
 
         <div id="previewContent"></div>
 
-        <div id="previewMessage" class="message"></div>
+
+        <div
+            id="previewMessage"
+            class="message"
+        ></div>
+
 
         <div class="buttons no-print">
 
-            <button class="btn-secondary" onclick="editApplication()">
+            <button
+                class="btn-secondary"
+                onclick="editApplication()"
+            >
                 Edit Application
             </button>
 
-            <button class="btn-success" onclick="confirmAndProceedToPayment()">
+
+            <button
+                class="btn-success"
+                onclick="confirmAndProceedToPayment()"
+            >
                 Confirm & Proceed
             </button>
 
@@ -615,10 +892,19 @@ footer{
     </div>
 
 
-    <!-- PAYMENT -->
-    <div class="card hidden" id="paymentCard">
+    <!-- =================================================
+         PAYMENT
+    ================================================== -->
 
-        <h2>Application Fee Payment</h2>
+    <div
+        class="card hidden"
+        id="paymentCard"
+    >
+
+        <h2>
+            Application Fee Payment
+        </h2>
+
 
         <div class="payment-box">
 
@@ -626,26 +912,45 @@ footer{
                 Online Admission Application Fee
             </p>
 
-            <div class="amount">₹10</div>
+
+            <div class="amount">
+                ₹10
+            </div>
+
 
             <p>
-                Session: <strong>2026-27</strong>
+                Session:
+                <strong>2026-27</strong>
             </p>
+
 
             <p class="small-note">
-                After successful payment your application will be saved
-                automatically.
+                After successful payment your application
+                will be saved automatically.
             </p>
 
-            <div id="paymentMessage" class="message"></div>
+
+            <div
+                id="paymentMessage"
+                class="message"
+            ></div>
+
 
             <div class="buttons">
 
-                <button class="btn-secondary" onclick="backToPreview()">
+                <button
+                    class="btn-secondary"
+                    onclick="backToPreview()"
+                >
                     Back to Preview
                 </button>
 
-                <button class="btn-success" id="payButton" onclick="startPayment()">
+
+                <button
+                    class="btn-success"
+                    id="payButton"
+                    onclick="startPayment()"
+                >
                     Pay ₹10
                 </button>
 
@@ -656,63 +961,94 @@ footer{
     </div>
 
 
-    <!-- CONFIRMATION -->
-    <div class="card hidden" id="confirmationCard">
+    <!-- =================================================
+         CONFIRMATION
+    ================================================== -->
+
+    <div
+        class="card hidden"
+        id="confirmationCard"
+    >
 
         <div class="confirmation">
 
-            <div class="success-icon">✓</div>
+            <div class="success-icon">
+                ✓
+            </div>
 
-            <h2>Application Submitted Successfully</h2>
+
+            <h2>
+                Application Submitted Successfully
+            </h2>
+
 
             <p>
-                Your online admission application has been successfully
-                submitted.
+                Your online admission application has been
+                successfully submitted.
             </p>
+
 
             <div class="application-number">
 
-                <div>Application Number</div>
+                <div>
+                    Application Number
+                </div>
 
                 <strong id="confirmationApplicationNo">
                     -
                 </strong>
 
                 <div class="small-note">
-                    Please keep this number safe for future reference.
+                    Please keep this number safe for
+                    future reference.
                 </div>
 
             </div>
 
+
             <p>
                 Payment ID:
-                <strong id="confirmationPaymentId">-</strong>
+                <strong id="confirmationPaymentId">
+                    -
+                </strong>
             </p>
+
 
             <p>
                 Payment Status:
                 <strong>Success</strong>
             </p>
 
-            <div id="confirmationMessage"
-                 class="message success"
-                 style="display:block;margin-top:20px;">
-            </div>
+
+            <div
+                id="confirmationMessage"
+                class="message success"
+                style="display:block;margin-top:20px;"
+            ></div>
+
 
             <div class="buttons no-print">
 
-                <button class="btn-primary"
-                        onclick="printApplication()">
+                <button
+                    class="btn-primary"
+                    onclick="printApplication()"
+                >
                     Print Application
                 </button>
 
-                <button class="btn-success"
-                        onclick="printReceipt()">
+
+                <button
+                    class="btn-success"
+                    onclick="printReceipt()"
+                >
                     Print Payment Receipt
                 </button>
 
-                <button class="btn-secondary"
-                        onclick="location.reload()">
+
+                <button
+                    class="btn-secondary"
+                    onclick="location.reload()"
+                >
                     New Application
                 </button>
 
@@ -726,7 +1062,8 @@ footer{
 
 
 <footer>
-    © 2026 Rainbow Public School | Conducted by Shubhi Education Foundation, Dahod
+    © 2026 Rainbow Public School |
+    Conducted by Shubhi Education Foundation, Dahod
 </footer>
 
 
@@ -764,30 +1101,48 @@ async function supabaseRequest(
     options = {}
 ){
 
-    const response = await fetch(
-        SUPABASE_URL + endpoint,
-        {
-            ...options,
+    const response =
+        await fetch(
+            SUPABASE_URL + endpoint,
+            {
+                ...options,
 
-            headers:{
-                "apikey":SUPABASE_KEY,
-                "Authorization":
-                    "Bearer " + SUPABASE_KEY,
-                "Content-Type":"application/json",
-                ...(options.headers || {})
+                headers:{
+                    "apikey":
+                        SUPABASE_KEY,
+
+                    "Authorization":
+                        "Bearer " + SUPABASE_KEY,
+
+                    "Content-Type":
+                        "application/json",
+
+                    ...(options.headers || {})
+                }
             }
-        }
-    );
+        );
 
-    const text = await response.text();
+
+    const text =
+        await response.text();
+
 
     let data = null;
 
+
     try{
-        data = text ? JSON.parse(text) : null;
+
+        data =
+            text
+                ? JSON.parse(text)
+                : null;
+
     }catch(e){
+
         data = text;
+
     }
+
 
     if(!response.ok){
 
@@ -796,10 +1151,18 @@ async function supabaseRequest(
             data?.error_description ||
             data?.hint ||
             data?.error ||
-            "Supabase request failed";
+            (
+                typeof data === "string"
+                    ? data
+                    : "Supabase request failed"
+            );
 
-        throw new Error(message);
+
+        throw new Error(
+            message
+        );
     }
+
 
     return data;
 }
@@ -811,12 +1174,23 @@ async function supabaseRequest(
 
 function createApplicationNumber(){
 
-    const year = new Date().getFullYear();
+    const year =
+        new Date().getFullYear();
+
 
     const random =
-        Math.floor(10000 + Math.random() * 90000);
+        Math.floor(
+            10000 +
+            Math.random() * 90000
+        );
 
-    return "RPS-" + year + "-" + random;
+
+    return (
+        "RPS-" +
+        year +
+        "-" +
+        random
+    );
 }
 
 
@@ -824,12 +1198,16 @@ function createApplicationNumber(){
    ADMISSION NUMBER
 ===================================================== */
 
-function createAdmissionNumber(applicationNo){
+function createAdmissionNumber(
+    applicationNo
+){
 
-    return "ADM-" +
+    return (
+        "ADM-" +
         applicationNo
             .replace("RPS-","")
-            .replace(/-/g,"");
+            .replace(/-/g,"")
+    );
 }
 
 
@@ -837,12 +1215,16 @@ function createAdmissionNumber(applicationNo){
    RECEIPT NUMBER
 ===================================================== */
 
-function createReceiptNumber(applicationNo){
+function createReceiptNumber(
+    applicationNo
+){
 
-    return "REC-" +
+    return (
+        "REC-" +
         applicationNo
             .replace("RPS-","")
-            .replace(/-/g,"");
+            .replace(/-/g,"")
+    );
 }
 
 
@@ -856,22 +1238,43 @@ function formatDatePrint(value){
         return "";
     }
 
-    const date = new Date(value);
 
-    if(isNaN(date.getTime())){
+    const date =
+        new Date(value);
+
+
+    if(
+        isNaN(
+            date.getTime()
+        )
+    ){
         return value;
     }
 
+
     const day =
-        String(date.getDate()).padStart(2,"0");
+        String(
+            date.getDate()
+        ).padStart(2,"0");
+
 
     const month =
-        String(date.getMonth()+1).padStart(2,"0");
+        String(
+            date.getMonth() + 1
+        ).padStart(2,"0");
+
 
     const year =
         date.getFullYear();
 
-    return day + "/" + month + "/" + year;
+
+    return (
+        day +
+        "/" +
+        month +
+        "/" +
+        year
+    );
 }
 
 
@@ -881,17 +1284,35 @@ function formatDatePrint(value){
 
 function escapeHtml(value){
 
-    if(value === null ||
-       value === undefined){
+    if(
+        value === null ||
+        value === undefined
+    ){
         return "";
     }
 
+
     return String(value)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
 
@@ -916,18 +1337,26 @@ function showMessage(
 ){
 
     const element =
-        document.getElementById(elementId);
+        document.getElementById(
+            elementId
+        );
+
 
     if(!element){
         return;
     }
 
+
     element.className =
         "message " + type;
 
-    element.innerHTML = message;
 
-    element.style.display = "block";
+    element.innerHTML =
+        message;
+
+
+    element.style.display =
+        "block";
 }
 
 
@@ -935,13 +1364,20 @@ function showMessage(
    HIDE MESSAGE
 ===================================================== */
 
-function hideMessage(elementId){
+function hideMessage(
+    elementId
+){
 
     const element =
-        document.getElementById(elementId);
+        document.getElementById(
+            elementId
+        );
+
 
     if(element){
-        element.style.display = "none";
+
+        element.style.display =
+            "none";
     }
 }
 
@@ -955,8 +1391,12 @@ function previewPhoto(event){
     const file =
         event.target.files[0];
 
+
     const preview =
-        document.getElementById("photoPreview");
+        document.getElementById(
+            "photoPreview"
+        );
+
 
     if(!file){
 
@@ -966,26 +1406,38 @@ function previewPhoto(event){
         return;
     }
 
-    if(!file.type.startsWith("image/")){
+
+    if(
+        !file.type.startsWith(
+            "image/"
+        )
+    ){
 
         preview.innerHTML =
             "Invalid image";
 
-        event.target.value = "";
+
+        event.target.value =
+            "";
+
 
         return;
     }
 
+
     const reader =
         new FileReader();
 
-    reader.onload = function(e){
 
-        preview.innerHTML =
-            '<img src="' +
-            e.target.result +
-            '" alt="Student Photo">';
-    };
+    reader.onload =
+        function(e){
+
+            preview.innerHTML =
+                '<img src="' +
+                e.target.result +
+                '" alt="Student Photo">';
+        };
+
 
     reader.readAsDataURL(file);
 }
@@ -998,32 +1450,64 @@ function previewPhoto(event){
 function validateForm(){
 
     const studentName =
-        document.getElementById("student_name")
-            .value.trim();
+        document
+            .getElementById(
+                "student_name"
+            )
+            .value
+            .trim();
+
 
     const dob =
-        document.getElementById("dob")
+        document
+            .getElementById(
+                "dob"
+            )
             .value;
+
 
     const className =
-        document.getElementById("class_name")
+        document
+            .getElementById(
+                "class_name"
+            )
             .value;
 
+
     const fatherName =
-        document.getElementById("father_name")
-            .value.trim();
+        document
+            .getElementById(
+                "father_name"
+            )
+            .value
+            .trim();
+
 
     const motherName =
-        document.getElementById("mother_name")
-            .value.trim();
+        document
+            .getElementById(
+                "mother_name"
+            )
+            .value
+            .trim();
+
 
     const mobile =
-        document.getElementById("mobile")
-            .value.trim();
+        document
+            .getElementById(
+                "mobile"
+            )
+            .value
+            .trim();
+
 
     const address =
-        document.getElementById("address")
-            .value.trim();
+        document
+            .getElementById(
+                "address"
+            )
+            .value
+            .trim();
 
 
     if(!studentName){
@@ -1081,7 +1565,11 @@ function validateForm(){
     }
 
 
-    if(!/^[0-9]{10}$/.test(mobile)){
+    if(
+        !/^[0-9]{10}$/.test(
+            mobile
+        )
+    ){
 
         showMessage(
             "formMessage",
@@ -1103,7 +1591,10 @@ function validateForm(){
     }
 
 
-    hideMessage("formMessage");
+    hideMessage(
+        "formMessage"
+    );
+
 
     return true;
 }
@@ -1118,76 +1609,143 @@ function getFormData(){
     return {
 
         student_name:
-            document.getElementById("student_name")
-                .value.trim(),
+            document
+                .getElementById(
+                    "student_name"
+                )
+                .value
+                .trim(),
 
         dob:
-            document.getElementById("dob")
+            document
+                .getElementById(
+                    "dob"
+                )
                 .value,
 
         gender:
-            document.getElementById("gender")
+            document
+                .getElementById(
+                    "gender"
+                )
                 .value,
 
         class_name:
-            document.getElementById("class_name")
+            document
+                .getElementById(
+                    "class_name"
+                )
                 .value,
 
         previous_school:
-            document.getElementById("previous_school")
-                .value.trim(),
+            document
+                .getElementById(
+                    "previous_school"
+                )
+                .value
+                .trim(),
 
         previous_class:
-            document.getElementById("previous_class")
-                .value.trim(),
+            document
+                .getElementById(
+                    "previous_class"
+                )
+                .value
+                .trim(),
 
         aadhaar:
-            document.getElementById("aadhaar")
-                .value.trim(),
+            document
+                .getElementById(
+                    "aadhaar"
+                )
+                .value
+                .trim(),
 
         blood:
-            document.getElementById("blood")
+            document
+                .getElementById(
+                    "blood"
+                )
                 .value,
 
         father_name:
-            document.getElementById("father_name")
-                .value.trim(),
+            document
+                .getElementById(
+                    "father_name"
+                )
+                .value
+                .trim(),
 
         mother_name:
-            document.getElementById("mother_name")
-                .value.trim(),
+            document
+                .getElementById(
+                    "mother_name"
+                )
+                .value
+                .trim(),
 
         mobile:
-            document.getElementById("mobile")
-                .value.trim(),
+            document
+                .getElementById(
+                    "mobile"
+                )
+                .value
+                .trim(),
 
         email:
-            document.getElementById("email")
-                .value.trim(),
+            document
+                .getElementById(
+                    "email"
+                )
+                .value
+                .trim(),
 
         address:
-            document.getElementById("address")
-                .value.trim(),
+            document
+                .getElementById(
+                    "address"
+                )
+                .value
+                .trim(),
 
         city:
-            document.getElementById("city")
-                .value.trim(),
+            document
+                .getElementById(
+                    "city"
+                )
+                .value
+                .trim(),
 
         pincode:
-            document.getElementById("pincode")
-                .value.trim(),
+            document
+                .getElementById(
+                    "pincode"
+                )
+                .value
+                .trim(),
 
         transport:
-            document.getElementById("transport")
+            document
+                .getElementById(
+                    "transport"
+                )
                 .value,
 
         emergency:
-            document.getElementById("emergency")
-                .value.trim(),
+            document
+                .getElementById(
+                    "emergency"
+                )
+                .value
+                .trim(),
 
         remarks:
-            document.getElementById("remarks")
-                .value.trim()
+            document
+                .getElementById(
+                    "remarks"
+                )
+                .value
+                .trim()
     };
 }
 
@@ -1202,26 +1760,40 @@ function openPreview(){
         return;
     }
 
+
     const data =
         getFormData();
 
-    let photoHtml = "Not uploaded";
+
+    let photoHtml =
+        "Not uploaded";
+
 
     const file =
-        document.getElementById("photo")
+        document
+            .getElementById(
+                "photo"
+            )
             .files[0];
+
 
     if(file){
 
-        const imageUrl =
-            document.getElementById("photoPreview")
-                .querySelector("img");
+        const image =
+            document
+                .getElementById(
+                    "photoPreview"
+                )
+                .querySelector(
+                    "img"
+                );
 
-        if(imageUrl){
+
+        if(image){
 
             photoHtml =
                 '<img class="preview-photo" src="' +
-                imageUrl.src +
+                image.src +
                 '" alt="Student Photo">';
         }
     }
@@ -1330,21 +1902,39 @@ function openPreview(){
     `;
 
 
-    document.getElementById("previewContent")
-        .innerHTML = html;
+    document.getElementById(
+        "previewContent"
+    ).innerHTML =
+        html;
 
 
-    document.getElementById("formCard")
-        .classList.add("hidden");
+    document.getElementById(
+        "formCard"
+    ).classList.add(
+        "hidden"
+    );
 
-    document.getElementById("paymentCard")
-        .classList.add("hidden");
 
-    document.getElementById("confirmationCard")
-        .classList.add("hidden");
+    document.getElementById(
+        "paymentCard"
+    ).classList.add(
+        "hidden"
+    );
 
-    document.getElementById("previewCard")
-        .classList.remove("hidden");
+
+    document.getElementById(
+        "confirmationCard"
+    ).classList.add(
+        "hidden"
+    );
+
+
+    document.getElementById(
+        "previewCard"
+    ).classList.remove(
+        "hidden"
+    );
+
 
     window.scrollTo({
         top:0,
@@ -1359,11 +1949,19 @@ function openPreview(){
 
 function editApplication(){
 
-    document.getElementById("previewCard")
-        .classList.add("hidden");
+    document.getElementById(
+        "previewCard"
+    ).classList.add(
+        "hidden"
+    );
 
-    document.getElementById("formCard")
-        .classList.remove("hidden");
+
+    document.getElementById(
+        "formCard"
+    ).classList.remove(
+        "hidden"
+    );
+
 
     window.scrollTo({
         top:0,
@@ -1382,11 +1980,20 @@ function confirmAndProceedToPayment(){
         return;
     }
 
-    document.getElementById("previewCard")
-        .classList.add("hidden");
 
-    document.getElementById("paymentCard")
-        .classList.remove("hidden");
+    document.getElementById(
+        "previewCard"
+    ).classList.add(
+        "hidden"
+    );
+
+
+    document.getElementById(
+        "paymentCard"
+    ).classList.remove(
+        "hidden"
+    );
+
 
     window.scrollTo({
         top:0,
@@ -1401,11 +2008,19 @@ function confirmAndProceedToPayment(){
 
 function backToPreview(){
 
-    document.getElementById("paymentCard")
-        .classList.add("hidden");
+    document.getElementById(
+        "paymentCard"
+    ).classList.add(
+        "hidden"
+    );
 
-    document.getElementById("previewCard")
-        .classList.remove("hidden");
+
+    document.getElementById(
+        "previewCard"
+    ).classList.remove(
+        "hidden"
+    );
+
 
     window.scrollTo({
         top:0,
@@ -1420,118 +2035,144 @@ function backToPreview(){
 
 function compressImage(file){
 
-    return new Promise((resolve,reject)=>{
+    return new Promise(
+        (resolve,reject)=>{
 
-        const reader =
-            new FileReader();
-
-        reader.onload = function(event){
-
-            const img =
-                new Image();
-
-            img.onload = function(){
-
-                const maxSize = 1000;
-
-                let width =
-                    img.width;
-
-                let height =
-                    img.height;
+            const reader =
+                new FileReader();
 
 
-                if(width > maxSize ||
-                   height > maxSize){
+            reader.onload =
+                function(event){
 
-                    if(width > height){
-
-                        height =
-                            height *
-                            maxSize /
-                            width;
-
-                        width =
-                            maxSize;
-
-                    }else{
-
-                        width =
-                            width *
-                            maxSize /
-                            height;
-
-                        height =
-                            maxSize;
-                    }
-                }
+                    const img =
+                        new Image();
 
 
-                const canvas =
-                    document.createElement("canvas");
+                    img.onload =
+                        function(){
 
-                canvas.width =
-                    width;
-
-                canvas.height =
-                    height;
+                            const maxSize =
+                                1000;
 
 
-                const ctx =
-                    canvas.getContext("2d");
-
-                ctx.drawImage(
-                    img,
-                    0,
-                    0,
-                    width,
-                    height
-                );
+                            let width =
+                                img.width;
 
 
-                canvas.toBlob(
-                    function(blob){
+                            let height =
+                                img.height;
 
-                        if(!blob){
+
+                            if(
+                                width > maxSize ||
+                                height > maxSize
+                            ){
+
+                                if(width > height){
+
+                                    height =
+                                        height *
+                                        maxSize /
+                                        width;
+
+                                    width =
+                                        maxSize;
+
+                                }else{
+
+                                    width =
+                                        width *
+                                        maxSize /
+                                        height;
+
+                                    height =
+                                        maxSize;
+                                }
+                            }
+
+
+                            const canvas =
+                                document
+                                    .createElement(
+                                        "canvas"
+                                    );
+
+
+                            canvas.width =
+                                width;
+
+                            canvas.height =
+                                height;
+
+
+                            const ctx =
+                                canvas
+                                    .getContext(
+                                        "2d"
+                                    );
+
+
+                            ctx.drawImage(
+                                img,
+                                0,
+                                0,
+                                width,
+                                height
+                            );
+
+
+                            canvas.toBlob(
+                                function(blob){
+
+                                    if(!blob){
+
+                                        reject(
+                                            new Error(
+                                                "Image compression failed"
+                                            )
+                                        );
+
+                                        return;
+                                    }
+
+
+                                    resolve(
+                                        blob
+                                    );
+
+                                },
+                                "image/jpeg",
+                                0.82
+                            );
+                        };
+
+
+                    img.onerror =
+                        function(){
 
                             reject(
                                 new Error(
-                                    "Image compression failed"
+                                    "Invalid image"
                                 )
                             );
-
-                            return;
-                        }
-
-                        resolve(blob);
-
-                    },
-                    "image/jpeg",
-                    0.82
-                );
-            };
+                        };
 
 
-            img.onerror = function(){
-
-                reject(
-                    new Error(
-                        "Invalid image"
-                    )
-                );
-            };
+                    img.src =
+                        event.target.result;
+                };
 
 
-            img.src =
-                event.target.result;
-        };
+            reader.onerror =
+                reject;
 
 
-        reader.onerror =
-            reject;
-
-        reader.readAsDataURL(file);
-    });
+            reader.readAsDataURL(
+                file
+            );
+        }
+    );
 }
 
 
@@ -1546,7 +2187,9 @@ async function uploadPhoto(
 ){
 
     const blob =
-        await compressImage(file);
+        await compressImage(
+            file
+        );
 
 
     const response =
@@ -1560,15 +2203,23 @@ async function uploadPhoto(
                 method:"POST",
 
                 headers:{
-                    "apikey":SUPABASE_KEY,
+
+                    "apikey":
+                        SUPABASE_KEY,
+
                     "Authorization":
-                        "Bearer " + SUPABASE_KEY,
+                        "Bearer " +
+                        SUPABASE_KEY,
+
                     "Content-Type":
                         "image/jpeg",
-                    "x-upsert":"true"
+
+                    "x-upsert":
+                        "true"
                 },
 
-                body:blob
+                body:
+                    blob
             }
         );
 
@@ -1582,10 +2233,14 @@ async function uploadPhoto(
         let errorMessage =
             "Photo upload failed";
 
+
         try{
 
             const json =
-                JSON.parse(text);
+                JSON.parse(
+                    text
+                );
+
 
             errorMessage =
                 json.message ||
@@ -1594,7 +2249,10 @@ async function uploadPhoto(
 
         }catch(e){}
 
-        throw new Error(errorMessage);
+
+        throw new Error(
+            errorMessage
+        );
     }
 
 
@@ -1619,12 +2277,15 @@ async function getExistingApplication(
 
     let query = "";
 
+
     if(paymentId){
 
         query =
             "/rest/v1/online_admissions" +
             "?payment_id=eq." +
-            encodeURIComponent(paymentId) +
+            encodeURIComponent(
+                paymentId
+            ) +
             "&select=*";
 
     }else{
@@ -1632,19 +2293,26 @@ async function getExistingApplication(
         query =
             "/rest/v1/online_admissions" +
             "?application_no=eq." +
-            encodeURIComponent(applicationNo) +
+            encodeURIComponent(
+                applicationNo
+            ) +
             "&select=*";
     }
 
 
     const data =
-        await supabaseRequest(query,{
-            method:"GET"
-        });
+        await supabaseRequest(
+            query,
+            {
+                method:"GET"
+            }
+        );
 
 
-    return data &&
-           data.length
+    return (
+        data &&
+        data.length
+    )
         ? data[0]
         : null;
 }
@@ -1662,7 +2330,9 @@ async function getExistingStudent(
         await supabaseRequest(
             "/rest/v1/students" +
             "?admission_no=eq." +
-            encodeURIComponent(admissionNo) +
+            encodeURIComponent(
+                admissionNo
+            ) +
             "&select=*",
             {
                 method:"GET"
@@ -1670,8 +2340,10 @@ async function getExistingStudent(
         );
 
 
-    return data &&
-           data.length
+    return (
+        data &&
+        data.length
+    )
         ? data[0]
         : null;
 }
@@ -1694,7 +2366,9 @@ async function getExistingFee(
         await supabaseRequest(
             "/rest/v1/fees" +
             "?transaction_id=eq." +
-            encodeURIComponent(paymentId) +
+            encodeURIComponent(
+                paymentId
+            ) +
             "&select=*",
             {
                 method:"GET"
@@ -1702,8 +2376,10 @@ async function getExistingFee(
         );
 
 
-    return data &&
-           data.length
+    return (
+        data &&
+        data.length
+    )
         ? data[0]
         : null;
 }
@@ -1719,7 +2395,8 @@ async function saveApplication(
 ){
 
     const paymentId =
-        paymentResponse.razorpay_payment_id;
+        paymentResponse
+            .razorpay_payment_id;
 
 
     const data =
@@ -1749,36 +2426,39 @@ async function saveApplication(
         );
 
 
-    let photoUrl = "";
+    let photoUrl =
+        "";
+
+
+    let studentPhotoUrl =
+        "";
+
+
+    /* -------------------------------------------------
+       PHOTO FILE
+    ------------------------------------------------- */
+
+    const photoFile =
+        document
+            .getElementById(
+                "photo"
+            )
+            .files[0];
 
 
     /* -------------------------------------------------
        UPLOAD ADMISSION PHOTO
     ------------------------------------------------- */
 
-    const photoFile =
-        document.getElementById("photo")
-            .files[0];
-
-
     if(photoFile){
 
         try{
-
-            const extension =
-                "jpg";
-
-            const fileName =
-                applicationNo +
-                "." +
-                extension;
-
 
             photoUrl =
                 await uploadPhoto(
                     photoFile,
                     "admission-photos",
-                    fileName
+                    applicationNo + ".jpg"
                 );
 
         }catch(error){
@@ -1787,6 +2467,7 @@ async function saveApplication(
                 "Admission photo upload failed:",
                 error
             );
+
         }
     }
 
@@ -1795,24 +2476,15 @@ async function saveApplication(
        UPLOAD STUDENT PHOTO
     ------------------------------------------------- */
 
-    let studentPhotoUrl =
-        photoUrl;
-
-
     if(photoFile){
 
         try{
-
-            const fileName =
-                admissionNo +
-                ".jpg";
-
 
             studentPhotoUrl =
                 await uploadPhoto(
                     photoFile,
                     "student-photos",
-                    fileName
+                    admissionNo + ".jpg"
                 );
 
         }catch(error){
@@ -1821,6 +2493,7 @@ async function saveApplication(
                 "Student photo upload failed:",
                 error
             );
+
         }
     }
 
@@ -1908,18 +2581,23 @@ async function saveApplication(
 
 
         await supabaseRequest(
-    "/rest/v1/online_admissions",
-    {
-        method:"POST",
+            "/rest/v1/online_admissions",
+            {
+                method:"POST",
 
-        headers:{
-            "Prefer":"return=representation"
-        },
+                headers:{
+                    "Prefer":
+                        "return=representation"
+                },
 
-        body:
-            JSON.stringify(admissionRecord)
+                body:
+                    JSON.stringify(
+                        admissionRecord
+                    )
+            }
+        );
     }
-);
+
 
     /* -------------------------------------------------
        STUDENT MASTER
@@ -1995,19 +2673,25 @@ async function saveApplication(
                 studentPhotoUrl || null
         };
 
-await supabaseRequest(
-    "/rest/v1/students",
-    {
-        method:"POST",
 
-        headers:{
-            "Prefer":"return=representation"
-        },
+        await supabaseRequest(
+            "/rest/v1/students",
+            {
+                method:"POST",
 
-        body:
-            JSON.stringify(studentRecord)
+                headers:{
+                    "Prefer":
+                        "return=representation"
+                },
+
+                body:
+                    JSON.stringify(
+                        studentRecord
+                    )
+            }
+        );
     }
-);
+
 
     /* -------------------------------------------------
        FINANCE / FEES
@@ -2054,18 +2738,24 @@ await supabaseRequest(
 
 
         await supabaseRequest(
-    "/rest/v1/fees",
-    {
-        method:"POST",
+            "/rest/v1/fees",
+            {
+                method:"POST",
 
-        headers:{
-            "Prefer":"return=representation"
-        },
+                headers:{
+                    "Prefer":
+                        "return=representation"
+                },
 
-        body:
-            JSON.stringify(feeRecord)
+                body:
+                    JSON.stringify(
+                        feeRecord
+                    )
+            }
+        );
     }
-);
+
+
     /* -------------------------------------------------
        SHOW CONFIRMATION
     ------------------------------------------------- */
@@ -2083,93 +2773,374 @@ await supabaseRequest(
    START PAYMENT
 ===================================================== */
 
-catch(error){
+async function startPayment(){
 
-    console.error("SAVE ERROR:", error);
+    const payButton =
+        document.getElementById(
+            "payButton"
+        );
 
-    let errorMessage = "Unknown error";
 
-    if(error){
-        if(error.message){
-            errorMessage = error.message;
-        }else{
-            errorMessage = String(error);
-        }
+    /* -------------------------------------------------
+       VALIDATE
+    ------------------------------------------------- */
+
+    if(!validateForm()){
+        return;
     }
 
-    showMessage(
-        "paymentMessage",
-        `
-        <div style="
-            text-align:left;
-            line-height:1.6;
-            background:#fff3cd;
-            border:1px solid #ffe69c;
-            padding:15px;
-            border-radius:8px;
-        ">
 
-            <div style="
-                font-size:18px;
-                font-weight:bold;
-                color:#856404;
-                margin-bottom:10px;
-            ">
-                ⚠️ Payment Successful
-            </div>
-
-            <div style="color:#856404;">
-                Payment successful ho gaya hai,
-                lekin database mein data save karte waqt problem aayi.
-            </div>
-
-            <hr style="margin:12px 0;border:0;border-top:1px solid #e5c76b;">
-
-            <div style="
-                font-weight:bold;
-                color:#721c24;
-                margin-bottom:5px;
-            ">
-                Actual Error:
-            </div>
-
-            <div style="
-                background:white;
-                color:#721c24;
-                padding:10px;
-                border-radius:6px;
-                word-break:break-word;
-                font-family:monospace;
-                font-size:13px;
-            ">
-                ${escapeHtml(errorMessage)}
-            </div>
-
-            <div style="
-                margin-top:12px;
-                font-weight:bold;
-                color:#856404;
-            ">
-                Payment dobara mat karein.
-            </div>
-
-            <div style="
-                margin-top:5px;
-                color:#856404;
-            ">
-                Is error ka screenshot mujhe bhej dena.
-            </div>
-
-        </div>
-        `,
-        "warning"
+    hideMessage(
+        "paymentMessage"
     );
 
-    payButton.disabled = true;
+
+    payButton.disabled =
+        true;
+
 
     payButton.innerHTML =
-        "Payment Already Completed";
+        '<span class="loading"></span> Processing...';
+
+
+    const applicationNo =
+        createApplicationNumber();
+
+
+    /* -------------------------------------------------
+       RAZORPAY OPTIONS
+    ------------------------------------------------- */
+
+    const options = {
+
+        key:
+            RAZORPAY_KEY,
+
+        amount:
+            APPLICATION_FEE * 100,
+
+        currency:
+            "INR",
+
+        name:
+            "Rainbow Public School",
+
+        description:
+            "Online Admission Application Fee",
+
+        image:
+            "logo.png",
+
+
+        /* ---------------------------------------------
+           PAYMENT SUCCESS
+        --------------------------------------------- */
+
+        handler:
+            async function(response){
+
+                try{
+
+                    payButton.disabled =
+                        true;
+
+
+                    payButton.innerHTML =
+                        '<span class="loading"></span> Saving Application...';
+
+
+                    await saveApplication(
+                        applicationNo,
+                        response
+                    );
+
+
+                }catch(error){
+
+                    console.error(
+                        "SAVE ERROR:",
+                        error
+                    );
+
+
+                    let errorMessage =
+                        "Unknown error";
+
+
+                    if(error){
+
+                        if(error.message){
+
+                            errorMessage =
+                                error.message;
+
+                        }else{
+
+                            errorMessage =
+                                String(error);
+                        }
+                    }
+
+
+                    showMessage(
+                        "paymentMessage",
+                        `
+                        <div style="
+                            text-align:left;
+                            line-height:1.6;
+                            background:#fff3cd;
+                            border:1px solid #ffe69c;
+                            padding:15px;
+                            border-radius:8px;
+                        ">
+
+                            <div style="
+                                font-size:18px;
+                                font-weight:bold;
+                                color:#856404;
+                                margin-bottom:10px;
+                            ">
+                                ⚠️ Payment Successful
+                            </div>
+
+                            <div style="
+                                color:#856404;
+                            ">
+                                Payment successful ho gaya hai,
+                                lekin database mein data save karte
+                                waqt problem aayi.
+                            </div>
+
+                            <hr style="
+                                margin:12px 0;
+                                border:0;
+                                border-top:1px solid #e5c76b;
+                            ">
+
+                            <div style="
+                                font-weight:bold;
+                                color:#721c24;
+                                margin-bottom:5px;
+                            ">
+                                Actual Database Error:
+                            </div>
+
+                            <div style="
+                                background:white;
+                                color:#721c24;
+                                padding:10px;
+                                border-radius:6px;
+                                word-break:break-word;
+                                font-family:monospace;
+                                font-size:13px;
+                            ">
+                                ${escapeHtml(errorMessage)}
+                            </div>
+
+                            <div style="
+                                margin-top:12px;
+                                font-weight:bold;
+                                color:#856404;
+                            ">
+                                ⚠️ Payment dobara mat karein.
+                            </div>
+
+                            <div style="
+                                margin-top:5px;
+                                color:#856404;
+                            ">
+                                Is error ka screenshot school
+                                administration ko bhej sakte hain.
+                            </div>
+
+                        </div>
+                        `,
+                        "warning"
+                    );
+
+
+                    payButton.disabled =
+                        true;
+
+
+                    payButton.innerHTML =
+                        "Payment Already Completed";
+                }
+            },
+
+
+        /* ---------------------------------------------
+           PREFILL
+        --------------------------------------------- */
+
+        prefill:{
+
+            name:
+                document
+                    .getElementById(
+                        "student_name"
+                    )
+                    .value
+                    .trim(),
+
+            contact:
+                document
+                    .getElementById(
+                        "mobile"
+                    )
+                    .value
+                    .trim(),
+
+            email:
+                document
+                    .getElementById(
+                        "email"
+                    )
+                    .value
+                    .trim()
+        },
+
+
+        /* ---------------------------------------------
+           NOTES
+        --------------------------------------------- */
+
+        notes:{
+
+            application_no:
+                applicationNo,
+
+            session:
+                SESSION,
+
+            student_name:
+                document
+                    .getElementById(
+                        "student_name"
+                    )
+                    .value
+                    .trim()
+        },
+
+
+        theme:{
+
+            color:
+                "#1769aa"
+        },
+
+
+        /* ---------------------------------------------
+           MODAL
+        --------------------------------------------- */
+
+        modal:{
+
+            ondismiss:
+                function(){
+
+                    payButton.disabled =
+                        false;
+
+
+                    payButton.innerHTML =
+                        "Pay ₹10";
+
+
+                    showMessage(
+                        "paymentMessage",
+                        "Payment cancelled.",
+                        "error"
+                    );
+                }
+        }
+    };
+
+
+    /* -------------------------------------------------
+       OPEN RAZORPAY
+    ------------------------------------------------- */
+
+    try{
+
+        const razorpay =
+            new Razorpay(
+                options
+            );
+
+
+        /* ---------------------------------------------
+           PAYMENT FAILED
+        --------------------------------------------- */
+
+        razorpay.on(
+            "payment.failed",
+            function(response){
+
+                console.error(
+                    "PAYMENT FAILED:",
+                    response
+                );
+
+
+                payButton.disabled =
+                    false;
+
+
+                payButton.innerHTML =
+                    "Pay ₹10";
+
+
+                const reason =
+                    response?.error?.description ||
+                    response?.error?.reason ||
+                    "Payment failed.";
+
+
+                showMessage(
+                    "paymentMessage",
+                    "Payment failed: " +
+                    escapeHtml(
+                        reason
+                    ),
+                    "error"
+                );
+            }
+        );
+
+
+        razorpay.open();
+
+
+    }catch(error){
+
+        console.error(
+            "RAZORPAY ERROR:",
+            error
+        );
+
+
+        payButton.disabled =
+            false;
+
+
+        payButton.innerHTML =
+            "Pay ₹10";
+
+
+        showMessage(
+            "paymentMessage",
+            "Razorpay open nahi ho saka: " +
+            escapeHtml(
+                error?.message ||
+                String(error)
+            ),
+            "error"
+        );
+    }
 }
+
+
 /* =====================================================
    SHOW CONFIRMATION
 ===================================================== */
@@ -2198,31 +3169,43 @@ function showConfirmation(
     ).innerHTML =
         "Application saved successfully. " +
         "Admission No: <strong>" +
-        escapeHtml(admissionNo) +
+        escapeHtml(
+            admissionNo
+        ) +
         "</strong><br>" +
         "Receipt No: <strong>" +
-        escapeHtml(receiptNo) +
+        escapeHtml(
+            receiptNo
+        ) +
         "</strong>";
 
 
     document.getElementById(
         "paymentCard"
-    ).classList.add("hidden");
+    ).classList.add(
+        "hidden"
+    );
 
 
     document.getElementById(
         "previewCard"
-    ).classList.add("hidden");
+    ).classList.add(
+        "hidden"
+    );
 
 
     document.getElementById(
         "formCard"
-    ).classList.add("hidden");
+    ).classList.add(
+        "hidden"
+    );
 
 
     document.getElementById(
         "confirmationCard"
-    ).classList.remove("hidden");
+    ).classList.remove(
+        "hidden"
+    );
 
 
     window.scrollTo({
@@ -2243,15 +3226,19 @@ function printApplication(){
 
 
     const applicationNo =
-        document.getElementById(
-            "confirmationApplicationNo"
-        ).textContent;
+        document
+            .getElementById(
+                "confirmationApplicationNo"
+            )
+            .textContent;
 
 
     const paymentId =
-        document.getElementById(
-            "confirmationPaymentId"
-        ).textContent;
+        document
+            .getElementById(
+                "confirmationPaymentId"
+            )
+            .textContent;
 
 
     const html = `
@@ -2313,13 +3300,6 @@ td:first-child{
     background:#f5f7fa;
 }
 
-.photo{
-    width:120px;
-    height:145px;
-    object-fit:cover;
-    border:1px solid #ccc;
-}
-
 .footer{
     margin-top:40px;
     display:flex;
@@ -2327,9 +3307,11 @@ td:first-child{
 }
 
 @media print{
+
     button{
         display:none;
     }
+
 }
 
 </style>
@@ -2342,7 +3324,9 @@ td:first-child{
 
 <img src="logo.png">
 
-<h1>Rainbow Public School</h1>
+<h1>
+Rainbow Public School
+</h1>
 
 <div>
 Conducted by Shubhi Education Foundation, Dahod
@@ -2355,7 +3339,9 @@ Rabdal, Dahod, Gujarat - 389151
 
 </div>
 
-<h2>Online Admission Application</h2>
+<h2>
+Online Admission Application
+</h2>
 
 <table>
 
@@ -2489,9 +3475,11 @@ School Office
 </div>
 
 <script>
+
 window.onload=function(){
     window.print();
 };
+
 <\/script>
 
 </body>
@@ -2519,7 +3507,9 @@ window.onload=function(){
 
     printWindow.document.open();
 
-    printWindow.document.write(html);
+    printWindow.document.write(
+        html
+    );
 
     printWindow.document.close();
 }
@@ -2536,15 +3526,19 @@ function printReceipt(){
 
 
     const applicationNo =
-        document.getElementById(
-            "confirmationApplicationNo"
-        ).textContent;
+        document
+            .getElementById(
+                "confirmationApplicationNo"
+            )
+            .textContent;
 
 
     const paymentId =
-        document.getElementById(
-            "confirmationPaymentId"
-        ).textContent;
+        document
+            .getElementById(
+                "confirmationPaymentId"
+            )
+            .textContent;
 
 
     const receiptNo =
@@ -2650,7 +3644,9 @@ td:first-child{
 
 <img src="logo.png">
 
-<h1>Rainbow Public School</h1>
+<h1>
+Rainbow Public School
+</h1>
 
 <div>
 Conducted by Shubhi Education Foundation, Dahod
@@ -2740,9 +3736,11 @@ School Office
 </div>
 
 <script>
+
 window.onload=function(){
     window.print();
 };
+
 <\/script>
 
 </body>
@@ -2770,7 +3768,9 @@ window.onload=function(){
 
     printWindow.document.open();
 
-    printWindow.document.write(html);
+    printWindow.document.write(
+        html
+    );
 
     printWindow.document.close();
 }
