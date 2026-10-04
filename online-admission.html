@@ -1,36 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Admission - Rainbow Public School</title>
 
-<title>Online Admission Form - Rainbow Public School</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <style>
-
 *{
     box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
 body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:#f1f5f9;
-    color:#1e293b;
+    font-family:Arial, Helvetica, sans-serif;
+    background:#f3f6fb;
+    color:#222;
 }
 
-.header{
-    background:#003b70;
+header{
+    background:linear-gradient(135deg,#123c73,#1769aa);
     color:white;
-    padding:18px;
+    padding:18px 15px;
     text-align:center;
+    box-shadow:0 3px 12px rgba(0,0,0,.15);
 }
 
-.header img{
+.header-inner{
+    max-width:1100px;
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+}
+
+.logo{
     width:80px;
     height:80px;
     object-fit:contain;
@@ -39,57 +46,58 @@ body{
     padding:5px;
 }
 
-.header h1{
-    margin:10px 0 5px;
-    font-size:25px;
+header h1{
+    font-size:28px;
+    margin-bottom:5px;
 }
 
-.header p{
-    margin:4px 0;
+header p{
     font-size:14px;
+    line-height:1.5;
 }
 
 .container{
-    max-width:1050px;
+    width:95%;
+    max-width:1100px;
     margin:25px auto;
-    padding:0 15px;
 }
 
 .card{
     background:white;
+    border-radius:15px;
     padding:25px;
-    border-radius:12px;
-    box-shadow:0 5px 20px rgba(0,0,0,.10);
     margin-bottom:20px;
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
 }
 
-.title{
-    text-align:center;
-    color:#003b70;
+.card h2{
+    color:#123c73;
     margin-bottom:20px;
+    border-bottom:2px solid #e5eaf2;
+    padding-bottom:10px;
 }
 
 .section-title{
-    background:#003b70;
-    color:white;
+    background:#eef5ff;
+    color:#123c73;
     padding:10px 14px;
-    border-radius:6px;
-    margin:22px 0 15px;
-    font-size:17px;
+    border-radius:8px;
+    margin:20px 0 15px;
+    font-weight:bold;
 }
 
-.grid{
+.form-grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
-    gap:15px;
+    gap:16px;
 }
 
-.field{
+.form-group{
     display:flex;
     flex-direction:column;
 }
 
-.field.full{
+.form-group.full{
     grid-column:1/-1;
 }
 
@@ -99,18 +107,22 @@ label{
     font-size:14px;
 }
 
-.required{
-    color:red;
-}
-
 input,
 select,
 textarea{
     width:100%;
-    padding:11px;
-    border:1px solid #cbd5e1;
-    border-radius:6px;
+    padding:11px 12px;
+    border:1px solid #cfd7e3;
+    border-radius:8px;
     font-size:14px;
+    outline:none;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    border-color:#1769aa;
+    box-shadow:0 0 0 2px rgba(23,105,170,.1);
 }
 
 textarea{
@@ -118,1135 +130,678 @@ textarea{
     resize:vertical;
 }
 
+.required{
+    color:red;
+}
+
 .photo-box{
-    text-align:center;
-    margin-top:10px;
+    display:flex;
+    gap:20px;
+    align-items:center;
+    flex-wrap:wrap;
 }
 
 .photo-preview{
-    display:none;
-    width:130px;
-    height:160px;
-    object-fit:cover;
-    border:2px solid #003b70;
-    border-radius:6px;
-    margin:10px auto;
-}
-
-.payment-box{
-    text-align:center;
-    background:#f8fafc;
-    border:2px solid #003b70;
-    border-radius:10px;
-    padding:20px;
-    margin-top:25px;
-}
-
-.amount{
-    font-size:30px;
-    font-weight:bold;
-    color:#008000;
-    margin:10px;
-}
-
-.pay-btn{
-    background:#16a34a;
-    color:white;
-    border:none;
-    padding:14px 30px;
-    font-size:17px;
-    font-weight:bold;
-    border-radius:7px;
-    cursor:pointer;
-}
-
-.pay-btn:hover{
-    opacity:.9;
-}
-
-.pay-btn:disabled{
-    background:#94a3b8;
-    cursor:not-allowed;
-}
-
-.print-btn{
-    background:#003b70;
-    color:white;
-    border:none;
-    padding:12px 25px;
-    border-radius:6px;
-    cursor:pointer;
-    margin:5px;
-}
-
-.clear-btn{
-    background:#64748b;
-    color:white;
-    border:none;
-    padding:12px 25px;
-    border-radius:6px;
-    cursor:pointer;
-    margin:5px;
-}
-
-.home-btn{
-    background:#64748b;
-    color:white;
-    border:none;
-    padding:11px 22px;
-    border-radius:7px;
-    cursor:pointer;
-    font-weight:bold;
-    margin-bottom:15px;
-}
-
-.message{
-    display:none;
-    padding:14px;
-    border-radius:7px;
-    margin-bottom:15px;
-    text-align:center;
-    font-weight:bold;
-}
-
-.success{
-    background:#dcfce7;
-    color:#166534;
-}
-
-.error{
-    background:#fee2e2;
-    color:#991b1b;
-}
-
-.info{
-    background:#dbeafe;
-    color:#1e40af;
-}
-
-.confirmation{
-    display:none;
-    text-align:center;
-}
-
-.confirmation h2{
-    color:#15803d;
-}
-
-.application-number{
-    font-size:24px;
-    font-weight:bold;
-    color:#003b70;
-    margin:15px;
-}
-
-.confirmation-photo-box{
-    text-align:center;
-    margin:20px 0;
-}
-
-.confirmation-photo{
-    width:130px;
-    height:160px;
-    object-fit:cover;
-    border:2px solid #003b70;
-    border-radius:8px;
-}
-
-
-/* ================================
-   PREVIEW
-================================ */
-
-.preview-header{
-    text-align:center;
-    border-bottom:2px solid #003b70;
-    padding-bottom:15px;
-    margin-bottom:20px;
-}
-
-.preview-header img{
-    width:70px;
-    height:70px;
-    object-fit:contain;
-}
-
-.preview-header h2{
-    color:#003b70;
-    margin:6px 0;
-}
-
-.preview-photo-box{
-    text-align:center;
-    margin:20px 0;
-}
-
-.preview-photo{
-    width:130px;
-    height:160px;
-    object-fit:cover;
-    border:2px solid #003b70;
-    border-radius:8px;
-}
-
-.no-photo{
-    width:130px;
-    height:160px;
-    border:2px dashed #94a3b8;
+    width:120px;
+    height:145px;
+    border:2px dashed #bbb;
     border-radius:8px;
     display:flex;
     align-items:center;
     justify-content:center;
-    margin:auto;
-    color:#64748b;
-    font-size:13px;
+    overflow:hidden;
+    background:#fafafa;
+    color:#888;
+    font-size:12px;
+    text-align:center;
+}
+
+.photo-preview img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.buttons{
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-top:25px;
+}
+
+button{
+    border:none;
+    border-radius:8px;
+    padding:12px 22px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.2s;
+}
+
+button:hover{
+    transform:translateY(-1px);
+}
+
+.btn-primary{
+    background:#1769aa;
+    color:white;
+}
+
+.btn-success{
+    background:#198754;
+    color:white;
+}
+
+.btn-danger{
+    background:#dc3545;
+    color:white;
+}
+
+.btn-secondary{
+    background:#6c757d;
+    color:white;
+}
+
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+    transform:none;
+}
+
+.message{
+    margin-top:15px;
+    padding:12px;
+    border-radius:8px;
+    display:none;
+}
+
+.message.error{
+    background:#ffe5e5;
+    color:#a40000;
+}
+
+.message.success{
+    background:#e4f8eb;
+    color:#126b35;
+}
+
+.message.warning{
+    background:#fff4d6;
+    color:#795600;
 }
 
 .preview-table{
     width:100%;
     border-collapse:collapse;
-    margin-top:20px;
+    margin-top:10px;
 }
 
 .preview-table td{
-    border:1px solid #cbd5e1;
-    padding:10px;
+    padding:9px 10px;
+    border:1px solid #ddd;
     vertical-align:top;
 }
 
 .preview-table td:first-child{
-    width:32%;
+    width:35%;
     font-weight:bold;
-    background:#f8fafc;
+    background:#f7f9fc;
 }
 
-.confirm-box{
-    background:#fefce8;
-    border:1px solid #eab308;
-    border-radius:8px;
-    padding:15px;
-    margin-top:25px;
+.preview-photo{
+    width:130px;
+    height:155px;
+    object-fit:cover;
+    border:1px solid #ccc;
+    border-radius:6px;
 }
 
-.confirm-box label{
-    display:flex;
-    align-items:flex-start;
-    gap:10px;
-    cursor:pointer;
-    margin:0;
-    font-weight:bold;
-}
-
-.confirm-box input[type="checkbox"]{
-    width:20px;
-    height:20px;
-    flex-shrink:0;
-}
-
-.preview-buttons{
+.payment-box{
     text-align:center;
-    margin-top:20px;
+    padding:20px;
 }
 
-.edit-btn{
-    background:#64748b;
-    color:white;
-    border:none;
-    padding:13px 25px;
-    border-radius:7px;
-    cursor:pointer;
+.amount{
+    font-size:32px;
+    color:#198754;
     font-weight:bold;
-    margin:5px;
+    margin:15px 0;
 }
 
-.confirm-btn{
-    background:#16a34a;
+.confirmation{
+    text-align:center;
+}
+
+.success-icon{
+    width:75px;
+    height:75px;
+    border-radius:50%;
+    background:#198754;
     color:white;
-    border:none;
-    padding:13px 25px;
-    border-radius:7px;
-    cursor:pointer;
-    font-weight:bold;
-    margin:5px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:40px;
+    margin:0 auto 15px;
 }
 
-.confirm-btn:disabled{
-    background:#94a3b8;
-    cursor:not-allowed;
+.application-number{
+    background:#eef5ff;
+    border:1px solid #b9d4f5;
+    padding:15px;
+    border-radius:10px;
+    margin:20px auto;
+    max-width:600px;
 }
 
-
-/* ================================
-   PAYMENT CARD
-================================ */
-
-.payment-card{
-    display:none;
+.application-number strong{
+    display:block;
+    font-size:24px;
+    color:#123c73;
+    margin-top:5px;
 }
 
-.payment-note{
-    color:#475569;
-    line-height:1.6;
+.small-note{
+    color:#666;
+    font-size:13px;
+    margin-top:8px;
 }
 
 footer{
-    background:#002f60;
+    background:#123c73;
     color:white;
     text-align:center;
-    padding:15px;
+    padding:18px;
     margin-top:30px;
+    font-size:13px;
+}
+
+.hidden{
+    display:none !important;
+}
+
+.loading{
+    display:inline-block;
+    width:18px;
+    height:18px;
+    border:3px solid rgba(255,255,255,.4);
+    border-top-color:white;
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+    vertical-align:middle;
+    margin-right:6px;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg);}
 }
 
 @media(max-width:700px){
-
-    .grid{
+    .form-grid{
         grid-template-columns:1fr;
     }
 
-    .field.full{
+    .form-group.full{
         grid-column:auto;
     }
 
-    .card{
-        padding:16px;
+    .header-inner{
+        flex-direction:column;
     }
 
-    .header h1{
-        font-size:20px;
+    header h1{
+        font-size:23px;
+    }
+
+    .card{
+        padding:17px;
     }
 
     .preview-table td{
         display:block;
         width:100% !important;
     }
-
-    .preview-table tr{
-        display:block;
-        margin-bottom:8px;
-    }
-
 }
 
 @media print{
+    header,
+    footer,
+    .no-print,
+    .buttons{
+        display:none !important;
+    }
 
     body{
         background:white;
     }
 
-    .no-print,
-    footer,
-    .pay-btn,
-    .clear-btn,
-    .print-btn,
-    .preview-buttons{
-        display:none !important;
+    .container{
+        width:100%;
+        max-width:none;
+        margin:0;
     }
 
     .card{
         box-shadow:none;
         border:none;
     }
-
-    .container{
-        max-width:100%;
-        margin:0;
-    }
-
 }
-
 </style>
-
 </head>
 
 <body>
 
+<header>
+    <div class="header-inner">
+        <img src="logo.png" class="logo" alt="School Logo">
 
-<div class="header">
-
-    <img src="logo.png" alt="School Logo">
-
-    <h1>Rainbow Public School</h1>
-
-    <p>Conducted by Shubhi Education Foundation, Dahod</p>
-
-    <p>
-        Shalimar Co-operative Society, Muvaliya Road, Rabdal,
-        Dahod, Gujarat - 389151
-    </p>
-
-</div>
+        <div>
+            <h1>Rainbow Public School</h1>
+            <p><strong>Conducted by Shubhi Education Foundation, Dahod</strong></p>
+            <p>Shalimar Co-operative Society, Muvaliya Road, Rabdal, Dahod, Gujarat - 389151</p>
+        </div>
+    </div>
+</header>
 
 
 <div class="container">
 
-<div id="message" class="message"></div>
+    <!-- FORM -->
+    <div class="card" id="formCard">
+
+        <h2>Online Admission Form</h2>
+
+        <div class="section-title">Student Information</div>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Student Name <span class="required">*</span></label>
+                <input type="text" id="student_name">
+            </div>
+
+            <div class="form-group">
+                <label>Date of Birth <span class="required">*</span></label>
+                <input type="date" id="dob">
+            </div>
+
+            <div class="form-group">
+                <label>Gender</label>
+                <select id="gender">
+                    <option value="">Select Gender</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Class Applied For <span class="required">*</span></label>
+                <select id="class_name">
+                    <option value="">Select Class</option>
+                    <option>Nursery</option>
+                    <option>LKG</option>
+                    <option>UKG</option>
+                    <option>1st</option>
+                    <option>2nd</option>
+                    <option>3rd</option>
+                    <option>4th</option>
+                    <option>5th</option>
+                    <option>6th</option>
+                    <option>7th</option>
+                    <option>8th</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Previous School</label>
+                <input type="text" id="previous_school">
+            </div>
+
+            <div class="form-group">
+                <label>Previous Class</label>
+                <input type="text" id="previous_class">
+            </div>
+
+            <div class="form-group">
+                <label>Aadhaar Number</label>
+                <input type="text" id="aadhaar" maxlength="12">
+            </div>
+
+            <div class="form-group">
+                <label>Blood Group</label>
+                <select id="blood">
+                    <option value="">Select</option>
+                    <option>A+</option>
+                    <option>A-</option>
+                    <option>B+</option>
+                    <option>B-</option>
+                    <option>AB+</option>
+                    <option>AB-</option>
+                    <option>O+</option>
+                    <option>O-</option>
+                </select>
+            </div>
+
+            <div class="form-group full">
+                <label>Student Photo</label>
+
+                <div class="photo-box">
+                    <div>
+                        <input type="file"
+                               id="photo"
+                               accept="image/*"
+                               onchange="previewPhoto(event)">
+                        <div class="small-note">
+                            JPG/PNG photo recommended.
+                        </div>
+                    </div>
+
+                    <div class="photo-preview" id="photoPreview">
+                        Photo Preview
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="section-title">Parent / Guardian Information</div>
 
+        <div class="form-grid">
 
-<!-- ================= BACK TO HOME ================= -->
+            <div class="form-group">
+                <label>Father's Name <span class="required">*</span></label>
+                <input type="text" id="father_name">
+            </div>
 
-<div class="no-print">
+            <div class="form-group">
+                <label>Mother's Name <span class="required">*</span></label>
+                <input type="text" id="mother_name">
+            </div>
 
-    <button
-        type="button"
-        class="home-btn"
-        onclick="goHome()">
+            <div class="form-group">
+                <label>Mobile Number <span class="required">*</span></label>
+                <input type="tel" id="mobile" maxlength="10">
+            </div>
 
-        ← Back to Home
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email">
+            </div>
 
-    </button>
+            <div class="form-group full">
+                <label>Address <span class="required">*</span></label>
+                <textarea id="address"></textarea>
+            </div>
 
-</div>
+            <div class="form-group">
+                <label>City</label>
+                <input type="text" id="city">
+            </div>
 
+            <div class="form-group">
+                <label>Pincode</label>
+                <input type="text" id="pincode" maxlength="6">
+            </div>
 
-<!-- ==================================================
-     FORM
-================================================== -->
+            <div class="form-group">
+                <label>Transport Required</label>
+                <select id="transport">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
 
-<div class="card" id="formCard">
+            <div class="form-group">
+                <label>Emergency Contact</label>
+                <input type="tel" id="emergency" maxlength="10">
+            </div>
 
-<h2 class="title">ONLINE ADMISSION FORM</h2>
+            <div class="form-group full">
+                <label>Remarks</label>
+                <textarea id="remarks"></textarea>
+            </div>
 
-<p style="text-align:center;">
-Please fill all required details carefully.
-</p>
+        </div>
 
 
-<div class="section-title">
-    Student Details
-</div>
+        <div id="formMessage" class="message"></div>
 
+        <div class="buttons">
+            <button class="btn-secondary" onclick="goHome()">
+                Back to Home
+            </button>
 
-<div class="grid">
+            <button class="btn-danger" onclick="clearForm()">
+                Clear Form
+            </button>
 
+            <button class="btn-primary" onclick="openPreview()">
+                Preview & Continue
+            </button>
+        </div>
 
-<div class="field">
+    </div>
 
-<label>
-Student Name <span class="required">*</span>
-</label>
 
-<input
-type="text"
-id="student_name"
-required
-placeholder="Enter Student Name">
+    <!-- PREVIEW -->
+    <div class="card hidden" id="previewCard">
 
-</div>
+        <h2>Application Preview</h2>
 
+        <p class="small-note">
+            Please check all details carefully before proceeding to payment.
+        </p>
 
-<div class="field">
+        <div id="previewContent"></div>
 
-<label>
-Date of Birth <span class="required">*</span>
-</label>
+        <div id="previewMessage" class="message"></div>
 
-<input
-type="date"
-id="dob"
-required>
+        <div class="buttons no-print">
 
-</div>
+            <button class="btn-secondary" onclick="editApplication()">
+                Edit Application
+            </button>
 
+            <button class="btn-success" onclick="confirmAndProceedToPayment()">
+                Confirm & Proceed
+            </button>
 
-<div class="field">
+        </div>
 
-<label>
-Gender <span class="required">*</span>
-</label>
+    </div>
 
-<select id="gender" required>
 
-<option value="">Select Gender</option>
-<option value="Male">Male</option>
-<option value="Female">Female</option>
-<option value="Other">Other</option>
+    <!-- PAYMENT -->
+    <div class="card hidden" id="paymentCard">
 
-</select>
+        <h2>Application Fee Payment</h2>
 
-</div>
+        <div class="payment-box">
 
+            <p>
+                Online Admission Application Fee
+            </p>
 
-<div class="field">
+            <div class="amount">₹10</div>
 
-<label>
-Applying For Class <span class="required">*</span>
-</label>
+            <p>
+                Session: <strong>2026-27</strong>
+            </p>
 
-<select id="class_name" required>
+            <p class="small-note">
+                After successful payment your application will be saved
+                automatically.
+            </p>
 
-<option value="">Select Class</option>
+            <div id="paymentMessage" class="message"></div>
 
-<option>Nursery</option>
-<option>LKG</option>
-<option>UKG</option>
-<option>1st</option>
-<option>2nd</option>
-<option>3rd</option>
-<option>4th</option>
-<option>5th</option>
-<option>6th</option>
-<option>7th</option>
-<option>8th</option>
-<option>9th</option>
-<option>10th</option>
+            <div class="buttons">
 
-</select>
+                <button class="btn-secondary" onclick="backToPreview()">
+                    Back to Preview
+                </button>
 
-</div>
+                <button class="btn-success" id="payButton" onclick="startPayment()">
+                    Pay ₹10
+                </button>
 
+            </div>
 
-<div class="field">
+        </div>
 
-<label>
-Previous School
-</label>
+    </div>
 
-<input
-type="text"
-id="previous_school"
-placeholder="Previous School Name">
 
-</div>
+    <!-- CONFIRMATION -->
+    <div class="card hidden" id="confirmationCard">
 
+        <div class="confirmation">
 
-<div class="field">
+            <div class="success-icon">✓</div>
 
-<label>
-Previous Class
-</label>
+            <h2>Application Submitted Successfully</h2>
 
-<input
-type="text"
-id="previous_class"
-placeholder="Previous Class">
+            <p>
+                Your online admission application has been successfully
+                submitted.
+            </p>
 
-</div>
+            <div class="application-number">
 
+                <div>Application Number</div>
 
-<div class="field">
+                <strong id="confirmationApplicationNo">
+                    -
+                </strong>
 
-<label>
-Student Aadhaar Number
-</label>
+                <div class="small-note">
+                    Please keep this number safe for future reference.
+                </div>
 
-<input
-type="text"
-id="aadhaar"
-maxlength="12"
-placeholder="12 digit Aadhaar">
+            </div>
 
-</div>
+            <p>
+                Payment ID:
+                <strong id="confirmationPaymentId">-</strong>
+            </p>
 
+            <p>
+                Payment Status:
+                <strong>Success</strong>
+            </p>
 
-<div class="field">
+            <div id="confirmationMessage"
+                 class="message success"
+                 style="display:block;margin-top:20px;">
+            </div>
 
-<label>
-Blood Group
-</label>
+            <div class="buttons no-print">
 
-<select id="blood">
+                <button class="btn-primary"
+                        onclick="printApplication()">
+                    Print Application
+                </button>
 
-<option value="">Select</option>
-<option>A+</option>
-<option>A-</option>
-<option>B+</option>
-<option>B-</option>
-<option>AB+</option>
-<option>AB-</option>
-<option>O+</option>
-<option>O-</option>
+                <button class="btn-success"
+                        onclick="printReceipt()">
+                    Print Payment Receipt
+                </button>
 
-</select>
+                <button class="btn-secondary"
+                        onclick="location.reload()">
+                    New Application
+                </button>
 
-</div>
+            </div>
 
+        </div>
 
-<div class="field full photo-box">
-
-<label>
-Student Photo
-</label>
-
-<input
-type="file"
-id="photo"
-accept="image/*"
-onchange="previewPhoto()">
-
-<img
-id="photoPreview"
-class="photo-preview"
-alt="Student Photo">
-
-</div>
-
-</div>
-
-
-<div class="section-title">
-Parent / Guardian Details
-</div>
-
-
-<div class="grid">
-
-
-<div class="field">
-
-<label>
-Father's Name <span class="required">*</span>
-</label>
-
-<input
-type="text"
-id="father_name"
-required
-placeholder="Father's Name">
-
-</div>
-
-
-<div class="field">
-
-<label>
-Mother's Name <span class="required">*</span>
-</label>
-
-<input
-type="text"
-id="mother_name"
-required
-placeholder="Mother's Name">
-
-</div>
-
-
-<div class="field">
-
-<label>
-Parent Mobile <span class="required">*</span>
-</label>
-
-<input
-type="tel"
-id="mobile"
-maxlength="10"
-required
-placeholder="10 digit mobile number">
-
-</div>
-
-
-<div class="field">
-
-<label>
-Parent Email
-</label>
-
-<input
-type="email"
-id="email"
-placeholder="Email Address">
-
-</div>
-
-
-<div class="field full">
-
-<label>
-Address <span class="required">*</span>
-</label>
-
-<textarea
-id="address"
-required
-placeholder="Complete Address"></textarea>
-
-</div>
-
-
-<div class="field">
-
-<label>
-City / Village
-</label>
-
-<input
-type="text"
-id="city"
-placeholder="City / Village">
-
-</div>
-
-
-<div class="field">
-
-<label>
-PIN Code
-</label>
-
-<input
-type="text"
-id="pincode"
-maxlength="6"
-placeholder="PIN Code">
-
-</div>
-
-</div>
-
-
-<div class="section-title">
-Other Information
-</div>
-
-
-<div class="grid">
-
-
-<div class="field">
-
-<label>
-Transport Required?
-</label>
-
-<select id="transport">
-
-<option value="No">No</option>
-<option value="Yes">Yes</option>
-
-</select>
-
-</div>
-
-
-<div class="field">
-
-<label>
-Emergency Contact
-</label>
-
-<input
-type="tel"
-id="emergency"
-maxlength="10"
-placeholder="Emergency Contact">
-
-</div>
-
-
-<div class="field full">
-
-<label>
-Any Other Information
-</label>
-
-<textarea
-id="remarks"
-placeholder="Any additional information"></textarea>
-
-</div>
-
-</div>
-
-
-<div class="payment-box">
-
-<h2>Review Your Application</h2>
-
-<p>
-Please check your application details before proceeding to payment.
-</p>
-
-<p>
-<strong>
-Payment will appear only after you confirm your details.
-</strong>
-</p>
-
-
-<button
-type="button"
-class="pay-btn"
-onclick="openPreview()">
-
-Preview & Continue
-
-</button>
-
-<br><br>
-
-<button
-type="button"
-class="clear-btn"
-onclick="clearForm()">
-
-Clear Form
-
-</button>
-
-</div>
-
-</div>
-
-
-<!-- ==================================================
-     PREVIEW CARD
-================================================== -->
-
-<div
-class="card"
-id="previewCard"
-style="display:none;">
-
-<div class="preview-header">
-
-<img src="logo.png" alt="School Logo">
-
-<h2>
-Rainbow Public School
-</h2>
-
-<div>
-Conducted by Shubhi Education Foundation, Dahod
-</div>
-
-<div style="font-size:13px;margin-top:5px;">
-Shalimar Co-operative Society, Muvaliya Road,
-Rabdal, Dahod, Gujarat - 389151
-</div>
-
-</div>
-
-
-<h2 class="title">
-APPLICATION PREVIEW
-</h2>
-
-
-<p style="text-align:center;color:#475569;">
-Please carefully check all details before payment.
-</p>
-
-
-<div class="preview-photo-box">
-
-<div id="previewPhotoContainer"></div>
-
-</div>
-
-
-<div id="previewContent"></div>
-
-
-<div class="confirm-box">
-
-<label>
-
-<input
-type="checkbox"
-id="confirmDetails"
-onchange="toggleConfirmButton()">
-
-<span>
-I have checked all the details above and confirm that
-they are correct.
-</span>
-
-</label>
-
-</div>
-
-
-<div class="preview-buttons">
-
-<button
-type="button"
-class="edit-btn"
-onclick="editApplication()">
-
-← Edit Application
-
-</button>
-
-
-<button
-type="button"
-class="confirm-btn"
-id="confirmPaymentButton"
-onclick="confirmAndProceedToPayment()"
-disabled>
-
-✓ Confirm & Proceed to Payment ₹10
-
-</button>
-
-</div>
-
-</div>
-
-
-<!-- ==================================================
-     PAYMENT CARD
-================================================== -->
-
-<div
-class="card payment-card"
-id="paymentCard">
-
-<div class="payment-box">
-
-<h2>
-Application Confirmation Fee
-</h2>
-
-
-<div class="amount">
-₹10
-</div>
-
-
-<p class="payment-note">
-
-Your application details have been confirmed.
-
-<br>
-
-Complete the secure Razorpay payment to submit
-your admission application.
-
-</p>
-
-
-<p>
-<strong>
-Application will be saved after successful payment.
-</strong>
-</p>
-
-
-<button
-type="button"
-class="pay-btn"
-id="payButton"
-onclick="startPayment()">
-
-Pay ₹10 & Submit Application
-
-</button>
-
-
-<br><br>
-
-
-<button
-type="button"
-class="clear-btn"
-onclick="backToPreview()">
-
-← Back to Preview
-
-</button>
-
-</div>
-
-</div>
-
-
-<!-- ==================================================
-     CONFIRMATION
-================================================== -->
-
-<div
-class="card confirmation"
-id="confirmationCard">
-
-<h2>
-✓ Application Submitted Successfully
-</h2>
-
-<p>
-Thank you. Your admission application has been received.
-</p>
-
-
-<div
-id="confirmationPhotoBox"
-class="confirmation-photo-box"
-style="display:none;">
-
-<div style="font-weight:bold;margin-bottom:10px;">
-Student Photo
-</div>
-
-<img
-id="confirmationStudentPhoto"
-class="confirmation-photo"
-alt="Student Photo">
-
-</div>
-
-
-<div class="application-number">
-
-Application No.:
-<span id="applicationNo"></span>
-
-</div>
-
-
-<p>
-Payment Status:
-<strong style="color:green;">
-PAID
-</strong>
-</p>
-
-
-<p>
-Payment ID:
-<span id="paymentId"></span>
-</p>
-
-
-<p>
-Confirmation Fee:
-<strong>₹10</strong>
-</p>
-
-
-<br>
-
-
-<button
-class="print-btn"
-onclick="printApplication()">
-
-Print Application Form
-
-</button>
-
-
-<button
-class="print-btn"
-onclick="printReceipt()">
-
-Print Payment Receipt
-
-</button>
-
-
-<br><br>
-
-
-<button
-class="clear-btn"
-onclick="location.reload()">
-
-New Application
-
-</button>
-
-</div>
+    </div>
 
 </div>
 
 
 <footer>
-© Shubhi Education Foundation
+    © 2026 Rainbow Public School | Conducted by Shubhi Education Foundation, Dahod
 </footer>
 
 
-<!-- =====================================================
-     JAVASCRIPT
-===================================================== -->
-
-```html
 <script>
 
 /* =====================================================
-   SUPABASE
+   SUPABASE CONFIGURATION
 ===================================================== */
 
 const SUPABASE_URL =
     "https://kqahcvaoxnmxfcgyyync.supabase.co";
 
-const SUPABASE_PUBLISHABLE_KEY =
+const SUPABASE_KEY =
     "sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl";
 
-const sb =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
-    );
-
 
 /* =====================================================
-   SETTINGS
+   RAZORPAY
 ===================================================== */
+
+const RAZORPAY_KEY =
+    "rzp_live_SeDR91zuvNa9fG";
 
 const APPLICATION_FEE = 10;
-const CURRENT_SESSION = "2026-27";
+
+const SESSION = "2026-27";
 
 
 /* =====================================================
-   BACK HOME
+   SUPABASE REQUEST HELPER
 ===================================================== */
 
-function goHome(){
+async function supabaseRequest(
+    endpoint,
+    options = {}
+){
 
-    window.location.href = "index.html";
+    const response = await fetch(
+        SUPABASE_URL + endpoint,
+        {
+            ...options,
 
-}
+            headers:{
+                "apikey":SUPABASE_KEY,
+                "Authorization":
+                    "Bearer " + SUPABASE_KEY,
+                "Content-Type":"application/json",
+                ...(options.headers || {})
+            }
+        }
+    );
 
+    const text = await response.text();
 
-/* =====================================================
-   PHOTO PREVIEW
-===================================================== */
+    let data = null;
 
-function previewPhoto(){
-
-    const file =
-        document.getElementById("photo").files[0];
-
-    const img =
-        document.getElementById("photoPreview");
-
-    if(!file){
-
-        img.style.display = "none";
-        img.src = "";
-
-        return;
+    try{
+        data = text ? JSON.parse(text) : null;
+    }catch(e){
+        data = text;
     }
 
-    if(!file.type.startsWith("image/")){
+    if(!response.ok){
 
-        showMessage(
-            "Please select a valid image file.",
-            "error"
-        );
+        let message =
+            data?.message ||
+            data?.error_description ||
+            data?.hint ||
+            data?.error ||
+            "Supabase request failed";
 
-        document.getElementById("photo").value = "";
-
-        img.style.display = "none";
-        img.src = "";
-
-        return;
+        throw new Error(message);
     }
 
-    const reader =
-        new FileReader();
-
-    reader.onload = function(e){
-
-        img.src = e.target.result;
-        img.style.display = "block";
-
-    };
-
-    reader.readAsDataURL(file);
-
+    return data;
 }
 
 
@@ -1256,71 +811,183 @@ function previewPhoto(){
 
 function createApplicationNumber(){
 
-    const date = new Date();
+    const year = new Date().getFullYear();
+
+    const random =
+        Math.floor(10000 + Math.random() * 90000);
+
+    return "RPS-" + year + "-" + random;
+}
+
+
+/* =====================================================
+   ADMISSION NUMBER
+===================================================== */
+
+function createAdmissionNumber(applicationNo){
+
+    return "ADM-" +
+        applicationNo
+            .replace("RPS-","")
+            .replace(/-/g,"");
+}
+
+
+/* =====================================================
+   RECEIPT NUMBER
+===================================================== */
+
+function createReceiptNumber(applicationNo){
+
+    return "REC-" +
+        applicationNo
+            .replace("RPS-","")
+            .replace(/-/g,"");
+}
+
+
+/* =====================================================
+   DATE FORMAT
+===================================================== */
+
+function formatDatePrint(value){
+
+    if(!value){
+        return "";
+    }
+
+    const date = new Date(value);
+
+    if(isNaN(date.getTime())){
+        return value;
+    }
+
+    const day =
+        String(date.getDate()).padStart(2,"0");
+
+    const month =
+        String(date.getMonth()+1).padStart(2,"0");
 
     const year =
         date.getFullYear();
 
-    const random =
-        Math.floor(
-            10000 +
-            Math.random() * 90000
-        );
-
-    return "RPS-" + year + "-" + random;
-
+    return day + "/" + month + "/" + year;
 }
 
 
 /* =====================================================
-   DETERMINISTIC ADMISSION NUMBER
-   Same application = same admission number
+   ESCAPE HTML
 ===================================================== */
 
-function createAdmissionNumberFromApplication(applicationNo){
+function escapeHtml(value){
 
-    return "ADM-" +
-        String(applicationNo)
-        .replace("RPS-","");
+    if(value === null ||
+       value === undefined){
+        return "";
+    }
 
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 }
 
 
 /* =====================================================
-   DETERMINISTIC RECEIPT NUMBER
-   Same application = same receipt number
+   ESCAPE PRINT
 ===================================================== */
 
-function createReceiptNumberFromApplication(applicationNo){
+function escapePrint(value){
 
-    return "REC-" +
-        String(applicationNo)
-        .replace("RPS-","");
-
+    return escapeHtml(value);
 }
 
 
 /* =====================================================
-   MESSAGE
+   SHOW MESSAGE
 ===================================================== */
 
-function showMessage(text,type){
+function showMessage(
+    elementId,
+    message,
+    type = "error"
+){
 
-    const box =
-        document.getElementById("message");
+    const element =
+        document.getElementById(elementId);
 
-    box.textContent = text;
+    if(!element){
+        return;
+    }
 
-    box.className =
+    element.className =
         "message " + type;
 
-    box.style.display = "block";
+    element.innerHTML = message;
 
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
+    element.style.display = "block";
+}
 
+
+/* =====================================================
+   HIDE MESSAGE
+===================================================== */
+
+function hideMessage(elementId){
+
+    const element =
+        document.getElementById(elementId);
+
+    if(element){
+        element.style.display = "none";
+    }
+}
+
+
+/* =====================================================
+   PHOTO PREVIEW
+===================================================== */
+
+function previewPhoto(event){
+
+    const file =
+        event.target.files[0];
+
+    const preview =
+        document.getElementById("photoPreview");
+
+    if(!file){
+
+        preview.innerHTML =
+            "Photo Preview";
+
+        return;
+    }
+
+    if(!file.type.startsWith("image/")){
+
+        preview.innerHTML =
+            "Invalid image";
+
+        event.target.value = "";
+
+        return;
+    }
+
+    const reader =
+        new FileReader();
+
+    reader.onload = function(e){
+
+        preview.innerHTML =
+            '<img src="' +
+            e.target.result +
+            '" alt="Student Photo">';
+    };
+
+    reader.readAsDataURL(file);
 }
 
 
@@ -1330,125 +997,198 @@ function showMessage(text,type){
 
 function validateForm(){
 
-    const name =
+    const studentName =
         document.getElementById("student_name")
-        .value.trim();
+            .value.trim();
 
     const dob =
         document.getElementById("dob")
-        .value;
-
-    const gender =
-        document.getElementById("gender")
-        .value;
+            .value;
 
     const className =
         document.getElementById("class_name")
-        .value;
+            .value;
 
-    const father =
+    const fatherName =
         document.getElementById("father_name")
-        .value.trim();
+            .value.trim();
 
-    const mother =
+    const motherName =
         document.getElementById("mother_name")
-        .value.trim();
+            .value.trim();
 
     const mobile =
         document.getElementById("mobile")
-        .value.trim();
+            .value.trim();
 
     const address =
         document.getElementById("address")
-        .value.trim();
+            .value.trim();
 
-    if(
-        !name ||
-        !dob ||
-        !gender ||
-        !className ||
-        !father ||
-        !mother ||
-        !mobile ||
-        !address
-    ){
+
+    if(!studentName){
 
         showMessage(
-            "Please fill all required fields.",
-            "error"
+            "formMessage",
+            "Please enter student name."
         );
 
         return false;
-
     }
+
+
+    if(!dob){
+
+        showMessage(
+            "formMessage",
+            "Please select date of birth."
+        );
+
+        return false;
+    }
+
+
+    if(!className){
+
+        showMessage(
+            "formMessage",
+            "Please select class."
+        );
+
+        return false;
+    }
+
+
+    if(!fatherName){
+
+        showMessage(
+            "formMessage",
+            "Please enter father's name."
+        );
+
+        return false;
+    }
+
+
+    if(!motherName){
+
+        showMessage(
+            "formMessage",
+            "Please enter mother's name."
+        );
+
+        return false;
+    }
+
 
     if(!/^[0-9]{10}$/.test(mobile)){
 
         showMessage(
-            "Please enter a valid 10 digit mobile number.",
-            "error"
+            "formMessage",
+            "Please enter a valid 10 digit mobile number."
         );
 
         return false;
-
     }
 
-    const aadhaar =
-        document.getElementById("aadhaar")
-        .value.trim();
 
-    if(
-        aadhaar &&
-        !/^[0-9]{12}$/.test(aadhaar)
-    ){
+    if(!address){
 
         showMessage(
-            "Aadhaar number must contain 12 digits.",
-            "error"
+            "formMessage",
+            "Please enter address."
         );
 
         return false;
-
     }
 
-    const pincode =
-        document.getElementById("pincode")
-        .value.trim();
 
-    if(
-        pincode &&
-        !/^[0-9]{6}$/.test(pincode)
-    ){
-
-        showMessage(
-            "Please enter a valid 6 digit PIN Code.",
-            "error"
-        );
-
-        return false;
-
-    }
-
-    const emergency =
-        document.getElementById("emergency")
-        .value.trim();
-
-    if(
-        emergency &&
-        !/^[0-9]{10}$/.test(emergency)
-    ){
-
-        showMessage(
-            "Please enter a valid 10 digit emergency contact.",
-            "error"
-        );
-
-        return false;
-
-    }
+    hideMessage("formMessage");
 
     return true;
+}
 
+
+/* =====================================================
+   GET FORM DATA
+===================================================== */
+
+function getFormData(){
+
+    return {
+
+        student_name:
+            document.getElementById("student_name")
+                .value.trim(),
+
+        dob:
+            document.getElementById("dob")
+                .value,
+
+        gender:
+            document.getElementById("gender")
+                .value,
+
+        class_name:
+            document.getElementById("class_name")
+                .value,
+
+        previous_school:
+            document.getElementById("previous_school")
+                .value.trim(),
+
+        previous_class:
+            document.getElementById("previous_class")
+                .value.trim(),
+
+        aadhaar:
+            document.getElementById("aadhaar")
+                .value.trim(),
+
+        blood:
+            document.getElementById("blood")
+                .value,
+
+        father_name:
+            document.getElementById("father_name")
+                .value.trim(),
+
+        mother_name:
+            document.getElementById("mother_name")
+                .value.trim(),
+
+        mobile:
+            document.getElementById("mobile")
+                .value.trim(),
+
+        email:
+            document.getElementById("email")
+                .value.trim(),
+
+        address:
+            document.getElementById("address")
+                .value.trim(),
+
+        city:
+            document.getElementById("city")
+                .value.trim(),
+
+        pincode:
+            document.getElementById("pincode")
+                .value.trim(),
+
+        transport:
+            document.getElementById("transport")
+                .value,
+
+        emergency:
+            document.getElementById("emergency")
+                .value.trim(),
+
+        remarks:
+            document.getElementById("remarks")
+                .value.trim()
+    };
 }
 
 
@@ -1459,139 +1199,157 @@ function validateForm(){
 function openPreview(){
 
     if(!validateForm()){
-
         return;
-
     }
 
-    fillPreview();
+    const data =
+        getFormData();
 
-    document.getElementById("formCard").style.display = "none";
-    document.getElementById("previewCard").style.display = "block";
-    document.getElementById("paymentCard").style.display = "none";
-    document.getElementById("confirmationCard").style.display = "none";
+    let photoHtml = "Not uploaded";
 
-    document.getElementById("confirmDetails").checked = false;
+    const file =
+        document.getElementById("photo")
+            .files[0];
 
-    toggleConfirmButton();
+    if(file){
 
-    document.getElementById("message").style.display = "none";
+        const imageUrl =
+            document.getElementById("photoPreview")
+                .querySelector("img");
+
+        if(imageUrl){
+
+            photoHtml =
+                '<img class="preview-photo" src="' +
+                imageUrl.src +
+                '" alt="Student Photo">';
+        }
+    }
+
+
+    const html = `
+
+        <table class="preview-table">
+
+            <tr>
+                <td>Student Photo</td>
+                <td>${photoHtml}</td>
+            </tr>
+
+            <tr>
+                <td>Student Name</td>
+                <td>${escapeHtml(data.student_name)}</td>
+            </tr>
+
+            <tr>
+                <td>Date of Birth</td>
+                <td>${formatDatePrint(data.dob)}</td>
+            </tr>
+
+            <tr>
+                <td>Gender</td>
+                <td>${escapeHtml(data.gender)}</td>
+            </tr>
+
+            <tr>
+                <td>Class Applied For</td>
+                <td>${escapeHtml(data.class_name)}</td>
+            </tr>
+
+            <tr>
+                <td>Previous School</td>
+                <td>${escapeHtml(data.previous_school)}</td>
+            </tr>
+
+            <tr>
+                <td>Previous Class</td>
+                <td>${escapeHtml(data.previous_class)}</td>
+            </tr>
+
+            <tr>
+                <td>Aadhaar</td>
+                <td>${escapeHtml(data.aadhaar)}</td>
+            </tr>
+
+            <tr>
+                <td>Blood Group</td>
+                <td>${escapeHtml(data.blood)}</td>
+            </tr>
+
+            <tr>
+                <td>Father's Name</td>
+                <td>${escapeHtml(data.father_name)}</td>
+            </tr>
+
+            <tr>
+                <td>Mother's Name</td>
+                <td>${escapeHtml(data.mother_name)}</td>
+            </tr>
+
+            <tr>
+                <td>Mobile</td>
+                <td>${escapeHtml(data.mobile)}</td>
+            </tr>
+
+            <tr>
+                <td>Email</td>
+                <td>${escapeHtml(data.email)}</td>
+            </tr>
+
+            <tr>
+                <td>Address</td>
+                <td>${escapeHtml(data.address)}</td>
+            </tr>
+
+            <tr>
+                <td>City</td>
+                <td>${escapeHtml(data.city)}</td>
+            </tr>
+
+            <tr>
+                <td>Pincode</td>
+                <td>${escapeHtml(data.pincode)}</td>
+            </tr>
+
+            <tr>
+                <td>Transport</td>
+                <td>${escapeHtml(data.transport)}</td>
+            </tr>
+
+            <tr>
+                <td>Emergency Contact</td>
+                <td>${escapeHtml(data.emergency)}</td>
+            </tr>
+
+            <tr>
+                <td>Remarks</td>
+                <td>${escapeHtml(data.remarks)}</td>
+            </tr>
+
+        </table>
+    `;
+
+
+    document.getElementById("previewContent")
+        .innerHTML = html;
+
+
+    document.getElementById("formCard")
+        .classList.add("hidden");
+
+    document.getElementById("paymentCard")
+        .classList.add("hidden");
+
+    document.getElementById("confirmationCard")
+        .classList.add("hidden");
+
+    document.getElementById("previewCard")
+        .classList.remove("hidden");
 
     window.scrollTo({
         top:0,
         behavior:"smooth"
     });
-
-}
-
-
-/* =====================================================
-   FILL PREVIEW
-===================================================== */
-
-function fillPreview(){
-
-    const photo =
-        document.getElementById("photoPreview");
-
-    const photoContainer =
-        document.getElementById("previewPhotoContainer");
-
-    if(
-        photo &&
-        photo.src &&
-        photo.src.startsWith("data:image")
-    ){
-
-        photoContainer.innerHTML = `
-            <img
-                src="${photo.src}"
-                class="preview-photo"
-                alt="Student Photo">
-        `;
-
-    }else{
-
-        photoContainer.innerHTML = `
-            <div class="no-photo">
-                No Photo Selected
-            </div>
-        `;
-
-    }
-
-    const fields = [
-
-        ["Student Name","student_name"],
-        ["Date of Birth","dob"],
-        ["Gender","gender"],
-        ["Applying For Class","class_name"],
-        ["Previous School","previous_school"],
-        ["Previous Class","previous_class"],
-        ["Aadhaar Number","aadhaar"],
-        ["Blood Group","blood"],
-        ["Father's Name","father_name"],
-        ["Mother's Name","mother_name"],
-        ["Parent Mobile","mobile"],
-        ["Parent Email","email"],
-        ["Address","address"],
-        ["City / Village","city"],
-        ["PIN Code","pincode"],
-        ["Transport Required","transport"],
-        ["Emergency Contact","emergency"],
-        ["Other Information","remarks"]
-
-    ];
-
-    let html = `<table class="preview-table">`;
-
-    fields.forEach(function(item){
-
-        const label = item[0];
-        const id = item[1];
-
-        let value =
-            document.getElementById(id).value.trim();
-
-        if(id === "dob"){
-
-            value = formatDatePrint(value);
-
-        }
-
-        html += `
-            <tr>
-                <td>${escapePrint(label)}</td>
-                <td>${escapePrint(value)}</td>
-            </tr>
-        `;
-
-    });
-
-    html += `</table>`;
-
-    document.getElementById(
-        "previewContent"
-    ).innerHTML = html;
-
-}
-
-
-/* =====================================================
-   CONFIRM CHECKBOX
-===================================================== */
-
-function toggleConfirmButton(){
-
-    const checkbox =
-        document.getElementById("confirmDetails");
-
-    const button =
-        document.getElementById("confirmPaymentButton");
-
-    button.disabled =
-        !checkbox.checked;
-
 }
 
 
@@ -1601,47 +1359,39 @@ function toggleConfirmButton(){
 
 function editApplication(){
 
-    document.getElementById("previewCard").style.display = "none";
-    document.getElementById("paymentCard").style.display = "none";
-    document.getElementById("formCard").style.display = "block";
+    document.getElementById("previewCard")
+        .classList.add("hidden");
+
+    document.getElementById("formCard")
+        .classList.remove("hidden");
 
     window.scrollTo({
         top:0,
         behavior:"smooth"
     });
-
 }
 
 
 /* =====================================================
-   CONFIRM AND PROCEED
+   CONFIRM & PROCEED
 ===================================================== */
 
 function confirmAndProceedToPayment(){
 
-    const checkbox =
-        document.getElementById("confirmDetails");
-
-    if(!checkbox.checked){
-
-        showMessage(
-            "Please confirm that all details are correct.",
-            "error"
-        );
-
+    if(!validateForm()){
         return;
-
     }
 
-    document.getElementById("previewCard").style.display = "none";
-    document.getElementById("formCard").style.display = "none";
-    document.getElementById("paymentCard").style.display = "block";
+    document.getElementById("previewCard")
+        .classList.add("hidden");
+
+    document.getElementById("paymentCard")
+        .classList.remove("hidden");
 
     window.scrollTo({
         top:0,
         behavior:"smooth"
     });
-
 }
 
 
@@ -1651,256 +1401,16 @@ function confirmAndProceedToPayment(){
 
 function backToPreview(){
 
-    document.getElementById("paymentCard").style.display = "none";
-    document.getElementById("previewCard").style.display = "block";
+    document.getElementById("paymentCard")
+        .classList.add("hidden");
+
+    document.getElementById("previewCard")
+        .classList.remove("hidden");
 
     window.scrollTo({
         top:0,
         behavior:"smooth"
     });
-
-}
-
-
-/* =====================================================
-   START RAZORPAY
-===================================================== */
-
-function startPayment(){
-
-    if(!validateForm()){
-
-        return;
-
-    }
-
-    const payButton =
-        document.getElementById("payButton");
-
-    payButton.disabled = true;
-
-    payButton.textContent =
-        "Opening Payment...";
-
-
-    /*
-       Application number is generated BEFORE payment.
-       It is sent to Razorpay Notes and then reused
-       for all database records.
-    */
-
-    const applicationNo =
-        createApplicationNumber();
-
-
-    const name =
-        document.getElementById("student_name")
-        .value.trim();
-
-    const email =
-        document.getElementById("email")
-        .value.trim();
-
-    const mobile =
-        document.getElementById("mobile")
-        .value.trim();
-
-
-    const options = {
-
-        key:
-        "rzp_live_SeDR91zuvNa9fG",
-
-        amount:
-        APPLICATION_FEE * 100,
-
-        currency:
-        "INR",
-
-        name:
-        "Rainbow Public School",
-
-        description:
-        "Online Admission Application Fee",
-
-        image:
-        "logo.png",
-
-        prefill:{
-
-            name:name,
-            email:email,
-            contact:mobile
-
-        },
-
-        notes:{
-
-            application_no:
-            applicationNo,
-
-            purpose:
-            "Admission Application"
-
-        },
-
-        theme:{
-
-            color:"#003b70"
-
-        },
-
-        handler:
-        async function(response){
-
-            console.log(
-                "Razorpay payment response:",
-                response
-            );
-
-            showMessage(
-                "Payment successful. Saving application...",
-                "info"
-            );
-
-            await saveApplication(
-                applicationNo,
-                response
-            );
-
-        },
-
-        modal:{
-
-            ondismiss:function(){
-
-                payButton.disabled = false;
-
-                payButton.textContent =
-                    "Pay ₹10 & Submit Application";
-
-                showMessage(
-                    "Payment cancelled.",
-                    "error"
-                );
-
-            }
-
-        }
-
-    };
-
-
-    const rzp =
-        new Razorpay(options);
-
-
-    rzp.on(
-        "payment.failed",
-        function(response){
-
-            console.error(
-                "Payment Failed:",
-                response
-            );
-
-            payButton.disabled = false;
-
-            payButton.textContent =
-                "Pay ₹10 & Submit Application";
-
-            showMessage(
-                "Payment failed. Please try again.",
-                "error"
-            );
-
-        }
-    );
-
-
-    rzp.open();
-
-}
-
-
-/* =====================================================
-   TODAY DATE
-===================================================== */
-
-function getTodayISO(){
-
-    const d = new Date();
-
-    const year =
-        d.getFullYear();
-
-    const month =
-        String(d.getMonth() + 1)
-        .padStart(2,"0");
-
-    const day =
-        String(d.getDate())
-        .padStart(2,"0");
-
-    return year + "-" + month + "-" + day;
-
-}
-
-
-/* =====================================================
-   AGE
-===================================================== */
-
-function calculateAge(dob){
-
-    if(!dob){
-
-        return "";
-
-    }
-
-    const birth =
-        new Date(dob);
-
-    const today =
-        new Date();
-
-    let age =
-        today.getFullYear() -
-        birth.getFullYear();
-
-    const month =
-        today.getMonth() -
-        birth.getMonth();
-
-    if(
-        month < 0 ||
-        (
-            month === 0 &&
-            today.getDate() < birth.getDate()
-        )
-    ){
-
-        age--;
-
-    }
-
-    return age >= 0
-        ? String(age)
-        : "";
-
-}
-
-
-/* =====================================================
-   SAFE FILE NAME
-===================================================== */
-
-function safeFileName(value){
-
-    return String(value || "")
-        .replace(/[^a-zA-Z0-9_-]/g,"-");
-
 }
 
 
@@ -1910,17 +1420,7 @@ function safeFileName(value){
 
 function compressImage(file){
 
-    return new Promise(function(resolve,reject){
-
-        if(
-            !file ||
-            !file.type.startsWith("image/")
-        ){
-
-            resolve(file);
-            return;
-
-        }
+    return new Promise((resolve,reject)=>{
 
         const reader =
             new FileReader();
@@ -1932,39 +1432,50 @@ function compressImage(file){
 
             img.onload = function(){
 
+                const maxSize = 1000;
+
                 let width =
                     img.width;
 
                 let height =
                     img.height;
 
-                const maxWidth = 500;
-                const maxHeight = 600;
 
-                if(
-                    width > maxWidth ||
-                    height > maxHeight
-                ){
+                if(width > maxSize ||
+                   height > maxSize){
 
-                    const ratio =
-                        Math.min(
-                            maxWidth / width,
-                            maxHeight / height
-                        );
+                    if(width > height){
 
-                    width =
-                        Math.round(width * ratio);
+                        height =
+                            height *
+                            maxSize /
+                            width;
 
-                    height =
-                        Math.round(height * ratio);
+                        width =
+                            maxSize;
 
+                    }else{
+
+                        width =
+                            width *
+                            maxSize /
+                            height;
+
+                        height =
+                            maxSize;
+                    }
                 }
+
 
                 const canvas =
                     document.createElement("canvas");
 
-                canvas.width = width;
-                canvas.height = height;
+                canvas.width =
+                    width;
+
+                canvas.height =
+                    height;
+
 
                 const ctx =
                     canvas.getContext("2d");
@@ -1976,6 +1487,7 @@ function compressImage(file){
                     width,
                     height
                 );
+
 
                 canvas.toBlob(
                     function(blob){
@@ -1989,133 +1501,115 @@ function compressImage(file){
                             );
 
                             return;
-
                         }
 
-                        resolve(
-                            new File(
-                                [blob],
-                                "student-photo.jpg",
-                                {
-                                    type:"image/jpeg"
-                                }
-                            )
-                        );
+                        resolve(blob);
 
                     },
                     "image/jpeg",
-                    0.75
+                    0.82
                 );
-
             };
+
 
             img.onerror = function(){
 
                 reject(
-                    new Error("Invalid image")
+                    new Error(
+                        "Invalid image"
+                    )
                 );
-
             };
+
 
             img.src =
                 event.target.result;
-
         };
 
-        reader.onerror = function(){
 
-            reject(
-                new Error("Could not read image")
-            );
-
-        };
+        reader.onerror =
+            reject;
 
         reader.readAsDataURL(file);
-
     });
-
 }
 
 
 /* =====================================================
-   UPLOAD STUDENT PHOTO
+   UPLOAD PHOTO
 ===================================================== */
 
-async function uploadStudentPhoto(
+async function uploadPhoto(
     file,
-    admissionNo
+    bucket,
+    fileName
 ){
 
-    if(!file){
-
-        return "";
-
-    }
-
-    let uploadFile = file;
-
-    try{
-
-        uploadFile =
-            await compressImage(file);
-
-    }
-    catch(error){
-
-        console.log(
-            "Compression skipped:",
-            error
-        );
-
-    }
-
-    const fileName =
-        "students/" +
-        safeFileName(admissionNo) +
-        "-" +
-        Date.now() +
-        ".jpg";
+    const blob =
+        await compressImage(file);
 
 
-    const uploadResult =
-        await sb
-        .storage
-        .from("student-photos")
-        .upload(
+    const response =
+        await fetch(
+            SUPABASE_URL +
+            "/storage/v1/object/" +
+            bucket +
+            "/" +
             fileName,
-            uploadFile,
             {
-                cacheControl:"3600",
-                upsert:false,
-                contentType:"image/jpeg"
+                method:"POST",
+
+                headers:{
+                    "apikey":SUPABASE_KEY,
+                    "Authorization":
+                        "Bearer " + SUPABASE_KEY,
+                    "Content-Type":
+                        "image/jpeg",
+                    "x-upsert":"true"
+                },
+
+                body:blob
             }
         );
 
 
-    if(uploadResult.error){
+    const text =
+        await response.text();
 
-        throw new Error(
-            "Student photo upload failed: " +
-            uploadResult.error.message
-        );
 
+    if(!response.ok){
+
+        let errorMessage =
+            "Photo upload failed";
+
+        try{
+
+            const json =
+                JSON.parse(text);
+
+            errorMessage =
+                json.message ||
+                json.error ||
+                errorMessage;
+
+        }catch(e){}
+
+        throw new Error(errorMessage);
     }
 
 
-    const publicData =
-        sb
-        .storage
-        .from("student-photos")
-        .getPublicUrl(fileName);
-
-
-    return publicData.data.publicUrl;
-
+    return (
+        SUPABASE_URL +
+        "/storage/v1/object/public/" +
+        bucket +
+        "/" +
+        fileName
+    );
 }
 
 
 /* =====================================================
-   CHECK EXISTING APPLICATION
+   GET EXISTING APPLICATION
 ===================================================== */
 
 async function getExistingApplication(
@@ -2123,131 +1617,100 @@ async function getExistingApplication(
     paymentId
 ){
 
-    let query =
-        sb
-        .from("online_admissions")
-        .select("*")
-        .limit(1);
-
+    let query = "";
 
     if(paymentId){
 
         query =
-            query.eq(
-                "payment_id",
-                paymentId
-            );
+            "/rest/v1/online_admissions" +
+            "?payment_id=eq." +
+            encodeURIComponent(paymentId) +
+            "&select=*";
 
     }else{
 
         query =
-            query.eq(
-                "application_no",
-                applicationNo
-            );
-
+            "/rest/v1/online_admissions" +
+            "?application_no=eq." +
+            encodeURIComponent(applicationNo) +
+            "&select=*";
     }
 
 
-    const result =
-        await query;
+    const data =
+        await supabaseRequest(query,{
+            method:"GET"
+        });
 
 
-    if(result.error){
-
-        throw new Error(
-            "Application check failed: " +
-            result.error.message
-        );
-
-    }
-
-
-    return result.data &&
-           result.data.length
-           ? result.data[0]
-           : null;
-
+    return data &&
+           data.length
+        ? data[0]
+        : null;
 }
 
 
 /* =====================================================
-   CHECK EXISTING STUDENT
+   GET EXISTING STUDENT
 ===================================================== */
 
 async function getExistingStudent(
     admissionNo
 ){
 
-    const result =
-        await sb
-        .from("students")
-        .select("*")
-        .eq(
-            "admission_no",
-            admissionNo
-        )
-        .limit(1);
-
-
-    if(result.error){
-
-        throw new Error(
-            "Student check failed: " +
-            result.error.message
+    const data =
+        await supabaseRequest(
+            "/rest/v1/students" +
+            "?admission_no=eq." +
+            encodeURIComponent(admissionNo) +
+            "&select=*",
+            {
+                method:"GET"
+            }
         );
 
-    }
 
-
-    return result.data &&
-           result.data.length
-           ? result.data[0]
-           : null;
-
+    return data &&
+           data.length
+        ? data[0]
+        : null;
 }
 
 
 /* =====================================================
-   CHECK EXISTING FEE
+   GET EXISTING FEE
 ===================================================== */
 
 async function getExistingFee(
     paymentId
 ){
 
-    const result =
-        await sb
-        .from("fees")
-        .select("*")
-        .eq(
-            "transaction_id",
-            paymentId
-        )
-        .limit(1);
-
-
-    if(result.error){
-
-        throw new Error(
-            "Fee check failed: " +
-            result.error.message
-        );
-
+    if(!paymentId){
+        return null;
     }
 
 
-    return result.data &&
-           result.data.length
-           ? result.data[0]
-           : null;
+    const data =
+        await supabaseRequest(
+            "/rest/v1/fees" +
+            "?transaction_id=eq." +
+            encodeURIComponent(paymentId) +
+            "&select=*",
+            {
+                method:"GET"
+            }
+        );
 
+
+    return data &&
+           data.length
+        ? data[0]
+        : null;
 }
 
 
 /* =====================================================
    SAVE APPLICATION
-   RETRY-SAFE VERSION
 ===================================================== */
 
 async function saveApplication(
@@ -2255,811 +1718,619 @@ async function saveApplication(
     paymentResponse
 ){
 
-    const file =
-        document.getElementById("photo").files[0];
-
     const paymentId =
         paymentResponse.razorpay_payment_id;
+
+
+    const data =
+        getFormData();
+
+
+    const admissionNo =
+        createAdmissionNumber(
+            applicationNo
+        );
+
+
+    const receiptNo =
+        createReceiptNumber(
+            applicationNo
+        );
+
+
+    /* -------------------------------------------------
+       CHECK EXISTING APPLICATION
+    ------------------------------------------------- */
+
+    const existingApplication =
+        await getExistingApplication(
+            applicationNo,
+            paymentId
+        );
+
+
+    let photoUrl = "";
+
+
+    /* -------------------------------------------------
+       UPLOAD ADMISSION PHOTO
+    ------------------------------------------------- */
+
+    const photoFile =
+        document.getElementById("photo")
+            .files[0];
+
+
+    if(photoFile){
+
+        try{
+
+            const extension =
+                "jpg";
+
+            const fileName =
+                applicationNo +
+                "." +
+                extension;
+
+
+            photoUrl =
+                await uploadPhoto(
+                    photoFile,
+                    "admission-photos",
+                    fileName
+                );
+
+        }catch(error){
+
+            console.warn(
+                "Admission photo upload failed:",
+                error
+            );
+        }
+    }
+
+
+    /* -------------------------------------------------
+       UPLOAD STUDENT PHOTO
+    ------------------------------------------------- */
+
+    let studentPhotoUrl =
+        photoUrl;
+
+
+    if(photoFile){
+
+        try{
+
+            const fileName =
+                admissionNo +
+                ".jpg";
+
+
+            studentPhotoUrl =
+                await uploadPhoto(
+                    photoFile,
+                    "student-photos",
+                    fileName
+                );
+
+        }catch(error){
+
+            console.warn(
+                "Student photo upload failed:",
+                error
+            );
+        }
+    }
+
+
+    /* -------------------------------------------------
+       SAVE ONLINE ADMISSION
+    ------------------------------------------------- */
+
+    if(!existingApplication){
+
+        const admissionRecord = {
+
+            application_no:
+                applicationNo,
+
+            session:
+                SESSION,
+
+            student_name:
+                data.student_name,
+
+            dob:
+                data.dob || null,
+
+            gender:
+                data.gender || null,
+
+            class_name:
+                data.class_name,
+
+            previous_school:
+                data.previous_school || null,
+
+            previous_class:
+                data.previous_class || null,
+
+            aadhaar:
+                data.aadhaar || null,
+
+            blood_group:
+                data.blood || null,
+
+            father_name:
+                data.father_name,
+
+            mother_name:
+                data.mother_name,
+
+            mobile:
+                data.mobile,
+
+            email:
+                data.email || null,
+
+            address:
+                data.address,
+
+            city:
+                data.city || null,
+
+            pincode:
+                data.pincode || null,
+
+            transport:
+                data.transport,
+
+            emergency_contact:
+                data.emergency || null,
+
+            remarks:
+                data.remarks || null,
+
+            photo_url:
+                photoUrl || null,
+
+            payment_id:
+                paymentId,
+
+            payment_status:
+                "success",
+
+            amount:
+                APPLICATION_FEE
+        };
+
+
+        await supabaseRequest(
+            "/rest/v1/online_admissions",
+            {
+                method:"POST",
+
+                headers:{
+                    "Prefer":
+                        "return=minimal"
+                },
+
+                body:
+                    JSON.stringify(
+                        admissionRecord
+                    )
+            }
+        );
+    }
+
+
+    /* -------------------------------------------------
+       STUDENT MASTER
+    ------------------------------------------------- */
+
+    const existingStudent =
+        await getExistingStudent(
+            admissionNo
+        );
+
+
+    if(!existingStudent){
+
+        const studentRecord = {
+
+            admission_no:
+                admissionNo,
+
+            admission_date:
+                new Date()
+                    .toISOString()
+                    .split("T")[0],
+
+            session:
+                SESSION,
+
+            student_name:
+                data.student_name,
+
+            father_name:
+                data.father_name,
+
+            mother_name:
+                data.mother_name,
+
+            dob:
+                data.dob || null,
+
+            gender:
+                data.gender || null,
+
+            class_name:
+                data.class_name,
+
+            section:
+                "A",
+
+            mobile:
+                data.mobile,
+
+            aadhaar:
+                data.aadhaar || null,
+
+            blood_group:
+                data.blood || null,
+
+            address:
+                data.address,
+
+            city:
+                data.city || null,
+
+            pincode:
+                data.pincode || null,
+
+            previous_school:
+                data.previous_school || null,
+
+            status:
+                "Active",
+
+            photo_url:
+                studentPhotoUrl || null
+        };
+
+
+        await supabaseRequest(
+            "/rest/v1/students",
+            {
+                method:"POST",
+
+                headers:{
+                    "Prefer":
+                        "return=minimal"
+                },
+
+                body:
+                    JSON.stringify(
+                        studentRecord
+                    )
+            }
+        );
+    }
+
+
+    /* -------------------------------------------------
+       FINANCE / FEES
+    ------------------------------------------------- */
+
+    const existingFee =
+        await getExistingFee(
+            paymentId
+        );
+
+
+    if(!existingFee){
+
+        const feeRecord = {
+
+            receipt_no:
+                receiptNo,
+
+            admission_no:
+                admissionNo,
+
+            student_name:
+                data.student_name,
+
+            transaction_id:
+                paymentId,
+
+            amount:
+                APPLICATION_FEE,
+
+            payment_status:
+                "success",
+
+            payment_date:
+                new Date()
+                    .toISOString(),
+
+            fee_type:
+                "Online Admission Application Fee",
+
+            session:
+                SESSION
+        };
+
+
+        await supabaseRequest(
+            "/rest/v1/fees",
+            {
+                method:"POST",
+
+                headers:{
+                    "Prefer":
+                        "return=minimal"
+                },
+
+                body:
+                    JSON.stringify(
+                        feeRecord
+                    )
+            }
+        );
+    }
+
+
+    /* -------------------------------------------------
+       SHOW CONFIRMATION
+    ------------------------------------------------- */
+
+    showConfirmation(
+        applicationNo,
+        admissionNo,
+        receiptNo,
+        paymentId
+    );
+}
+
+
+/* =====================================================
+   START PAYMENT
+===================================================== */
+
+function startPayment(){
+
+    if(!validateForm()){
+        return;
+    }
 
 
     const payButton =
         document.getElementById("payButton");
 
 
-    try{
+    payButton.disabled = true;
 
-        if(!paymentId){
+    payButton.innerHTML =
+        '<span class="loading"></span>Processing...';
 
-            throw new Error(
-                "Razorpay payment ID not received."
-            );
 
-        }
+    const applicationNo =
+        createApplicationNumber();
 
 
-        /* =============================================
-           1. DETERMINISTIC NUMBERS
-        ============================================= */
+    const options = {
 
-        const admissionNo =
-            createAdmissionNumberFromApplication(
-                applicationNo
-            );
+        key:
+            RAZORPAY_KEY,
 
-        const receiptNo =
-            createReceiptNumberFromApplication(
-                applicationNo
-            );
+        amount:
+            APPLICATION_FEE * 100,
 
+        currency:
+            "INR",
 
-        /* =============================================
-           2. READ FORM DATA
-        ============================================= */
+        name:
+            "Rainbow Public School",
 
-        const studentName =
-            document.getElementById("student_name")
-            .value.trim();
+        description:
+            "Online Admission Application Fee",
 
-        const dob =
-            document.getElementById("dob")
-            .value;
+        image:
+            "logo.png",
 
-        const gender =
-            document.getElementById("gender")
-            .value;
+        handler:
+            async function(response){
 
-        const className =
-            document.getElementById("class_name")
-            .value;
+                try{
 
-        const previousSchool =
-            document.getElementById("previous_school")
-            .value.trim();
+                    payButton.innerHTML =
+                        '<span class="loading"></span>Saving...';
 
-        const previousClass =
-            document.getElementById("previous_class")
-            .value.trim();
 
-        const fatherName =
-            document.getElementById("father_name")
-            .value.trim();
-
-        const motherName =
-            document.getElementById("mother_name")
-            .value.trim();
-
-        const mobile =
-            document.getElementById("mobile")
-            .value.trim();
-
-        const email =
-            document.getElementById("email")
-            .value.trim();
-
-        const address =
-            document.getElementById("address")
-            .value.trim();
-
-        const aadhaar =
-            document.getElementById("aadhaar")
-            .value.trim();
-
-        const blood =
-            document.getElementById("blood")
-            .value;
-
-        const transport =
-            document.getElementById("transport")
-            .value;
-
-        const city =
-            document.getElementById("city")
-            .value.trim();
-
-        const pincode =
-            document.getElementById("pincode")
-            .value.trim();
-
-        const emergency =
-            document.getElementById("emergency")
-            .value.trim();
-
-        const remarks =
-            document.getElementById("remarks")
-            .value.trim();
-
-
-        /* =============================================
-           3. CHECK WHETHER PAYMENT WAS ALREADY SAVED
-        ============================================= */
-
-        showMessage(
-            "Payment verify ho raha hai aur application save ho rahi hai...",
-            "info"
-        );
-
-
-        const existingApplication =
-            await getExistingApplication(
-                applicationNo,
-                paymentId
-            );
-
-
-        /* =============================================
-           4. PHOTO
-        ============================================= */
-
-        let admissionPhotoUrl = "";
-
-        let studentPhotoUrl = "";
-
-
-        if(existingApplication){
-
-            admissionPhotoUrl =
-                existingApplication.photo || "";
-
-        }
-
-
-        /*
-           Photo upload is attempted only if
-           application is not already saved.
-        */
-
-        if(
-            !existingApplication &&
-            file
-        ){
-
-            showMessage(
-                "Student photo save ho rahi hai...",
-                "info"
-            );
-
-
-            const extension =
-                file.name
-                .split(".")
-                .pop()
-                .toLowerCase();
-
-
-            const fileName =
-                safeFileName(applicationNo) +
-                "-" +
-                Date.now() +
-                "." +
-                extension;
-
-
-            const uploadResult =
-                await sb
-                .storage
-                .from("admission-photos")
-                .upload(
-                    fileName,
-                    file,
-                    {
-                        cacheControl:"3600",
-                        upsert:false
-                    }
-                );
-
-
-            if(uploadResult.error){
-
-                throw new Error(
-                    "Admission photo upload failed: " +
-                    uploadResult.error.message
-                );
-
-            }
-
-
-            const publicData =
-                sb
-                .storage
-                .from("admission-photos")
-                .getPublicUrl(fileName);
-
-
-            admissionPhotoUrl =
-                publicData.data.publicUrl;
-
-
-            try{
-
-                studentPhotoUrl =
-                    await uploadStudentPhoto(
-                        file,
-                        admissionNo
-                    );
-
-            }
-            catch(photoError){
-
-                /*
-                   Admission should not fail completely
-                   only because Student Master photo upload
-                   failed.
-                */
-
-                console.error(
-                    "Student photo upload warning:",
-                    photoError
-                );
-
-                studentPhotoUrl = "";
-
-            }
-
-        }
-
-
-        /* =============================================
-           5. ONLINE ADMISSION
-        ============================================= */
-
-        let applicationRecord =
-            existingApplication;
-
-
-        if(!applicationRecord){
-
-            showMessage(
-                "Online admission save ho rahi hai...",
-                "info"
-            );
-
-
-            const applicationData = {
-
-                application_no:
-                    applicationNo,
-
-                student_name:
-                    studentName,
-
-                dob:
-                    dob,
-
-                gender:
-                    gender,
-
-                class_name:
-                    className,
-
-                previous_school:
-                    previousSchool,
-
-                previous_class:
-                    previousClass,
-
-                aadhaar:
-                    aadhaar,
-
-                blood_group:
-                    blood,
-
-                father_name:
-                    fatherName,
-
-                mother_name:
-                    motherName,
-
-                mobile:
-                    mobile,
-
-                email:
-                    email,
-
-                address:
-                    address,
-
-                city:
-                    city,
-
-                pincode:
-                    pincode,
-
-                transport:
-                    transport,
-
-                emergency:
-                    emergency,
-
-                remarks:
-                    remarks,
-
-                photo:
-                    admissionPhotoUrl,
-
-                amount:
-                    APPLICATION_FEE,
-
-                payment_id:
-                    paymentId,
-
-                payment_status:
-                    "success",
-
-                confirmation_status:
-                    "confirmed",
-
-                submitted_at:
-                    new Date().toISOString()
-
-            };
-
-
-            const applicationResult =
-                await sb
-                .from("online_admissions")
-                .insert([
-                    applicationData
-                ])
-                .select()
-                .single();
-
-
-            if(applicationResult.error){
-
-                /*
-                   If another request already inserted
-                   the same payment, check again instead
-                   of creating another payment/record.
-                */
-
-                const retryCheck =
-                    await getExistingApplication(
+                    await saveApplication(
                         applicationNo,
-                        paymentId
+                        response
+                    );
+
+                }catch(error){
+
+                    console.error(
+                        "SAVE ERROR:",
+                        error
                     );
 
 
-                if(retryCheck){
-
-                    applicationRecord =
-                        retryCheck;
-
-                }else{
-
-                    throw new Error(
-                        "Online admission save failed: " +
-                        applicationResult.error.message
+                    showMessage(
+                        "paymentMessage",
+                        "Payment successful hai, lekin data save mein problem aayi. Payment dobara mat karein. School office se application recovery karai ja sakti hai.",
+                        "warning"
                     );
 
+
+                    payButton.disabled = true;
+
+                    payButton.innerHTML =
+                        "Payment Already Completed";
                 }
+            },
 
-            }else{
 
-                applicationRecord =
-                    applicationResult.data;
+        prefill:{
 
+            name:
+                document.getElementById(
+                    "father_name"
+                ).value,
+
+            email:
+                document.getElementById(
+                    "email"
+                ).value,
+
+            contact:
+                document.getElementById(
+                    "mobile"
+                ).value
+        },
+
+
+        notes:{
+
+            application_no:
+                applicationNo,
+
+            session:
+                SESSION
+        },
+
+
+        theme:{
+
+            color:"#1769aa"
+        },
+
+
+        modal:{
+
+            ondismiss:function(){
+
+                payButton.disabled = false;
+
+                payButton.innerHTML =
+                    "Pay ₹10";
+
+                showMessage(
+                    "paymentMessage",
+                    "Payment cancelled. Aap dobara try kar sakte hain.",
+                    "warning"
+                );
             }
-
         }
+    };
 
 
-        /* =============================================
-           6. STUDENT MASTER
-        ============================================= */
-
-        showMessage(
-            "Student Master record check ho raha hai...",
-            "info"
-        );
+    const razorpay =
+        new Razorpay(options);
 
 
-        let studentRecord =
-            await getExistingStudent(
-                admissionNo
+    razorpay.on(
+        "payment.failed",
+        function(response){
+
+            console.error(
+                "PAYMENT FAILED:",
+                response
             );
 
 
-        if(!studentRecord){
+            payButton.disabled = false;
 
-            const studentData = {
-
-                session:
-                    CURRENT_SESSION,
-
-                student_status:
-                    "Active",
-
-                admission_no:
-                    admissionNo,
-
-                roll_no:
-                    "",
-
-                admission_date:
-                    getTodayISO(),
-
-                student_name:
-                    studentName,
-
-                father_name:
-                    fatherName,
-
-                mother_name:
-                    motherName,
-
-                dob:
-                    dob,
-
-                age:
-                    calculateAge(dob),
-
-                gender:
-                    gender,
-
-                class_name:
-                    className,
-
-                section:
-                    "",
-
-                mobile:
-                    mobile,
-
-                aadhar:
-                    aadhaar,
-
-                udise:
-                    "",
-
-                pen:
-                    "",
-
-                apaar:
-                    "",
-
-                blood:
-                    blood,
-
-                bus:
-                    transport === "Yes"
-                    ? "Required"
-                    : "No",
-
-                address:
-                    address +
-                    (
-                        city
-                        ? ", " + city
-                        : ""
-                    ) +
-                    (
-                        pincode
-                        ? " - " + pincode
-                        : ""
-                    ),
-
-                photo_url:
-                    studentPhotoUrl,
-
-                source:
-                    "online_admission",
-
-                created_at:
-                    new Date().toISOString(),
-
-                updated_at:
-                    new Date().toISOString()
-
-            };
+            payButton.innerHTML =
+                "Pay ₹10";
 
 
-            const studentResult =
-                await sb
-                .from("students")
-                .insert([
-                    studentData
-                ])
-                .select()
-                .single();
+            const reason =
+                response.error &&
+                response.error.description
+                ? response.error.description
+                : "Payment failed";
 
 
-            if(studentResult.error){
-
-                const retryStudent =
-                    await getExistingStudent(
-                        admissionNo
-                    );
-
-
-                if(retryStudent){
-
-                    studentRecord =
-                        retryStudent;
-
-                }else{
-
-                    throw new Error(
-                        "Student Master entry failed: " +
-                        studentResult.error.message
-                    );
-
-                }
-
-            }else{
-
-                studentRecord =
-                    studentResult.data;
-
-            }
-
-        }
-
-
-        const studentId =
-            studentRecord.id;
-
-
-        /* =============================================
-           7. FEES
-        ============================================= */
-
-        showMessage(
-            "Finance entry check ho rahi hai...",
-            "info"
-        );
-
-
-        let feeRecord =
-            await getExistingFee(
-                paymentId
+            showMessage(
+                "paymentMessage",
+                reason,
+                "error"
             );
-
-
-        if(!feeRecord){
-
-            const feeData = {
-
-                receipt_no:
-                    receiptNo,
-
-                student_id:
-                    studentId,
-
-                admission_no:
-                    admissionNo,
-
-                student_name:
-                    studentName,
-
-                class_name:
-                    className,
-
-                section:
-                    "",
-
-                session:
-                    CURRENT_SESSION,
-
-                fee_type:
-                    "Online Admission Application Fee",
-
-                amount:
-                    APPLICATION_FEE,
-
-                discount:
-                    0,
-
-                paid:
-                    APPLICATION_FEE,
-
-                balance:
-                    0,
-
-                mode:
-                    "Razorpay",
-
-                date:
-                    getTodayISO(),
-
-                transaction_id:
-                    paymentId,
-
-                payment_status:
-                    "success",
-
-                source:
-                    "online_admission",
-
-                created_at:
-                    new Date().toISOString()
-
-            };
-
-
-            const feeResult =
-                await sb
-                .from("fees")
-                .insert([
-                    feeData
-                ])
-                .select()
-                .single();
-
-
-            if(feeResult.error){
-
-                const retryFee =
-                    await getExistingFee(
-                        paymentId
-                    );
-
-
-                if(retryFee){
-
-                    feeRecord =
-                        retryFee;
-
-                }else{
-
-                    throw new Error(
-                        "Finance entry failed: " +
-                        feeResult.error.message
-                    );
-
-                }
-
-            }else{
-
-                feeRecord =
-                    feeResult.data;
-
-            }
-
         }
+    );
 
 
-        /* =============================================
-           8. FINAL SUCCESS
-        ============================================= */
-
-        showMessage(
-            "Admission + Student Master + Finance successfully saved.",
-            "success"
-        );
-
-
-        showConfirmation(
-            applicationNo,
-            paymentId,
-            admissionNo,
-            feeRecord.receipt_no || receiptNo
-        );
-
-
-    }
-    catch(error){
-
-        console.error(
-            "COMPLETE ADMISSION ERROR:",
-            error
-        );
-
-
-        /*
-           IMPORTANT:
-           Payment has already succeeded.
-           Do NOT tell the user to pay again.
-        */
-
-        showMessage(
-            "Payment successful hai, lekin data save mein problem aayi. Payment dobara mat karein. School office se application recovery karai ja sakti hai.",
-            "error"
-        );
-
-
-        if(payButton){
-
-            payButton.disabled = true;
-
-            payButton.textContent =
-                "Payment Already Completed";
-
-        }
-
-    }
-
+    razorpay.open();
 }
 
 
 /* =====================================================
-   CONFIRMATION
+   SHOW CONFIRMATION
 ===================================================== */
 
 function showConfirmation(
     applicationNo,
-    paymentId,
     admissionNo,
-    receiptNo
+    receiptNo,
+    paymentId
 ){
 
-    document.getElementById("formCard").style.display = "none";
-    document.getElementById("previewCard").style.display = "none";
-    document.getElementById("paymentCard").style.display = "none";
-    document.getElementById("confirmationCard").style.display = "block";
-
-
     document.getElementById(
-        "applicationNo"
+        "confirmationApplicationNo"
     ).textContent =
         applicationNo;
 
 
     document.getElementById(
-        "paymentId"
+        "confirmationPaymentId"
     ).textContent =
         paymentId;
 
 
-    const preview =
-        document.getElementById("photoPreview");
+    document.getElementById(
+        "confirmationMessage"
+    ).innerHTML =
+        "Application saved successfully. " +
+        "Admission No: <strong>" +
+        escapeHtml(admissionNo) +
+        "</strong><br>" +
+        "Receipt No: <strong>" +
+        escapeHtml(receiptNo) +
+        "</strong>";
 
 
-    if(
-        preview &&
-        preview.src &&
-        preview.src.startsWith("data:image")
-    ){
-
-        document.getElementById(
-            "confirmationStudentPhoto"
-        ).src =
-            preview.src;
+    document.getElementById(
+        "paymentCard"
+    ).classList.add("hidden");
 
 
-        document.getElementById(
-            "confirmationPhotoBox"
-        ).style.display =
-            "block";
-
-    }
+    document.getElementById(
+        "previewCard"
+    ).classList.add("hidden");
 
 
-    localStorage.setItem(
-        "lastAdmissionApplication",
-        JSON.stringify({
+    document.getElementById(
+        "formCard"
+    ).classList.add("hidden");
 
-            applicationNo:
-                applicationNo,
 
-            admissionNo:
-                admissionNo,
-
-            receiptNo:
-                receiptNo,
-
-            paymentId:
-                paymentId,
-
-            amount:
-                APPLICATION_FEE,
-
-            session:
-                CURRENT_SESSION,
-
-            date:
-                new Date().toLocaleString(
-                    "en-IN"
-                )
-
-        })
-    );
+    document.getElementById(
+        "confirmationCard"
+    ).classList.remove("hidden");
 
 
     window.scrollTo({
         top:0,
         behavior:"smooth"
     });
-
 }
 
 
@@ -3069,126 +2340,20 @@ function showConfirmation(
 
 function printApplication(){
 
+    const data =
+        getFormData();
+
+
     const applicationNo =
         document.getElementById(
-            "applicationNo"
+            "confirmationApplicationNo"
         ).textContent;
 
 
     const paymentId =
         document.getElementById(
-            "paymentId"
+            "confirmationPaymentId"
         ).textContent;
-
-
-    const studentPhoto =
-        document.getElementById(
-            "photoPreview"
-        ).src;
-
-
-    const studentName =
-        document.getElementById(
-            "student_name"
-        ).value;
-
-
-    const printWindow =
-        window.open(
-            "",
-            "_blank"
-        );
-
-
-    if(!printWindow){
-
-        showMessage(
-            "Please allow pop-ups in your browser to print the application.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const rows = [
-
-        ["Application No.", applicationNo],
-        ["Student Name", studentName],
-        ["Date of Birth",
-            formatDatePrint(
-                document.getElementById("dob").value
-            )
-        ],
-        ["Gender",
-            document.getElementById("gender").value
-        ],
-        ["Applying For Class",
-            document.getElementById("class_name").value
-        ],
-        ["Previous School",
-            document.getElementById("previous_school").value
-        ],
-        ["Previous Class",
-            document.getElementById("previous_class").value
-        ],
-        ["Aadhaar Number",
-            document.getElementById("aadhaar").value
-        ],
-        ["Blood Group",
-            document.getElementById("blood").value
-        ],
-        ["Father's Name",
-            document.getElementById("father_name").value
-        ],
-        ["Mother's Name",
-            document.getElementById("mother_name").value
-        ],
-        ["Mobile",
-            document.getElementById("mobile").value
-        ],
-        ["Email",
-            document.getElementById("email").value
-        ],
-        ["Address",
-            document.getElementById("address").value
-        ],
-        ["City / Village",
-            document.getElementById("city").value
-        ],
-        ["PIN Code",
-            document.getElementById("pincode").value
-        ],
-        ["Transport",
-            document.getElementById("transport").value
-        ],
-        ["Emergency Contact",
-            document.getElementById("emergency").value
-        ],
-        ["Payment Status","PAID"],
-        ["Confirmation Fee","₹10"],
-        ["Payment ID",paymentId]
-
-    ];
-
-
-    let tableRows = "";
-
-    rows.forEach(function(row){
-
-        tableRows += `
-            <tr>
-                <td class="label">
-                    ${escapePrint(row[0])}
-                </td>
-                <td>
-                    ${escapePrint(row[1])}
-                </td>
-            </tr>
-        `;
-
-    });
 
 
     const html = `
@@ -3199,69 +2364,74 @@ function printApplication(){
 
 <head>
 
+<meta charset="UTF-8">
+
 <title>Admission Application</title>
 
 <style>
 
 body{
     font-family:Arial,sans-serif;
-    padding:25px;
-    color:#111;
+    padding:30px;
+    color:#222;
 }
 
 .header{
     text-align:center;
-    border-bottom:2px solid #003b70;
+    border-bottom:2px solid #123c73;
     padding-bottom:15px;
+    margin-bottom:20px;
 }
 
-.logo{
+.header img{
     width:75px;
     height:75px;
     object-fit:contain;
 }
 
 h1{
-    margin:5px;
-    color:#003b70;
+    color:#123c73;
+    margin:5px 0;
 }
 
 h2{
     text-align:center;
-}
-
-.photo-area{
-    text-align:right;
-    margin-top:15px;
-}
-
-.student-photo{
-    width:120px;
-    height:150px;
-    object-fit:cover;
-    border:2px solid #003b70;
+    margin:20px 0;
 }
 
 table{
     width:100%;
     border-collapse:collapse;
-    margin-top:15px;
 }
 
 td{
-    border:1px solid #555;
-    padding:8px;
+    border:1px solid #ccc;
+    padding:9px;
 }
 
-.label{
+td:first-child{
+    width:35%;
     font-weight:bold;
-    width:30%;
+    background:#f5f7fa;
+}
+
+.photo{
+    width:120px;
+    height:145px;
+    object-fit:cover;
+    border:1px solid #ccc;
 }
 
 .footer{
-    margin-top:50px;
+    margin-top:40px;
     display:flex;
     justify-content:space-between;
+}
+
+@media print{
+    button{
+        display:none;
+    }
 }
 
 </style>
@@ -3272,48 +2442,139 @@ td{
 
 <div class="header">
 
-<img
-class="logo"
-src="logo.png"
-alt="School Logo">
+<img src="logo.png">
 
-<h1>
-Rainbow Public School
-</h1>
+<h1>Rainbow Public School</h1>
 
-<p>
+<div>
 Conducted by Shubhi Education Foundation, Dahod
-</p>
+</div>
 
-<p>
+<div>
 Shalimar Co-operative Society, Muvaliya Road,
 Rabdal, Dahod, Gujarat - 389151
-</p>
+</div>
 
 </div>
 
-<h2>
-ONLINE ADMISSION APPLICATION
-</h2>
-
-<div class="photo-area">
-
-${
-    studentPhoto
-    ?
-    `<img
-    class="student-photo"
-    src="${studentPhoto}"
-    alt="Student Photo">`
-    :
-    ""
-}
-
-</div>
+<h2>Online Admission Application</h2>
 
 <table>
 
-${tableRows}
+<tr>
+<td>Application No.</td>
+<td>${escapePrint(applicationNo)}</td>
+</tr>
+
+<tr>
+<td>Session</td>
+<td>${escapePrint(SESSION)}</td>
+</tr>
+
+<tr>
+<td>Student Name</td>
+<td>${escapePrint(data.student_name)}</td>
+</tr>
+
+<tr>
+<td>Date of Birth</td>
+<td>${escapePrint(formatDatePrint(data.dob))}</td>
+</tr>
+
+<tr>
+<td>Gender</td>
+<td>${escapePrint(data.gender)}</td>
+</tr>
+
+<tr>
+<td>Class Applied For</td>
+<td>${escapePrint(data.class_name)}</td>
+</tr>
+
+<tr>
+<td>Previous School</td>
+<td>${escapePrint(data.previous_school)}</td>
+</tr>
+
+<tr>
+<td>Previous Class</td>
+<td>${escapePrint(data.previous_class)}</td>
+</tr>
+
+<tr>
+<td>Aadhaar</td>
+<td>${escapePrint(data.aadhaar)}</td>
+</tr>
+
+<tr>
+<td>Blood Group</td>
+<td>${escapePrint(data.blood)}</td>
+</tr>
+
+<tr>
+<td>Father's Name</td>
+<td>${escapePrint(data.father_name)}</td>
+</tr>
+
+<tr>
+<td>Mother's Name</td>
+<td>${escapePrint(data.mother_name)}</td>
+</tr>
+
+<tr>
+<td>Mobile</td>
+<td>${escapePrint(data.mobile)}</td>
+</tr>
+
+<tr>
+<td>Email</td>
+<td>${escapePrint(data.email)}</td>
+</tr>
+
+<tr>
+<td>Address</td>
+<td>${escapePrint(data.address)}</td>
+</tr>
+
+<tr>
+<td>City</td>
+<td>${escapePrint(data.city)}</td>
+</tr>
+
+<tr>
+<td>Pincode</td>
+<td>${escapePrint(data.pincode)}</td>
+</tr>
+
+<tr>
+<td>Transport</td>
+<td>${escapePrint(data.transport)}</td>
+</tr>
+
+<tr>
+<td>Emergency Contact</td>
+<td>${escapePrint(data.emergency)}</td>
+</tr>
+
+<tr>
+<td>Remarks</td>
+<td>${escapePrint(data.remarks)}</td>
+</tr>
+
+<tr>
+<td>Payment ID</td>
+<td>${escapePrint(paymentId)}</td>
+</tr>
+
+<tr>
+<td>Payment Status</td>
+<td>Success</td>
+</tr>
+
+<tr>
+<td>Application Fee</td>
+<td>₹10</td>
+</tr>
 
 </table>
 
@@ -3330,60 +2591,15 @@ School Office
 </div>
 
 <script>
-
 window.onload=function(){
-
-    setTimeout(function(){
-
-        window.print();
-
-    },700);
-
+    window.print();
 };
-
 <\/script>
 
 </body>
 
 </html>
-
 `;
-
-
-    printWindow.document.write(html);
-    printWindow.document.close();
-
-}
-
-
-/* =====================================================
-   PRINT RECEIPT
-===================================================== */
-
-function printReceipt(){
-
-    const applicationNo =
-        document.getElementById(
-            "applicationNo"
-        ).textContent;
-
-
-    const paymentId =
-        document.getElementById(
-            "paymentId"
-        ).textContent;
-
-
-    const studentName =
-        document.getElementById(
-            "student_name"
-        ).value;
-
-
-    const studentPhoto =
-        document.getElementById(
-            "photoPreview"
-        ).src;
 
 
     const printWindow =
@@ -3395,14 +2611,54 @@ function printReceipt(){
 
     if(!printWindow){
 
-        showMessage(
-            "Please allow pop-ups in your browser to print the receipt.",
-            "error"
+        alert(
+            "Please allow pop-ups for printing."
         );
 
         return;
-
     }
+
+
+    printWindow.document.open();
+
+    printWindow.document.write(html);
+
+    printWindow.document.close();
+}
+
+
+/* =====================================================
+   PRINT RECEIPT
+===================================================== */
+
+function printReceipt(){
+
+    const data =
+        getFormData();
+
+
+    const applicationNo =
+        document.getElementById(
+            "confirmationApplicationNo"
+        ).textContent;
+
+
+    const paymentId =
+        document.getElementById(
+            "confirmationPaymentId"
+        ).textContent;
+
+
+    const receiptNo =
+        createReceiptNumber(
+            applicationNo
+        );
+
+
+    const today =
+        formatDatePrint(
+            new Date().toISOString()
+        );
 
 
     const html = `
@@ -3412,6 +2668,8 @@ function printReceipt(){
 <html>
 
 <head>
+
+<meta charset="UTF-8">
 
 <title>Payment Receipt</title>
 
@@ -3423,54 +2681,63 @@ body{
 }
 
 .receipt{
-    max-width:600px;
+    max-width:700px;
     margin:auto;
-    border:2px solid #003b70;
+    border:2px solid #123c73;
     padding:25px;
 }
 
-.center{
+.header{
     text-align:center;
+    border-bottom:1px solid #ccc;
+    padding-bottom:15px;
 }
 
-.logo{
+.header img{
     width:70px;
     height:70px;
     object-fit:contain;
 }
 
-.school-name{
-    color:#003b70;
+h1{
+    color:#123c73;
     margin:5px;
 }
 
-.student-photo{
-    width:90px;
-    height:110px;
-    object-fit:cover;
-    border:2px solid #003b70;
-    display:block;
-    margin:15px auto;
+.receipt-title{
+    text-align:center;
+    margin:20px 0;
+    font-size:22px;
+    font-weight:bold;
 }
 
 table{
     width:100%;
     border-collapse:collapse;
-    margin-top:20px;
 }
 
 td{
-    border:1px solid #555;
     padding:10px;
+    border:1px solid #ccc;
 }
 
-.label{
+td:first-child{
     font-weight:bold;
+    width:40%;
+    background:#f5f7fa;
 }
 
-.success{
-    color:green;
+.paid{
+    text-align:center;
+    font-size:22px;
     font-weight:bold;
+    margin:20px 0;
+}
+
+.signatures{
+    display:flex;
+    justify-content:space-between;
+    margin-top:60px;
 }
 
 </style>
@@ -3481,282 +2748,109 @@ td{
 
 <div class="receipt">
 
-<div class="center">
+<div class="header">
 
-<img
-class="logo"
-src="logo.png"
-alt="School Logo">
+<img src="logo.png">
 
-<h1 class="school-name">
-Rainbow Public School
-</h1>
+<h1>Rainbow Public School</h1>
 
-<p>
-Shubhi Education Foundation, Dahod
-</p>
+<div>
+Conducted by Shubhi Education Foundation, Dahod
+</div>
 
-<h2>
+<div>
+Shalimar Co-operative Society, Muvaliya Road,
+Rabdal, Dahod, Gujarat - 389151
+</div>
+
+</div>
+
+<div class="receipt-title">
 PAYMENT RECEIPT
-</h2>
-
-${
-    studentPhoto
-    ?
-    `<img
-    class="student-photo"
-    src="${studentPhoto}"
-    alt="Student Photo">`
-    :
-    ""
-}
-
 </div>
 
 <table>
 
 <tr>
-<td class="label">
-Application No.
-</td>
-<td>
-${escapePrint(applicationNo)}
-</td>
+<td>Receipt No.</td>
+<td>${escapePrint(receiptNo)}</td>
 </tr>
 
 <tr>
-<td class="label">
-Student Name
-</td>
-<td>
-${escapePrint(studentName)}
-</td>
+<td>Date</td>
+<td>${escapePrint(today)}</td>
 </tr>
 
 <tr>
-<td class="label">
-Amount Paid
-</td>
-<td>
-<strong>₹10</strong>
-</td>
+<td>Application No.</td>
+<td>${escapePrint(applicationNo)}</td>
 </tr>
 
 <tr>
-<td class="label">
-Payment ID
-</td>
-<td>
-${escapePrint(paymentId)}
-</td>
+<td>Student Name</td>
+<td>${escapePrint(data.student_name)}</td>
 </tr>
 
 <tr>
-<td class="label">
-Payment Status
-</td>
-<td class="success">
-PAID
-</td>
+<td>Class</td>
+<td>${escapePrint(data.class_name)}</td>
 </tr>
 
 <tr>
-<td class="label">
-Date
-</td>
-<td>
-${new Date().toLocaleDateString("en-IN")}
-</td>
+<td>Father's Name</td>
+<td>${escapePrint(data.father_name)}</td>
+</tr>
+
+<tr>
+<td>Payment ID</td>
+<td>${escapePrint(paymentId)}</td>
+</tr>
+
+<tr>
+<td>Payment For</td>
+<td>Online Admission Application Fee</td>
+</tr>
+
+<tr>
+<td>Amount</td>
+<td>₹10</td>
+</tr>
+
+<tr>
+<td>Payment Status</td>
+<td>Success</td>
 </tr>
 
 </table>
 
-<br>
+<div class="paid">
+PAID ₹10
+</div>
 
-<p>
-This receipt confirms payment of the online admission
-application confirmation fee.
-</p>
+<div class="signatures">
 
-<p style="text-align:right;margin-top:50px;">
-Authorized Signatory
-</p>
+<div>
+Parent / Guardian
+</div>
+
+<div>
+School Office
+</div>
+
+</div>
 
 </div>
 
 <script>
-
 window.onload=function(){
-
-    setTimeout(function(){
-
-        window.print();
-
-    },700);
-
+    window.print();
 };
-
 <\/script>
 
 </body>
 
 </html>
-
 `;
-
-
-    printWindow.document.write(html);
-    printWindow.document.close();
-
-}
-
-
-/* =====================================================
-   PRINT HELPERS
-===================================================== */
-
-function escapePrint(value){
-
-    return String(value || "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-
-}
-
-
-function formatDatePrint(value){
-
-    if(!value){
-
-        return "";
-
-    }
-
-    const parts =
-        value.split("-");
-
-    if(parts.length !== 3){
-
-        return value;
-
-    }
-
-    return (
-        parts[2] +
-        "/" +
-        parts[1] +
-        "/" +
-        parts[0]
-    );
-
-}
-
-
-/* =====================================================
-   CLEAR FORM
-===================================================== */
-
-function clearForm(){
-
-    if(
-        !confirm(
-            "Clear all entered information?"
-        )
-    ){
-
-        return;
-
-    }
-
-
-    document
-    .querySelectorAll(
-        "#formCard input, #formCard textarea"
-    )
-    .forEach(function(el){
-
-        if(el.type !== "file"){
-
-            el.value = "";
-
-        }
-
-    });
-
-
-    document.getElementById("photo").value = "";
-
-    document.getElementById("gender").value = "";
-
-    document.getElementById("class_name").value = "";
-
-    document.getElementById("blood").value = "";
-
-    document.getElementById("transport").value = "No";
-
-    document.getElementById("photoPreview").style.display = "none";
-
-    document.getElementById("photoPreview").src = "";
-
-    document.getElementById("previewCard").style.display = "none";
-
-    document.getElementById("paymentCard").style.display = "none";
-
-    document.getElementById("confirmationCard").style.display = "none";
-
-    document.getElementById("formCard").style.display = "block";
-
-    document.getElementById("message").style.display = "none";
-
-}
-
-</script>
-```
-
-
-</body>
-
-</html>
-
-`;
-
-    printWindow.document.write(html);
-    printWindow.document.close();
-
-}
-
-
-/* =====================================================
-   PRINT RECEIPT
-===================================================== */
-
-function printReceipt(){
-
-    const applicationNo =
-        document.getElementById(
-            "applicationNo"
-        ).textContent;
-
-
-    const paymentId =
-        document.getElementById(
-            "paymentId"
-        ).textContent;
-
-
-    const studentName =
-        document.getElementById(
-            "student_name"
-        ).value;
-
-
-    const studentPhoto =
-        document.getElementById(
-            "photoPreview"
-        ).src;
 
 
     const printWindow =
@@ -3768,280 +2862,19 @@ function printReceipt(){
 
     if(!printWindow){
 
-        showMessage(
-            "Please allow pop-ups in your browser to print the receipt.",
-            "error"
+        alert(
+            "Please allow pop-ups for printing."
         );
 
         return;
-
     }
 
 
-    const html = `
-
-<!DOCTYPE html>
-
-<html>
-
-<head>
-
-<title>Payment Receipt</title>
-
-<style>
-
-body{
-    font-family:Arial,sans-serif;
-    padding:30px;
-}
-
-.receipt{
-    max-width:600px;
-    margin:auto;
-    border:2px solid #003b70;
-    padding:25px;
-}
-
-.center{
-    text-align:center;
-}
-
-.logo{
-    width:70px;
-    height:70px;
-    object-fit:contain;
-}
-
-.school-name{
-    color:#003b70;
-    margin:5px;
-}
-
-.student-photo{
-    width:90px;
-    height:110px;
-    object-fit:cover;
-    border:2px solid #003b70;
-    display:block;
-    margin:15px auto;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:20px;
-}
-
-td{
-    border:1px solid #555;
-    padding:10px;
-}
-
-.label{
-    font-weight:bold;
-}
-
-.success{
-    color:green;
-    font-weight:bold;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<div class="receipt">
-
-<div class="center">
-
-<img
-class="logo"
-src="logo.png"
-alt="School Logo">
-
-<h1 class="school-name">
-Rainbow Public School
-</h1>
-
-<p>
-Shubhi Education Foundation, Dahod
-</p>
-
-<h2>
-PAYMENT RECEIPT
-</h2>
-
-${
-    studentPhoto
-    ?
-    `<img
-    class="student-photo"
-    src="${studentPhoto}"
-    alt="Student Photo">`
-    :
-    ""
-}
-
-</div>
-
-<table>
-
-<tr>
-
-<td class="label">
-Application No.
-</td>
-
-<td>
-${escapePrint(applicationNo)}
-</td>
-
-</tr>
-
-<tr>
-
-<td class="label">
-Student Name
-</td>
-
-<td>
-${escapePrint(studentName)}
-</td>
-
-</tr>
-
-<tr>
-
-<td class="label">
-Amount Paid
-</td>
-
-<td>
-<strong>₹10</strong>
-</td>
-
-</tr>
-
-<tr>
-
-<td class="label">
-Payment ID
-</td>
-
-<td>
-${escapePrint(paymentId)}
-</td>
-
-</tr>
-
-<tr>
-
-<td class="label">
-Payment Status
-</td>
-
-<td class="success">
-PAID
-</td>
-
-</tr>
-
-<tr>
-
-<td class="label">
-Date
-</td>
-
-<td>
-${new Date().toLocaleDateString("en-IN")}
-</td>
-
-</tr>
-
-</table>
-
-<br>
-
-<p>
-This receipt confirms payment of the online admission
-application confirmation fee.
-</p>
-
-<p style="text-align:right;margin-top:50px;">
-Authorized Signatory
-</p>
-
-</div>
-
-<script>
-
-window.onload=function(){
-
-    setTimeout(function(){
-
-        window.print();
-
-    },700);
-
-};
-
-<\/script>
-
-</body>
-
-</html>
-
-`;
+    printWindow.document.open();
 
     printWindow.document.write(html);
+
     printWindow.document.close();
-
-}
-
-
-/* =====================================================
-   PRINT HELPERS
-===================================================== */
-
-function escapePrint(value){
-
-    return String(value || "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-
-}
-
-
-function formatDatePrint(value){
-
-    if(!value){
-
-        return "";
-
-    }
-
-    const parts =
-        value.split("-");
-
-    if(parts.length !== 3){
-
-        return value;
-
-    }
-
-    return (
-        parts[2] +
-        "/" +
-        parts[1] +
-        "/" +
-        parts[0]
-    );
-
 }
 
 
@@ -4051,33 +2884,24 @@ function formatDatePrint(value){
 
 function clearForm(){
 
-    if(
-        !confirm(
-            "Clear all entered information?"
-        )
-    ){
+    const confirmed =
+        confirm(
+            "Are you sure you want to clear the complete form?"
+        );
 
+
+    if(!confirmed){
         return;
-
     }
-
-    document
-    .querySelectorAll(
-        "#formCard input, #formCard textarea"
-    )
-    .forEach(function(el){
-
-        if(el.type !== "file"){
-
-            el.value = "";
-
-        }
-
-    });
 
 
     document.getElementById(
-        "photo"
+        "student_name"
+    ).value = "";
+
+
+    document.getElementById(
+        "dob"
     ).value = "";
 
 
@@ -4092,7 +2916,57 @@ function clearForm(){
 
 
     document.getElementById(
+        "previous_school"
+    ).value = "";
+
+
+    document.getElementById(
+        "previous_class"
+    ).value = "";
+
+
+    document.getElementById(
+        "aadhaar"
+    ).value = "";
+
+
+    document.getElementById(
         "blood"
+    ).value = "";
+
+
+    document.getElementById(
+        "father_name"
+    ).value = "";
+
+
+    document.getElementById(
+        "mother_name"
+    ).value = "";
+
+
+    document.getElementById(
+        "mobile"
+    ).value = "";
+
+
+    document.getElementById(
+        "email"
+    ).value = "";
+
+
+    document.getElementById(
+        "address"
+    ).value = "";
+
+
+    document.getElementById(
+        "city"
+    ).value = "";
+
+
+    document.getElementById(
+        "pincode"
     ).value = "";
 
 
@@ -4102,39 +2976,40 @@ function clearForm(){
 
 
     document.getElementById(
-        "photoPreview"
-    ).style.display = "none";
+        "emergency"
+    ).value = "";
+
+
+    document.getElementById(
+        "remarks"
+    ).value = "";
+
+
+    document.getElementById(
+        "photo"
+    ).value = "";
 
 
     document.getElementById(
         "photoPreview"
-    ).src = "";
+    ).innerHTML =
+        "Photo Preview";
 
 
-    document.getElementById(
-        "previewCard"
-    ).style.display = "none";
+    hideMessage(
+        "formMessage"
+    );
+}
 
 
-    document.getElementById(
-        "paymentCard"
-    ).style.display = "none";
+/* =====================================================
+   HOME
+===================================================== */
 
+function goHome(){
 
-    document.getElementById(
-        "confirmationCard"
-    ).style.display = "none";
-
-
-    document.getElementById(
-        "formCard"
-    ).style.display = "block";
-
-
-    document.getElementById(
-        "message"
-    ).style.display = "none";
-
+    window.location.href =
+        "index.html";
 }
 
 </script>
