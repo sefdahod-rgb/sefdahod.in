@@ -611,6 +611,29 @@ button{
             </div>
 
             <div class="field">
+                <label>Category</label>
+                <select id="category">
+                    <option value="">Select Category</option>
+                    <option>General</option>
+                    <option>OBC</option>
+                    <option>SC</option>
+                    <option>ST</option>
+                    <option>EWS</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Caste</label>
+                <input type="text" id="caste">
+            </div>
+
+            <div class="field">
+                <label>Sub-Caste</label>
+                <input type="text" id="subCaste">
+            </div>
+
+            <div class="field">
                 <label>Blood Group</label>
                 <select id="bloodGroup">
                     <option value="">Select</option>
@@ -1038,6 +1061,21 @@ button{
             <tr>
                 <td>Gender</td>
                 <td id="paGender"></td>
+            </tr>
+
+            <tr>
+                <td>Category</td>
+                <td id="paCategory"></td>
+            </tr>
+
+            <tr>
+                <td>Caste</td>
+                <td id="paCaste"></td>
+            </tr>
+
+            <tr>
+                <td>Sub-Caste</td>
+                <td id="paSubCaste"></td>
             </tr>
 
             <tr>
@@ -1813,6 +1851,12 @@ function collectApplication(){
 
         gender:value("gender"),
 
+        category:value("category"),
+
+        caste:value("caste"),
+
+        sub_caste:value("subCaste"),
+
         blood_group:value("bloodGroup"),
 
         aadhaar:value("aadhaar"),
@@ -1898,6 +1942,9 @@ function showPreview(){
         ["Date of Birth",formatDateIndian(a.dob)],
         ["Age",a.age],
         ["Gender",a.gender],
+        ["Category",a.category],
+        ["Caste",a.caste],
+        ["Sub-Caste",a.sub_caste],
         ["Blood Group",a.blood_group],
         ["Aadhaar",a.aadhaar],
         ["PEN",a.pen],
@@ -2226,6 +2273,15 @@ async function saveApplication(paymentId){
 
             emergency_relationship:
                 a.emergency_relationship,
+
+            category:
+                a.category,
+
+            caste:
+                a.caste,
+
+            sub_caste:
+                a.sub_caste,
 
             medical_info:
                 a.medical_info,
@@ -2737,6 +2793,15 @@ function preparePrintApplication(){
 
     el("paGender").textContent =
         a.gender;
+
+    el("paCategory").textContent =
+        a.category || "-";
+
+    el("paCaste").textContent =
+        a.caste || "-";
+
+    el("paSubCaste").textContent =
+        a.sub_caste || "-";
 
     el("paBlood").textContent =
         a.blood_group || "-";
