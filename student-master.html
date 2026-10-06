@@ -2012,462 +2012,50 @@ function editStu(id){
 ===================================================== */
 
 function printStudentForm(id){
-
-    const s = students.find(
-        x => String(x.id) === String(id)
-    );
-
-    if(!s){
-        showMsg(
-            "Student not found.",
-            "error"
-        );
-        return;
-    }
-
-    const photo = s.photo_url
-        ? `<img src="${escapeHtml(s.photo_url)}"
-                style="
-                width:120px;
-                height:145px;
-                object-fit:cover;
-                border:1px solid #333;
-                border-radius:6px;
-                ">`
-        : `<div style="
-                width:120px;
-                height:145px;
-                border:1px solid #333;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                font-size:14px;
-                ">
-                PHOTO
-           </div>`;
-
-    const win = window.open(
-        "",
-        "_blank",
-        "width=900,height=1000"
-    );
-
-    win.document.write(`
-
-<!DOCTYPE html>
-<html>
-<head>
-
-<meta charset="UTF-8">
-
-<title>Student Form - ${escapeHtml(s.student_name)}</title>
-
+    const s = students.find(x => String(x.id) === String(id));
+    if(!s){ showMsg("Student not found.","error"); return; }
+    const esc = v => escapeHtml(v || "");
+    const fmt = v => (typeof formatDate === "function" ? formatDate(v) : (v||""));
+    const photo = s.photo_url ? `<img src="${esc(s.photo_url)}" class="photo-img">` : `<div class="photo-placeholder">PHOTO</div>`;
+    const win = window.open("", "_blank", "width=1000,height=1200");
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Student Admission Form - ${esc(s.student_name)}</title>
 <style>
-
-*{
-    box-sizing:border-box;
-}
-
-body{
-    font-family:Arial,Helvetica,sans-serif;
-    margin:0;
-    padding:20px;
-    background:white;
-    color:#111;
-}
-
-.form{
-    max-width:850px;
-    margin:auto;
-    border:2px solid #173b72;
-    padding:22px;
-}
-
-.header{
-    text-align:center;
-    border-bottom:2px solid #173b72;
-    padding-bottom:12px;
-    margin-bottom:15px;
-}
-
-.header img{
-    width:75px;
-    height:75px;
-    object-fit:contain;
-}
-
-.header h1{
-    margin:5px 0;
-    color:#173b72;
-    font-size:25px;
-}
-
-.header p{
-    margin:3px 0;
-    font-size:12px;
-}
-
-.title{
-    text-align:center;
-    background:#173b72;
-    color:white;
-    padding:8px;
-    font-size:18px;
-    font-weight:bold;
-    margin-bottom:15px;
-}
-
-.student-top{
-    display:flex;
-    gap:20px;
-    margin-bottom:15px;
-}
-
-.photo{
-    width:130px;
-    flex-shrink:0;
-}
-
-.details{
-    flex:1;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-
-td{
-    border:1px solid #777;
-    padding:7px;
-    font-size:12px;
-    vertical-align:top;
-}
-
-.label{
-    width:22%;
-    font-weight:bold;
-    background:#f1f5f9;
-}
-
-.value{
-    width:28%;
-}
-
-.section-title{
-    background:#173b72;
-    color:white;
-    font-weight:bold;
-    padding:7px;
-    margin-top:15px;
-    margin-bottom:0;
-}
-
-.signatures{
-    display:flex;
-    justify-content:space-between;
-    margin-top:70px;
-    font-size:12px;
-}
-
-.signature{
-    width:200px;
-    text-align:center;
-    border-top:1px solid #333;
-    padding-top:6px;
-}
-
-@media print{
-
-    body{
-        padding:0;
-    }
-
-    .form{
-        border:2px solid #173b72;
-        max-width:none;
-    }
-
-}
-
-</style>
-
-</head>
-
-<body>
-
-<div class="form">
-
-<div class="header">
-
-<img src="logo.png"
-     onerror="this.style.display='none'"
-     alt="School Logo">
-
-<h1>RAINBOW PUBLIC SCHOOL</h1>
-
-<p><b>Conducted by Shubhi Education Foundation</b></p>
-
-<p>
-Under Indian Society Act 1860 Guj./2249/DHD.
-& Mumbai Public Trust Act 1950 F/2247/DHD
-</p>
-
-<p>
-Student Management System
-</p>
-
-</div>
-
-
-<div class="title">
-STUDENT INFORMATION FORM
-</div>
-
-
-<div class="student-top">
-
-<div class="photo">
-${photo}
-</div>
-
-<div class="details">
-
+*{box-sizing:border-box} @page{size:A4;margin:8mm} body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff;font-size:9.5px}.form{width:100%;position:relative;border:1.5px solid #222;padding:7px;overflow:hidden}.form:before{content:"";position:absolute;inset:0;background:url('logo.png') center center/280px 280px no-repeat;opacity:.035;pointer-events:none}.content{position:relative;z-index:1}.header{text-align:center;border-bottom:2px solid #173b72;padding-bottom:5px;margin-bottom:5px}.header-top{display:flex;align-items:center;justify-content:center;gap:9px}.header img{width:54px;height:54px;object-fit:contain}.header h1{margin:0;color:#173b72;font-size:20px}.header p{margin:2px 0;font-size:8.5px}.form-title{text-align:center;font-weight:bold;font-size:14px;border:1px solid #173b72;background:#eef4fb;padding:4px;margin-bottom:5px}.section-title{background:#173b72;color:#fff;font-weight:bold;font-size:10.5px;padding:3px 5px;margin-top:5px}table{width:100%;border-collapse:collapse;table-layout:fixed}td,th{border:1px solid #555;padding:3px 4px;vertical-align:top;height:18px}.label{font-weight:bold;background:#f3f5f8}.photo-cell{width:95px;text-align:center;vertical-align:middle}.photo-img,.photo-placeholder{width:76px;height:92px;object-fit:cover;border:1px solid #333;display:inline-flex;align-items:center;justify-content:center;font-size:8px}.address{height:37px}.big-space{height:40px}.checkbox{display:inline-block;width:9px;height:9px;border:1px solid #333;margin-right:2px;vertical-align:-1px}.terms{margin:3px 0;padding-left:17px;font-size:8px}.terms li{margin:1px 0}.signature-row{display:flex;justify-content:space-between;gap:14px;margin-top:20px}.signature{width:30%;text-align:center;border-top:1px solid #333;padding-top:3px}.footer-sign{display:flex;justify-content:space-between;margin-top:7px;font-weight:bold;font-size:8.5px}.page-break{page-break-before:always}.small{font-size:8.5px}@media print{body{padding:0}.form{border:1.5px solid #222}}
+</style></head><body><div class="form"><div class="content">
+<div class="header"><div class="header-top"><img src="logo.png" onerror="this.style.display='none'"><div><h1>RAINBOW PUBLIC SCHOOL</h1><p><b>Conducted by Shubhi Education Foundation</b></p><p>Shalimar Co-operative Society, Muvaliya Road, Rabdal, Dahod, Gujarat - 389151</p><p>Under Indian Society Act 1860 Guj./2249/DHD.</p></div></div></div>
+<div class="form-title">STUDENT ADMISSION / MASTER FORM</div>
+<div class="section-title">A. INFORMATION OF THE CHILD</div>
 <table>
-
-<tr>
-<td class="label">Student Name</td>
-<td colspan="3">
-<b>${escapeHtml(s.student_name || "")}</b>
-</td>
-</tr>
-
-<tr>
-<td class="label">Admission No.</td>
-<td>${escapeHtml(s.admission_no || "")}</td>
-
-<td class="label">Roll No.</td>
-<td>${escapeHtml(s.roll_no || "")}</td>
-</tr>
-
-<tr>
-<td class="label">Class</td>
-<td>
-${escapeHtml(s.class_name || "")}
-</td>
-
-<td class="label">Section</td>
-<td>
-${escapeHtml(s.section || "")}
-</td>
-</tr>
-
-<tr>
-<td class="label">Session</td>
-<td>
-${escapeHtml(s.session || "")}
-</td>
-
-<td class="label">Status</td>
-<td>
-${escapeHtml(s.student_status || "Active")}
-</td>
-</tr>
-
-</table>
-
-</div>
-
-</div>
-
-
-<div class="section-title">
-PERSONAL DETAILS
-</div>
-
-<table>
-
-<tr>
-
-<td class="label">Father Name</td>
-<td class="value">
-${escapeHtml(s.father_name || "")}
-</td>
-
-<td class="label">Mother Name</td>
-<td class="value">
-${escapeHtml(s.mother_name || "")}
-</td>
-
-</tr>
-
-<tr>
-
-<td class="label">Date of Birth</td>
-<td>
-${formatDate(s.dob)}
-</td>
-
-<td class="label">Age</td>
-<td>
-${escapeHtml(s.age || "")}
-</td>
-
-</tr>
-
-<tr>
-
-<td class="label">Gender</td>
-<td>
-${escapeHtml(s.gender || "")}
-</td>
-
-<td class="label">Blood Group</td>
-<td>
-${escapeHtml(s.blood || "")}
-</td>
-
-</tr>
-
-<tr>
-
-<td class="label">Mobile</td>
-<td>
-${escapeHtml(s.mobile || "")}
-</td>
-
-<td class="label">Bus Route</td>
-<td>
-${escapeHtml(s.bus || "")}
-</td>
-
-</tr>
-
-</table>
-
-
-<div class="section-title">
-IDENTIFICATION DETAILS
-</div>
-
-<table>
-
-<tr>
-
-<td class="label">Aadhar Number</td>
-<td>
-${escapeHtml(s.aadhar || "")}
-</td>
-
-<td class="label">UDISE Number</td>
-<td>
-${escapeHtml(s.udise || "")}
-</td>
-
-</tr>
-
-<tr>
-
-<td class="label">PEN Number</td>
-<td>
-${escapeHtml(s.pen || "")}
-</td>
-
-<td class="label">APAAR ID</td>
-<td>
-${escapeHtml(s.apaar || "")}
-</td>
-
-</tr>
-
-</table>
-
-
-<div class="section-title">
-ADMISSION DETAILS
-</div>
-
-<table>
-
-<tr>
-
-<td class="label">Admission Date</td>
-<td>
-${formatDate(s.admission_date)}
-</td>
-
-<td class="label">Academic Session</td>
-<td>
-${escapeHtml(s.session || "")}
-</td>
-
-</tr>
-
-</table>
-
-
-<div class="section-title">
-ADDRESS
-</div>
-
-<table>
-
-<tr>
-
-<td style="height:70px;">
-${escapeHtml(s.address || "")}
-</td>
-
-</tr>
-
-</table>
-
-
-<div class="signatures">
-
-<div class="signature">
-Parent / Guardian Signature
-</div>
-
-<div class="signature">
-Class Teacher Signature
-</div>
-
-<div class="signature">
-Principal / Authorized Signatory
-</div>
-
-</div>
-
-
-</div>
-
-
-<script>
-
-window.onload=function(){
-
-    setTimeout(function(){
-        window.print();
-    },500);
-
-};
-
-<\/script>
-
-</body>
-</html>
-
-`);
-
+<tr><td class="label">First Name</td><td></td><td class="label">Middle Name</td><td></td><td class="label">Last Name</td><td></td><td rowspan="5" class="photo-cell">${photo}</td></tr>
+<tr><td class="label">Gender</td><td>${esc(s.gender)}</td><td class="label">Date of Birth</td><td>${esc(fmt(s.dob))}</td><td class="label">Date of Birth in words</td><td></td></tr>
+<tr><td class="label">Place of Birth</td><td></td><td class="label">Aadhaar No.</td><td>${esc(s.aadhar)}</td><td class="label">Age</td><td>${esc(s.age)}</td></tr>
+<tr><td class="label">Religion</td><td></td><td class="label">Caste</td><td></td><td class="label">Community</td><td></td></tr>
+<tr><td class="label">Category</td><td colspan="5"><span class="checkbox"></span> ST &nbsp; <span class="checkbox"></span> SC &nbsp; <span class="checkbox"></span> OBC &nbsp; <span class="checkbox"></span> GEN. &nbsp; <span class="checkbox"></span> Other</td></tr>
+<tr><td class="label">Name of Bank</td><td></td><td class="label">IFSC Code</td><td></td><td class="label">Bank A/C No.</td><td colspan="2"></td></tr>
+<tr><td class="label">Branch</td><td></td><td class="label">Residential Address</td><td colspan="4" class="address">${esc(s.address)}</td></tr>
+<tr><td class="label">Correspondence Address</td><td colspan="6" class="address"></td></tr>
+<tr><td class="label">Emergency Contact No. (Res/Mobile)</td><td></td><td class="label">Name of person to be contacted</td><td></td><td class="label">Relationship</td><td colspan="2"></td></tr>
+<tr><td class="label">Mother’s Mobile No.</td><td></td><td class="label">E-mail ID</td><td></td><td class="label">Father’s Mobile No.</td><td>${esc(s.mobile)}</td><td class="label">E-mail ID</td></tr>
+<tr><td class="label">Admission No.</td><td>${esc(s.admission_no)}</td><td class="label">Roll No.</td><td>${esc(s.roll_no)}</td><td class="label">Class</td><td>${esc(s.class_name)}</td><td class="label">Section</td></tr>
+<tr><td class="label">Section</td><td>${esc(s.section)}</td><td class="label">Session</td><td>${esc(s.session)}</td><td class="label">Admission Date</td><td>${esc(fmt(s.admission_date))}</td><td class="label">Status</td></tr>
+<tr><td class="label">UDISE No.</td><td>${esc(s.udise)}</td><td class="label">PEN No.</td><td>${esc(s.pen)}</td><td class="label">APAAR ID</td><td>${esc(s.apaar)}</td><td>${esc(s.student_status || "Active")}</td></tr>
+<tr><td class="label">Bus Route</td><td colspan="6">${esc(s.bus)}</td></tr></table>
+<div class="section-title">B. FAMILY INFORMATION:-</div>
+<table><tr><th colspan="6">Father / Guardian:-</th></tr><tr><td class="label">Name</td><td>${esc(s.father_name)}</td><td class="label">Age</td><td></td><td class="label">Nationality</td><td></td></tr><tr><td class="label">Educational Qualification</td><td></td><td class="label">Institution</td><td></td><td class="label">Occupation</td><td></td></tr><tr><td class="label">Office Address</td><td colspan="3" class="big-space"></td><td class="label">Designation</td><td></td></tr><tr><td class="label">Annual Income</td><td></td><td class="label">Tel</td><td>${esc(s.mobile)}</td><td class="label">Aadhar No.</td><td></td></tr></table>
+<table style="margin-top:4px"><tr><th colspan="6">Mother / Guardian:-</th></tr><tr><td class="label">Name</td><td>${esc(s.mother_name)}</td><td class="label">Age</td><td></td><td class="label">Nationality</td><td></td></tr><tr><td class="label">Educational Qualification</td><td></td><td class="label">Institution</td><td></td><td class="label">Occupation</td><td></td></tr><tr><td class="label">Office Address</td><td colspan="3" class="big-space"></td><td class="label">Designation</td><td></td></tr><tr><td class="label">Annual Income</td><td></td><td class="label">Tel</td><td></td><td class="label">Aadhar No.</td><td></td></tr></table>
+<table style="margin-top:4px"><tr><th colspan="4">Details of Brothers / Sisters of students</th></tr><tr><th>Name</th><th>Age</th><th>Name of the School</th><th>Standard</th></tr><tr><td>&nbsp;</td><td></td><td></td><td></td></tr><tr><td>&nbsp;</td><td></td><td></td><td></td></tr></table>
+<div class="section-title">C. DETAILS OF PREVIOUS STUDY</div><table><tr><th>Year</th><th>School</th><th>Standard/Grade</th><th>Grade/Marks obtained in final exams</th></tr><tr><td>&nbsp;</td><td></td><td></td><td></td></tr><tr><td>&nbsp;</td><td></td><td></td><td></td></tr></table>
+<div class="section-title">APPLICATION</div><table><tr><td><b>To,</b><br>The Principal,<br>Rainbow Public School,<br>Dahod.<br><br>Respected Sir/Madam,<br><br>I Request for the admission for my son/daughter in your school in standard <b>${esc(s.class_name)}</b>.<br><br>I and my son/daughter abide and agree to the rules and regulation of your school.<br><br>Please attach: 1) Birth Certificate &nbsp; 2) 3 Photos &nbsp; 3) Aadhaar Card &nbsp; 4) Bank Passbook<br><br>Your Faithfully</td></tr></table>
+<div class="signature-row"><div class="signature">Guardian’s Sign</div><div class="signature">Date</div><div class="signature">Parent / Guardian</div></div>
+<div class="section-title">FOR OFFICE USE ONLY</div><table><tr><td class="label">Admission granted to student’s full name</td><td colspan="3">${esc(s.student_name)}</td></tr><tr><td class="label">In std.</td><td>${esc(s.class_name)}</td><td class="label">Medium</td><td></td></tr><tr><td class="label">UDISE No.</td><td>${esc(s.udise)}</td><td class="label">DATE</td><td></td></tr></table>
+<div class="footer-sign"><span>DATE: __________________</span><span>For, Rainbow Public School, Dahod</span><span>The Principal</span></div>
+<div class="section-title">TERM & CONDITION</div><ol class="terms"><li>Attendance requires more than 80%.</li><li>Batch of Name, Address, Tele No., Compulsory attach on cloth with photo.</li><li>Come with Water Bottle, Handkerchief and Lunch Box.</li><li>Any circumstances you require leave than please inform before minimum two days.</li><li>Fees once paid are not at all refundable.</li><li>Fees must be paid in the beginning week of March for the month of March, April & May.</li><li>The fees must be paid the Annual Year whether if the child leaves in the midterm.</li><li>School resume the right to change the syllabus / Time scheduled without inform to you.</li><li>Require 3 photograph of passport size.</li><li>Require the zerox of Birth Certificate, Aadhaar Card & Bank A/C Passbook.</li><li>The responsibility of bringing the child to school and taking the child from school rests entirely with the parents.</li></ol>
+<div class="footer-sign"><span>DAHOD</span><span>DATE: __________________</span><span>Parents Signature: __________________</span></div>
+</div></div><script>window.onload=function(){setTimeout(function(){window.print();},700);};<\/script></body></html>`);
     win.document.close();
-
 }
-/* =====================================================
-   DELETE
-===================================================== */
 
-async function delStu(id){
+function delStu(id){
 
     const s =
         students.find(
@@ -3579,4 +3167,3 @@ async function(){
 
 </body>
 </html>
-
