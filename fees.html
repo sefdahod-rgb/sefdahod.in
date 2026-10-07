@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fees Management - Rainbow Public School</title>
+<title>Fees - Rainbow Public School</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -531,7 +531,7 @@ tr:hover{
 
         <img src="logo.png" alt="School Logo">
 
-        <h2>💰 Fees Management</h2>
+        <h2>💰 Fees </h2>
 
         <div class="login-field">
             <label>Username</label>
@@ -1144,7 +1144,7 @@ const sb = window.supabase.createClient(
    SEPARATE FROM STUDENT MASTER
 ================================ */
 
-const FEES_LOGIN_KEY = "rps_fees_management_login";
+const FEES_LOGIN_KEY = "rps_fees_login";
 
 const FEES_USERNAME = "admin";
 const FEES_PASSWORD = "admin123";
@@ -1708,7 +1708,7 @@ async function saveFee(){
             paymentStatus,
 
         source:
-            "fees-management"
+            "fees"
 
     };
 
