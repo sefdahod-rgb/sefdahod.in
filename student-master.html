@@ -345,10 +345,12 @@ Student Management System
        id="loginPass"
        placeholder="Password">
 
-<button class="btn btn-primary"
-        style="width:100%;"
-        onclick="doLogin()">
-Login
+<script>
+if(localStorage.getItem("isAdmin")!=="yes"){
+  localStorage.setItem("redirectAfterLogin","student-master.html");
+  location.href="login.html";
+}
+</script> Login
 </button>
 
 <p id="loginError"
