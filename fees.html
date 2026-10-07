@@ -1,0 +1,2550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fees Management - Rainbow Public School</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f6f9;
+    color:#222;
+}
+
+header{
+    background:linear-gradient(135deg,#1e3c72,#2a5298);
+    color:white;
+    padding:18px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+}
+
+.header-left{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.logo{
+    width:65px;
+    height:65px;
+    object-fit:contain;
+    background:white;
+    border-radius:8px;
+    padding:4px;
+}
+
+.school-name{
+    font-size:24px;
+    font-weight:bold;
+}
+
+.trust-name{
+    font-size:14px;
+    margin-top:4px;
+}
+
+.container{
+    max-width:1200px;
+    margin:20px auto;
+    padding:0 15px;
+}
+
+.nav{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+.nav button{
+    border:0;
+    padding:11px 16px;
+    border-radius:7px;
+    cursor:pointer;
+    font-weight:bold;
+    background:white;
+    color:#1e3c72;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.nav button:hover{
+    background:#eaf0ff;
+}
+
+.card{
+    background:white;
+    border-radius:12px;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.card h2{
+    margin-top:0;
+    color:#1e3c72;
+    font-size:20px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.field label{
+    font-size:13px;
+    font-weight:bold;
+    color:#444;
+}
+
+.field input,
+.field select,
+.field textarea{
+    width:100%;
+    padding:11px;
+    border:1px solid #ccc;
+    border-radius:7px;
+    font-size:14px;
+    outline:none;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+    border-color:#2a5298;
+}
+
+.full{
+    grid-column:1/-1;
+}
+
+.student-box{
+    background:#f0f6ff;
+    border:1px solid #c8dcff;
+    border-radius:10px;
+    padding:15px;
+    margin-top:15px;
+}
+
+.student-details{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:12px;
+}
+
+.detail{
+    background:white;
+    padding:10px;
+    border-radius:7px;
+    border:1px solid #e0e0e0;
+}
+
+.detail small{
+    display:block;
+    color:#777;
+    font-size:11px;
+}
+
+.detail strong{
+    display:block;
+    margin-top:4px;
+    font-size:14px;
+}
+
+.btn{
+    border:0;
+    border-radius:7px;
+    padding:11px 18px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.btn-primary{
+    background:#1e3c72;
+    color:white;
+}
+
+.btn-success{
+    background:#198754;
+    color:white;
+}
+
+.btn-danger{
+    background:#dc3545;
+    color:white;
+}
+
+.btn-secondary{
+    background:#6c757d;
+    color:white;
+}
+
+.btn-warning{
+    background:#f0ad4e;
+    color:white;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:18px;
+}
+
+.message{
+    padding:12px;
+    border-radius:7px;
+    margin-top:15px;
+    display:none;
+}
+
+.success{
+    background:#d1e7dd;
+    color:#0f5132;
+}
+
+.error{
+    background:#f8d7da;
+    color:#842029;
+}
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:950px;
+}
+
+th,td{
+    border-bottom:1px solid #ddd;
+    padding:10px;
+    text-align:left;
+    font-size:13px;
+}
+
+th{
+    background:#1e3c72;
+    color:white;
+}
+
+tr:hover{
+    background:#f7f9fc;
+}
+
+.status-paid{
+    color:#198754;
+    font-weight:bold;
+}
+
+.status-partial{
+    color:#d97706;
+    font-weight:bold;
+}
+
+.status-pending{
+    color:#dc3545;
+    font-weight:bold;
+}
+
+.summary{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+
+.summary-box{
+    background:white;
+    padding:18px;
+    border-radius:10px;
+    box-shadow:0 2px 10px rgba(0,0,0,.07);
+}
+
+.summary-box span{
+    color:#777;
+    font-size:13px;
+}
+
+.summary-box strong{
+    display:block;
+    font-size:23px;
+    margin-top:5px;
+    color:#1e3c72;
+}
+
+.login-screen{
+    position:fixed;
+    inset:0;
+    background:linear-gradient(135deg,#1e3c72,#2a5298);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:99999;
+}
+
+.login-box{
+    width:360px;
+    max-width:92%;
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 15px 40px rgba(0,0,0,.3);
+}
+
+.login-box h2{
+    text-align:center;
+    color:#1e3c72;
+    margin-top:0;
+}
+
+.login-box img{
+    display:block;
+    width:75px;
+    height:75px;
+    object-fit:contain;
+    margin:0 auto 15px;
+}
+
+.login-field{
+    margin-bottom:15px;
+}
+
+.login-field label{
+    display:block;
+    font-weight:bold;
+    font-size:13px;
+    margin-bottom:6px;
+}
+
+.login-field input{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:7px;
+}
+
+.hidden{
+    display:none !important;
+}
+
+.receipt-preview{
+    border:1px dashed #aaa;
+    padding:20px;
+    background:#fafafa;
+    margin-top:20px;
+    display:none;
+}
+
+/* Receipt */
+.receipt{
+    width:100%;
+    max-width:760px;
+    margin:auto;
+    background:white;
+    border:2px solid #222;
+    padding:18px;
+}
+
+.receipt-header{
+    text-align:center;
+    border-bottom:2px solid #222;
+    padding-bottom:12px;
+}
+
+.receipt-header h1{
+    margin:0;
+    font-size:25px;
+}
+
+.receipt-header h3{
+    margin:5px 0;
+    font-size:15px;
+}
+
+.receipt-header p{
+    margin:3px 0;
+    font-size:12px;
+}
+
+.receipt-title{
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+    margin:15px 0;
+    text-decoration:underline;
+}
+
+.receipt-info{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px 25px;
+    margin-bottom:15px;
+    font-size:13px;
+}
+
+.receipt-info div{
+    border-bottom:1px dotted #aaa;
+    padding:5px 0;
+}
+
+.receipt table{
+    min-width:0;
+    border:1px solid #222;
+}
+
+.receipt th,
+.receipt td{
+    border:1px solid #222;
+    color:#222;
+    background:white;
+}
+
+.receipt th{
+    background:#eee;
+    font-weight:bold;
+}
+
+.receipt-total{
+    margin-top:15px;
+    display:flex;
+    justify-content:flex-end;
+}
+
+.total-box{
+    width:280px;
+}
+
+.total-row{
+    display:flex;
+    justify-content:space-between;
+    padding:6px 0;
+    border-bottom:1px solid #ddd;
+    font-size:13px;
+}
+
+.total-row.final{
+    font-size:16px;
+    font-weight:bold;
+    border-top:2px solid #222;
+    border-bottom:2px solid #222;
+}
+
+.signature-area{
+    margin-top:50px;
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+}
+
+@media(max-width:900px){
+    .grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .student-details{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .summary{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:600px){
+    header{
+        flex-direction:column;
+        text-align:center;
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .student-details{
+        grid-template-columns:1fr;
+    }
+
+    .summary{
+        grid-template-columns:1fr;
+    }
+
+    .receipt-info{
+        grid-template-columns:1fr;
+    }
+}
+
+@media print{
+    body *{
+        visibility:hidden !important;
+    }
+
+    #printArea,
+    #printArea *{
+        visibility:visible !important;
+    }
+
+    #printArea{
+        position:absolute;
+        left:0;
+        top:0;
+        width:100%;
+        display:block !important;
+    }
+
+    .receipt{
+        max-width:none;
+        border:2px solid #000;
+    }
+
+    @page{
+        size:A4;
+        margin:12mm;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="login-screen">
+    <div class="login-box">
+
+        <img src="logo.png" alt="School Logo">
+
+        <h2>💰 Fees Management</h2>
+
+        <div class="login-field">
+            <label>Username</label>
+            <input
+                type="text"
+                id="loginUser"
+                autocomplete="username"
+                placeholder="Enter username">
+        </div>
+
+        <div class="login-field">
+            <label>Password</label>
+            <input
+                type="password"
+                id="loginPass"
+                autocomplete="current-password"
+                placeholder="Enter password"
+                onkeydown="if(event.key==='Enter') doLogin()">
+        </div>
+
+        <button
+            type="button"
+            class="btn btn-primary"
+            style="width:100%;"
+            onclick="doLogin()">
+            🔐 Login
+        </button>
+
+        <div id="loginError" class="message error"></div>
+
+    </div>
+</div>
+
+
+<!-- MAIN -->
+<div id="mainApp" class="hidden">
+
+<header>
+
+    <div class="header-left">
+
+        <img src="logo.png" class="logo" alt="Logo">
+
+        <div>
+            <div class="school-name">Rainbow Public School</div>
+            <div class="trust-name">
+                Conducted by Shubhi Education Foundation, Dahod
+            </div>
+        </div>
+
+    </div>
+
+    <button
+        type="button"
+        class="btn btn-danger"
+        onclick="logout()">
+        Logout
+    </button>
+
+</header>
+
+
+<div class="container">
+
+    <div class="nav">
+
+        <button
+            type="button"
+            onclick="goStudentMaster()">
+            👨‍🎓 Student Master
+        </button>
+
+        <button
+            type="button"
+            onclick="newFee()">
+            ➕ New Fee
+        </button>
+
+        <button
+            type="button"
+            onclick="loadFees()">
+            🔄 Refresh
+        </button>
+
+    </div>
+
+
+    <!-- SUMMARY -->
+
+    <div class="summary">
+
+        <div class="summary-box">
+            <span>Total Receipts</span>
+            <strong id="totalReceipts">0</strong>
+        </div>
+
+        <div class="summary-box">
+            <span>Total Paid</span>
+            <strong id="totalPaid">₹0</strong>
+        </div>
+
+        <div class="summary-box">
+            <span>Total Discount</span>
+            <strong id="totalDiscount">₹0</strong>
+        </div>
+
+        <div class="summary-box">
+            <span>Total Balance</span>
+            <strong id="totalBalance">₹0</strong>
+        </div>
+
+    </div>
+
+
+    <!-- FEE FORM -->
+
+    <div class="card">
+
+        <h2>💰 Fee Collection</h2>
+
+        <div class="grid">
+
+            <div class="field">
+                <label>Admission No.</label>
+
+                <input
+                    type="text"
+                    id="searchAdmission"
+                    placeholder="Enter admission no."
+                    onkeydown="if(event.key==='Enter') searchStudent()">
+            </div>
+
+            <div class="field">
+                <label>&nbsp;</label>
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    onclick="searchStudent()">
+                    🔎 Search Student
+                </button>
+            </div>
+
+            <div class="field">
+                <label>Session</label>
+
+                <select id="fee_session">
+                    <option value="2026-27">2026-27</option>
+                    <option value="2027-28">2027-28</option>
+                    <option value="2028-29">2028-29</option>
+                    <option value="2029-30">2029-30</option>
+                    <option value="2030-31">2030-31</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Fee Date</label>
+
+                <input
+                    type="date"
+                    id="fee_date">
+            </div>
+
+        </div>
+
+
+        <div id="studentBox" class="student-box hidden">
+
+            <div class="student-details">
+
+                <div class="detail">
+                    <small>Student Name</small>
+                    <strong id="studentName">-</strong>
+                </div>
+
+                <div class="detail">
+                    <small>Admission No.</small>
+                    <strong id="studentAdm">-</strong>
+                </div>
+
+                <div class="detail">
+                    <small>Class</small>
+                    <strong id="studentClass">-</strong>
+                </div>
+
+                <div class="detail">
+                    <small>Section</small>
+                    <strong id="studentSection">-</strong>
+                </div>
+
+                <div class="detail">
+                    <small>Father Name</small>
+                    <strong id="studentFather">-</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="grid" style="margin-top:18px;">
+
+            <div class="field">
+                <label>Fee Type</label>
+
+                <select id="fee_type">
+                    <option value="Admission Fee">Admission Fee</option>
+                    <option value="Tuition Fee">Tuition Fee</option>
+                    <option value="Annual Fee">Annual Fee</option>
+                    <option value="Transport Fee">Transport Fee</option>
+                    <option value="Exam Fee">Exam Fee</option>
+                    <option value="Activity Fee">Activity Fee</option>
+                    <option value="Other Fee">Other Fee</option>
+                </select>
+            </div>
+
+
+            <div class="field">
+                <label>Total Fee</label>
+
+                <input
+                    type="number"
+                    id="total_fee"
+                    min="0"
+                    step="0.01"
+                    value="0"
+                    oninput="calculateAmount()">
+            </div>
+
+
+            <div class="field">
+                <label>Discount</label>
+
+                <input
+                    type="number"
+                    id="discount"
+                    min="0"
+                    step="0.01"
+                    value="0"
+                    oninput="calculateAmount()">
+            </div>
+
+
+            <div class="field">
+                <label>Paid Amount</label>
+
+                <input
+                    type="number"
+                    id="paid"
+                    min="0"
+                    step="0.01"
+                    value="0"
+                    oninput="calculateAmount()">
+            </div>
+
+
+            <div class="field">
+                <label>Balance</label>
+
+                <input
+                    type="number"
+                    id="balance"
+                    readonly
+                    value="0">
+            </div>
+
+
+            <div class="field">
+                <label>Payment Mode</label>
+
+                <select id="mode">
+                    <option value="Cash">Cash</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="Cheque">Cheque</option>
+                    <option value="Online">Online</option>
+                </select>
+            </div>
+
+
+            <div class="field">
+                <label>Transaction ID / Reference</label>
+
+                <input
+                    type="text"
+                    id="transaction_id"
+                    placeholder="Optional">
+            </div>
+
+
+            <div class="field">
+                <label>Payment Status</label>
+
+                <select id="payment_status">
+                    <option value="Paid">Paid</option>
+                    <option value="Partial">Partial</option>
+                    <option value="Pending">Pending</option>
+                </select>
+            </div>
+
+
+            <div class="field full">
+                <label>Remarks</label>
+
+                <textarea
+                    id="remarks"
+                    rows="2"
+                    placeholder="Optional remarks"></textarea>
+            </div>
+
+        </div>
+
+
+        <div id="formMessage" class="message"></div>
+
+
+        <div class="actions">
+
+            <button
+                type="button"
+                class="btn btn-success"
+                onclick="saveFee()">
+                💾 Save Fee
+            </button>
+
+            <button
+                type="button"
+                class="btn btn-secondary"
+                onclick="newFee()">
+                🆕 Clear
+            </button>
+
+            <button
+                type="button"
+                class="btn btn-warning"
+                onclick="printCurrentReceipt()">
+                🖨️ Print Last Receipt
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- FEE HISTORY -->
+
+    <div class="card">
+
+        <h2>📋 Fee History</h2>
+
+        <div class="grid">
+
+            <div class="field">
+                <label>Search</label>
+
+                <input
+                    type="text"
+                    id="feeSearch"
+                    placeholder="Receipt / Admission / Student Name"
+                    oninput="filterFees()">
+            </div>
+
+            <div class="field">
+                <label>Session</label>
+
+                <select
+                    id="historySession"
+                    onchange="filterFees()">
+
+                    <option value="">All Sessions</option>
+                    <option value="2026-27">2026-27</option>
+                    <option value="2027-28">2027-28</option>
+                    <option value="2028-29">2028-29</option>
+                    <option value="2029-30">2029-30</option>
+                    <option value="2030-31">2030-31</option>
+
+                </select>
+            </div>
+
+        </div>
+
+
+        <div class="table-wrap" style="margin-top:18px;">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Receipt No.</th>
+                        <th>Date</th>
+                        <th>Admission No.</th>
+                        <th>Student</th>
+                        <th>Class</th>
+                        <th>Fee Type</th>
+                        <th>Total</th>
+                        <th>Discount</th>
+                        <th>Paid</th>
+                        <th>Balance</th>
+                        <th>Mode</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="feeTable">
+                    <tr>
+                        <td colspan="12" style="text-align:center;">
+                            Loading...
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- PRINT AREA -->
+
+<div id="printArea" class="hidden">
+
+    <div class="receipt">
+
+        <div class="receipt-header">
+
+            <h1>RAINBOW PUBLIC SCHOOL</h1>
+
+            <h3>Conducted by Shubhi Education Foundation, Dahod</h3>
+
+            <p>
+                Shalimar Co-operative Society, Muvaliya Road, Rabdal,
+                Dahod, Gujarat - 389151
+            </p>
+
+        </div>
+
+
+        <div class="receipt-title">
+            FEE RECEIPT
+        </div>
+
+
+        <div class="receipt-info">
+
+            <div>
+                <b>Receipt No.:</b>
+                <span id="r_receipt">-</span>
+            </div>
+
+            <div>
+                <b>Date:</b>
+                <span id="r_date">-</span>
+            </div>
+
+            <div>
+                <b>Student Name:</b>
+                <span id="r_student">-</span>
+            </div>
+
+            <div>
+                <b>Admission No.:</b>
+                <span id="r_adm">-</span>
+            </div>
+
+            <div>
+                <b>Father Name:</b>
+                <span id="r_father">-</span>
+            </div>
+
+            <div>
+                <b>Class / Section:</b>
+                <span id="r_class">-</span>
+            </div>
+
+            <div>
+                <b>Session:</b>
+                <span id="r_session">-</span>
+            </div>
+
+            <div>
+                <b>Payment Mode:</b>
+                <span id="r_mode">-</span>
+            </div>
+
+        </div>
+
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th style="width:70%;">Particulars</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td id="r_fee_type">Fee</td>
+                    <td id="r_total">₹0</td>
+                </tr>
+
+                <tr>
+                    <td>Discount</td>
+                    <td id="r_discount">₹0</td>
+                </tr>
+
+                <tr>
+                    <td><b>Paid Amount</b></td>
+                    <td id="r_paid"><b>₹0</b></td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+
+        <div class="receipt-total">
+
+            <div class="total-box">
+
+                <div class="total-row">
+                    <span>Total Fee</span>
+                    <span id="r_total2">₹0</span>
+                </div>
+
+                <div class="total-row">
+                    <span>Discount</span>
+                    <span id="r_discount2">₹0</span>
+                </div>
+
+                <div class="total-row">
+                    <span>Paid</span>
+                    <span id="r_paid2">₹0</span>
+                </div>
+
+                <div class="total-row final">
+                    <span>Balance</span>
+                    <span id="r_balance">₹0</span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div style="margin-top:18px;font-size:12px;">
+            <b>Amount in Words:</b>
+            <span id="r_words">Rupees Zero Only</span>
+        </div>
+
+
+        <div style="margin-top:10px;font-size:12px;">
+            <b>Transaction ID:</b>
+            <span id="r_transaction">-</span>
+        </div>
+
+
+        <div style="margin-top:10px;font-size:12px;">
+            <b>Status:</b>
+            <span id="r_status">Paid</span>
+        </div>
+
+
+        <div class="signature-area">
+
+            <div>
+                Parent / Guardian Signature
+            </div>
+
+            <div>
+                Authorized Signature
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* ================================
+   SUPABASE
+================================ */
+
+const SUPABASE_URL =
+"https://kqahcvaoxnmxfcgyyync.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+"sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl";
+
+const sb = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+);
+
+
+/* ================================
+   FEES LOGIN
+   SEPARATE FROM STUDENT MASTER
+================================ */
+
+const FEES_LOGIN_KEY = "rps_fees_management_login";
+
+const FEES_USERNAME = "admin";
+const FEES_PASSWORD = "admin123";
+
+
+/* ================================
+   GLOBAL VARIABLES
+================================ */
+
+let selectedStudent = null;
+let feeRecords = [];
+let lastReceipt = null;
+
+
+/* ================================
+   LOGIN
+================================ */
+
+function checkLogin(){
+
+    if(localStorage.getItem(FEES_LOGIN_KEY) === "yes"){
+
+        document
+        .getElementById("loginScreen")
+        .classList.add("hidden");
+
+        document
+        .getElementById("mainApp")
+        .classList.remove("hidden");
+
+        return true;
+    }
+
+    document
+    .getElementById("loginScreen")
+    .classList.remove("hidden");
+
+    document
+    .getElementById("mainApp")
+    .classList.add("hidden");
+
+    return false;
+}
+
+
+function doLogin(){
+
+    const username =
+        document.getElementById("loginUser").value.trim();
+
+    const password =
+        document.getElementById("loginPass").value;
+
+    const error =
+        document.getElementById("loginError");
+
+    if(
+        username === FEES_USERNAME &&
+        password === FEES_PASSWORD
+    ){
+
+        localStorage.setItem(
+            FEES_LOGIN_KEY,
+            "yes"
+        );
+
+        error.style.display = "none";
+
+        document
+        .getElementById("loginScreen")
+        .classList.add("hidden");
+
+        document
+        .getElementById("mainApp")
+        .classList.remove("hidden");
+
+        initPage();
+
+    }else{
+
+        error.textContent =
+            "Invalid Username or Password";
+
+        error.style.display = "block";
+    }
+}
+
+
+function logout(){
+
+    localStorage.removeItem(
+        FEES_LOGIN_KEY
+    );
+
+    location.reload();
+}
+
+
+/* ================================
+   INIT
+================================ */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        if(checkLogin()){
+
+            initPage();
+
+        }
+
+    }
+);
+
+
+async function initPage(){
+
+    document.getElementById("fee_date").value =
+        new Date().toISOString().split("T")[0];
+
+    calculateAmount();
+
+    await loadFees();
+
+}
+
+
+/* ================================
+   STUDENT MASTER NAVIGATION
+================================ */
+
+function goStudentMaster(){
+
+    window.location.href =
+        "student-master.html";
+
+}
+
+
+/* ================================
+   MESSAGE
+================================ */
+
+function showMessage(
+    text,
+    type = "success"
+){
+
+    const box =
+        document.getElementById("formMessage");
+
+    box.textContent = text;
+
+    box.className =
+        "message " +
+        (type === "success"
+            ? "success"
+            : "error");
+
+    box.style.display = "block";
+
+    setTimeout(
+        function(){
+            box.style.display = "none";
+        },
+        5000
+    );
+}
+
+
+/* ================================
+   STUDENT SEARCH
+================================ */
+
+async function searchStudent(){
+
+    const adm =
+        document
+        .getElementById("searchAdmission")
+        .value
+        .trim();
+
+    if(!adm){
+
+        showMessage(
+            "Admission No. enter karo.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } = await sb
+        .from("students")
+        .select("*")
+        .eq("admission_no", adm)
+        .limit(1);
+
+
+    if(error){
+
+        console.error(error);
+
+        showMessage(
+            "Student search error: " +
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+
+    if(!data || data.length === 0){
+
+        selectedStudent = null;
+
+        document
+        .getElementById("studentBox")
+        .classList.add("hidden");
+
+        showMessage(
+            "Student nahi mila.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    selectedStudent = data[0];
+
+
+    document
+    .getElementById("studentBox")
+    .classList.remove("hidden");
+
+
+    document.getElementById("studentName")
+        .textContent =
+        selectedStudent.student_name || "-";
+
+
+    document.getElementById("studentAdm")
+        .textContent =
+        selectedStudent.admission_no || "-";
+
+
+    document.getElementById("studentClass")
+        .textContent =
+        selectedStudent.class_name || "-";
+
+
+    document.getElementById("studentSection")
+        .textContent =
+        selectedStudent.section || "-";
+
+
+    document.getElementById("studentFather")
+        .textContent =
+        selectedStudent.father_name || "-";
+
+
+    if(selectedStudent.session){
+
+        document.getElementById("fee_session").value =
+            selectedStudent.session;
+
+    }
+
+}
+
+
+/* ================================
+   CALCULATE
+================================ */
+
+function calculateAmount(){
+
+    const total =
+        Number(
+            document.getElementById("total_fee").value
+        ) || 0;
+
+
+    const discount =
+        Number(
+            document.getElementById("discount").value
+        ) || 0;
+
+
+    const paid =
+        Number(
+            document.getElementById("paid").value
+        ) || 0;
+
+
+    let balance =
+        total - discount - paid;
+
+
+    if(balance < 0){
+
+        balance = 0;
+
+    }
+
+
+    document.getElementById("balance").value =
+        balance.toFixed(2);
+
+
+    const net =
+        total - discount;
+
+
+    const status =
+        document.getElementById("payment_status");
+
+
+    if(paid >= net && net > 0){
+
+        status.value = "Paid";
+
+    }else if(paid > 0){
+
+        status.value = "Partial";
+
+    }else{
+
+        status.value = "Pending";
+
+    }
+
+}
+
+
+/* ================================
+   RECEIPT NUMBER
+   UNIQUE
+================================ */
+
+function generateReceiptNo(){
+
+    const now = new Date();
+
+    const year =
+        now.getFullYear();
+
+    const month =
+        String(now.getMonth()+1)
+        .padStart(2,"0");
+
+    const day =
+        String(now.getDate())
+        .padStart(2,"0");
+
+    const time =
+        String(now.getHours())
+        .padStart(2,"0") +
+        String(now.getMinutes())
+        .padStart(2,"0") +
+        String(now.getSeconds())
+        .padStart(2,"0");
+
+    const random =
+        Math.floor(
+            100 + Math.random()*900
+        );
+
+    return "RPS-FEE-" +
+        year +
+        month +
+        day +
+        "-" +
+        time +
+        "-" +
+        random;
+}
+
+
+/* ================================
+   SAVE FEE
+================================ */
+
+async function saveFee(){
+
+    if(!selectedStudent){
+
+        showMessage(
+            "Pehle Admission No. se student search karo.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    calculateAmount();
+
+
+    const total =
+        Number(
+            document.getElementById("total_fee").value
+        ) || 0;
+
+
+    const discount =
+        Number(
+            document.getElementById("discount").value
+        ) || 0;
+
+
+    const paid =
+        Number(
+            document.getElementById("paid").value
+        ) || 0;
+
+
+    const balance =
+        Number(
+            document.getElementById("balance").value
+        ) || 0;
+
+
+    if(total <= 0){
+
+        showMessage(
+            "Total Fee enter karo.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if(discount < 0 || paid < 0){
+
+        showMessage(
+            "Amount valid nahi hai.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if(discount > total){
+
+        showMessage(
+            "Discount total fee se zyada nahi ho sakta.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const net =
+        total - discount;
+
+
+    if(paid > net){
+
+        showMessage(
+            "Paid amount net fee se zyada nahi ho sakta.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const receiptNo =
+        generateReceiptNo();
+
+
+    const feeDate =
+        document.getElementById("fee_date").value;
+
+
+    const session =
+        document.getElementById("fee_session").value;
+
+
+    const feeType =
+        document.getElementById("fee_type").value;
+
+
+    const mode =
+        document.getElementById("mode").value;
+
+
+    const transactionId =
+        document.getElementById("transaction_id")
+        .value
+        .trim();
+
+
+    const paymentStatus =
+        document.getElementById("payment_status").value;
+
+
+    /*
+       IMPORTANT:
+       No duplicate check on student_id.
+       Same student can have multiple receipts.
+    */
+
+    const feeData = {
+
+        receipt_no: receiptNo,
+
+        student_id: selectedStudent.id,
+
+        admission_no:
+            selectedStudent.admission_no,
+
+        student_name:
+            selectedStudent.student_name,
+
+        class_name:
+            selectedStudent.class_name,
+
+        section:
+            selectedStudent.section,
+
+        session:
+            session,
+
+        fee_type:
+            feeType,
+
+        amount:
+            total,
+
+        discount:
+            discount,
+
+        paid:
+            paid,
+
+        balance:
+            balance,
+
+        mode:
+            mode,
+
+        date:
+            feeDate,
+
+        transaction_id:
+            transactionId,
+
+        payment_status:
+            paymentStatus,
+
+        source:
+            "fees-management"
+
+    };
+
+
+    const {
+        data,
+        error
+    } = await sb
+        .from("fees")
+        .insert([feeData])
+        .select()
+        .single();
+
+
+    if(error){
+
+        console.error(
+            "FEE SAVE ERROR:",
+            error
+        );
+
+        showMessage(
+            "Fee save nahi hui: " +
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+
+    lastReceipt = data;
+
+
+    showMessage(
+        "Fee successfully save ho gayi. Receipt No.: " +
+        receiptNo,
+        "success"
+    );
+
+
+    await loadFees();
+
+
+    prepareReceipt(data);
+
+
+    setTimeout(
+        function(){
+
+            printReceipt();
+
+        },
+        300
+    );
+
+}
+
+
+/* ================================
+   LOAD FEES
+================================ */
+
+async function loadFees(){
+
+    const tbody =
+        document.getElementById("feeTable");
+
+
+    tbody.innerHTML =
+        `<tr>
+            <td colspan="12" style="text-align:center;">
+                Loading...
+            </td>
+        </tr>`;
+
+
+    const {
+        data,
+        error
+    } = await sb
+        .from("fees")
+        .select("*")
+        .order("id",{ascending:false})
+        .limit(500);
+
+
+    if(error){
+
+        console.error(error);
+
+        tbody.innerHTML =
+            `<tr>
+                <td colspan="12" style="text-align:center;color:red;">
+                    ${escapeHtml(error.message)}
+                </td>
+            </tr>`;
+
+        return;
+    }
+
+
+    feeRecords = data || [];
+
+
+    updateSummary();
+
+
+    filterFees();
+
+}
+
+
+/* ================================
+   SUMMARY
+================================ */
+
+function updateSummary(){
+
+    const totalReceipts =
+        feeRecords.length;
+
+
+    const totalPaid =
+        feeRecords.reduce(
+            (sum,r)=>
+                sum + Number(r.paid || 0),
+            0
+        );
+
+
+    const totalDiscount =
+        feeRecords.reduce(
+            (sum,r)=>
+                sum + Number(r.discount || 0),
+            0
+        );
+
+
+    const totalBalance =
+        feeRecords.reduce(
+            (sum,r)=>
+                sum + Number(r.balance || 0),
+            0
+        );
+
+
+    document.getElementById("totalReceipts")
+        .textContent =
+        totalReceipts;
+
+
+    document.getElementById("totalPaid")
+        .textContent =
+        money(totalPaid);
+
+
+    document.getElementById("totalDiscount")
+        .textContent =
+        money(totalDiscount);
+
+
+    document.getElementById("totalBalance")
+        .textContent =
+        money(totalBalance);
+
+}
+
+
+/* ================================
+   FILTER
+================================ */
+
+function filterFees(){
+
+    const search =
+        document
+        .getElementById("feeSearch")
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    const session =
+        document
+        .getElementById("historySession")
+        .value;
+
+
+    const filtered =
+        feeRecords.filter(
+            function(r){
+
+                const text =
+                    (
+                        r.receipt_no || ""
+                    ).toLowerCase() +
+                    " " +
+                    (
+                        r.admission_no || ""
+                    ).toLowerCase() +
+                    " " +
+                    (
+                        r.student_name || ""
+                    ).toLowerCase();
+
+
+                const searchOK =
+                    !search ||
+                    text.includes(search);
+
+
+                const sessionOK =
+                    !session ||
+                    r.session === session;
+
+
+                return searchOK && sessionOK;
+
+            }
+        );
+
+
+    renderFees(filtered);
+
+}
+
+
+/* ================================
+   RENDER TABLE
+================================ */
+
+function renderFees(records){
+
+    const tbody =
+        document.getElementById("feeTable");
+
+
+    if(!records.length){
+
+        tbody.innerHTML =
+            `<tr>
+                <td colspan="12" style="text-align:center;">
+                    No fee records found.
+                </td>
+            </tr>`;
+
+        return;
+    }
+
+
+    tbody.innerHTML =
+        records.map(
+            function(r){
+
+                const status =
+                    String(
+                        r.payment_status || ""
+                    ).toLowerCase();
+
+
+                let statusClass =
+                    "status-pending";
+
+
+                if(status === "paid"){
+                    statusClass = "status-paid";
+                }
+
+                if(status === "partial"){
+                    statusClass = "status-partial";
+                }
+
+
+                return `
+                <tr>
+
+                    <td>
+                        ${escapeHtml(r.receipt_no || "-")}
+                    </td>
+
+                    <td>
+                        ${formatDate(r.date)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(r.admission_no || "-")}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(r.student_name || "-")}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            (r.class_name || "-") +
+                            (
+                                r.section
+                                ? " - " + r.section
+                                : ""
+                            )
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(r.fee_type || "-")}
+                    </td>
+
+                    <td>
+                        ${money(r.amount)}
+                    </td>
+
+                    <td>
+                        ${money(r.discount)}
+                    </td>
+
+                    <td>
+                        ${money(r.paid)}
+                    </td>
+
+                    <td>
+                        ${money(r.balance)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(r.mode || "-")}
+                    </td>
+
+                    <td>
+
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            style="padding:7px 10px;"
+                            onclick='printSavedReceipt(${JSON.stringify(r)})'>
+                            🖨️
+                        </button>
+
+                    </td>
+
+                </tr>
+                `;
+
+            }
+        ).join("");
+
+}
+
+
+/* ================================
+   NEW FEE
+================================ */
+
+function newFee(){
+
+    selectedStudent = null;
+
+    document
+    .getElementById("searchAdmission")
+    .value = "";
+
+
+    document
+    .getElementById("studentBox")
+    .classList.add("hidden");
+
+
+    document
+    .getElementById("fee_type")
+    .value = "Admission Fee";
+
+
+    document
+    .getElementById("total_fee")
+    .value = "0";
+
+
+    document
+    .getElementById("discount")
+    .value = "0";
+
+
+    document
+    .getElementById("paid")
+    .value = "0";
+
+
+    document
+    .getElementById("balance")
+    .value = "0";
+
+
+    document
+    .getElementById("mode")
+    .value = "Cash";
+
+
+    document
+    .getElementById("transaction_id")
+    .value = "";
+
+
+    document
+    .getElementById("payment_status")
+    .value = "Pending";
+
+
+    document
+    .getElementById("remarks")
+    .value = "";
+
+
+    document
+    .getElementById("fee_date")
+    .value =
+        new Date().toISOString().split("T")[0];
+
+
+    document
+    .getElementById("formMessage")
+    .style.display = "none";
+
+}
+
+
+/* ================================
+   RECEIPT
+================================ */
+
+function prepareReceipt(r){
+
+    document.getElementById("r_receipt")
+        .textContent =
+        r.receipt_no || "-";
+
+
+    document.getElementById("r_date")
+        .textContent =
+        formatDate(r.date);
+
+
+    document.getElementById("r_student")
+        .textContent =
+        r.student_name || "-";
+
+
+    document.getElementById("r_adm")
+        .textContent =
+        r.admission_no || "-";
+
+
+    document.getElementById("r_father")
+        .textContent =
+        selectedStudent
+        ? (selectedStudent.father_name || "-")
+        : "-";
+
+
+    document.getElementById("r_class")
+        .textContent =
+        (r.class_name || "-") +
+        (
+            r.section
+            ? " / " + r.section
+            : ""
+        );
+
+
+    document.getElementById("r_session")
+        .textContent =
+        r.session || "-";
+
+
+    document.getElementById("r_mode")
+        .textContent =
+        r.mode || "-";
+
+
+    document.getElementById("r_fee_type")
+        .textContent =
+        r.fee_type || "Fee";
+
+
+    document.getElementById("r_total")
+        .textContent =
+        money(r.amount);
+
+
+    document.getElementById("r_discount")
+        .textContent =
+        money(r.discount);
+
+
+    document.getElementById("r_paid")
+        .textContent =
+        money(r.paid);
+
+
+    document.getElementById("r_total2")
+        .textContent =
+        money(r.amount);
+
+
+    document.getElementById("r_discount2")
+        .textContent =
+        money(r.discount);
+
+
+    document.getElementById("r_paid2")
+        .textContent =
+        money(r.paid);
+
+
+    document.getElementById("r_balance")
+        .textContent =
+        money(r.balance);
+
+
+    document.getElementById("r_words")
+        .textContent =
+        numberToWordsIndian(
+            Number(r.paid || 0)
+        );
+
+
+    document.getElementById("r_transaction")
+        .textContent =
+        r.transaction_id || "-";
+
+
+    document.getElementById("r_status")
+        .textContent =
+        r.payment_status || "-";
+
+
+    document
+    .getElementById("printArea")
+    .classList.remove("hidden");
+
+}
+
+
+/* ================================
+   PRINT
+================================ */
+
+function printReceipt(){
+
+    window.print();
+
+}
+
+
+function printCurrentReceipt(){
+
+    if(!lastReceipt){
+
+        showMessage(
+            "Pehle koi receipt save karo.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    prepareReceipt(lastReceipt);
+
+    setTimeout(
+        printReceipt,
+        200
+    );
+
+}
+
+
+async function printSavedReceipt(r){
+
+    let student = null;
+
+
+    if(r.student_id){
+
+        const {
+            data
+        } = await sb
+            .from("students")
+            .select("*")
+            .eq("id",r.student_id)
+            .limit(1);
+
+
+        if(data && data.length){
+
+            student = data[0];
+
+        }
+
+    }
+
+
+    selectedStudent = student;
+
+
+    prepareReceipt(r);
+
+
+    setTimeout(
+        printReceipt,
+        200
+    );
+
+}
+
+
+/* ================================
+   HELPERS
+================================ */
+
+function money(value){
+
+    const n =
+        Number(value || 0);
+
+
+    return "₹" +
+        n.toLocaleString(
+            "en-IN",
+            {
+                minimumFractionDigits:2,
+                maximumFractionDigits:2
+            }
+        );
+
+}
+
+
+function formatDate(date){
+
+    if(!date) return "-";
+
+
+    const d =
+        new Date(date);
+
+
+    if(isNaN(d.getTime())){
+
+        return date;
+
+    }
+
+
+    return String(d.getDate())
+        .padStart(2,"0") +
+        "/" +
+        String(d.getMonth()+1)
+        .padStart(2,"0") +
+        "/" +
+        d.getFullYear();
+
+}
+
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* ================================
+   INDIAN NUMBER TO WORDS
+================================ */
+
+function numberToWordsIndian(num){
+
+    num =
+        Math.round(
+            Number(num || 0)
+        );
+
+
+    if(num === 0){
+
+        return "Rupees Zero Only";
+
+    }
+
+
+    const ones = [
+        "",
+        "One",
+        "Two",
+        "Three",
+        "Four",
+        "Five",
+        "Six",
+        "Seven",
+        "Eight",
+        "Nine",
+        "Ten",
+        "Eleven",
+        "Twelve",
+        "Thirteen",
+        "Fourteen",
+        "Fifteen",
+        "Sixteen",
+        "Seventeen",
+        "Eighteen",
+        "Nineteen"
+    ];
+
+
+    const tens = [
+        "",
+        "",
+        "Twenty",
+        "Thirty",
+        "Forty",
+        "Fifty",
+        "Sixty",
+        "Seventy",
+        "Eighty",
+        "Ninety"
+    ];
+
+
+    function twoDigits(n){
+
+        if(n < 20){
+
+            return ones[n];
+
+        }
+
+
+        return tens[
+            Math.floor(n/10)
+        ] +
+        (
+            n%10
+            ? " " + ones[n%10]
+            : ""
+        );
+
+    }
+
+
+    function convert(n){
+
+        let str = "";
+
+
+        if(n >= 10000000){
+
+            str +=
+                convert(
+                    Math.floor(n/10000000)
+                ) +
+                " Crore ";
+
+            n %= 10000000;
+
+        }
+
+
+        if(n >= 100000){
+
+            str +=
+                convert(
+                    Math.floor(n/100000)
+                ) +
+                " Lakh ";
+
+            n %= 100000;
+
+        }
+
+
+        if(n >= 1000){
+
+            str +=
+                convert(
+                    Math.floor(n/1000)
+                ) +
+                " Thousand ";
+
+            n %= 1000;
+
+        }
+
+
+        if(n >= 100){
+
+            str +=
+                ones[
+                    Math.floor(n/100)
+                ] +
+                " Hundred ";
+
+            n %= 100;
+
+        }
+
+
+        if(n > 0){
+
+            if(str !== ""){
+
+                str += "and ";
+
+            }
+
+            str += twoDigits(n);
+
+        }
+
+
+        return str.trim();
+
+    }
+
+
+    return "Rupees " +
+        convert(num) +
+        " Only";
+
+}
+
+</script>
+
+</body>
+</html>
