@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Rainbow Public School - Result Management</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
 *{
@@ -16,83 +16,129 @@
 body{
     margin:0;
     font-family:Arial,Helvetica,sans-serif;
-    background:#f3f6fb;
-    color:#222;
+    background:#eef4ff;
+    color:#1f2937;
 }
 
-header{
-    background:linear-gradient(135deg,#173b8f,#2563eb);
+button,input,select,textarea{
+    font-family:inherit;
+}
+
+.header{
+    background:linear-gradient(135deg,#183b73,#2563eb,#4f46e5);
     color:white;
     padding:18px 25px;
-    box-shadow:0 3px 12px rgba(0,0,0,.15);
+    box-shadow:0 4px 15px rgba(0,0,0,.15);
 }
 
-header h1{
-    margin:0;
-    font-size:25px;
-}
-
-header p{
-    margin:5px 0 0;
-    opacity:.9;
-}
-
-.topbar{
+.header-inner{
+    max-width:1250px;
+    margin:auto;
     display:flex;
-    justify-content:space-between;
     align-items:center;
-    gap:10px;
-    flex-wrap:wrap;
+    gap:15px;
 }
 
-.logout{
-    background:#dc2626;
-    border:0;
-    color:white;
-    padding:10px 16px;
-    border-radius:7px;
-    cursor:pointer;
-    font-weight:bold;
+.logo{
+    width:65px;
+    height:65px;
+    object-fit:contain;
+    background:white;
+    border-radius:12px;
+    padding:5px;
+}
+
+.school-title{
+    font-size:26px;
+    font-weight:800;
+}
+
+.school-sub{
+    margin-top:4px;
+    font-size:14px;
+    opacity:.95;
 }
 
 .container{
-    max-width:1400px;
-    margin:20px auto;
+    max-width:1250px;
+    margin:25px auto;
     padding:0 15px;
 }
 
-.tabs{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-bottom:18px;
+.login-box{
+    max-width:400px;
+    margin:80px auto;
+    background:white;
+    padding:30px;
+    border-radius:18px;
+    box-shadow:0 10px 35px rgba(0,0,0,.15);
 }
 
-.tab{
-    border:0;
-    padding:12px 18px;
+.login-box h2{
+    text-align:center;
+    color:#1d4ed8;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+label{
+    display:block;
+    font-weight:700;
+    margin-bottom:6px;
+}
+
+input,select,textarea{
+    width:100%;
+    padding:11px 12px;
+    border:1px solid #cbd5e1;
     border-radius:8px;
-    background:#dbe4f5;
-    cursor:pointer;
-    font-weight:bold;
+    outline:none;
+    background:white;
 }
 
-.tab.active{
-    background:#2563eb;
+input:focus,select:focus,textarea:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 0 3px rgba(37,99,235,.1);
+}
+
+.btn{
+    border:0;
+    padding:11px 17px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:700;
     color:white;
+    margin:3px;
+}
+
+.btn-primary{background:#2563eb;}
+.btn-success{background:#16a34a;}
+.btn-danger{background:#dc2626;}
+.btn-warning{background:#d97706;}
+.btn-dark{background:#374151;}
+.btn-purple{background:#7c3aed;}
+.btn:hover{opacity:.9;}
+
+.page-title{
+    color:#173b76;
+    margin-bottom:18px;
 }
 
 .card{
     background:white;
-    border-radius:12px;
-    padding:20px;
+    border-radius:16px;
+    padding:22px;
     margin-bottom:20px;
-    box-shadow:0 3px 15px rgba(0,0,0,.08);
+    box-shadow:0 5px 20px rgba(30,64,175,.10);
 }
 
-.card h2{
+.card h3{
     margin-top:0;
-    color:#173b8f;
+    color:#1d4ed8;
+    border-bottom:2px solid #dbeafe;
+    padding-bottom:10px;
 }
 
 .grid{
@@ -101,84 +147,74 @@ header p{
     gap:14px;
 }
 
-.field{
-    display:flex;
-    flex-direction:column;
-    gap:6px;
+@media(max-width:900px){
+    .grid{
+        grid-template-columns:repeat(2,1fr);
+    }
 }
 
-.field label{
-    font-weight:bold;
-    font-size:14px;
+@media(max-width:600px){
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .school-title{
+        font-size:20px;
+    }
 }
 
-input,select,textarea{
-    width:100%;
-    padding:10px;
-    border:1px solid #cbd5e1;
-    border-radius:7px;
-    font-size:14px;
-    background:white;
-}
-
-textarea{
-    min-height:80px;
-    resize:vertical;
-}
-
-button{
-    font-family:inherit;
-}
-
-.btn{
-    border:0;
-    padding:10px 16px;
-    border-radius:7px;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-.btn-primary{
-    background:#2563eb;
-    color:white;
-}
-
-.btn-success{
-    background:#16a34a;
-    color:white;
-}
-
-.btn-danger{
-    background:#dc2626;
-    color:white;
-}
-
-.btn-warning{
-    background:#f59e0b;
-    color:white;
-}
-
-.btn-secondary{
-    background:#64748b;
-    color:white;
-}
-
-.btn-dark{
-    background:#1e293b;
-    color:white;
-}
-
-.actions{
-    display:flex;
+.subject-row{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr 50px;
     gap:10px;
-    flex-wrap:wrap;
-    margin-top:18px;
+    align-items:end;
+    margin-bottom:10px;
+}
+
+@media(max-width:700px){
+    .subject-row{
+        grid-template-columns:1fr;
+    }
+}
+
+.subject-list{
+    margin-top:15px;
+}
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#1d4ed8;
+    color:white;
+    padding:10px;
+    border:1px solid #d1d5db;
+}
+
+td{
+    padding:9px;
+    border:1px solid #d1d5db;
+    text-align:center;
+}
+
+td:first-child{
+    text-align:left;
+}
+
+tr:nth-child(even) td{
+    background:#f8fbff;
 }
 
 .message{
-    margin-top:12px;
-    padding:11px;
-    border-radius:7px;
+    padding:10px 14px;
+    border-radius:8px;
+    margin:10px 0;
     display:none;
 }
 
@@ -192,241 +228,309 @@ button{
     color:#991b1b;
 }
 
-.subject-header{
+.info{
+    background:#dbeafe;
+    color:#1e40af;
+}
+
+.tabs{
     display:flex;
-    justify-content:space-between;
-    align-items:center;
     flex-wrap:wrap;
-    gap:10px;
-    margin-bottom:12px;
+    gap:8px;
+    margin-bottom:20px;
 }
 
-.subject-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:10px;
-}
-
-.subject-table th,
-.subject-table td{
-    border:1px solid #dbe2ea;
-    padding:8px;
-    text-align:center;
-}
-
-.subject-table th{
-    background:#eff6ff;
-}
-
-.subject-table input{
-    min-width:80px;
-}
-
-.subject-table select{
-    min-width:150px;
-}
-
-.remove-subject{
-    background:#dc2626;
-    color:white;
-    border:0;
-    padding:7px 10px;
-    border-radius:5px;
-    cursor:pointer;
-}
-
-.total-box{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:12px;
-    margin-top:15px;
-}
-
-.stat{
-    background:#f8fafc;
-    border:1px solid #e2e8f0;
-    padding:14px;
+.tab-btn{
+    background:white;
+    border:1px solid #bfdbfe;
+    color:#1e40af;
+    padding:10px 15px;
     border-radius:8px;
-    text-align:center;
+    cursor:pointer;
+    font-weight:700;
 }
 
-.stat strong{
-    display:block;
-    font-size:20px;
-    margin-top:5px;
+.tab-btn.active{
+    background:#2563eb;
+    color:white;
 }
 
-.search-results{
-    border:1px solid #cbd5e1;
-    border-radius:7px;
-    max-height:220px;
-    overflow:auto;
-    margin-top:5px;
+.section{
     display:none;
 }
 
-.student-option{
-    padding:10px;
-    border-bottom:1px solid #e5e7eb;
-    cursor:pointer;
+.section.active{
+    display:block;
 }
 
-.student-option:hover{
-    background:#eff6ff;
+.summary-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
 }
 
-.result-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:15px;
-}
-
-.result-table th,
-.result-table td{
-    border:1px solid #d1d5db;
-    padding:8px;
+.summary-box{
+    padding:16px;
+    border-radius:12px;
     text-align:center;
+    background:#eff6ff;
+    border:1px solid #bfdbfe;
 }
 
-.result-table th{
-    background:#1e3a8a;
-    color:white;
+.summary-box strong{
+    display:block;
+    font-size:23px;
+    color:#1d4ed8;
 }
 
-.badge{
-    display:inline-block;
-    padding:5px 9px;
-    border-radius:20px;
-    font-size:12px;
-    font-weight:bold;
-}
-
-.badge-pass{
-    background:#dcfce7;
-    color:#166534;
-}
-
-.badge-fail{
-    background:#fee2e2;
-    color:#991b1b;
+.subject-actions{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
 }
 
 .hidden{
     display:none !important;
 }
 
-.login-screen{
-    position:fixed;
-    inset:0;
-    background:linear-gradient(135deg,#172554,#2563eb);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    z-index:9999;
-}
+/* ================= PRINT AREA ================= */
 
-.login-box{
-    width:370px;
-    max-width:90%;
-    background:white;
-    padding:30px;
-    border-radius:15px;
-    box-shadow:0 10px 40px rgba(0,0,0,.3);
-}
-
-.login-box h2{
-    text-align:center;
-    color:#173b8f;
-    margin-top:0;
-}
-
-.login-box .field{
-    margin-bottom:14px;
-}
-
-.login-error{
-    color:#dc2626;
-    text-align:center;
-    margin-top:10px;
+#printArea{
     display:none;
 }
 
-.exam-info{
-    background:#eff6ff;
-    border-left:4px solid #2563eb;
-    padding:12px;
-    margin-bottom:15px;
-    border-radius:6px;
+.print-page{
+    width:100%;
+    background:white;
+    color:#111827;
+    font-family:Arial,Helvetica,sans-serif;
 }
 
-.empty{
-    padding:30px;
+.report-border{
+    border:3px solid #1d4ed8;
+    border-radius:12px;
+    padding:10px;
+    background:#fff;
+}
+
+.report-header{
+    border-radius:9px;
+    padding:13px;
     text-align:center;
-    color:#64748b;
+    background:linear-gradient(135deg,#dbeafe,#eef2ff,#ede9fe);
+    border-bottom:4px solid #2563eb;
 }
 
-.rank-box{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:12px;
-    margin-top:15px;
+.report-logo{
+    width:58px;
+    height:58px;
+    object-fit:contain;
+    vertical-align:middle;
+    margin-right:10px;
 }
 
-.rank{
-    background:#f8fafc;
-    padding:15px;
-    border-radius:8px;
-    text-align:center;
-    border:1px solid #e2e8f0;
-}
-
-.rank b{
-    display:block;
+.report-school{
     font-size:24px;
-    color:#173b8f;
+    font-weight:900;
+    color:#173b76;
 }
 
-@media(max-width:900px){
-    .grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .total-box{
-        grid-template-columns:repeat(2,1fr);
-    }
+.report-foundation{
+    font-size:13px;
+    font-weight:700;
+    color:#374151;
+    margin-top:3px;
 }
 
-@media(max-width:600px){
-    .grid{
-        grid-template-columns:1fr;
-    }
+.report-address{
+    font-size:10px;
+    margin-top:3px;
+    color:#4b5563;
+}
 
-    .total-box{
-        grid-template-columns:1fr;
-    }
+.report-title{
+    display:inline-block;
+    margin-top:9px;
+    padding:6px 22px;
+    border-radius:20px;
+    background:#2563eb;
+    color:white;
+    font-size:16px;
+    font-weight:800;
+}
 
-    .rank-box{
-        grid-template-columns:1fr;
-    }
+.student-info{
+    margin-top:10px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    border:1px solid #93c5fd;
+    border-radius:7px;
+    overflow:hidden;
+}
 
-    .card{
-        padding:14px;
-    }
+.info-cell{
+    padding:6px 8px;
+    border-right:1px solid #bfdbfe;
+    border-bottom:1px solid #bfdbfe;
+    font-size:10px;
+}
 
-    .subject-table{
-        min-width:800px;
-    }
+.info-cell:nth-child(4n){
+    border-right:0;
+}
 
-    .subject-scroll{
-        overflow-x:auto;
-    }
+.info-label{
+    font-size:8px;
+    color:#64748b;
+    font-weight:700;
+    text-transform:uppercase;
+}
+
+.info-value{
+    font-weight:800;
+    margin-top:2px;
+    color:#111827;
+}
+
+.print-section-title{
+    margin-top:10px;
+    padding:6px 9px;
+    background:linear-gradient(90deg,#2563eb,#6366f1);
+    color:white;
+    font-size:11px;
+    font-weight:800;
+    border-radius:5px;
+}
+
+.result-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:5px;
+    font-size:9px;
+}
+
+.result-table th{
+    background:#1e40af;
+    color:white;
+    padding:5px 4px;
+    border:1px solid #1e3a8a;
+    text-align:center;
+}
+
+.result-table td{
+    padding:4px;
+    border:1px solid #93c5fd;
+    text-align:center;
+}
+
+.result-table td.subject-name{
+    text-align:left;
+    font-weight:700;
+}
+
+.result-table tbody tr:nth-child(even) td{
+    background:#eff6ff;
+}
+
+.total-row td{
+    background:#dbeafe !important;
+    font-weight:900;
+}
+
+.final-row td{
+    background:#ede9fe !important;
+    font-weight:900;
+}
+
+.summary-print{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:5px;
+    margin-top:8px;
+}
+
+.summary-print-box{
+    text-align:center;
+    padding:6px 3px;
+    border:1px solid #bfdbfe;
+    border-radius:5px;
+    background:#f8fbff;
+}
+
+.summary-print-label{
+    font-size:7px;
+    color:#64748b;
+    font-weight:700;
+}
+
+.summary-print-value{
+    font-size:11px;
+    font-weight:900;
+    color:#1e40af;
+    margin-top:2px;
+}
+
+.attendance-box{
+    margin-top:8px;
+    border:1px solid #bfdbfe;
+    border-radius:6px;
+    padding:6px;
+    background:#f0fdf4;
+    font-size:9px;
+}
+
+.remarks-box{
+    margin-top:7px;
+    border:1px solid #c4b5fd;
+    border-radius:6px;
+    padding:7px;
+    background:#faf5ff;
+    font-size:9px;
+    min-height:30px;
+}
+
+.signature-row{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:25px;
+    margin-top:35px;
+    text-align:center;
+    font-size:9px;
+}
+
+.signature-line{
+    border-top:1px solid #374151;
+    padding-top:5px;
+}
+
+.footer-note{
+    text-align:center;
+    margin-top:8px;
+    font-size:7px;
+    color:#6b7280;
+}
+
+.only-final{
+    display:none;
 }
 
 /* PRINT */
+
+@page{
+    size:A4;
+    margin:7mm;
+}
+
 @media print{
 
-    body{
-        background:white;
+    html,body{
+        width:210mm;
+        background:white !important;
+        margin:0;
+        padding:0;
+        -webkit-print-color-adjust:exact !important;
+        print-color-adjust:exact !important;
     }
 
     body *{
@@ -435,90 +539,41 @@ button{
 
     #printArea,
     #printArea *{
-        visibility:visible;
+        visibility:visible !important;
     }
 
     #printArea{
+        display:block !important;
         position:absolute;
         left:0;
         top:0;
         width:100%;
-        background:white;
-        padding:15px;
+        background:white !important;
     }
 
-    .no-print{
-        display:none !important;
+    .print-page{
+        display:block !important;
+        width:100%;
+        background:white !important;
     }
 
-    @page{
-        size:A4 portrait;
-        margin:10mm;
+    .report-border{
+        page-break-inside:avoid;
+        break-inside:avoid;
+        -webkit-print-color-adjust:exact !important;
+        print-color-adjust:exact !important;
     }
-}
 
-.print-school{
-    text-align:center;
-    border-bottom:2px solid #111;
-    padding-bottom:10px;
-    margin-bottom:12px;
-}
-
-.print-school h1{
-    margin:0;
-    font-size:25px;
-}
-
-.print-school p{
-    margin:3px 0;
-}
-
-.print-title{
-    text-align:center;
-    font-size:20px;
-    font-weight:bold;
-    margin:12px 0;
-}
-
-.print-info{
-    width:100%;
-    border-collapse:collapse;
-    margin-bottom:12px;
-}
-
-.print-info td{
-    border:1px solid #444;
-    padding:6px;
-}
-
-.print-marks{
-    width:100%;
-    border-collapse:collapse;
-    font-size:12px;
-}
-
-.print-marks th,
-.print-marks td{
-    border:1px solid #444;
-    padding:5px;
-    text-align:center;
-}
-
-.print-marks th{
-    background:#eee;
-}
-
-.signatures{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    margin-top:55px;
-    text-align:center;
-}
-
-.signature-line{
-    border-top:1px solid #333;
-    padding-top:5px;
-    margin:0 20px;
+    .report-header,
+    .print-section-title,
+    .result-table th,
+    .result-table td,
+    .summary-print-box,
+    .attendance-box,
+    .remarks-box{
+        -webkit-print-color-adjust:exact !important;
+        print-color-adjust:exact !important;
+    }
 }
 </style>
 </head>
@@ -526,606 +581,448 @@ button{
 <body>
 
 <!-- LOGIN -->
-<div id="loginScreen" class="login-screen">
-    <div class="login-box">
-        <h2>Rainbow Public School</h2>
-        <p style="text-align:center;">Result Management System</p>
+<div id="loginScreen" class="login-box">
+    <h2>🔐 Result Management Login</h2>
 
-        <div class="field">
-            <label>Username</label>
-            <input type="text" id="loginUser" placeholder="Username">
-        </div>
+    <div id="loginMsg" class="message error"></div>
 
-        <div class="field">
-            <label>Password</label>
-            <input type="password" id="loginPass" placeholder="Password">
-        </div>
-
-        <button class="btn btn-primary" style="width:100%;" onclick="doLogin()">
-            Login
-        </button>
-
-        <div id="loginError" class="login-error">
-            Invalid Username or Password
-        </div>
+    <div class="form-group">
+        <label>Username</label>
+        <input id="loginUser" type="text" value="admin">
     </div>
+
+    <div class="form-group">
+        <label>Password</label>
+        <input id="loginPass" type="password">
+    </div>
+
+    <button class="btn btn-primary" style="width:100%;" onclick="doLogin()">
+        Login
+    </button>
 </div>
 
 
-<header>
-    <div class="topbar">
+<!-- MAIN -->
+<div id="mainApp" class="hidden">
+
+<header class="header">
+    <div class="header-inner">
+
+        <img src="logo.png" class="logo"
+             onerror="this.style.display='none'">
+
         <div>
-            <h1>Rainbow Public School</h1>
-            <p>Conducted by Shubhi Education Foundation</p>
-            <p>Result Management System</p>
+            <div class="school-title">Rainbow Public School</div>
+            <div class="school-sub">
+                Conducted by Shubhi Education Foundation, Dahod
+            </div>
         </div>
 
-        <button class="logout" onclick="logout()">Logout</button>
     </div>
 </header>
 
 
 <div class="container">
 
-    <div class="tabs">
-        <button class="tab active" onclick="showTab('entryTab',this)">
-            Result Entry
-        </button>
-
-        <button class="tab" onclick="showTab('studentTab',this)">
-            Student Result
-        </button>
-
-        <button class="tab" onclick="showTab('classTab',this)">
-            Class Result
-        </button>
-
-        <button class="tab" onclick="showTab('schoolTab',this)">
-            School Result
-        </button>
-    </div>
-
-
-    <!-- ================= RESULT ENTRY ================= -->
-
-    <section id="entryTab">
-
-        <div class="card">
-
-            <h2>Result Entry</h2>
-
-            <div class="grid">
-
-                <div class="field">
-                    <label>Session</label>
-                    <select id="session">
-                        <option>2026-27</option>
-                        <option>2027-28</option>
-                        <option>2028-29</option>
-                        <option>2029-30</option>
-                        <option>2030-31</option>
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label>Class</label>
-                    <select id="className" onchange="classChanged()">
-                        <option value="">Select Class</option>
-                        <option>Nursery</option>
-                        <option>UKG</option>
-                        <option>SRKG</option>
-                        <option>1st</option>
-                        <option>2nd</option>
-                        <option>3rd</option>
-                        <option>4th</option>
-                        <option>5th</option>
-                        <option>6th</option>
-                        <option>7th</option>
-                        <option>8th</option>
-                        <option>9th</option>
-                        <option>10th</option>
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label>Section</label>
-                    <select id="section">
-                        <option value="">Select Section</option>
-                        <option>A</option>
-                        <option>B</option>
-                        <option>C</option>
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label>Exam</label>
-                    <select id="examType" onchange="examChanged()">
-                        <option value="FA-1">FA-1</option>
-                        <option value="SA-1">SA-1</option>
-                        <option value="FA-2">FA-2</option>
-                        <option value="SA-2">SA-2</option>
-                    </select>
-                </div>
-
-            </div>
-
-            <div class="exam-info" style="margin-top:15px;">
-                <b>Exam Marks:</b>
-                FA-1 / FA-2 = 30 Marks &nbsp; | &nbsp;
-                SA-1 / SA-2 = 50 Marks
-                <br>
-                <small>
-                    Max Marks ko har subject ke liye manually change bhi kar sakte hain.
-                </small>
-            </div>
-
-        </div>
-
-
-        <!-- STUDENT -->
-        <div class="card">
-
-            <h2>Student Details</h2>
-
-            <div class="grid">
-
-                <div class="field">
-                    <label>Search Student</label>
-                    <input
-                        type="text"
-                        id="studentSearch"
-                        placeholder="Name / Admission No."
-                        oninput="searchStudents()"
-                    >
-                    <div id="studentResults" class="search-results"></div>
-                </div>
-
-                <div class="field">
-                    <label>Admission No.</label>
-                    <input id="admissionNo" readonly>
-                </div>
-
-                <div class="field">
-                    <label>Student Name</label>
-                    <input id="studentName" readonly>
-                </div>
-
-                <div class="field">
-                    <label>Father Name</label>
-                    <input id="fatherName" readonly>
-                </div>
-
-            </div>
-
-            <input type="hidden" id="studentId">
-
-            <div id="selectedStudentMessage" class="message success"></div>
-
-        </div>
-
-
-        <!-- SUBJECTS -->
-        <div class="card">
-
-            <div class="subject-header">
-                <h2 style="margin:0;">Subjects & Marks</h2>
-
-                <button class="btn btn-primary" onclick="addSubject()">
-                    + Add Subject
-                </button>
-            </div>
-
-            <p style="color:#64748b;">
-                Nursery / UKG / SRKG mein jitne subjects hain, sirf utne hi subjects add karein.
-                Har class ke subjects aap manually select/add kar sakte hain.
-            </p>
-
-            <div class="subject-scroll">
-
-                <table class="subject-table">
-
-                    <thead>
-                        <tr>
-                            <th width="30%">Subject</th>
-                            <th>Max Marks</th>
-                            <th>Obtained Marks</th>
-                            <th>%</th>
-                            <th>Remove</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="subjectBody"></tbody>
-
-                </table>
-
-            </div>
-
-            <div class="actions">
-                <button class="btn btn-secondary" onclick="loadDefaultSubjects()">
-                    Load Common Subjects
-                </button>
-
-                <button class="btn btn-warning" onclick="clearSubjects()">
-                    Clear Subjects
-                </button>
-            </div>
-
-        </div>
-
-
-        <!-- ATTENDANCE -->
-        <div class="card">
-
-            <h2>Attendance</h2>
-
-            <div class="grid">
-
-                <div class="field">
-                    <label>Working Days</label>
-                    <input
-                        type="number"
-                        id="workingDays"
-                        min="0"
-                        value="0"
-                        oninput="calculateTotals()"
-                    >
-                </div>
-
-                <div class="field">
-                    <label>Present Days</label>
-                    <input
-                        type="number"
-                        id="presentDays"
-                        min="0"
-                        value="0"
-                        oninput="calculateTotals()"
-                    >
-                </div>
-
-                <div class="field">
-                    <label>Absent Days</label>
-                    <input id="absentDays" readonly>
-                </div>
-
-                <div class="field">
-                    <label>Attendance %</label>
-                    <input id="attendancePercentage" readonly>
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- TOTAL -->
-        <div class="card">
-
-            <h2>Result Summary</h2>
-
-            <div class="total-box">
-
-                <div class="stat">
-                    Total Max
-                    <strong id="totalMax">0</strong>
-                </div>
-
-                <div class="stat">
-                    Obtained
-                    <strong id="obtainedMarks">0</strong>
-                </div>
-
-                <div class="stat">
-                    Percentage
-                    <strong id="percentage">0%</strong>
-                </div>
-
-                <div class="stat">
-                    Grade
-                    <strong id="grade">-</strong>
-                </div>
-
-            </div>
-
-            <div class="grid" style="margin-top:15px;">
-
-                <div class="field">
-                    <label>Result</label>
-                    <select id="resultStatus">
-                        <option value="PASS">PASS</option>
-                        <option value="FAIL">FAIL</option>
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label>Remarks</label>
-                    <input id="remarks" placeholder="Remarks">
-                </div>
-
-            </div>
-
-            <div id="entryMessage" class="message"></div>
-
-            <div class="actions">
-
-                <button class="btn btn-success" onclick="saveResult()">
-                    Save Result
-                </button>
-
-                <button class="btn btn-secondary" onclick="resetEntry()">
-                    New / Clear
-                </button>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ================= STUDENT RESULT ================= -->
-
-    <section id="studentTab" class="hidden">
-
-        <div class="card">
-
-            <h2>Student Result</h2>
-
-            <div class="grid">
-
-                <div class="field">
-                    <label>Session</label>
-                    <select id="viewSession">
-                        <option>2026-27</option>
-                        <option>2027-28</option>
-                        <option>2028-29</option>
-                        <option>2029-30</option>
-                        <option>2030-31</option>
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label>Admission No.</label>
-                    <input id="viewAdmissionNo" placeholder="Admission No.">
-                </div>
-
-                <div class="field">
-                    <label>Result Type</label>
-
-                    <select id="viewExam">
-
-                        <option value="FA-1">FA-1</option>
-                        <option value="SA-1">SA-1</option>
-                        <option value="FA-2">FA-2</option>
-                        <option value="SA-2">SA-2</option>
-
-                        <option value="FA-1+SA-1">
-                            FA-1 + SA-1
-                        </option>
-
-                        <option value="FA-2+SA-2">
-                            FA-2 + SA-2
-                        </option>
-
-                        <option value="FINAL">
-                            FINAL RESULT
-                        </option>
-
-                    </select>
-                </div>
-
-            </div>
-
-            <div class="actions">
-
-                <button class="btn btn-primary" onclick="viewStudentResult()">
-                    View Result
-                </button>
-
-                <button class="btn btn-success" onclick="printStudentResult()">
-                    Print Result
-                </button>
-
-            </div>
-
-        </div>
-
-        <div id="studentResultOutput" class="card">
-            <div class="empty">
-                Student result yahan show hoga.
-            </div>
-        </div>
-
-    </section>
-
-
-    <!-- ================= CLASS RESULT ================= -->
-
-    <section id="classTab" class="hidden">
-
-        <div class="card">
-
-            <h2>Class Result</h2>
-
-            <div class="grid">
-
-                <div class="field">
-                    <label>Session</label>
-                    <select id="classSession">
-                        <option>2026-27</option>
-                        <option>2027-28</option>
-                        <option>2028-29</option>
-                        <option>2029-30</option>
-                        <option>2030-31</option>
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label>Class</label>
-
-                    <select id="classResultClass">
-
-                        <option>Nursery</option>
-                        <option>UKG</option>
-                        <option>SRKG</option>
-                        <option>1st</option>
-                        <option>2nd</option>
-                        <option>3rd</option>
-                        <option>4th</option>
-                        <option>5th</option>
-                        <option>6th</option>
-                        <option>7th</option>
-                        <option>8th</option>
-                        <option>9th</option>
-                        <option>10th</option>
-
-                    </select>
-
-                </div>
-
-                <div class="field">
-                    <label>Section</label>
-
-                    <select id="classResultSection">
-                        <option value="">All Sections</option>
-                        <option>A</option>
-                        <option>B</option>
-                        <option>C</option>
-                    </select>
-
-                </div>
-
-                <div class="field">
-                    <label>Result Type</label>
-
-                    <select id="classResultExam">
-
-                        <option value="FA-1">FA-1</option>
-                        <option value="SA-1">SA-1</option>
-                        <option value="FA-2">FA-2</option>
-                        <option value="SA-2">SA-2</option>
-
-                        <option value="FA-1+SA-1">
-                            FA-1 + SA-1
-                        </option>
-
-                        <option value="FA-2+SA-2">
-                            FA-2 + SA-2
-                        </option>
-
-                        <option value="FINAL">
-                            FINAL RESULT
-                        </option>
-
-                    </select>
-
-                </div>
-
-            </div>
-
-            <div class="actions">
-
-                <button class="btn btn-primary" onclick="loadClassResult()">
-                    Load Class Result
-                </button>
-
-                <button class="btn btn-success" onclick="exportClassExcel()">
-                    Export Excel
-                </button>
-
-            </div>
-
-        </div>
-
-        <div id="classResultOutput" class="card">
-            <div class="empty">
-                Class result yahan show hoga.
-            </div>
-        </div>
-
-    </section>
-
-
-    <!-- ================= SCHOOL RESULT ================= -->
-
-    <section id="schoolTab" class="hidden">
-
-        <div class="card">
-
-            <h2>School Result Summary</h2>
-
-            <div class="grid">
-
-                <div class="field">
-                    <label>Session</label>
-
-                    <select id="schoolSession">
-                        <option>2026-27</option>
-                        <option>2027-28</option>
-                        <option>2028-29</option>
-                        <option>2029-30</option>
-                        <option>2030-31</option>
-                    </select>
-
-                </div>
-
-                <div class="field">
-                    <label>Result Type</label>
-
-                    <select id="schoolExam">
-
-                        <option value="FA-1">FA-1</option>
-                        <option value="SA-1">SA-1</option>
-                        <option value="FA-2">FA-2</option>
-                        <option value="SA-2">SA-2</option>
-
-                        <option value="FA-1+SA-1">
-                            FA-1 + SA-1
-                        </option>
-
-                        <option value="FA-2+SA-2">
-                            FA-2 + SA-2
-                        </option>
-
-                        <option value="FINAL">
-                            FINAL RESULT
-                        </option>
-
-                    </select>
-
-                </div>
-
-            </div>
-
-            <div class="actions">
-
-                <button class="btn btn-primary" onclick="loadSchoolResult()">
-                    Generate School Result
-                </button>
-
-            </div>
-
-        </div>
-
-        <div id="schoolResultOutput" class="card">
-            <div class="empty">
-                School result yahan show hoga.
-            </div>
-        </div>
-
-    </section>
+<h1 class="page-title">📊 Result Management System</h1>
+
+<div class="tabs">
+
+    <button class="tab-btn active"
+            onclick="showSection('entry',this)">
+        ✏️ Result Entry
+    </button>
+
+    <button class="tab-btn"
+            onclick="showSection('studentResult',this)">
+        👨‍🎓 Student Result
+    </button>
+
+    <button class="tab-btn"
+            onclick="showSection('classResult',this)">
+        🏫 Class Result
+    </button>
+
+    <button class="tab-btn"
+            onclick="showSection('schoolResult',this)">
+        📚 School Result
+    </button>
 
 </div>
 
 
+<!-- ================= RESULT ENTRY ================= -->
+
+<div id="entry" class="section active">
+
+<div class="card">
+
+<h3>📝 Student Result Entry</h3>
+
+<div id="entryMsg" class="message"></div>
+
+<div class="grid">
+
+<div class="form-group">
+<label>Admission No.</label>
+<input id="admissionNo" onblur="loadStudent()">
+</div>
+
+<div class="form-group">
+<label>Student Name</label>
+<input id="studentName" readonly>
+</div>
+
+<div class="form-group">
+<label>Father Name</label>
+<input id="fatherName" readonly>
+</div>
+
+<div class="form-group">
+<label>Class</label>
+<input id="className" readonly>
+</div>
+
+<div class="form-group">
+<label>Section</label>
+<input id="section" readonly>
+</div>
+
+<div class="form-group">
+<label>Session</label>
+<select id="session">
+<option>2026-27</option>
+<option>2027-28</option>
+<option>2028-29</option>
+<option>2029-30</option>
+<option>2030-31</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Exam</label>
+
+<select id="examType">
+<option value="FA-1">FA-1</option>
+<option value="SA-1">SA-1</option>
+<option value="FA-2">FA-2</option>
+<option value="SA-2">SA-2</option>
+</select>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="subject-actions">
+
+<h3 style="margin:0;border:0;">📚 Subject-wise Marks</h3>
+
+<button class="btn btn-primary" onclick="addSubject()">
+➕ Add Subject
+</button>
+
+</div>
+
+<div id="subjectList" class="subject-list"></div>
+
+<div class="summary-grid">
+
+<div class="summary-box">
+Total Max
+<strong id="totalMax">0</strong>
+</div>
+
+<div class="summary-box">
+Obtained
+<strong id="obtainedMarks">0</strong>
+</div>
+
+<div class="summary-box">
+Percentage
+<strong id="percentage">0%</strong>
+</div>
+
+<div class="summary-box">
+Grade
+<strong id="grade">-</strong>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>📅 Attendance</h3>
+
+<div class="grid">
+
+<div class="form-group">
+<label>Working Days</label>
+<input id="workingDays" type="number" min="0" value="0"
+       oninput="calculateAll()">
+</div>
+
+<div class="form-group">
+<label>Present Days</label>
+<input id="presentDays" type="number" min="0" value="0"
+       oninput="calculateAll()">
+</div>
+
+<div class="form-group">
+<label>Absent Days</label>
+<input id="absentDays" type="number" min="0" value="0"
+       readonly>
+</div>
+
+<div class="form-group">
+<label>Attendance %</label>
+<input id="attendancePercentage" readonly>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>📋 Result Details</h3>
+
+<div class="grid">
+
+<div class="form-group">
+<label>Result</label>
+
+<select id="result">
+<option value="PASS">PASS</option>
+<option value="FAIL">FAIL</option>
+<option value="PROMOTED">PROMOTED</option>
+</select>
+
+</div>
+
+<div class="form-group">
+<label>Remarks</label>
+<input id="remarks"
+       placeholder="Good / Very Good / Needs Improvement">
+</div>
+
+</div>
+
+<button class="btn btn-success"
+        onclick="saveResult()">
+💾 Save Result
+</button>
+
+<button class="btn btn-warning"
+        onclick="clearForm()">
+🆕 New
+</button>
+
+</div>
+
+</div>
+
+
+<!-- ================= STUDENT RESULT ================= -->
+
+<div id="studentResult" class="section">
+
+<div class="card">
+
+<h3>👨‍🎓 Student Result</h3>
+
+<div class="grid">
+
+<div class="form-group">
+<label>Admission No.</label>
+<input id="viewAdmissionNo">
+</div>
+
+<div class="form-group">
+<label>Session</label>
+
+<select id="viewSession">
+<option>2026-27</option>
+<option>2027-28</option>
+<option>2028-29</option>
+<option>2029-30</option>
+<option>2030-31</option>
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>Result Type</label>
+
+<select id="viewExamType">
+
+<option value="FA-1">FA-1</option>
+<option value="SA-1">SA-1</option>
+<option value="FA-2">FA-2</option>
+<option value="SA-2">SA-2</option>
+
+<option value="FA1-SA1">
+FA-1 + SA-1
+</option>
+
+<option value="FA2-SA2">
+FA-2 + SA-2
+</option>
+
+<option value="FINAL">
+⭐ FINAL RESULT
+</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>&nbsp;</label>
+
+<button class="btn btn-primary"
+        onclick="showStudentResult()">
+🔍 View Result
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="studentResultPreview"></div>
+
+</div>
+
+
+<!-- ================= CLASS RESULT ================= -->
+
+<div id="classResult" class="section">
+
+<div class="card">
+
+<h3>🏫 Class Result</h3>
+
+<div class="grid">
+
+<div class="form-group">
+<label>Class</label>
+<input id="classResultClass"
+       placeholder="e.g. 5th">
+</div>
+
+<div class="form-group">
+<label>Section</label>
+<select id="classResultSection">
+<option value="">All</option>
+<option>A</option>
+<option>B</option>
+<option>C</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Session</label>
+<select id="classResultSession">
+<option>2026-27</option>
+<option>2027-28</option>
+<option>2028-29</option>
+<option>2029-30</option>
+<option>2030-31</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Exam</label>
+<select id="classResultExam">
+<option>FA-1</option>
+<option>SA-1</option>
+<option>FA-2</option>
+<option>SA-2</option>
+</select>
+</div>
+
+</div>
+
+<button class="btn btn-primary"
+        onclick="loadClassResult()">
+🔍 View Class Result
+</button>
+
+</div>
+
+<div id="classResultPreview"></div>
+
+</div>
+
+
+<!-- ================= SCHOOL RESULT ================= -->
+
+<div id="schoolResult" class="section">
+
+<div class="card">
+
+<h3>📚 School Result</h3>
+
+<div class="grid">
+
+<div class="form-group">
+<label>Session</label>
+<select id="schoolResultSession">
+<option>2026-27</option>
+<option>2027-28</option>
+<option>2028-29</option>
+<option>2029-30</option>
+<option>2030-31</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Exam</label>
+<select id="schoolResultExam">
+<option>FA-1</option>
+<option>SA-1</option>
+<option>FA-2</option>
+<option>SA-2</option>
+</select>
+</div>
+
+</div>
+
+<button class="btn btn-purple"
+        onclick="loadSchoolResult()">
+📊 View School Result
+</button>
+
+</div>
+
+<div id="schoolResultPreview"></div>
+
+</div>
+
+</div>
+</div>
+
+
 <!-- PRINT AREA -->
-<div id="printArea" style="display:none;"></div>
+
+<div id="printArea"></div>
 
 
 <script>
 
-/* =========================================================
-   SUPABASE
-========================================================= */
+/* ================= SUPABASE ================= */
 
 const SUPABASE_URL =
 "https://kqahcvaoxnmxfcgyyync.supabase.co";
@@ -1140,76 +1037,86 @@ window.supabase.createClient(
 );
 
 
-/* =========================================================
-   LOGIN
-========================================================= */
+/* ================= LOGIN ================= */
 
-function checkLogin(){
+document.addEventListener("DOMContentLoaded",function(){
 
-    if(localStorage.getItem("rps_login") === "yes"){
-        document.getElementById("loginScreen").style.display="none";
-    }else{
-        document.getElementById("loginScreen").style.display="flex";
+    if(localStorage.getItem("rps_login")==="yes"){
+        showApp();
     }
-}
+
+});
+
 
 function doLogin(){
 
-    const user =
+    const u =
         document.getElementById("loginUser").value.trim();
 
-    const pass =
+    const p =
         document.getElementById("loginPass").value;
 
-    if(user === "admin" && pass === "admin123"){
+    if(u==="admin" && p==="admin123"){
 
         localStorage.setItem("rps_login","yes");
 
-        document.getElementById("loginScreen").style.display="none";
+        showApp();
 
     }else{
 
-        document.getElementById("loginError").style.display="block";
+        const m =
+            document.getElementById("loginMsg");
 
+        m.innerText =
+            "Invalid Username or Password";
+
+        m.style.display="block";
     }
 }
 
-function logout(){
 
-    localStorage.removeItem("rps_login");
+function showApp(){
 
-    location.reload();
+    document.getElementById("loginScreen")
+        .classList.add("hidden");
 
+    document.getElementById("mainApp")
+        .classList.remove("hidden");
+
+    if(document.getElementById("subjectList").children.length===0){
+        addDefaultSubjects();
+    }
 }
 
 
-/* =========================================================
-   TABS
-========================================================= */
+/* ================= TABS ================= */
 
-function showTab(id,button){
+function showSection(id,btn){
 
-    document.querySelectorAll("section").forEach(s=>{
-        s.classList.add("hidden");
-    });
+    document.querySelectorAll(".section")
+        .forEach(x=>x.classList.remove("active"));
 
-    document.getElementById(id).classList.remove("hidden");
+    document.getElementById(id)
+        .classList.add("active");
 
-    document.querySelectorAll(".tab").forEach(t=>{
-        t.classList.remove("active");
-    });
+    document.querySelectorAll(".tab-btn")
+        .forEach(x=>x.classList.remove("active"));
 
-    button.classList.add("active");
-
+    btn.classList.add("active");
 }
 
 
-/* =========================================================
-   SUBJECT LIST
-========================================================= */
+/* ================= SUBJECTS ================= */
 
-const commonSubjects = [
+const lowerSubjects=[
+    "English",
+    "Hindi",
+    "Mathematics",
+    "Gujarati",
+    "EVS"
+];
 
+const higherSubjects=[
     "English",
     "Hindi",
     "Gujarati",
@@ -1217,369 +1124,376 @@ const commonSubjects = [
     "EVS",
     "Science",
     "Social Science",
-    "Computer",
-    "General Knowledge",
-    "Drawing",
-    "GK",
-    "Rhymes",
-    "Conversation",
-    "Activity",
-    "Environmental Studies"
-
+    "Computer"
 ];
 
 
-/* =========================================================
-   CLASS CHANGE
-========================================================= */
+function addDefaultSubjects(){
 
-function classChanged(){
-
-    /*
-      Subjects automatically load only if table empty.
-      User can remove/add according to actual school syllabus.
-    */
-
-    if(document.querySelectorAll("#subjectBody tr").length === 0){
-
-        loadDefaultSubjects();
-
-    }
-
-}
-
-
-/* =========================================================
-   EXAM CHANGE
-========================================================= */
-
-function examChanged(){
-
-    const exam =
-        document.getElementById("examType").value;
-
-    const defaultMax =
-        (exam === "FA-1" || exam === "FA-2")
-        ? 30
-        : 50;
-
-    document.querySelectorAll(".max-mark").forEach(input=>{
-
-        if(!input.dataset.manual){
-            input.value = defaultMax;
-        }
-
-    });
-
-    calculateTotals();
-
-}
-
-
-/* =========================================================
-   ADD SUBJECT
-========================================================= */
-
-function addSubject(subjectName=""){
-
-    const exam =
-        document.getElementById("examType").value;
-
-    const defaultMax =
-        (exam === "FA-1" || exam === "FA-2")
-        ? 30
-        : 50;
-
-    const tbody =
-        document.getElementById("subjectBody");
-
-    const tr =
-        document.createElement("tr");
-
-    tr.innerHTML = `
-
-        <td>
-
-            <select class="subject-name"
-                    onchange="subjectChanged(this)">
-
-                <option value="">Select Subject</option>
-
-                ${commonSubjects.map(s =>
-                    `<option value="${escapeHtml(s)}">
-                        ${escapeHtml(s)}
-                    </option>`
-                ).join("")}
-
-                <option value="__OTHER__">
-                    Other Subject
-                </option>
-
-            </select>
-
-            <input
-                class="other-subject"
-                placeholder="Enter Subject Name"
-                style="display:none;margin-top:5px;"
-            >
-
-        </td>
-
-        <td>
-
-            <input
-                type="number"
-                class="max-mark"
-                value="${defaultMax}"
-                min="1"
-                oninput="this.dataset.manual='1';calculateTotals()"
-            >
-
-        </td>
-
-        <td>
-
-            <input
-                type="number"
-                class="obtained-mark"
-                value="0"
-                min="0"
-                oninput="validateMark(this);calculateTotals()"
-            >
-
-        </td>
-
-        <td class="subject-percent">
-            0%
-        </td>
-
-        <td>
-
-            <button
-                class="remove-subject"
-                onclick="removeSubject(this)">
-                Remove
-            </button>
-
-        </td>
-
-    `;
-
-    tbody.appendChild(tr);
-
-    if(subjectName){
-
-        const select =
-            tr.querySelector(".subject-name");
-
-        const option =
-            [...select.options].find(
-                o => o.value === subjectName
-            );
-
-        if(option){
-            select.value = subjectName;
-        }else{
-
-            select.value="__OTHER__";
-
-            const other =
-                tr.querySelector(".other-subject");
-
-            other.style.display="block";
-            other.value=subjectName;
-
-        }
-
-    }
-
-    calculateTotals();
-
-}
-
-
-/* =========================================================
-   SUBJECT CHANGED
-========================================================= */
-
-function subjectChanged(select){
-
-    const row =
-        select.closest("tr");
-
-    const other =
-        row.querySelector(".other-subject");
-
-    if(select.value === "__OTHER__"){
-
-        other.style.display="block";
-
-        setTimeout(()=>{
-            other.focus();
-        },50);
-
-    }else{
-
-        other.style.display="none";
-
-        other.value="";
-
-    }
-
-}
-
-
-/* =========================================================
-   REMOVE SUBJECT
-========================================================= */
-
-function removeSubject(button){
-
-    button.closest("tr").remove();
-
-    calculateTotals();
-
-}
-
-
-/* =========================================================
-   LOAD COMMON SUBJECTS
-========================================================= */
-
-function loadDefaultSubjects(){
-
-    clearSubjects();
-
-    const className =
+    const cls =
         document.getElementById("className").value;
 
-    let subjects = [];
+    const arr =
+        ["Nursery","LKG","UKG","SRKG"]
+        .includes(cls)
+        ? lowerSubjects
+        : higherSubjects;
 
-    /*
-       Nursery / UKG / SRKG ke liye intentionally
-       limited common subjects.
-    */
+    document.getElementById("subjectList").innerHTML="";
 
-    if(
-        className === "Nursery" ||
-        className === "UKG" ||
-        className === "SRKG"
-    ){
-
-        subjects = [
-            "English",
-            "Hindi",
-            "Mathematics",
-            "Gujarati",
-            "EVS"
-        ];
-
-    }else{
-
-        subjects = [
-            "English",
-            "Hindi",
-            "Gujarati",
-            "Mathematics",
-            "EVS",
-            "Science",
-            "Social Science",
-            "Computer"
-        ];
-
-    }
-
-    subjects.forEach(s=>{
+    arr.forEach(function(s){
         addSubject(s);
     });
 
+    calculateAll();
 }
 
 
-/* =========================================================
-   CLEAR SUBJECTS
-========================================================= */
-
-function clearSubjects(){
-
-    document.getElementById("subjectBody").innerHTML="";
-
-    calculateTotals();
-
-}
-
-
-/* =========================================================
-   VALIDATE MARK
-========================================================= */
-
-function validateMark(input){
+function addSubject(subject=""){
 
     const row =
-        input.closest("tr");
+        document.createElement("div");
 
-    const max =
-        Number(
-            row.querySelector(".max-mark").value
-        ) || 0;
+    row.className="subject-row";
 
-    let obtained =
-        Number(input.value) || 0;
+    row.innerHTML=`
 
-    if(obtained < 0){
-        obtained=0;
+        <div>
+            <label>Subject</label>
+
+            <select class="sub-name">
+
+                <option value="">Select Subject</option>
+
+                ${[
+                    "English",
+                    "Hindi",
+                    "Gujarati",
+                    "Mathematics",
+                    "EVS",
+                    "Science",
+                    "Social Science",
+                    "Computer",
+                    "General Knowledge",
+                    "Drawing",
+                    "Moral Science",
+                    "Other Subject"
+                ].map(x=>
+                    `<option ${x===subject?"selected":""}>${x}</option>`
+                ).join("")}
+
+            </select>
+
+        </div>
+
+        <div>
+            <label>Max Marks</label>
+
+            <input
+                class="sub-max"
+                type="number"
+                value="${getDefaultMax()}"
+                oninput="calculateAll()">
+        </div>
+
+        <div>
+            <label>Obtained</label>
+
+            <input
+                class="sub-obtained"
+                type="number"
+                min="0"
+                value="0"
+                oninput="calculateAll()">
+        </div>
+
+        <div>
+            <button
+                type="button"
+                class="btn btn-danger"
+                onclick="this.closest('.subject-row').remove();calculateAll()">
+                ✕
+            </button>
+        </div>
+
+    `;
+
+    document.getElementById("subjectList")
+        .appendChild(row);
+
+    calculateAll();
+}
+
+
+function getDefaultMax(){
+
+    const exam =
+        document.getElementById("examType").value;
+
+    return exam.startsWith("FA") ? 30 : 50;
+}
+
+
+document.getElementById("examType")
+.addEventListener("change",function(){
+
+    document.querySelectorAll(".sub-max")
+        .forEach(x=>{
+            x.value=getDefaultMax();
+        });
+
+    calculateAll();
+});
+
+
+/* ================= STUDENT LOAD ================= */
+
+async function loadStudent(){
+
+    const admissionNo =
+        document.getElementById("admissionNo")
+        .value.trim();
+
+    if(!admissionNo) return;
+
+    const {data,error} =
+        await supabaseClient
+        .from("students")
+        .select("*")
+        .eq("admission_no",admissionNo)
+        .limit(1);
+
+    if(error){
+
+        showMessage(
+            "entryMsg",
+            error.message,
+            "error"
+        );
+
+        return;
     }
 
-    if(obtained > max){
-        obtained=max;
+    if(!data || data.length===0){
+
+        showMessage(
+            "entryMsg",
+            "Student not found.",
+            "error"
+        );
+
+        return;
     }
 
-    input.value=obtained;
+    const s=data[0];
+
+    document.getElementById("studentName").value =
+        s.student_name || "";
+
+    document.getElementById("fatherName").value =
+        s.father_name || "";
+
+    document.getElementById("className").value =
+        s.class_name || "";
+
+    document.getElementById("section").value =
+        s.section || "";
+
+    document.getElementById("session").value =
+        s.session || "2026-27";
+
+    addDefaultSubjects();
+
+    await loadExistingResult();
 
 }
 
 
-/* =========================================================
-   GET SUBJECT DATA
-========================================================= */
+async function loadExistingResult(){
 
-function getSubjectData(){
+    const admissionNo =
+        document.getElementById("admissionNo").value.trim();
 
-    const rows =
-        document.querySelectorAll("#subjectBody tr");
+    const exam =
+        document.getElementById("examType").value;
 
-    const data=[];
+    const session =
+        document.getElementById("session").value;
 
-    rows.forEach(row=>{
+    if(!admissionNo) return;
 
-        let name =
-            row.querySelector(".subject-name").value;
+    const {data,error} =
+        await supabaseClient
+        .from("student_results")
+        .select("*")
+        .eq("admission_no",admissionNo)
+        .eq("session",session)
+        .eq("exam_type",exam)
+        .order("updated_at",{ascending:false})
+        .limit(1);
 
-        if(name === "__OTHER__"){
+    if(error || !data || data.length===0) return;
 
-            name =
-                row.querySelector(".other-subject").value.trim();
+    const r=data[0];
 
-        }
+    document.getElementById("subjectList").innerHTML="";
+
+    let marks=[];
+
+    try{
+        marks =
+            Array.isArray(r.marks)
+            ? r.marks
+            : JSON.parse(r.marks || "[]");
+    }catch(e){
+        marks=[];
+    }
+
+    marks.forEach(m=>{
+        addSubject(m.subject || "");
+
+        const rows =
+            document.querySelectorAll(".subject-row");
+
+        const row=rows[rows.length-1];
+
+        row.querySelector(".sub-max").value =
+            m.max || getDefaultMax();
+
+        row.querySelector(".sub-obtained").value =
+            m.obtained || 0;
+    });
+
+    document.getElementById("workingDays").value =
+        r.working_days || 0;
+
+    document.getElementById("presentDays").value =
+        r.present_days || 0;
+
+    document.getElementById("remarks").value =
+        r.remarks || "";
+
+    document.getElementById("result").value =
+        r.result || "PASS";
+
+    calculateAll();
+}
+
+
+/* ================= CALCULATIONS ================= */
+
+function calculateAll(){
+
+    let totalMax=0;
+    let obtained=0;
+
+    document.querySelectorAll(".subject-row")
+    .forEach(row=>{
 
         const max =
-            Number(
-                row.querySelector(".max-mark").value
-            ) || 0;
+            Number(row.querySelector(".sub-max").value)||0;
+
+        const obt =
+            Number(row.querySelector(".sub-obtained").value)||0;
+
+        totalMax+=max;
+        obtained+=obt;
+
+    });
+
+    let percentage =
+        totalMax>0
+        ? (obtained/totalMax)*100
+        : 0;
+
+    document.getElementById("totalMax").innerText =
+        totalMax.toFixed(0);
+
+    document.getElementById("obtainedMarks").innerText =
+        obtained.toFixed(0);
+
+    document.getElementById("percentage").innerText =
+        percentage.toFixed(2)+"%";
+
+    document.getElementById("grade").innerText =
+        calculateGrade(percentage);
+
+
+    const working =
+        Number(document.getElementById("workingDays").value)||0;
+
+    const present =
+        Number(document.getElementById("presentDays").value)||0;
+
+    const absent =
+        Math.max(0,working-present);
+
+    document.getElementById("absentDays").value =
+        absent;
+
+    document.getElementById("attendancePercentage").value =
+        working>0
+        ? ((present/working)*100).toFixed(2)+"%"
+        : "0%";
+}
+
+
+function calculateGrade(p){
+
+    if(p>=90) return "A+";
+    if(p>=80) return "A";
+    if(p>=70) return "B+";
+    if(p>=60) return "B";
+    if(p>=50) return "C";
+    if(p>=40) return "D";
+
+    return "F";
+}
+
+
+/* ================= SAVE ================= */
+
+async function saveResult(){
+
+    calculateAll();
+
+    const admissionNo =
+        document.getElementById("admissionNo").value.trim();
+
+    if(!admissionNo){
+
+        showMessage(
+            "entryMsg",
+            "Please enter Admission No.",
+            "error"
+        );
+
+        return;
+    }
+
+    const marks=[];
+
+    document.querySelectorAll(".subject-row")
+    .forEach(row=>{
+
+        const subject =
+            row.querySelector(".sub-name").value;
+
+        const max =
+            Number(row.querySelector(".sub-max").value)||0;
 
         const obtained =
-            Number(
-                row.querySelector(".obtained-mark").value
-            ) || 0;
+            Number(row.querySelector(".sub-obtained").value)||0;
 
-        if(name){
+        if(subject){
 
-            data.push({
-                subject:name,
+            marks.push({
+                subject:subject,
                 max:max,
                 obtained:obtained,
-                percentage:max > 0
-                    ? Number((obtained/max*100).toFixed(2))
+                percentage:
+                    max>0
+                    ? Number(((obtained/max)*100).toFixed(2))
                     : 0
             });
 
@@ -1587,671 +1501,140 @@ function getSubjectData(){
 
     });
 
-    return data;
 
-}
+    const totalMax =
+        marks.reduce((a,b)=>a+Number(b.max||0),0);
 
-
-/* =========================================================
-   CALCULATE TOTALS
-========================================================= */
-
-function calculateTotals(){
-
-    const rows =
-        document.querySelectorAll("#subjectBody tr");
-
-    let totalMax=0;
-    let obtained=0;
-
-    rows.forEach(row=>{
-
-        const max =
-            Number(
-                row.querySelector(".max-mark").value
-            ) || 0;
-
-        const marks =
-            Number(
-                row.querySelector(".obtained-mark").value
-            ) || 0;
-
-        totalMax += max;
-        obtained += marks;
-
-        const pct =
-            max > 0
-            ? (marks/max*100)
-            : 0;
-
-        row.querySelector(".subject-percent").textContent =
-            pct.toFixed(2)+"%";
-
-    });
+    const obtainedMarks =
+        marks.reduce((a,b)=>a+Number(b.obtained||0),0);
 
     const percentage =
-        totalMax > 0
-        ? (obtained/totalMax*100)
+        totalMax>0
+        ? Number(((obtainedMarks/totalMax)*100).toFixed(2))
         : 0;
-
-    document.getElementById("totalMax").textContent =
-        totalMax;
-
-    document.getElementById("obtainedMarks").textContent =
-        obtained;
-
-    document.getElementById("percentage").textContent =
-        percentage.toFixed(2)+"%";
-
-    const grade =
-        calculateGrade(percentage);
-
-    document.getElementById("grade").textContent =
-        grade;
-
-    document.getElementById("resultStatus").value =
-        percentage >= 33 ? "PASS" : "FAIL";
-
-
-    /* Attendance */
-
-    const working =
-        Number(
-            document.getElementById("workingDays").value
-        ) || 0;
-
-    const present =
-        Number(
-            document.getElementById("presentDays").value
-        ) || 0;
-
-    let absent =
-        working-present;
-
-    if(absent<0){
-        absent=0;
-    }
-
-    let attendance=0;
-
-    if(working>0){
-        attendance =
-            (present/working*100);
-    }
-
-    document.getElementById("absentDays").value =
-        absent;
-
-    document.getElementById("attendancePercentage").value =
-        attendance.toFixed(2)+"%";
-
-}
-
-
-/* =========================================================
-   GRADE
-========================================================= */
-
-function calculateGrade(p){
-
-    if(p >= 90) return "A+";
-    if(p >= 80) return "A";
-    if(p >= 70) return "B+";
-    if(p >= 60) return "B";
-    if(p >= 50) return "C";
-    if(p >= 40) return "D";
-    if(p >= 33) return "E";
-
-    return "F";
-
-}
-
-
-/* =========================================================
-   SEARCH STUDENTS
-========================================================= */
-
-let searchTimer=null;
-
-async function searchStudents(){
-
-    clearTimeout(searchTimer);
-
-    searchTimer =
-        setTimeout(async()=>{
-
-            const q =
-                document.getElementById("studentSearch")
-                .value.trim();
-
-            const box =
-                document.getElementById("studentResults");
-
-            if(q.length < 2){
-
-                box.style.display="none";
-                box.innerHTML="";
-                return;
-
-            }
-
-            const {data,error} =
-                await supabaseClient
-                .from("students")
-                .select("*")
-                .or(
-                    `student_name.ilike.%${q}%,admission_no.ilike.%${q}%`
-                )
-                .limit(20);
-
-            if(error){
-
-                console.error(error);
-
-                box.innerHTML =
-                    `<div class="student-option">
-                        Search error
-                    </div>`;
-
-                box.style.display="block";
-
-                return;
-
-            }
-
-            if(!data || data.length===0){
-
-                box.innerHTML =
-                    `<div class="student-option">
-                        No student found
-                    </div>`;
-
-                box.style.display="block";
-
-                return;
-
-            }
-
-            box.innerHTML="";
-
-            data.forEach(student=>{
-
-                const div =
-                    document.createElement("div");
-
-                div.className="student-option";
-
-                div.innerHTML =
-                    `<b>${escapeHtml(student.student_name || "")}</b>
-                     <br>
-                     <small>
-                     Admission No: ${escapeHtml(student.admission_no || "")}
-                     | Class: ${escapeHtml(student.class_name || "")}
-                     | Section: ${escapeHtml(student.section || "")}
-                     </small>`;
-
-                div.onclick=()=>selectStudent(student);
-
-                box.appendChild(div);
-
-            });
-
-            box.style.display="block";
-
-        },250);
-
-}
-
-
-/* =========================================================
-   SELECT STUDENT
-========================================================= */
-
-function selectStudent(student){
-
-    document.getElementById("studentId").value =
-        student.id || "";
-
-    document.getElementById("admissionNo").value =
-        student.admission_no || "";
-
-    document.getElementById("studentName").value =
-        student.student_name || "";
-
-    document.getElementById("fatherName").value =
-        student.father_name || "";
-
-    document.getElementById("studentSearch").value =
-        student.student_name || "";
-
-    document.getElementById("studentResults").style.display="none";
-
-    /*
-      Student Master se class/section automatically fill.
-    */
-
-    if(student.class_name){
-
-        const classSelect =
-            document.getElementById("className");
-
-        const option =
-            [...classSelect.options].find(
-                o=>o.value === student.class_name
-            );
-
-        if(option){
-            classSelect.value=student.class_name;
-        }
-
-    }
-
-    if(student.section){
-
-        const sectionSelect =
-            document.getElementById("section");
-
-        const option =
-            [...sectionSelect.options].find(
-                o=>o.value === student.section
-            );
-
-        if(option){
-            sectionSelect.value=student.section;
-        }
-
-    }
-
-    const msg =
-        document.getElementById("selectedStudentMessage");
-
-    msg.textContent =
-        "Student selected: " +
-        (student.student_name || "");
-
-    msg.style.display="block";
-
-}
-
-
-/* =========================================================
-   SAVE RESULT
-========================================================= */
-
-async function saveResult(){
-
-    const admissionNo =
-        document.getElementById("admissionNo").value.trim();
-
-    const studentName =
-        document.getElementById("studentName").value.trim();
-
-    const fatherName =
-        document.getElementById("fatherName").value.trim();
-
-    const className =
-        document.getElementById("className").value;
-
-    const section =
-        document.getElementById("section").value;
-
-    const session =
-        document.getElementById("session").value;
-
-    const examType =
-        document.getElementById("examType").value;
-
-    const studentId =
-        document.getElementById("studentId").value.trim();
-
-    const subjects =
-        getSubjectData();
-
-    if(!admissionNo){
-
-        showEntryMessage(
-            "Please select a student.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    if(!studentName){
-
-        showEntryMessage(
-            "Student name missing.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    if(!className){
-
-        showEntryMessage(
-            "Please select class.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    if(!section){
-
-        showEntryMessage(
-            "Please select section.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    if(subjects.length===0){
-
-        showEntryMessage(
-            "Please add at least one subject.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    let totalMax=0;
-    let obtained=0;
-
-    subjects.forEach(s=>{
-
-        totalMax += Number(s.max) || 0;
-        obtained += Number(s.obtained) || 0;
-
-    });
-
-    const percentage =
-        totalMax > 0
-        ? Number((obtained/totalMax*100).toFixed(2))
-        : 0;
-
-    const grade =
-        calculateGrade(percentage);
-
-    const result =
-        percentage >= 33
-        ? "PASS"
-        : "FAIL";
-
 
     const workingDays =
-        Number(
-            document.getElementById("workingDays").value
-        ) || 0;
+        Number(document.getElementById("workingDays").value)||0;
 
     const presentDays =
-        Number(
-            document.getElementById("presentDays").value
-        ) || 0;
+        Number(document.getElementById("presentDays").value)||0;
 
     const absentDays =
-        Math.max(
-            0,
-            workingDays-presentDays
-        );
+        Math.max(0,workingDays-presentDays);
 
     const attendancePercentage =
-        workingDays > 0
-        ? Number(
-            (presentDays/workingDays*100).toFixed(2)
-        )
+        workingDays>0
+        ? Number(((presentDays/workingDays)*100).toFixed(2))
         : 0;
 
-    const remarks =
-        document.getElementById("remarks").value.trim();
 
+    const payload={
 
-    /*
-      IMPORTANT:
-      student_id is now TEXT so UUID is accepted.
-    */
+        student_id:admissionNo,
 
-    const payload = {
-
-        student_id:
-            studentId || null,
-
-        admission_no:
-            admissionNo,
+        admission_no:admissionNo,
 
         student_name:
-            studentName,
+            document.getElementById("studentName").value,
 
         father_name:
-            fatherName,
+            document.getElementById("fatherName").value,
 
         class_name:
-            className,
+            document.getElementById("className").value,
 
         section:
-            section,
+            document.getElementById("section").value,
 
         session:
-            session,
+            document.getElementById("session").value,
 
         exam_type:
-            examType,
+            document.getElementById("examType").value,
 
-        marks:
-            subjects,
+        marks:marks,
 
-        total_max:
-            totalMax,
+        total_max:totalMax,
 
-        obtained_marks:
-            obtained,
+        obtained_marks:obtainedMarks,
 
-        percentage:
-            percentage,
+        percentage:percentage,
 
-        grade:
-            grade,
+        grade:calculateGrade(percentage),
 
         result:
-            result,
+            document.getElementById("result").value,
 
-        working_days:
-            workingDays,
+        working_days:workingDays,
 
-        present_days:
-            presentDays,
+        present_days:presentDays,
 
-        absent_days:
-            absentDays,
+        absent_days:absentDays,
 
         attendance_percentage:
             attendancePercentage,
 
         remarks:
-            remarks,
+            document.getElementById("remarks").value,
 
-        updated_at:
-            new Date().toISOString()
+        updated_at:new Date().toISOString()
 
     };
 
 
-    /*
-      Existing result check.
-    */
-
-    const {data:existing,error:checkError} =
+    const {data:existing} =
         await supabaseClient
         .from("student_results")
         .select("id")
         .eq("admission_no",admissionNo)
-        .eq("session",session)
-        .eq("exam_type",examType)
-        .eq("class_name",className)
-        .eq("section",section)
-        .maybeSingle();
-
-    if(checkError){
-
-        console.error(checkError);
-
-        showEntryMessage(
-            checkError.message,
-            "error"
-        );
-
-        return;
-
-    }
+        .eq("session",payload.session)
+        .eq("exam_type",payload.exam_type)
+        .order("updated_at",{ascending:false})
+        .limit(1);
 
 
-    let error=null;
+    let response;
 
 
-    if(existing){
+    if(existing && existing.length){
 
-        const response =
+        response =
             await supabaseClient
             .from("student_results")
             .update(payload)
-            .eq("id",existing.id);
-
-        error=response.error;
+            .eq("id",existing[0].id);
 
     }else{
 
-        const response =
+        response =
             await supabaseClient
             .from("student_results")
-            .insert(payload);
-
-        error=response.error;
+            .insert([payload]);
 
     }
 
 
-    if(error){
+    if(response.error){
 
-        console.error(error);
-
-        showEntryMessage(
-            error.message,
+        showMessage(
+            "entryMsg",
+            response.error.message,
             "error"
         );
 
         return;
-
     }
 
 
-    showEntryMessage(
-        `${examType} result successfully saved for ${studentName}.`,
+    showMessage(
+        "entryMsg",
+        "Result saved successfully ✅",
         "success"
     );
-
 }
 
 
-/* =========================================================
-   MESSAGE
-========================================================= */
-
-function showEntryMessage(text,type){
-
-    const box =
-        document.getElementById("entryMessage");
-
-    box.textContent=text;
-
-    box.className =
-        "message " +
-        (type==="success"
-            ? "success"
-            : "error");
-
-    box.style.display="block";
-
-}
-
-
-/* =========================================================
-   RESET ENTRY
-========================================================= */
-
-function resetEntry(){
-
-    document.getElementById("studentSearch").value="";
-    document.getElementById("studentId").value="";
-    document.getElementById("admissionNo").value="";
-    document.getElementById("studentName").value="";
-    document.getElementById("fatherName").value="";
-    document.getElementById("studentResults").style.display="none";
-    document.getElementById("selectedStudentMessage").style.display="none";
-
-    document.getElementById("workingDays").value=0;
-    document.getElementById("presentDays").value=0;
-    document.getElementById("absentDays").value=0;
-    document.getElementById("attendancePercentage").value="0.00%";
-
-    document.getElementById("remarks").value="";
-
-    clearSubjects();
-
-    document.getElementById("entryMessage").style.display="none";
-
-}
-
-
-/* =========================================================
-   GET EXAM COMPONENTS
-========================================================= */
-
-function getExamComponents(type){
-
-    if(type === "FA-1"){
-        return ["FA-1"];
-    }
-
-    if(type === "SA-1"){
-        return ["SA-1"];
-    }
-
-    if(type === "FA-2"){
-        return ["FA-2"];
-    }
-
-    if(type === "SA-2"){
-        return ["SA-2"];
-    }
-
-    if(type === "FA-1+SA-1"){
-        return ["FA-1","SA-1"];
-    }
-
-    if(type === "FA-2+SA-2"){
-        return ["FA-2","SA-2"];
-    }
-
-    if(type === "FINAL"){
-        return ["FA-1","SA-1","FA-2","SA-2"];
-    }
-
-    return [];
-
-}
-
-
-/* =========================================================
-   GET ONE EXAM RESULT
-========================================================= */
+/* ================= STUDENT RESULT ================= */
 
 async function getExamResult(
     admissionNo,
@@ -2267,369 +1650,274 @@ async function getExamResult(
         .eq("session",session)
         .eq("exam_type",exam)
         .order("updated_at",{ascending:false})
-        .limit(1)
-        .maybeSingle();
+        .limit(1);
 
-    if(error){
+    if(error) throw error;
 
-        console.error(error);
-        return null;
-
-    }
-
-    return data;
-
+    return data && data.length ? data[0] : null;
 }
 
 
-/* =========================================================
-   VIEW STUDENT RESULT
-========================================================= */
-
-async function viewStudentResult(){
+async function showStudentResult(){
 
     const admissionNo =
         document.getElementById("viewAdmissionNo")
         .value.trim();
 
     const session =
-        document.getElementById("viewSession").value;
+        document.getElementById("viewSession")
+        .value;
 
     const type =
-        document.getElementById("viewExam").value;
-
-    const output =
-        document.getElementById("studentResultOutput");
+        document.getElementById("viewExamType")
+        .value;
 
     if(!admissionNo){
 
-        output.innerHTML =
-            `<div class="message error" style="display:block;">
-                Please enter Admission No.
-             </div>`;
+        alert("Please enter Admission No.");
 
         return;
-
     }
 
 
-    const exams =
-        getExamComponents(type);
-
-    const results=[];
-
-    for(const exam of exams){
-
-        const row =
-            await getExamResult(
-                admissionNo,
-                session,
-                exam
-            );
-
-        if(row){
-            results.push(row);
-        }
-
-    }
+    let resultHTML="";
 
 
-    if(results.length===0){
+    if(type==="FINAL"){
 
-        output.innerHTML =
-            `<div class="empty">
-                No result found.
-             </div>`;
-
-        return;
-
-    }
-
-
-    if(type === "FINAL"){
-
-        output.innerHTML =
-            buildFinalResultHTML(
-                results,
+        resultHTML =
+            await createFinalReport(
                 admissionNo,
                 session
             );
 
+    }else if(type==="FA1-SA1"){
+
+        resultHTML =
+            await createCombinedReport(
+                admissionNo,
+                session,
+                ["FA-1","SA-1"],
+                "FA-1 + SA-1"
+            );
+
+    }else if(type==="FA2-SA2"){
+
+        resultHTML =
+            await createCombinedReport(
+                admissionNo,
+                session,
+                ["FA-2","SA-2"],
+                "FA-2 + SA-2"
+            );
+
     }else{
 
-        output.innerHTML =
-            buildCombinedResultHTML(
-                results,
+        const r =
+            await getExamResult(
                 admissionNo,
                 session,
                 type
             );
 
-    }
+        if(!r){
 
-}
+            alert("Result not found.");
 
-
-/* =========================================================
-   COMBINED RESULT
-========================================================= */
-
-function buildCombinedResultHTML(
-    results,
-    admissionNo,
-    session,
-    type
-){
-
-    const first=results[0];
-
-    let max=0;
-    let obtained=0;
-
-    results.forEach(r=>{
-
-        max += Number(r.total_max)||0;
-        obtained += Number(r.obtained_marks)||0;
-
-    });
-
-    const percentage =
-        max>0
-        ? (obtained/max*100)
-        : 0;
-
-    const grade =
-        calculateGrade(percentage);
-
-    const result =
-        percentage>=33
-        ? "PASS"
-        : "FAIL";
-
-
-    let rows="";
-
-    results.forEach(r=>{
-
-        rows += `
-
-        <tr>
-
-            <td>${escapeHtml(r.exam_type)}</td>
-
-            <td>${r.total_max}</td>
-
-            <td>${r.obtained_marks}</td>
-
-            <td>${Number(r.percentage).toFixed(2)}%</td>
-
-            <td>${escapeHtml(r.grade || "-")}</td>
-
-            <td>
-                <span class="badge ${
-                    r.result==="PASS"
-                    ? "badge-pass"
-                    : "badge-fail"
-                }">
-                    ${escapeHtml(r.result || "-")}
-                </span>
-            </td>
-
-        </tr>
-
-        `;
-
-    });
-
-
-    return `
-
-    <h2>
-        ${escapeHtml(first.student_name || "")}
-    </h2>
-
-    <p>
-        <b>Admission No:</b>
-        ${escapeHtml(admissionNo)}
-        &nbsp; | &nbsp;
-
-        <b>Class:</b>
-        ${escapeHtml(first.class_name || "")}
-        &nbsp; | &nbsp;
-
-        <b>Section:</b>
-        ${escapeHtml(first.section || "")}
-    </p>
-
-    <p>
-        <b>Session:</b>
-        ${escapeHtml(session)}
-    </p>
-
-
-    <table class="result-table">
-
-        <thead>
-
-            <tr>
-                <th>Exam</th>
-                <th>Max Marks</th>
-                <th>Obtained</th>
-                <th>Percentage</th>
-                <th>Grade</th>
-                <th>Result</th>
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-            ${rows}
-
-        </tbody>
-
-        <tfoot>
-
-            <tr>
-
-                <th>TOTAL</th>
-                <th>${max}</th>
-                <th>${obtained}</th>
-                <th>${percentage.toFixed(2)}%</th>
-                <th>${grade}</th>
-                <th>${result}</th>
-
-            </tr>
-
-        </tfoot>
-
-    </table>
-
-    `;
-
-}
-
-
-/* =========================================================
-   FINAL RESULT
-========================================================= */
-
-function buildFinalResultHTML(
-    results,
-    admissionNo,
-    session
-){
-
-    const student =
-        results[0];
-
-    const examMap={};
-
-    results.forEach(r=>{
-        examMap[r.exam_type]=r;
-    });
-
-
-    const allExams =
-        ["FA-1","SA-1","FA-2","SA-2"];
-
-
-    let finalMax=0;
-    let finalObtained=0;
-
-    allExams.forEach(exam=>{
-
-        if(examMap[exam]){
-
-            finalMax +=
-                Number(examMap[exam].total_max)||0;
-
-            finalObtained +=
-                Number(examMap[exam].obtained_marks)||0;
-
-        }
-
-    });
-
-
-    const finalPercentage =
-        finalMax>0
-        ? finalObtained/finalMax*100
-        : 0;
-
-    const finalGrade =
-        calculateGrade(finalPercentage);
-
-    const finalResult =
-        finalPercentage>=33
-        ? "PASS"
-        : "FAIL";
-
-
-    /*
-      Subject-wise merge
-    */
-
-    const subjectMap={};
-
-    allExams.forEach(exam=>{
-
-        const row=examMap[exam];
-
-        if(!row || !Array.isArray(row.marks)){
             return;
         }
 
-        row.marks.forEach(s=>{
+        resultHTML =
+            createSingleReport(
+                r,
+                type
+            );
+    }
 
-            const name=s.subject;
 
-            if(!subjectMap[name]){
+    document.getElementById(
+        "studentResultPreview"
+    ).innerHTML=resultHTML;
+}
 
-                subjectMap[name]={
+
+/* ================= RESULT DATA ================= */
+
+function parseMarks(r){
+
+    if(!r) return [];
+
+    if(Array.isArray(r.marks))
+        return r.marks;
+
+    try{
+        return JSON.parse(r.marks || "[]");
+    }catch(e){
+        return [];
+    }
+}
+
+
+function makeSubjectMap(results){
+
+    const map={};
+
+    results.forEach(r=>{
+
+        parseMarks(r).forEach(m=>{
+
+            const name=m.subject;
+
+            if(!map[name]){
+                map[name]={
                     "FA-1":null,
                     "SA-1":null,
                     "FA-2":null,
-                    "SA-2":null,
-                    total:0
+                    "SA-2":null
                 };
-
             }
 
-            subjectMap[name][exam] =
-                Number(s.obtained)||0;
-
-            subjectMap[name].total +=
-                Number(s.obtained)||0;
+            map[name][r.exam_type]=m;
 
         });
 
     });
 
+    return map;
+}
 
-    let subjectRows="";
 
-    Object.keys(subjectMap).forEach(subject=>{
+/* ================= REPORT HEADER ================= */
 
-        const s=subjectMap[subject];
+function reportHeader(title,r){
 
-        subjectRows += `
+    return `
+
+    <div class="report-header">
+
+        <div>
+            <img src="logo.png"
+                 class="report-logo"
+                 onerror="this.style.display='none'">
+
+            <span class="report-school">
+                Rainbow Public School
+            </span>
+        </div>
+
+        <div class="report-foundation">
+            Conducted by Shubhi Education Foundation, Dahod
+        </div>
+
+        <div class="report-address">
+            Shalimar Co-operative Society, Muvaliya Road,
+            Rabdal, Dahod, Gujarat - 389151
+        </div>
+
+        <div class="report-title">
+            ${title}
+        </div>
+
+    </div>
+
+    <div class="student-info">
+
+        <div class="info-cell">
+            <div class="info-label">Student Name</div>
+            <div class="info-value">
+                ${escapeHTML(r?.student_name || "-")}
+            </div>
+        </div>
+
+        <div class="info-cell">
+            <div class="info-label">Father Name</div>
+            <div class="info-value">
+                ${escapeHTML(r?.father_name || "-")}
+            </div>
+        </div>
+
+        <div class="info-cell">
+            <div class="info-label">Admission No.</div>
+            <div class="info-value">
+                ${escapeHTML(r?.admission_no || "-")}
+            </div>
+        </div>
+
+        <div class="info-cell">
+            <div class="info-label">Session</div>
+            <div class="info-value">
+                ${escapeHTML(r?.session || "-")}
+            </div>
+        </div>
+
+        <div class="info-cell">
+            <div class="info-label">Class</div>
+            <div class="info-value">
+                ${escapeHTML(r?.class_name || "-")}
+            </div>
+        </div>
+
+        <div class="info-cell">
+            <div class="info-label">Section</div>
+            <div class="info-value">
+                ${escapeHTML(r?.section || "-")}
+            </div>
+        </div>
+
+        <div class="info-cell">
+            <div class="info-label">Exam</div>
+            <div class="info-value">
+                ${escapeHTML(r?.exam_type || "-")}
+            </div>
+        </div>
+
+        <div class="info-cell">
+            <div class="info-label">Result</div>
+            <div class="info-value">
+                ${escapeHTML(r?.result || "-")}
+            </div>
+        </div>
+
+    </div>
+    `;
+}
+
+
+/* ================= SINGLE REPORT ================= */
+
+function createSingleReport(r,title){
+
+    const marks=parseMarks(r);
+
+    let rows="";
+
+    marks.forEach((m,i)=>{
+
+        const max=Number(m.max)||0;
+        const obt=Number(m.obtained)||0;
+
+        const pct =
+            max>0
+            ? ((obt/max)*100).toFixed(1)
+            : "0.0";
+
+        rows+=`
 
         <tr>
 
-            <td>
-                ${escapeHtml(subject)}
+            <td class="subject-name">
+                ${i+1}. ${escapeHTML(m.subject)}
             </td>
 
-            <td>${displayNumber(s["FA-1"])}</td>
+            <td>${max}</td>
 
-            <td>${displayNumber(s["SA-1"])}</td>
+            <td>${obt}</td>
 
-            <td>${displayNumber(s["FA-2"])}</td>
+            <td>${pct}%</td>
 
-            <td>${displayNumber(s["SA-2"])}</td>
-
-            <td><b>${s.total}</b></td>
+            <td>
+                ${calculateGrade(Number(pct))}
+            </td>
 
         </tr>
 
@@ -2638,154 +1926,54 @@ function buildFinalResultHTML(
     });
 
 
-    /*
-      Exam summary
-    */
-
-    let examRows="";
-
-    allExams.forEach(exam=>{
-
-        const r=examMap[exam];
-
-        if(r){
-
-            examRows += `
-
-            <tr>
-
-                <td>${exam}</td>
-
-                <td>${r.total_max}</td>
-
-                <td>${r.obtained_marks}</td>
-
-                <td>
-                    ${Number(r.percentage).toFixed(2)}%
-                </td>
-
-                <td>${escapeHtml(r.grade || "-")}</td>
-
-                <td>${escapeHtml(r.result || "-")}</td>
-
-            </tr>
-
-            `;
-
-        }else{
-
-            examRows += `
-
-            <tr>
-
-                <td>${exam}</td>
-                <td>—</td>
-                <td>—</td>
-                <td>—</td>
-                <td>—</td>
-                <td>NOT ENTERED</td>
-
-            </tr>
-
-            `;
-
-        }
-
-    });
-
-
-    /*
-      Attendance from latest available exam
-    */
-
-    const attendanceRow =
-        examMap["SA-2"] ||
-        examMap["FA-2"] ||
-        examMap["SA-1"] ||
-        examMap["FA-1"];
-
-
-    const attendance =
-        attendanceRow
-        ? Number(
-            attendanceRow.attendance_percentage
-          ).toFixed(2)
-        : "0.00";
-
-
     return `
 
-    <div class="final-result-box">
+    <div class="print-page">
 
-        <h2>
-            FINAL RESULT
-        </h2>
+    <div class="report-border">
 
-        <p>
-            <b>Student:</b>
-            ${escapeHtml(student.student_name || "")}
-        </p>
+        ${reportHeader(
+            title==="FINAL RESULT"
+            ? "FINAL RESULT"
+            : "PROGRESS REPORT - "+title,
+            r
+        )}
 
-        <p>
-            <b>Admission No:</b>
-            ${escapeHtml(admissionNo)}
-        </p>
-
-        <p>
-            <b>Father Name:</b>
-            ${escapeHtml(student.father_name || "")}
-        </p>
-
-        <p>
-            <b>Class:</b>
-            ${escapeHtml(student.class_name || "")}
-            &nbsp;&nbsp;
-
-            <b>Section:</b>
-            ${escapeHtml(student.section || "")}
-            &nbsp;&nbsp;
-
-            <b>Session:</b>
-            ${escapeHtml(session)}
-        </p>
-
-
-        <h3>Exam Summary</h3>
+        <div class="print-section-title">
+            SUBJECT-WISE PERFORMANCE
+        </div>
 
         <table class="result-table">
 
             <thead>
 
                 <tr>
-                    <th>Exam</th>
+                    <th>Subject</th>
                     <th>Max Marks</th>
                     <th>Obtained</th>
-                    <th>%</th>
+                    <th>Percentage</th>
                     <th>Grade</th>
-                    <th>Result</th>
                 </tr>
 
             </thead>
 
             <tbody>
 
-                ${examRows}
+                ${rows}
 
-                <tr>
+                <tr class="total-row">
 
-                    <th>FINAL TOTAL</th>
+                    <td class="subject-name">
+                        TOTAL
+                    </td>
 
-                    <th>${finalMax}</th>
+                    <td>${r.total_max || 0}</td>
 
-                    <th>${finalObtained}</th>
+                    <td>${r.obtained_marks || 0}</td>
 
-                    <th>
-                        ${finalPercentage.toFixed(2)}%
-                    </th>
+                    <td>${Number(r.percentage||0).toFixed(2)}%</td>
 
-                    <th>${finalGrade}</th>
-
-                    <th>${finalResult}</th>
+                    <td>${escapeHTML(r.grade || "-")}</td>
 
                 </tr>
 
@@ -2794,7 +1982,222 @@ function buildFinalResultHTML(
         </table>
 
 
-        <h3>Subject-wise Final Performance</h3>
+        <div class="summary-print">
+
+            <div class="summary-print-box">
+                <div class="summary-print-label">TOTAL MARKS</div>
+                <div class="summary-print-value">
+                    ${r.total_max || 0}
+                </div>
+            </div>
+
+            <div class="summary-print-box">
+                <div class="summary-print-label">OBTAINED</div>
+                <div class="summary-print-value">
+                    ${r.obtained_marks || 0}
+                </div>
+            </div>
+
+            <div class="summary-print-box">
+                <div class="summary-print-label">PERCENTAGE</div>
+                <div class="summary-print-value">
+                    ${Number(r.percentage||0).toFixed(2)}%
+                </div>
+            </div>
+
+            <div class="summary-print-box">
+                <div class="summary-print-label">GRADE</div>
+                <div class="summary-print-value">
+                    ${escapeHTML(r.grade||"-")}
+                </div>
+            </div>
+
+            <div class="summary-print-box">
+                <div class="summary-print-label">RESULT</div>
+                <div class="summary-print-value">
+                    ${escapeHTML(r.result||"-")}
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="attendance-box">
+
+            <b>Attendance:</b>
+
+            Working Days:
+            ${r.working_days || 0}
+
+            &nbsp; | &nbsp;
+
+            Present:
+            ${r.present_days || 0}
+
+            &nbsp; | &nbsp;
+
+            Absent:
+            ${r.absent_days || 0}
+
+            &nbsp; | &nbsp;
+
+            Attendance:
+            ${Number(r.attendance_percentage||0).toFixed(2)}%
+
+        </div>
+
+
+        <div class="remarks-box">
+
+            <b>Remarks:</b>
+            ${escapeHTML(r.remarks || "—")}
+
+        </div>
+
+
+        <div class="signature-row">
+
+            <div>
+                <div class="signature-line">
+                    Class Teacher
+                </div>
+            </div>
+
+            <div>
+                <div class="signature-line">
+                    Principal
+                </div>
+            </div>
+
+            <div>
+                <div class="signature-line">
+                    Parent / Guardian
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="footer-note">
+            This is a computer generated result.
+        </div>
+
+    </div>
+
+    </div>
+
+    `;
+}
+
+
+/* ================= COMBINED REPORT ================= */
+
+async function createCombinedReport(
+    admissionNo,
+    session,
+    exams,
+    title
+){
+
+    const results=[];
+
+    for(const exam of exams){
+
+        const r =
+            await getExamResult(
+                admissionNo,
+                session,
+                exam
+            );
+
+        if(r) results.push(r);
+
+    }
+
+    if(!results.length){
+
+        return `
+        <div class="card">
+            Result not found.
+        </div>`;
+    }
+
+
+    const first=results[0];
+
+    const map=makeSubjectMap(results);
+
+    let rows="";
+
+    const subjects=Object.keys(map);
+
+
+    subjects.forEach((subject,index)=>{
+
+        let totalMax=0;
+        let totalObt=0;
+
+        const cells =
+            exams.map(exam=>{
+
+                const m=map[subject][exam];
+
+                if(!m){
+
+                    return `<td>—</td>`;
+
+                }
+
+                totalMax += Number(m.max)||0;
+                totalObt += Number(m.obtained)||0;
+
+                return `
+                    <td>
+                        ${m.obtained || 0}/${m.max || 0}
+                    </td>
+                `;
+
+            }).join("");
+
+
+        rows+=`
+
+        <tr>
+
+            <td class="subject-name">
+                ${index+1}. ${escapeHTML(subject)}
+            </td>
+
+            ${cells}
+
+            <td>
+                ${totalObt}/${totalMax}
+            </td>
+
+            <td>
+                ${totalMax>0
+                    ? ((totalObt/totalMax)*100).toFixed(1)
+                    : "0.0"}%
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+
+    return `
+
+    <div class="print-page">
+
+    <div class="report-border">
+
+        ${reportHeader(title,first)}
+
+        <div class="print-section-title">
+            SUBJECT-WISE EXAM PERFORMANCE
+        </div>
 
         <table class="result-table">
 
@@ -2803,11 +2206,14 @@ function buildFinalResultHTML(
                 <tr>
 
                     <th>Subject</th>
-                    <th>FA-1</th>
-                    <th>SA-1</th>
-                    <th>FA-2</th>
-                    <th>SA-2</th>
-                    <th>Final Total</th>
+
+                    ${exams.map(e=>
+                        `<th>${e}<br>Obt./Max</th>`
+                    ).join("")}
+
+                    <th>Total<br>Obt./Max</th>
+
+                    <th>%</th>
 
                 </tr>
 
@@ -2815,962 +2221,16 @@ function buildFinalResultHTML(
 
             <tbody>
 
-                ${subjectRows}
+                ${rows}
 
             </tbody>
 
         </table>
 
 
-        <div class="rank-box">
-
-            <div class="rank">
-
-                Attendance
-
-                <b>${attendance}%</b>
-
-            </div>
-
-            <div class="rank">
-
-                Final Percentage
-
-                <b>${finalPercentage.toFixed(2)}%</b>
-
-            </div>
-
-            <div class="rank">
-
-                Grade
-
-                <b>${finalGrade}</b>
-
-            </div>
-
-            <div class="rank">
-
-                Result
-
-                <b>${finalResult}</b>
-
-            </div>
-
+        <div class="print-section-title">
+            EXAM SUMMARY
         </div>
-
-
-        <div class="actions no-print">
-
-            <button
-                class="btn btn-success"
-                onclick="printCurrentStudentResult()">
-                Print Final Result
-            </button>
-
-        </div>
-
-    </div>
-
-    `;
-
-}
-
-
-/* =========================================================
-   PRINT CURRENT RESULT
-========================================================= */
-
-async function printStudentResult(){
-
-    const admissionNo =
-        document.getElementById("viewAdmissionNo")
-        .value.trim();
-
-    const session =
-        document.getElementById("viewSession").value;
-
-    const type =
-        document.getElementById("viewExam").value;
-
-    if(!admissionNo){
-
-        alert("Please enter Admission No.");
-
-        return;
-
-    }
-
-
-    const exams =
-        getExamComponents(type);
-
-    const results=[];
-
-    for(const exam of exams){
-
-        const row =
-            await getExamResult(
-                admissionNo,
-                session,
-                exam
-            );
-
-        if(row){
-            results.push(row);
-        }
-
-    }
-
-    if(results.length===0){
-
-        alert("No result found.");
-
-        return;
-
-    }
-
-
-    let html="";
-
-
-    if(type==="FINAL"){
-
-        html =
-            buildPrintFinalResult(
-                results,
-                admissionNo,
-                session
-            );
-
-    }else{
-
-        html =
-            buildPrintCombinedResult(
-                results,
-                admissionNo,
-                session,
-                type
-            );
-
-    }
-
-
-    const printArea =
-        document.getElementById("printArea");
-
-    printArea.style.display="block";
-
-    printArea.innerHTML=html;
-
-    window.print();
-
-    setTimeout(()=>{
-        printArea.style.display="none";
-        printArea.innerHTML="";
-    },1000);
-
-}
-
-
-/* =========================================================
-   PRINT CURRENT FINAL RESULT BUTTON
-========================================================= */
-
-function printCurrentStudentResult(){
-
-    printStudentResult();
-
-}
-
-
-/* =========================================================
-   PRINT COMBINED
-========================================================= */
-
-function buildPrintCombinedResult(
-    results,
-    admissionNo,
-    session,
-    type
-){
-
-    const r=results[0];
-
-    let max=0;
-    let obtained=0;
-
-    results.forEach(x=>{
-
-        max += Number(x.total_max)||0;
-        obtained += Number(x.obtained_marks)||0;
-
-    });
-
-    const percentage =
-        max>0
-        ? obtained/max*100
-        : 0;
-
-    const grade =
-        calculateGrade(percentage);
-
-    const result =
-        percentage>=33
-        ? "PASS"
-        : "FAIL";
-
-
-    let rows="";
-
-    results.forEach(x=>{
-
-        rows += `
-
-        <tr>
-
-            <td>${x.exam_type}</td>
-            <td>${x.total_max}</td>
-            <td>${x.obtained_marks}</td>
-            <td>${Number(x.percentage).toFixed(2)}%</td>
-            <td>${x.grade || "-"}</td>
-            <td>${x.result || "-"}</td>
-
-        </tr>
-
-        `;
-
-    });
-
-
-    return `
-
-    <div class="print-school">
-
-        <h1>Rainbow Public School</h1>
-
-        <p>
-            Conducted by Shubhi Education Foundation
-        </p>
-
-        <p>
-            Result Management System
-        </p>
-
-    </div>
-
-
-    <div class="print-title">
-        ${escapeHtml(type)} RESULT
-    </div>
-
-
-    <table class="print-info">
-
-        <tr>
-
-            <td>
-                <b>Student Name</b>
-            </td>
-
-            <td>
-                ${escapeHtml(r.student_name || "")}
-            </td>
-
-            <td>
-                <b>Admission No.</b>
-            </td>
-
-            <td>
-                ${escapeHtml(admissionNo)}
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td>
-                <b>Father Name</b>
-            </td>
-
-            <td>
-                ${escapeHtml(r.father_name || "")}
-            </td>
-
-            <td>
-                <b>Class / Section</b>
-            </td>
-
-            <td>
-                ${escapeHtml(r.class_name || "")}
-                /
-                ${escapeHtml(r.section || "")}
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td>
-                <b>Session</b>
-            </td>
-
-            <td colspan="3">
-                ${escapeHtml(session)}
-            </td>
-
-        </tr>
-
-    </table>
-
-
-    <table class="print-marks">
-
-        <thead>
-
-            <tr>
-
-                <th>Exam</th>
-                <th>Max Marks</th>
-                <th>Obtained</th>
-                <th>%</th>
-                <th>Grade</th>
-                <th>Result</th>
-
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-            ${rows}
-
-            <tr>
-
-                <th>TOTAL</th>
-                <th>${max}</th>
-                <th>${obtained}</th>
-                <th>${percentage.toFixed(2)}%</th>
-                <th>${grade}</th>
-                <th>${result}</th>
-
-            </tr>
-
-        </tbody>
-
-    </table>
-
-
-    <div style="margin-top:15px;">
-
-        <b>Attendance:</b>
-        ${Number(
-            r.attendance_percentage || 0
-        ).toFixed(2)}%
-
-        &nbsp;&nbsp;&nbsp;
-
-        <b>Working Days:</b>
-        ${r.working_days || 0}
-
-        &nbsp;&nbsp;&nbsp;
-
-        <b>Present:</b>
-        ${r.present_days || 0}
-
-        &nbsp;&nbsp;&nbsp;
-
-        <b>Absent:</b>
-        ${r.absent_days || 0}
-
-    </div>
-
-
-    <div style="margin-top:15px;">
-
-        <b>Remarks:</b>
-        ${escapeHtml(r.remarks || "")}
-
-    </div>
-
-
-    <div class="signatures">
-
-        <div>
-            <div class="signature-line">
-                Class Teacher
-            </div>
-        </div>
-
-        <div>
-            <div class="signature-line">
-                Principal
-            </div>
-        </div>
-
-        <div>
-            <div class="signature-line">
-                Parent / Guardian
-            </div>
-        </div>
-
-    </div>
-
-    `;
-
-}
-
-
-/* =========================================================
-   PRINT FINAL
-========================================================= */
-
-function buildPrintFinalResult(
-    results,
-    admissionNo,
-    session
-){
-
-    const examMap={};
-
-    results.forEach(r=>{
-        examMap[r.exam_type]=r;
-    });
-
-
-    const student=results[0];
-
-
-    const exams =
-        ["FA-1","SA-1","FA-2","SA-2"];
-
-
-    let finalMax=0;
-    let finalObtained=0;
-
-    exams.forEach(exam=>{
-
-        if(examMap[exam]){
-
-            finalMax +=
-                Number(examMap[exam].total_max)||0;
-
-            finalObtained +=
-                Number(examMap[exam].obtained_marks)||0;
-
-        }
-
-    });
-
-
-    const finalPercentage =
-        finalMax>0
-        ? finalObtained/finalMax*100
-        : 0;
-
-    const finalGrade =
-        calculateGrade(finalPercentage);
-
-    const finalResult =
-        finalPercentage>=33
-        ? "PASS"
-        : "FAIL";
-
-
-    let examRows="";
-
-    exams.forEach(exam=>{
-
-        const r=examMap[exam];
-
-        examRows += `
-
-        <tr>
-
-            <td>${exam}</td>
-
-            <td>${r ? r.total_max : "—"}</td>
-
-            <td>${r ? r.obtained_marks : "—"}</td>
-
-            <td>
-                ${r
-                    ? Number(r.percentage).toFixed(2)+"%"
-                    : "—"}
-            </td>
-
-            <td>
-                ${r ? (r.grade || "-") : "—"}
-            </td>
-
-            <td>
-                ${r ? (r.result || "-") : "NOT ENTERED"}
-            </td>
-
-        </tr>
-
-        `;
-
-    });
-
-
-    const subjectMap={};
-
-    exams.forEach(exam=>{
-
-        const r=examMap[exam];
-
-        if(!r || !Array.isArray(r.marks)){
-            return;
-        }
-
-        r.marks.forEach(s=>{
-
-            const name=s.subject;
-
-            if(!subjectMap[name]){
-
-                subjectMap[name]={
-                    "FA-1":"",
-                    "SA-1":"",
-                    "FA-2":"",
-                    "SA-2":"",
-                    total:0
-                };
-
-            }
-
-            subjectMap[name][exam] =
-                s.obtained;
-
-            subjectMap[name].total +=
-                Number(s.obtained)||0;
-
-        });
-
-    });
-
-
-    let subjectRows="";
-
-    Object.keys(subjectMap).forEach(subject=>{
-
-        const s=subjectMap[subject];
-
-        subjectRows += `
-
-        <tr>
-
-            <td>${escapeHtml(subject)}</td>
-
-            <td>${displayNumber(s["FA-1"])}</td>
-
-            <td>${displayNumber(s["SA-1"])}</td>
-
-            <td>${displayNumber(s["FA-2"])}</td>
-
-            <td>${displayNumber(s["SA-2"])}</td>
-
-            <td>${s.total}</td>
-
-        </tr>
-
-        `;
-
-    });
-
-
-    const attendanceRow =
-        examMap["SA-2"] ||
-        examMap["FA-2"] ||
-        examMap["SA-1"] ||
-        examMap["FA-1"];
-
-
-    return `
-
-    <div class="print-school">
-
-        <h1>Rainbow Public School</h1>
-
-        <p>
-            Conducted by Shubhi Education Foundation
-        </p>
-
-        <p>
-            Result Management System
-        </p>
-
-    </div>
-
-
-    <div class="print-title">
-        FINAL RESULT
-    </div>
-
-
-    <table class="print-info">
-
-        <tr>
-
-            <td><b>Student Name</b></td>
-
-            <td>
-                ${escapeHtml(student.student_name || "")}
-            </td>
-
-            <td><b>Admission No.</b></td>
-
-            <td>
-                ${escapeHtml(admissionNo)}
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td><b>Father Name</b></td>
-
-            <td>
-                ${escapeHtml(student.father_name || "")}
-            </td>
-
-            <td><b>Class / Section</b></td>
-
-            <td>
-                ${escapeHtml(student.class_name || "")}
-                /
-                ${escapeHtml(student.section || "")}
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td><b>Session</b></td>
-
-            <td colspan="3">
-                ${escapeHtml(session)}
-            </td>
-
-        </tr>
-
-    </table>
-
-
-    <h3>Exam Summary</h3>
-
-
-    <table class="print-marks">
-
-        <thead>
-
-            <tr>
-
-                <th>Exam</th>
-                <th>Max Marks</th>
-                <th>Obtained</th>
-                <th>%</th>
-                <th>Grade</th>
-                <th>Result</th>
-
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-            ${examRows}
-
-            <tr>
-
-                <th>FINAL TOTAL</th>
-
-                <th>${finalMax}</th>
-
-                <th>${finalObtained}</th>
-
-                <th>
-                    ${finalPercentage.toFixed(2)}%
-                </th>
-
-                <th>${finalGrade}</th>
-
-                <th>${finalResult}</th>
-
-            </tr>
-
-        </tbody>
-
-    </table>
-
-
-    <h3>Subject-wise Performance</h3>
-
-
-    <table class="print-marks">
-
-        <thead>
-
-            <tr>
-
-                <th>Subject</th>
-                <th>FA-1</th>
-                <th>SA-1</th>
-                <th>FA-2</th>
-                <th>SA-2</th>
-                <th>Final Total</th>
-
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-            ${subjectRows}
-
-        </tbody>
-
-    </table>
-
-
-    <div style="margin-top:15px;">
-
-        <b>Attendance:</b>
-        ${attendanceRow
-            ? Number(
-                attendanceRow.attendance_percentage || 0
-              ).toFixed(2)
-            : "0.00"}%
-
-        &nbsp;&nbsp;&nbsp;
-
-        <b>Working Days:</b>
-        ${attendanceRow
-            ? attendanceRow.working_days || 0
-            : 0}
-
-        &nbsp;&nbsp;&nbsp;
-
-        <b>Present:</b>
-        ${attendanceRow
-            ? attendanceRow.present_days || 0
-            : 0}
-
-        &nbsp;&nbsp;&nbsp;
-
-        <b>Absent:</b>
-        ${attendanceRow
-            ? attendanceRow.absent_days || 0
-            : 0}
-
-    </div>
-
-
-    <div style="margin-top:15px;">
-
-        <b>Final Percentage:</b>
-        ${finalPercentage.toFixed(2)}%
-
-        &nbsp;&nbsp;&nbsp;
-
-        <b>Grade:</b>
-        ${finalGrade}
-
-        &nbsp;&nbsp;&nbsp;
-
-        <b>Result:</b>
-        ${finalResult}
-
-    </div>
-
-
-    <div class="signatures">
-
-        <div>
-            <div class="signature-line">
-                Class Teacher
-            </div>
-        </div>
-
-        <div>
-            <div class="signature-line">
-                Principal
-            </div>
-        </div>
-
-        <div>
-            <div class="signature-line">
-                Parent / Guardian
-            </div>
-        </div>
-
-    </div>
-
-    `;
-
-}
-
-
-/* =========================================================
-   CLASS RESULT
-========================================================= */
-
-async function loadClassResult(){
-
-    const session =
-        document.getElementById("classSession").value;
-
-    const className =
-        document.getElementById("classResultClass").value;
-
-    const section =
-        document.getElementById("classResultSection").value;
-
-    const type =
-        document.getElementById("classResultExam").value;
-
-    const output =
-        document.getElementById("classResultOutput");
-
-
-    const exams =
-        getExamComponents(type);
-
-
-    const {data,error} =
-        await supabaseClient
-        .from("student_results")
-        .select("*")
-        .eq("session",session)
-        .eq("class_name",className);
-
-
-    if(error){
-
-        output.innerHTML =
-            `<div class="message error" style="display:block;">
-                ${escapeHtml(error.message)}
-             </div>`;
-
-        return;
-
-    }
-
-
-    let rows=data || [];
-
-
-    if(section){
-        rows =
-            rows.filter(
-                r=>r.section === section
-            );
-    }
-
-
-    /*
-      Build student groups.
-    */
-
-    const groups={};
-
-    rows.forEach(r=>{
-
-        if(!groups[r.admission_no]){
-            groups[r.admission_no]=[];
-        }
-
-        groups[r.admission_no].push(r);
-
-    });
-
-
-    const finalRows=[];
-
-
-    Object.keys(groups).forEach(adm=>{
-
-        const studentRows =
-            groups[adm];
-
-        const selected =
-            studentRows.filter(
-                r=>exams.includes(r.exam_type)
-            );
-
-        if(selected.length===0){
-            return;
-        }
-
-
-        let max=0;
-        let obtained=0;
-
-
-        selected.forEach(r=>{
-
-            max += Number(r.total_max)||0;
-            obtained += Number(r.obtained_marks)||0;
-
-        });
-
-
-        const pct =
-            max>0
-            ? obtained/max*100
-            : 0;
-
-
-        finalRows.push({
-
-            admission_no:adm,
-
-            student_name:
-                selected[0].student_name,
-
-            father_name:
-                selected[0].father_name,
-
-            section:
-                selected[0].section,
-
-            max:max,
-
-            obtained:obtained,
-
-            percentage:pct,
-
-            grade:calculateGrade(pct),
-
-            result:pct>=33 ? "PASS":"FAIL"
-
-        });
-
-    });
-
-
-    finalRows.sort(
-        (a,b)=>
-            b.percentage-a.percentage
-    );
-
-
-    let html=`
-
-        <h2>
-            ${escapeHtml(className)}
-            ${section ? "- Section "+escapeHtml(section) : ""}
-            Result
-        </h2>
-
-        <p>
-            <b>Session:</b>
-            ${escapeHtml(session)}
-            &nbsp; | &nbsp;
-
-            <b>Result:</b>
-            ${escapeHtml(type)}
-        </p>
 
         <table class="result-table">
 
@@ -3778,6 +2238,754 @@ async function loadClassResult(){
 
                 <tr>
 
+                    <th>Exam</th>
+                    <th>Max Marks</th>
+                    <th>Obtained</th>
+                    <th>Percentage</th>
+                    <th>Grade</th>
+                    <th>Result</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                ${results.map(r=>`
+
+                    <tr>
+
+                        <td><b>${r.exam_type}</b></td>
+
+                        <td>${r.total_max || 0}</td>
+
+                        <td>${r.obtained_marks || 0}</td>
+
+                        <td>
+                            ${Number(r.percentage||0).toFixed(2)}%
+                        </td>
+
+                        <td>${escapeHTML(r.grade||"-")}</td>
+
+                        <td>${escapeHTML(r.result||"-")}</td>
+
+                    </tr>
+
+                `).join("")}
+
+            </tbody>
+
+        </table>
+
+
+        <div class="attendance-box">
+
+            <b>Attendance:</b>
+
+            Working Days:
+            ${first.working_days || 0}
+
+            &nbsp; | &nbsp;
+
+            Present:
+            ${first.present_days || 0}
+
+            &nbsp; | &nbsp;
+
+            Absent:
+            ${first.absent_days || 0}
+
+            &nbsp; | &nbsp;
+
+            Attendance:
+            ${Number(first.attendance_percentage||0).toFixed(2)}%
+
+        </div>
+
+
+        <div class="remarks-box">
+
+            <b>Remarks:</b>
+            ${escapeHTML(first.remarks || "—")}
+
+        </div>
+
+
+        <div class="signature-row">
+
+            <div>
+                <div class="signature-line">
+                    Class Teacher
+                </div>
+            </div>
+
+            <div>
+                <div class="signature-line">
+                    Principal
+                </div>
+            </div>
+
+            <div>
+                <div class="signature-line">
+                    Parent / Guardian
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer-note">
+            This is a computer generated result.
+        </div>
+
+    </div>
+
+    </div>
+
+    `;
+}
+
+
+/* ================= FINAL RESULT ================= */
+
+async function createFinalReport(
+    admissionNo,
+    session
+){
+
+    const exams=[
+        "FA-1",
+        "SA-1",
+        "FA-2",
+        "SA-2"
+    ];
+
+    const results=[];
+
+    for(const exam of exams){
+
+        const r =
+            await getExamResult(
+                admissionNo,
+                session,
+                exam
+            );
+
+        if(r) results.push(r);
+
+    }
+
+    if(!results.length){
+
+        return `
+        <div class="card">
+            Final Result data not found.
+            Please save FA-1, SA-1, FA-2 and SA-2 results first.
+        </div>`;
+    }
+
+
+    const first=results[0];
+
+    const map=makeSubjectMap(results);
+
+    let rows="";
+
+    let grandMax=0;
+    let grandObt=0;
+
+
+    Object.keys(map).forEach((subject,index)=>{
+
+        let subjectMax=0;
+        let subjectObt=0;
+
+
+        const examCells =
+            exams.map(exam=>{
+
+                const m=map[subject][exam];
+
+                if(!m){
+
+                    return `<td>—</td>`;
+
+                }
+
+                const max =
+                    Number(m.max)||0;
+
+                const obt =
+                    Number(m.obtained)||0;
+
+                subjectMax+=max;
+                subjectObt+=obt;
+
+                return `
+                <td>
+                    <b>${obt}</b> / ${max}
+                </td>`;
+
+            }).join("");
+
+
+        grandMax+=subjectMax;
+        grandObt+=subjectObt;
+
+
+        rows+=`
+
+        <tr>
+
+            <td class="subject-name">
+                ${index+1}. ${escapeHTML(subject)}
+            </td>
+
+            ${examCells}
+
+            <td>
+                <b>${subjectObt}</b> / ${subjectMax}
+            </td>
+
+            <td>
+                ${subjectMax>0
+                    ? ((subjectObt/subjectMax)*100).toFixed(1)
+                    : "0.0"}%
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+
+    const finalPercentage =
+        grandMax>0
+        ? (grandObt/grandMax)*100
+        : 0;
+
+    const finalGrade =
+        calculateGrade(finalPercentage);
+
+
+    /* Average exam percentages */
+
+    let totalPercent=0;
+
+    results.forEach(r=>{
+        totalPercent += Number(r.percentage)||0;
+    });
+
+    const averagePercentage =
+        results.length
+        ? totalPercent/results.length
+        : finalPercentage;
+
+
+    return `
+
+    <div class="print-page">
+
+    <div class="report-border">
+
+        ${reportHeader(
+            "FINAL RESULT",
+            {
+                ...first,
+                exam_type:"FA-1 + SA-1 + FA-2 + SA-2"
+            }
+        )}
+
+
+        <div class="print-section-title">
+            FINAL SUBJECT-WISE PERFORMANCE
+        </div>
+
+
+        <table class="result-table">
+
+            <thead>
+
+                <tr>
+
+                    <th style="width:23%;">
+                        Subject
+                    </th>
+
+                    <th>
+                        FA-1<br>Obt./Max
+                    </th>
+
+                    <th>
+                        SA-1<br>Obt./Max
+                    </th>
+
+                    <th>
+                        FA-2<br>Obt./Max
+                    </th>
+
+                    <th>
+                        SA-2<br>Obt./Max
+                    </th>
+
+                    <th>
+                        FINAL<br>Obt./Max
+                    </th>
+
+                    <th>
+                        %
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                ${rows}
+
+
+                <tr class="final-row">
+
+                    <td class="subject-name">
+                        GRAND TOTAL
+                    </td>
+
+                    <td>
+                        ${getExamTotal(results,"FA-1")}
+                    </td>
+
+                    <td>
+                        ${getExamTotal(results,"SA-1")}
+                    </td>
+
+                    <td>
+                        ${getExamTotal(results,"FA-2")}
+                    </td>
+
+                    <td>
+                        ${getExamTotal(results,"SA-2")}
+                    </td>
+
+                    <td>
+                        ${grandObt}/${grandMax}
+                    </td>
+
+                    <td>
+                        ${finalPercentage.toFixed(2)}%
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+
+        <div class="print-section-title">
+            FINAL SUMMARY
+        </div>
+
+
+        <div class="summary-print">
+
+            <div class="summary-print-box">
+
+                <div class="summary-print-label">
+                    FINAL MAX MARKS
+                </div>
+
+                <div class="summary-print-value">
+                    ${grandMax}
+                </div>
+
+            </div>
+
+
+            <div class="summary-print-box">
+
+                <div class="summary-print-label">
+                    FINAL OBTAINED
+                </div>
+
+                <div class="summary-print-value">
+                    ${grandObt}
+                </div>
+
+            </div>
+
+
+            <div class="summary-print-box">
+
+                <div class="summary-print-label">
+                    FINAL %
+                </div>
+
+                <div class="summary-print-value">
+                    ${finalPercentage.toFixed(2)}%
+                </div>
+
+            </div>
+
+
+            <div class="summary-print-box">
+
+                <div class="summary-print-label">
+                    GRADE
+                </div>
+
+                <div class="summary-print-value">
+                    ${finalGrade}
+                </div>
+
+            </div>
+
+
+            <div class="summary-print-box">
+
+                <div class="summary-print-label">
+                    RESULT
+                </div>
+
+                <div class="summary-print-value">
+                    ${escapeHTML(
+                        first.result || "PASS"
+                    )}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="print-section-title">
+            EXAM-WISE SUMMARY
+        </div>
+
+
+        <table class="result-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Exam</th>
+                    <th>Max Marks</th>
+                    <th>Obtained</th>
+                    <th>Percentage</th>
+                    <th>Grade</th>
+                    <th>Result</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                ${exams.map(exam=>{
+
+                    const r =
+                        results.find(
+                            x=>x.exam_type===exam
+                        );
+
+                    if(!r){
+
+                        return `
+                        <tr>
+                            <td>${exam}</td>
+                            <td colspan="5">
+                                Not Entered
+                            </td>
+                        </tr>`;
+
+                    }
+
+                    return `
+
+                    <tr>
+
+                        <td><b>${exam}</b></td>
+
+                        <td>${r.total_max || 0}</td>
+
+                        <td>${r.obtained_marks || 0}</td>
+
+                        <td>
+                            ${Number(r.percentage||0).toFixed(2)}%
+                        </td>
+
+                        <td>
+                            ${escapeHTML(r.grade||"-")}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(r.result||"-")}
+                        </td>
+
+                    </tr>
+
+                    `;
+
+                }).join("")}
+
+            </tbody>
+
+        </table>
+
+
+        <div class="attendance-box">
+
+            <b>Attendance:</b>
+
+            Working Days:
+            ${first.working_days || 0}
+
+            &nbsp; | &nbsp;
+
+            Present:
+            ${first.present_days || 0}
+
+            &nbsp; | &nbsp;
+
+            Absent:
+            ${first.absent_days || 0}
+
+            &nbsp; | &nbsp;
+
+            Attendance:
+            ${Number(first.attendance_percentage||0).toFixed(2)}%
+
+        </div>
+
+
+        <div class="remarks-box">
+
+            <b>Remarks:</b>
+            ${escapeHTML(first.remarks || "—")}
+
+        </div>
+
+
+        <div class="signature-row">
+
+            <div>
+                <div class="signature-line">
+                    Class Teacher
+                </div>
+            </div>
+
+            <div>
+                <div class="signature-line">
+                    Principal
+                </div>
+            </div>
+
+            <div>
+                <div class="signature-line">
+                    Parent / Guardian
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="footer-note">
+
+            This is a computer generated result.
+
+        </div>
+
+    </div>
+
+    </div>
+
+    `;
+}
+
+
+/* ================= TOTAL ================= */
+
+function getExamTotal(results,exam){
+
+    const r =
+        results.find(
+            x=>x.exam_type===exam
+        );
+
+    if(!r) return "—";
+
+    return `
+        ${r.obtained_marks || 0}/${r.total_max || 0}
+    `;
+}
+
+
+/* ================= PRINT ================= */
+
+function printHTML(html){
+
+    document.getElementById("printArea").innerHTML=html;
+
+    setTimeout(function(){
+
+        window.print();
+
+    },300);
+}
+
+
+/* Add Print Button to preview automatically */
+
+function addPrintButton(containerId,html){
+
+    document.getElementById(containerId).innerHTML =
+
+        `<div style="text-align:right;margin-bottom:10px;">
+            <button class="btn btn-primary"
+                    onclick='printHTML(${JSON.stringify(html)})'>
+                🖨️ Print Result
+            </button>
+        </div>` +
+
+        html;
+}
+
+
+/* ================= CLASS RESULT ================= */
+
+async function loadClassResult(){
+
+    const cls =
+        document.getElementById("classResultClass")
+        .value.trim();
+
+    const section =
+        document.getElementById("classResultSection")
+        .value;
+
+    const session =
+        document.getElementById("classResultSession")
+        .value;
+
+    const exam =
+        document.getElementById("classResultExam")
+        .value;
+
+
+    let query =
+        supabaseClient
+        .from("student_results")
+        .select("*")
+        .eq("class_name",cls)
+        .eq("session",session)
+        .eq("exam_type",exam);
+
+
+    if(section){
+        query=query.eq("section",section);
+    }
+
+
+    const {data,error}=await query;
+
+    if(error){
+
+        alert(error.message);
+
+        return;
+    }
+
+
+    if(!data || !data.length){
+
+        document.getElementById(
+            "classResultPreview"
+        ).innerHTML=
+
+        `<div class="card">
+            No result found.
+        </div>`;
+
+        return;
+    }
+
+
+    data.sort(
+        (a,b)=>
+        Number(b.percentage||0)-
+        Number(a.percentage||0)
+    );
+
+
+    let rows="";
+
+
+    data.forEach((r,i)=>{
+
+        rows+=`
+
+        <tr>
+
+            <td>${i+1}</td>
+
+            <td>
+                ${escapeHTML(r.admission_no||"")}
+            </td>
+
+            <td>
+                ${escapeHTML(r.student_name||"")}
+            </td>
+
+            <td>
+                ${escapeHTML(r.section||"")}
+            </td>
+
+            <td>
+                ${r.total_max||0}
+            </td>
+
+            <td>
+                ${r.obtained_marks||0}
+            </td>
+
+            <td>
+                ${Number(r.percentage||0).toFixed(2)}%
+            </td>
+
+            <td>
+                ${escapeHTML(r.grade||"")}
+            </td>
+
+            <td>
+                ${escapeHTML(r.result||"")}
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+
+    const html=`
+
+    <div class="card">
+
+        <h3>
+            Class Result -
+            ${escapeHTML(cls)}
+            ${section ? " - "+section : ""}
+            (${exam})
+        </h3>
+
+        <div class="table-wrap">
+
+        <table>
+
+            <thead>
+
+                <tr>
                     <th>Rank</th>
                     <th>Admission No.</th>
                     <th>Student Name</th>
@@ -3787,96 +2995,42 @@ async function loadClassResult(){
                     <th>%</th>
                     <th>Grade</th>
                     <th>Result</th>
-
                 </tr>
 
             </thead>
 
             <tbody>
-    `;
-
-
-    finalRows.forEach((r,index)=>{
-
-        html += `
-
-        <tr>
-
-            <td>${index+1}</td>
-
-            <td>
-                ${escapeHtml(r.admission_no)}
-            </td>
-
-            <td>
-                ${escapeHtml(r.student_name || "")}
-            </td>
-
-            <td>
-                ${escapeHtml(r.section || "")}
-            </td>
-
-            <td>${r.max}</td>
-
-            <td>${r.obtained}</td>
-
-            <td>${r.percentage.toFixed(2)}%</td>
-
-            <td>${r.grade}</td>
-
-            <td>
-                <span class="badge ${
-                    r.result==="PASS"
-                    ? "badge-pass"
-                    : "badge-fail"
-                }">
-                    ${r.result}
-                </span>
-            </td>
-
-        </tr>
-
-        `;
-
-    });
-
-
-    html += `
-
+                ${rows}
             </tbody>
 
         </table>
 
-        <p style="margin-top:15px;">
-            <b>Total Students:</b>
-            ${finalRows.length}
-        </p>
+        </div>
+
+    </div>
 
     `;
 
 
-    output.innerHTML=html;
-
+    document.getElementById(
+        "classResultPreview"
+    ).innerHTML=html;
 }
 
 
-/* =========================================================
-   EXPORT CLASS EXCEL
-========================================================= */
+/* ================= SCHOOL RESULT ================= */
 
-async function exportClassExcel(){
+async function loadSchoolResult(){
 
     const session =
-        document.getElementById("classSession").value;
+        document.getElementById(
+            "schoolResultSession"
+        ).value;
 
-    const className =
-        document.getElementById("classResultClass").value;
-
-    const section =
-        document.getElementById("classResultSection").value;
-
-    const type =
-        document.getElementById("classResultExam").value;
+    const exam =
+        document.getElementById(
+            "schoolResultExam"
+        ).value;
 
 
     const {data,error} =
@@ -3884,346 +3038,76 @@ async function exportClassExcel(){
         .from("student_results")
         .select("*")
         .eq("session",session)
-        .eq("class_name",className);
+        .eq("exam_type",exam);
 
 
     if(error){
 
         alert(error.message);
-        return;
-
-    }
-
-
-    let rows=data || [];
-
-
-    if(section){
-
-        rows =
-            rows.filter(
-                r=>r.section===section
-            );
-
-    }
-
-
-    const exams =
-        getExamComponents(type);
-
-
-    const groups={};
-
-
-    rows.forEach(r=>{
-
-        if(!groups[r.admission_no]){
-            groups[r.admission_no]=[];
-        }
-
-        groups[r.admission_no].push(r);
-
-    });
-
-
-    const excel=[];
-
-
-    Object.keys(groups).forEach(adm=>{
-
-        const selected =
-            groups[adm].filter(
-                r=>exams.includes(r.exam_type)
-            );
-
-        if(selected.length===0){
-            return;
-        }
-
-
-        let max=0;
-        let obtained=0;
-
-
-        selected.forEach(r=>{
-
-            max += Number(r.total_max)||0;
-            obtained += Number(r.obtained_marks)||0;
-
-        });
-
-
-        const pct =
-            max>0
-            ? obtained/max*100
-            : 0;
-
-
-        excel.push({
-
-            "Rank":"",
-            "Admission No.":adm,
-
-            "Student Name":
-                selected[0].student_name || "",
-
-            "Father Name":
-                selected[0].father_name || "",
-
-            "Class":
-                selected[0].class_name || "",
-
-            "Section":
-                selected[0].section || "",
-
-            "Max Marks":max,
-
-            "Obtained":obtained,
-
-            "Percentage":
-                Number(pct.toFixed(2)),
-
-            "Grade":
-                calculateGrade(pct),
-
-            "Result":
-                pct>=33 ? "PASS":"FAIL"
-
-        });
-
-    });
-
-
-    excel.sort(
-        (a,b)=>
-            b.Percentage-a.Percentage
-    );
-
-
-    excel.forEach((r,i)=>{
-        r["Rank"]=i+1;
-    });
-
-
-    const ws =
-        XLSX.utils.json_to_sheet(excel);
-
-    const wb =
-        XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(
-        wb,
-        ws,
-        "Class Result"
-    );
-
-
-    XLSX.writeFile(
-        wb,
-        `Class-Result-${className}-${type}.xlsx`
-    );
-
-}
-
-
-/* =========================================================
-   SCHOOL RESULT
-========================================================= */
-
-async function loadSchoolResult(){
-
-    const session =
-        document.getElementById("schoolSession").value;
-
-    const type =
-        document.getElementById("schoolExam").value;
-
-    const output =
-        document.getElementById("schoolResultOutput");
-
-
-    const exams =
-        getExamComponents(type);
-
-
-    const {data,error} =
-        await supabaseClient
-        .from("student_results")
-        .select("*")
-        .eq("session",session);
-
-
-    if(error){
-
-        output.innerHTML =
-            `<div class="message error" style="display:block;">
-                ${escapeHtml(error.message)}
-             </div>`;
 
         return;
-
     }
 
 
-    const rows=data || [];
+    if(!data || !data.length){
 
-    const groups={};
+        document.getElementById(
+            "schoolResultPreview"
+        ).innerHTML=
 
+        `<div class="card">
+            No result found.
+        </div>`;
 
-    rows.forEach(r=>{
-
-        if(!groups[r.admission_no]){
-            groups[r.admission_no]=[];
-        }
-
-        groups[r.admission_no].push(r);
-
-    });
+        return;
+    }
 
 
-    const students=[];
-
-
-    Object.keys(groups).forEach(adm=>{
-
-        const selected =
-            groups[adm].filter(
-                r=>exams.includes(r.exam_type)
-            );
-
-        if(selected.length===0){
-            return;
-        }
-
-
-        let max=0;
-        let obtained=0;
-
-
-        selected.forEach(r=>{
-
-            max += Number(r.total_max)||0;
-            obtained += Number(r.obtained_marks)||0;
-
-        });
-
-
-        const pct =
-            max>0
-            ? obtained/max*100
-            : 0;
-
-
-        students.push({
-
-            admission_no:adm,
-
-            student_name:
-                selected[0].student_name,
-
-            class_name:
-                selected[0].class_name,
-
-            section:
-                selected[0].section,
-
-            percentage:pct,
-
-            grade:calculateGrade(pct),
-
-            result:
-                pct>=33
-                ? "PASS"
-                : "FAIL"
-
-        });
-
-    });
-
-
-    students.sort(
+    data.sort(
         (a,b)=>
-            b.percentage-a.percentage
+        Number(b.percentage||0)-
+        Number(a.percentage||0)
     );
 
 
-    const total =
-        students.length;
-
-    const passed =
-        students.filter(
-            s=>s.result==="PASS"
-        ).length;
-
-    const failed =
-        students.filter(
-            s=>s.result==="FAIL"
-        ).length;
-
-    const passPercent =
-        total>0
-        ? passed/total*100
-        : 0;
+    let rows="";
 
 
-    const topper =
-        students.length
-        ? students[0]
-        : null;
+    data.forEach((r,i)=>{
 
-
-    const classMap={};
-
-
-    students.forEach(s=>{
-
-        if(!classMap[s.class_name]){
-            classMap[s.class_name]={
-                total:0,
-                pass:0,
-                fail:0
-            };
-        }
-
-        classMap[s.class_name].total++;
-
-        if(s.result==="PASS"){
-            classMap[s.class_name].pass++;
-        }else{
-            classMap[s.class_name].fail++;
-        }
-
-    });
-
-
-    let classRows="";
-
-
-    Object.keys(classMap)
-    .sort()
-    .forEach(cls=>{
-
-        const c=classMap[cls];
-
-        const pp =
-            c.total>0
-            ? c.pass/c.total*100
-            : 0;
-
-
-        classRows += `
+        rows+=`
 
         <tr>
 
-            <td>${escapeHtml(cls)}</td>
+            <td>${i+1}</td>
 
-            <td>${c.total}</td>
+            <td>
+                ${escapeHTML(r.admission_no||"")}
+            </td>
 
-            <td>${c.pass}</td>
+            <td>
+                ${escapeHTML(r.student_name||"")}
+            </td>
 
-            <td>${c.fail}</td>
+            <td>
+                ${escapeHTML(r.class_name||"")}
+            </td>
 
-            <td>${pp.toFixed(2)}%</td>
+            <td>
+                ${escapeHTML(r.section||"")}
+            </td>
+
+            <td>
+                ${Number(r.percentage||0).toFixed(2)}%
+            </td>
+
+            <td>
+                ${escapeHTML(r.grade||"")}
+            </td>
+
+            <td>
+                ${escapeHTML(r.result||"")}
+            </td>
 
         </tr>
 
@@ -4232,145 +3116,21 @@ async function loadSchoolResult(){
     });
 
 
-    let topRows="";
+    document.getElementById(
+        "schoolResultPreview"
+    ).innerHTML=
 
+    `
 
-    students
-    .slice(0,10)
-    .forEach((s,index)=>{
+    <div class="card">
 
-        topRows += `
-
-        <tr>
-
-            <td>${index+1}</td>
-
-            <td>${escapeHtml(s.admission_no)}</td>
-
-            <td>${escapeHtml(s.student_name || "")}</td>
-
-            <td>${escapeHtml(s.class_name || "")}</td>
-
-            <td>${escapeHtml(s.section || "")}</td>
-
-            <td>${s.percentage.toFixed(2)}%</td>
-
-            <td>${s.grade}</td>
-
-        </tr>
-
-        `;
-
-    });
-
-
-    output.innerHTML = `
-
-        <h2>School Result Summary</h2>
-
-        <p>
-            <b>Session:</b>
-            ${escapeHtml(session)}
-            &nbsp; | &nbsp;
-
-            <b>Result:</b>
-            ${escapeHtml(type)}
-        </p>
-
-
-        <div class="total-box">
-
-            <div class="stat">
-                Total Students
-                <strong>${total}</strong>
-            </div>
-
-            <div class="stat">
-                Passed
-                <strong>${passed}</strong>
-            </div>
-
-            <div class="stat">
-                Failed
-                <strong>${failed}</strong>
-            </div>
-
-            <div class="stat">
-                Pass %
-                <strong>${passPercent.toFixed(2)}%</strong>
-            </div>
-
-        </div>
-
-
-        ${
-            topper
-            ? `
-            <div class="card" style="margin-top:15px;background:#eff6ff;">
-
-                <h3>School Topper</h3>
-
-                <p>
-
-                    <b>${escapeHtml(topper.student_name || "")}</b>
-
-                    <br>
-
-                    Admission No:
-                    ${escapeHtml(topper.admission_no)}
-
-                    <br>
-
-                    Class:
-                    ${escapeHtml(topper.class_name)}
-                    -
-                    ${escapeHtml(topper.section || "")}
-
-                    <br>
-
-                    Percentage:
-                    <b>${topper.percentage.toFixed(2)}%</b>
-
-                </p>
-
-            </div>
-            `
-            : ""
-        }
-
-
-        <h3>Class-wise Summary</h3>
-
-        <table class="result-table">
-
-            <thead>
-
-                <tr>
-
-                    <th>Class</th>
-                    <th>Total</th>
-                    <th>Pass</th>
-                    <th>Fail</th>
-                    <th>Pass %</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                ${classRows}
-
-            </tbody>
-
-        </table>
-
-
-        <h3 style="margin-top:25px;">
-            Top Students
+        <h3>
+            School Result - ${exam}
         </h3>
 
-        <table class="result-table">
+        <div class="table-wrap">
+
+        <table>
 
             <thead>
 
@@ -4378,34 +3138,75 @@ async function loadSchoolResult(){
 
                     <th>Rank</th>
                     <th>Admission No.</th>
-                    <th>Student</th>
+                    <th>Student Name</th>
                     <th>Class</th>
                     <th>Section</th>
                     <th>%</th>
                     <th>Grade</th>
+                    <th>Result</th>
 
                 </tr>
 
             </thead>
 
             <tbody>
-
-                ${topRows}
-
+                ${rows}
             </tbody>
 
         </table>
 
-    `;
+        </div>
 
+    </div>
+
+    `;
 }
 
 
-/* =========================================================
-   HELPERS
-========================================================= */
+/* ================= UTILITY ================= */
 
-function escapeHtml(value){
+function showMessage(id,text,type){
+
+    const el =
+        document.getElementById(id);
+
+    el.innerText=text;
+
+    el.className=
+        "message "+type;
+
+    el.style.display="block";
+
+    setTimeout(()=>{
+        el.style.display="none";
+    },5000);
+}
+
+
+function clearForm(){
+
+    document.getElementById("admissionNo").value="";
+    document.getElementById("studentName").value="";
+    document.getElementById("fatherName").value="";
+    document.getElementById("className").value="";
+    document.getElementById("section").value="";
+
+    document.getElementById("workingDays").value=0;
+    document.getElementById("presentDays").value=0;
+    document.getElementById("absentDays").value=0;
+    document.getElementById("attendancePercentage").value="0%";
+
+    document.getElementById("remarks").value="";
+
+    document.getElementById("subjectList").innerHTML="";
+
+    addDefaultSubjects();
+
+    calculateAll();
+}
+
+
+function escapeHTML(value){
 
     return String(value ?? "")
         .replace(/&/g,"&amp;")
@@ -4413,48 +3214,34 @@ function escapeHtml(value){
         .replace(/>/g,"&gt;")
         .replace(/"/g,"&quot;")
         .replace(/'/g,"&#039;");
-
 }
 
 
-function displayNumber(value){
+/* ================= PRINT BUTTON FIX ================= */
 
-    if(value === null ||
-       value === undefined ||
-       value === ""){
-        return "—";
-    }
+/*
+   Override preview print buttons.
+*/
 
-    return value;
+document.addEventListener("click",function(e){
 
-}
+    if(
+        e.target &&
+        e.target.matches(".print-result-button")
+    ){
 
+        const html =
+            e.target.getAttribute(
+                "data-html"
+            );
 
-/* =========================================================
-   INITIALIZE
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    ()=>{
-
-        checkLogin();
-
-        /*
-          Start with empty subject list so user
-          can decide subjects for each class.
-        */
-
-        clearSubjects();
-
-        /*
-          Default FA-1 marks = 30.
-        */
-
-        examChanged();
+        if(html){
+            printHTML(html);
+        }
 
     }
-);
+
+});
 
 </script>
 
