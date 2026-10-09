@@ -1897,7 +1897,7 @@ async function getStudentInfo(admissionNo){
     const { data, error } = await supabaseClient
         .from("students")
         .select("*")
-        .eq("admission_no", admissionNo)
+        .eq("admission_no", admissionNo.trim())
         .limit(1);
 
     if(error){
@@ -1908,49 +1908,39 @@ async function getStudentInfo(admissionNo){
     if(!data || !data.length) return null;
 
     const student = data[0];
-    const photoValue = String(student.photo || "").trim();
+
+    // Different versions of Student Master/admission form may use different photo field names.
+    const photoValue = String(
+        student.photo || student.photo_url || student.student_photo ||
+        student.photoUrl || student.image_url || student.image || ""
+    ).trim();
+
     let photoUrl = "";
-
-    console.log("PHOTO DATABASE VALUE:", photoValue);
-
     if(photoValue){
-        try{
-            // Database mein poora URL ho to use seedha istemal karein.
-            if(/^https?:\/\//i.test(photoValue) || /^data:image\//i.test(photoValue)){
-                photoUrl = photoValue;
+        if(/^https?:\/\//i.test(photoValue) || /^data:image\//i.test(photoValue)){
+            photoUrl = photoValue;
+        } else if(/^\/?storage\/v1\/object\/public\//i.test(photoValue)){
+            photoUrl = SUPABASE_URL + "/" + photoValue.replace(/^\/+/, "");
+        } else {
+            let bucket = "admission-photos";
+            let filePath = photoValue.replace(/^\/+/, "");
+            if(/^student-photos\//i.test(filePath)){
+                bucket = "student-photos";
+                filePath = filePath.replace(/^student-photos\//i, "");
+            } else if(/^admission-photos\//i.test(filePath)){
+                filePath = filePath.replace(/^admission-photos\//i, "");
             }
-            // Public storage path ka base URL missing ho to add karein.
-            else if(/^\/?storage\/v1\/object\/public\//i.test(photoValue)){
-                photoUrl = SUPABASE_URL + "/" + photoValue.replace(/^\/+/, "");
-            }
-            // Online admission ke photos admission-photos bucket mein hain.
-            else {
-                let bucket = "admission-photos";
-                let filePath = photoValue.replace(/^\/+/, "");
-
-                if(/^student-photos\//i.test(filePath)){
-                    bucket = "student-photos";
-                    filePath = filePath.replace(/^student-photos\//i, "");
-                } else if(/^admission-photos\//i.test(filePath)){
-                    filePath = filePath.replace(/^admission-photos\//i, "");
-                }
-
-                const { data: urlData } = supabaseClient.storage
-                    .from(bucket)
-                    .getPublicUrl(filePath);
-
-                if(urlData && urlData.publicUrl) photoUrl = urlData.publicUrl;
-            }
-        }catch(e){
-            console.error("Photo URL error:", e);
+            const { data: urlData } = supabaseClient.storage.from(bucket).getPublicUrl(filePath);
+            photoUrl = urlData?.publicUrl || "";
         }
     }
 
-    console.log("FINAL PHOTO URL:", photoUrl);
+    console.log("Student admission number:", student.admission_no);
+    console.log("Student photo value:", photoValue);
+    console.log("Resolved photo URL:", photoUrl);
 
     return { ...student, photoUrl };
 }
-
 
 /* ==========================================
    REPORT HEADER
@@ -1968,14 +1958,12 @@ function reportHeader(student,title){
                 class="studentPhoto"
                 alt="Student Photo"
                 loading="eager"
-                onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+                referrerpolicy="no-referrer"
+                onload="this.dataset.loaded='yes';"
+                onerror="this.dataset.loaded='no';this.style.display='none';this.parentElement.querySelector('.photoFallback').style.display='block';"
             >
 
-            <div
-                class="photoFallback"
-                style="display:none;">
-                Photo
-            </div>
+            <div class="photoFallback" style="display:none;">Photo could not load</div>
 
         `
         :`
