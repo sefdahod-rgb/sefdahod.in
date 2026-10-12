@@ -6,6 +6,7 @@
 <title>Rainbow Public School - Student Master</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
 *{
@@ -859,6 +860,19 @@ tr:hover td{
             </div>
 
 
+            <!-- ADDITIONAL STUDENT DETAILS -->
+            <div class="form-group"><label>Religion</label><input type="text" id="religion" placeholder="Religion"></div>
+            <div class="form-group">
+                <label>Category</label>
+                <select id="category"><option value="">Select Category</option><option>General</option><option>OBC</option><option>SC</option><option>ST</option><option>EWS</option><option>Other</option></select>
+            </div>
+            <div class="form-group"><label>Caste</label><input type="text" id="caste" placeholder="Caste"></div>
+            <div class="form-group"><label>Sub-Caste</label><input type="text" id="subCaste" placeholder="Sub-Caste"></div>
+            <div class="form-group">
+                <label>RTE Student?</label>
+                <select id="rteStudent"><option value="false">No</option><option value="true">Yes</option></select>
+            </div>
+
             <!-- CLASS -->
             <div class="form-group">
                 <label>Class *</label>
@@ -1108,6 +1122,20 @@ tr:hover td{
 
     </div>
 
+
+    <!-- EXCEL BULK IMPORT -->
+    <div class="card">
+        <h3>📥 Excel Student Upload / Download</h3>
+        <div class="module-note">Excel file se ek saath bahut saare students add kar sakte hain. Pehle template download karein, data bharein, phir upload karein. Same Admission No. hone par existing student update hoga. Excel se photo upload nahi hota.</div>
+        <div class="actions" style="align-items:center">
+            <button type="button" class="btn btn-secondary" onclick="downloadExcelTemplate()">⬇ Download Excel Template</button>
+            <button type="button" class="btn btn-success" onclick="downloadStudentsExcel()">⬇ Download Student List</button>
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('excelFile').click()">📤 Choose Excel File</button>
+            <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" style="display:none" onchange="importStudentsExcel(event)">
+        </div>
+        <div id="excelMessage" class="message" style="display:none;margin-top:12px"></div>
+        <small style="display:block;margin-top:10px;color:#64748b">Required columns: Admission No, Student Name, Class, Section. Dates: DD/MM/YYYY or Excel date cells. RTE Student: Yes or No.</small>
+    </div>
 
     <!-- STUDENT LIST -->
     <div class="card">
@@ -1593,6 +1621,12 @@ async function saveStudent(){
     const address =
         document.getElementById("address").value.trim();
 
+    const religion = document.getElementById("religion").value.trim();
+    const category = document.getElementById("category").value;
+    const caste = document.getElementById("caste").value.trim();
+    const subCaste = document.getElementById("subCaste").value.trim();
+    const rteStudent = document.getElementById("rteStudent").value === "true";
+
     const annualFeeValue =
         document.getElementById("annualFee").value.trim();
 
@@ -1779,7 +1813,7 @@ async function saveStudent(){
 
             const safeAdm =
                 admissionNo
-                .replace(/[^a-zA-Z0-9_-]/g,"_");
+                .replace(/[^a-zA-Z0-9\_-]/g,"\_");
 
             const filePath =
                 "students/" +
@@ -1870,6 +1904,12 @@ async function saveStudent(){
             bus:bus || null,
 
             address:address || null,
+
+            religion:religion || null,
+            category:category || null,
+            caste:caste || null,
+            sub_caste:subCaste || null,
+            rte_student:rteStudent,
 
             annual_fee:Number(annualFeeValue),
 
@@ -2038,22 +2078,9 @@ function updateStats(){
 ========================================================= */
 
 function escapeHtml(value){
-
-    if(value === null || value === undefined){
-
-        return "";
-
-    }
-
-    return String(value)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-
+    if(value === null || value === undefined) return "";
+    return String(value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 }
-
 
 /* =========================================================
    CLASS DISPLAY
@@ -2388,6 +2415,12 @@ function editStudent(id){
     document.getElementById("address").value =
         s.address || "";
 
+    document.getElementById("religion").value = s.religion || "";
+    document.getElementById("category").value = s.category || "";
+    document.getElementById("caste").value = s.caste || "";
+    document.getElementById("subCaste").value = s.sub_caste || "";
+    document.getElementById("rteStudent").value = s.rte_student ? "true" : "false";
+
 
     document.getElementById("photoFile").value = "";
 
@@ -2543,6 +2576,11 @@ function clearForm(){
     document.getElementById("annualFee").value = "";
 
     document.getElementById("address").value = "";
+    document.getElementById("religion").value = "";
+    document.getElementById("category").value = "";
+    document.getElementById("caste").value = "";
+    document.getElementById("subCaste").value = "";
+    document.getElementById("rteStudent").value = "false";
 
     document.getElementById("photoFile").value = "";
 
@@ -2808,6 +2846,118 @@ function printStudent(id){
 
 }
 
+
+
+/* EXCEL TEMPLATE, EXPORT, AND BULK IMPORT */
+function setExcelMessage(message,type){
+    const box=document.getElementById("excelMessage");
+    box.textContent=message;
+    box.className="message "+type;
+    box.style.display="block";
+}
+function downloadExcelTemplate(){
+    if(typeof XLSX==="undefined"){alert("Excel library load nahi hui. Internet check karke page refresh karein.");return;}
+    const headers=[["Admission No","Roll No","Academic Session","Student Status","Admission Date","Student Name","Father Name","Mother Name","Date of Birth","Age","Gender","Class","Section","Mobile","Aadhaar","UDISE","PEN","APAAR","Blood Group","Bus Route","Annual Fee","Address","Religion","Category","Caste","Sub-Caste","RTE Student"]];
+    const ws=XLSX.utils.aoa_to_sheet(headers);
+    ws["!cols"]=headers[0].map(h=>({wch:Math.max(14,h.length+3)}));
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"Students");
+    XLSX.writeFile(wb,"Rainbow_Public_School_Student_Template.xlsx");
+}
+function downloadStudentsExcel(){
+    if(typeof XLSX==="undefined"){alert("Excel library load nahi hui. Internet check karke page refresh karein.");return;}
+    if(!students||!students.length){alert("Download karne ke liye student records nahi mile. Pehle Refresh karein.");return;}
+    const rows=students.map(s=>({
+        "Admission No":s.admission_no||"","Roll No":s.roll_no||"","Academic Session":s.session||"",
+        "Student Status":s.student_status||"","Admission Date":formatDateIndian(s.admission_date),
+        "Student Name":s.student_name||"","Father Name":s.father_name||"","Mother Name":s.mother_name||"",
+        "Date of Birth":formatDateIndian(s.dob),"Age":s.age||"","Gender":s.gender||"",
+        "Class":displayClass(s.class_name),"Section":s.section||"","Mobile":s.mobile||"",
+        "Aadhaar":s.aadhar||"","UDISE":s.udise||"","PEN":s.pen||"","APAAR":s.apaar||"",
+        "Blood Group":s.blood||"","Bus Route":s.bus||"","Annual Fee":s.annual_fee||0,"Address":s.address||"",
+        "Religion":s.religion||"","Category":s.category||"","Caste":s.caste||"",
+        "Sub-Caste":s.sub_caste||"","RTE Student":s.rte_student?"Yes":"No"
+    }));
+    const ws=XLSX.utils.json_to_sheet(rows), wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"Students");
+    XLSX.writeFile(wb,"Rainbow_Public_School_Students.xlsx");
+}
+function excelHeaderKey(v){return String(v==null?"":v).trim().toLowerCase().replace(/[_-]+/g," ").replace(/\s+/g," ");}
+function excelCell(row,aliases){
+    const keys=Object.keys(row);
+    for(const alias of aliases){
+        const found=keys.find(k=>excelHeaderKey(k)===excelHeaderKey(alias));
+        if(found!==undefined&&row[found]!==undefined&&row[found]!==null&&String(row[found]).trim()!=="")return row[found];
+    }
+    return "";
+}
+function excelText(v){return v===null||v===undefined?"":String(v).trim();}
+function excelDate(v){
+    if(v===null||v===undefined||v==="")return null;
+    if(v instanceof Date&&!isNaN(v.getTime()))return v.getFullYear()+"-"+String(v.getMonth()+1).padStart(2,"0")+"-"+String(v.getDate()).padStart(2,"0");
+    if(typeof v==="number"&&typeof XLSX!=="undefined"){const d=XLSX.SSF.parse_date_code(v);if(d)return d.y+"-"+String(d.m).padStart(2,"0")+"-"+String(d.d).padStart(2,"0");}
+    const str=String(v).trim();let m=str.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);
+    if(m)return m[3]+"-"+m[2].padStart(2,"0")+"-"+m[1].padStart(2,"0");
+    m=str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if(m)return m[1]+"-"+m[2].padStart(2,"0")+"-"+m[3].padStart(2,"0");
+    const d=new Date(str);if(!isNaN(d.getTime()))return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    return null;
+}
+function excelBool(v){return ["yes","y","true","1","rte"].includes(excelText(v).toLowerCase());}
+function excelClass(v){const x=excelText(v);const m={"1st":"1","2nd":"2","3rd":"3","4th":"4","5th":"5","6th":"6","7th":"7","8th":"8"};return m[x.toLowerCase()]||x;}
+async function importStudentsExcel(event){
+    const file=event.target.files&&event.target.files[0];if(!file)return;
+    if(typeof XLSX==="undefined"){setExcelMessage("Excel library load nahi hui. Internet check karke page refresh karein.","error");event.target.value="";return;}
+    if(localStorage.getItem("rps_login")!=="yes"){setExcelMessage("Pehle Student Master mein login karein.","error");event.target.value="";return;}
+    try{
+        setExcelMessage("Excel file read ho rahi hai...","success");
+        const wb=XLSX.read(await file.arrayBuffer(),{type:"array",cellDates:true});
+        const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:"",raw:true});
+        if(!rows.length)throw new Error("Excel file mein student rows nahi mili.");
+        let added=0,updated=0,skipped=0;const errors=[];
+        for(let i=0;i<rows.length;i++){
+            const r=rows[i], admissionNo=excelText(excelCell(r,["Admission No","Admission Number","Admission","Adm No"]));
+            const studentName=excelText(excelCell(r,["Student Name","Name","Student"]));
+            const className=excelClass(excelCell(r,["Class","Class Name"]));
+            const section=excelText(excelCell(r,["Section","Div"]));
+            if(!admissionNo||!studentName||!className||!section){skipped++;errors.push("Row "+(i+2)+": Admission No, Student Name, Class ya Section missing.");continue;}
+            const statusRaw=excelText(excelCell(r,["Student Status","Status"]))||"Active";
+            const validStatus=["Active","Left","TC","Promoted"].find(x=>x.toLowerCase()===statusRaw.toLowerCase())||"Active";
+            const data={
+                session:excelText(excelCell(r,["Academic Session","Session"]))||"2026-27",student_status:validStatus,
+                admission_no:admissionNo,roll_no:excelText(excelCell(r,["Roll No","Roll Number"]))||null,
+                admission_date:excelDate(excelCell(r,["Admission Date"])),student_name:studentName,
+                father_name:excelText(excelCell(r,["Father Name","Father's Name"]))||"",
+                mother_name:excelText(excelCell(r,["Mother Name","Mother's Name"]))||null,
+                dob:excelDate(excelCell(r,["Date of Birth","DOB"])),age:excelText(excelCell(r,["Age"]))||null,
+                gender:excelText(excelCell(r,["Gender"]))||null,class_name:className,section:section,
+                mobile:excelText(excelCell(r,["Mobile","Mobile Number","Phone"]))||null,
+                aadhar:excelText(excelCell(r,["Aadhaar","Aadhaar Number","Aadhar"]))||null,
+                udise:excelText(excelCell(r,["UDISE","UDISE Number"]))||null,pen:excelText(excelCell(r,["PEN","PEN Number"]))||null,
+                apaar:excelText(excelCell(r,["APAAR","APAAR ID"]))||null,blood:excelText(excelCell(r,["Blood Group","Blood"]))||null,
+                bus:excelText(excelCell(r,["Bus Route","Bus"]))||null,annual_fee:Number(excelCell(r,["Annual Fee","Annual Fee (₹)","Fee"])||0),
+                address:excelText(excelCell(r,["Address"]))||null,religion:excelText(excelCell(r,["Religion"]))||null,
+                category:excelText(excelCell(r,["Category"]))||null,caste:excelText(excelCell(r,["Caste"]))||null,
+                sub_caste:excelText(excelCell(r,["Sub-Caste","Sub Caste"]))||null,
+                rte_student:excelBool(excelCell(r,["RTE Student","RTE","Is RTE"])),
+                source:"student-master",updated_at:new Date().toISOString()
+            };
+            try{
+                const found=await sb.from("students").select("id").eq("admission_no",admissionNo).maybeSingle();
+                if(found.error)throw found.error;
+                let result;
+                if(found.data&&found.data.id){result=await sb.from("students").update(data).eq("id",found.data.id);if(!result.error)updated++;}
+                else{result=await sb.from("students").insert([data]);if(!result.error)added++;}
+                if(result.error)throw result.error;
+            }catch(e){errors.push("Row "+(i+2)+" ("+admissionNo+"): "+e.message);}
+        }
+        await loadStudents();
+        let msg="Import complete. Added: "+added+", Updated: "+updated+", Skipped: "+skipped+".";
+        if(errors.length)msg+=" First issue: "+errors.slice(0,3).join(" | ");
+        setExcelMessage(msg,errors.length?"error":"success");
+    }catch(e){console.error(e);setExcelMessage("Excel upload failed: "+e.message,"error");}
+    finally{event.target.value="";}
+}
 
 /* =========================================================
    INITIALIZE
