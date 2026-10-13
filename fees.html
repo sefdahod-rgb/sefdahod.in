@@ -291,57 +291,6 @@ tr:hover{
     color:#1e3c72;
 }
 
-.login-screen{
-    position:fixed;
-    inset:0;
-    background:linear-gradient(135deg,#1e3c72,#2a5298);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:99999;
-}
-
-.login-box{
-    width:360px;
-    max-width:92%;
-    background:white;
-    padding:30px;
-    border-radius:15px;
-    box-shadow:0 15px 40px rgba(0,0,0,.3);
-}
-
-.login-box h2{
-    text-align:center;
-    color:#1e3c72;
-    margin-top:0;
-}
-
-.login-box img{
-    display:block;
-    width:75px;
-    height:75px;
-    object-fit:contain;
-    margin:0 auto 15px;
-}
-
-.login-field{
-    margin-bottom:15px;
-}
-
-.login-field label{
-    display:block;
-    font-weight:bold;
-    font-size:13px;
-    margin-bottom:6px;
-}
-
-.login-field input{
-    width:100%;
-    padding:12px;
-    border:1px solid #ccc;
-    border-radius:7px;
-}
-
 .hidden{
     display:none !important;
 }
@@ -525,49 +474,8 @@ tr:hover{
 
 <body>
 
-<!-- LOGIN -->
-<div id="loginScreen" class="login-screen">
-    <div class="login-box">
-
-        <img src="logo.png" alt="School Logo">
-
-        <h2>💰 Fees Management </h2>
-
-        <div class="login-field">
-            <label>Username</label>
-            <input
-                type="text"
-                id="loginUser"
-                autocomplete="username"
-                placeholder="Enter username">
-        </div>
-
-        <div class="login-field">
-            <label>Password</label>
-            <input
-                type="password"
-                id="loginPass"
-                autocomplete="current-password"
-                placeholder="Enter password"
-                onkeydown="if(event.key==='Enter') doLogin()">
-        </div>
-
-        <button
-            type="button"
-            class="btn btn-primary"
-            style="width:100%;"
-            onclick="doLogin()">
-            🔐 Login
-        </button>
-
-        <div id="loginError" class="message error"></div>
-
-    </div>
-</div>
-
-
 <!-- MAIN -->
-<div id="mainApp" class="hidden">
+<div id="mainApp">
 
 <header>
 
@@ -583,13 +491,6 @@ tr:hover{
         </div>
 
     </div>
-
-    <button
-        type="button"
-        class="btn btn-danger"
-        onclick="logout()">
-        Logout
-    </button>
 
 </header>
 
@@ -1140,17 +1041,6 @@ const sb = window.supabase.createClient(
 
 
 /* ================================
-   FEES LOGIN
-   SEPARATE FROM STUDENT MASTER
-================================ */
-
-const FEES_LOGIN_KEY = "rps_fees_login";
-
-const FEES_USERNAME = "admin";
-const FEES_PASSWORD = "admin123";
-
-
-/* ================================
    GLOBAL VARIABLES
 ================================ */
 
@@ -1160,105 +1050,12 @@ let lastReceipt = null;
 
 
 /* ================================
-   LOGIN
+   INIT - NO SEPARATE FEES LOGIN
 ================================ */
 
-function checkLogin(){
-
-    if(localStorage.getItem(FEES_LOGIN_KEY) === "yes"){
-
-        document
-        .getElementById("loginScreen")
-        .classList.add("hidden");
-
-        document
-        .getElementById("mainApp")
-        .classList.remove("hidden");
-
-        return true;
-    }
-
-    document
-    .getElementById("loginScreen")
-    .classList.remove("hidden");
-
-    document
-    .getElementById("mainApp")
-    .classList.add("hidden");
-
-    return false;
-}
-
-
-function doLogin(){
-
-    const username =
-        document.getElementById("loginUser").value.trim();
-
-    const password =
-        document.getElementById("loginPass").value;
-
-    const error =
-        document.getElementById("loginError");
-
-    if(
-        username === FEES_USERNAME &&
-        password === FEES_PASSWORD
-    ){
-
-        localStorage.setItem(
-            FEES_LOGIN_KEY,
-            "yes"
-        );
-
-        error.style.display = "none";
-
-        document
-        .getElementById("loginScreen")
-        .classList.add("hidden");
-
-        document
-        .getElementById("mainApp")
-        .classList.remove("hidden");
-
-        initPage();
-
-    }else{
-
-        error.textContent =
-            "Invalid Username or Password";
-
-        error.style.display = "block";
-    }
-}
-
-
-function logout(){
-
-    localStorage.removeItem(
-        FEES_LOGIN_KEY
-    );
-
-    location.reload();
-}
-
-
-/* ================================
-   INIT
-================================ */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function(){
-
-        if(checkLogin()){
-
-            initPage();
-
-        }
-
-    }
-);
+document.addEventListener("DOMContentLoaded", function(){
+    initPage();
+});
 
 
 async function initPage(){
@@ -1320,7 +1117,6 @@ function showMessage(
    STUDENT SEARCH
 ================================ */
 
-```javascript
 async function searchStudent(){
 
     const adm = document
