@@ -1047,6 +1047,9 @@ const sb = window.supabase.createClient(
 let selectedStudent = null;
 let feeRecords = [];
 let lastReceipt = null;
+let editingFeeId = null;
+let previousPaid = 0;
+let previousDiscount = 0;
 
 
 /* ================================
@@ -1186,6 +1189,8 @@ async function searchStudent(){
 
     document.getElementById("total_fee").value = annualFee;
 
+    await loadPreviousPayments();
+
     showMessage(
         Number(annualFee) > 0
             ? "Student's annual fee Recipt."
@@ -1198,65 +1203,48 @@ async function searchStudent(){
    CALCULATE
 ================================ */
 
-function calculateAmount(){
+async function loadPreviousPayments(){
+    if(!selectedStudent) return;
 
-    const total =
-        Number(
-            document.getElementById("total_fee").value
-        ) || 0;
+    const session = document.getElementById("fee_session").value;
+    const feeType = document.getElementById("fee_type").value;
 
+    let query = sb.from("fees").select("id, paid, discount")
+        .eq("student_id", selectedStudent.id)
+        .eq("session", session)
+        .eq("fee_type", feeType);
 
-    const discount =
-        Number(
-            document.getElementById("discount").value
-        ) || 0;
-
-
-    const paid =
-        Number(
-            document.getElementById("paid").value
-        ) || 0;
-
-
-    let balance =
-        total - discount - paid;
-
-
-    if(balance < 0){
-
-        balance = 0;
-
+    const { data, error } = await query;
+    if(error){
+        console.error(error);
+        showMessage("Previous fee history load nahi hui: " + error.message, "error");
+        return;
     }
 
-
-    document.getElementById("balance").value =
-        balance.toFixed(2);
-
-
-    const net =
-        total - discount;
-
-
-    const status =
-        document.getElementById("payment_status");
-
-
-    if(paid >= net && net > 0){
-
-        status.value = "Paid";
-
-    }else if(paid > 0){
-
-        status.value = "Partial";
-
-    }else{
-
-        status.value = "Pending";
-
-    }
-
+    const rows = (data || []).filter(row => String(row.id) !== String(editingFeeId));
+    previousPaid = rows.reduce((sum, row) => sum + (Number(row.paid) || 0), 0);
+    previousDiscount = rows.reduce((sum, row) => sum + (Number(row.discount) || 0), 0);
+    calculateAmount();
 }
 
+function calculateAmount(){
+    const total = Number(document.getElementById("total_fee").value) || 0;
+    const discount = Number(document.getElementById("discount").value) || 0;
+    const paid = Number(document.getElementById("paid").value) || 0;
+    const balance = Math.max(0, total - previousDiscount - discount - previousPaid - paid);
+    document.getElementById("balance").value = balance.toFixed(2);
+
+    const totalPaid = previousPaid + paid;
+    const totalDiscount = previousDiscount + discount;
+    const status = document.getElementById("payment_status");
+    if(total > 0 && total - totalPaid - totalDiscount <= 0){
+        status.value = "Paid";
+    } else if(totalPaid > 0 || totalDiscount > 0){
+        status.value = "Partial";
+    } else {
+        status.value = "Pending";
+    }
+}
 
 /* ================================
    RECEIPT NUMBER
@@ -1307,237 +1295,79 @@ function generateReceiptNo(){
 ================================ */
 
 async function saveFee(){
-
     if(!selectedStudent){
-
-        showMessage(
-            "Pehle Admission No. se student search karo.",
-            "error"
-        );
-
+        showMessage("Pehle Admission No. se student search karo.", "error");
         return;
     }
 
+    await loadPreviousPayments();
 
-    calculateAmount();
+    const total = Number(document.getElementById("total_fee").value) || 0;
+    const discount = Number(document.getElementById("discount").value) || 0;
+    const paid = Number(document.getElementById("paid").value) || 0;
+    const balance = Math.max(0, total - previousDiscount - discount - previousPaid - paid);
 
-
-    const total =
-        Number(
-            document.getElementById("total_fee").value
-        ) || 0;
-
-
-    const discount =
-        Number(
-            document.getElementById("discount").value
-        ) || 0;
-
-
-    const paid =
-        Number(
-            document.getElementById("paid").value
-        ) || 0;
-
-
-    const balance =
-        Number(
-            document.getElementById("balance").value
-        ) || 0;
-
-
-    if(total <= 0){
-
-        showMessage(
-            "Total Fee enter karo.",
-            "error"
-        );
-
+    if(total <= 0){ showMessage("Total Fee enter karo.", "error"); return; }
+    if(discount < 0 || paid < 0){ showMessage("Amount valid nahi hai.", "error"); return; }
+    if(previousDiscount + discount > total){ showMessage("Total discount, total fee se zyada nahi ho sakta.", "error"); return; }
+    if(previousPaid + previousDiscount + discount + paid > total){
+        showMessage("Paid/discount amount remaining fee se zyada ho raha hai. Remaining balance ₹" + Math.max(0,total-previousPaid-previousDiscount).toFixed(2) + " hai.", "error");
         return;
     }
 
-
-    if(discount < 0 || paid < 0){
-
-        showMessage(
-            "Amount valid nahi hai.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    if(discount > total){
-
-        showMessage(
-            "Discount total fee se zyada nahi ho sakta.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    const net =
-        total - discount;
-
-
-    if(paid > net){
-
-        showMessage(
-            "Paid amount net fee se zyada nahi ho sakta.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    const receiptNo =
-        generateReceiptNo();
-
-
-    const feeDate =
-        document.getElementById("fee_date").value;
-
-
-    const session =
-        document.getElementById("fee_session").value;
-
-
-    const feeType =
-        document.getElementById("fee_type").value;
-
-
-    const mode =
-        document.getElementById("mode").value;
-
-
-    const transactionId =
-        document.getElementById("transaction_id")
-        .value
-        .trim();
-
-
-    const paymentStatus =
-        document.getElementById("payment_status").value;
-
-
-    /*
-       IMPORTANT:
-       No duplicate check on student_id.
-       Same student can have multiple receipts.
-    */
+    const feeDate = document.getElementById("fee_date").value;
+    const session = document.getElementById("fee_session").value;
+    const feeType = document.getElementById("fee_type").value;
+    const mode = document.getElementById("mode").value;
+    const transactionId = document.getElementById("transaction_id").value.trim();
+    const totalPaidAfter = previousPaid + paid;
+    const totalDiscountAfter = previousDiscount + discount;
+    const paymentStatus = total - totalPaidAfter - totalDiscountAfter <= 0 ? "Paid" : (totalPaidAfter > 0 || totalDiscountAfter > 0 ? "Partial" : "Pending");
 
     const feeData = {
-
-        receipt_no: receiptNo,
-
         student_id: selectedStudent.id,
-
-        admission_no:
-            selectedStudent.admission_no,
-
-        student_name:
-            selectedStudent.student_name,
-
-        class_name:
-            selectedStudent.class_name,
-
-        section:
-            selectedStudent.section,
-
-        session:
-            session,
-
-        fee_type:
-            feeType,
-
-        amount:
-            total,
-
-        discount:
-            discount,
-
-        paid:
-            paid,
-
-        balance:
-            balance,
-
-        mode:
-            mode,
-
-        date:
-            feeDate,
-
-        transaction_id:
-            transactionId,
-
-        payment_status:
-            paymentStatus,
-
-        source:
-            "fees"
-
+        admission_no: selectedStudent.admission_no,
+        student_name: selectedStudent.student_name,
+        class_name: selectedStudent.class_name,
+        section: selectedStudent.section,
+        session,
+        fee_type: feeType,
+        amount: total,
+        discount,
+        paid,
+        balance,
+        mode,
+        date: feeDate,
+        transaction_id: transactionId,
+        payment_status: paymentStatus,
+        source: "fees"
     };
 
+    let result;
+    if(editingFeeId !== null){
+        result = await sb.from("fees").update(feeData).eq("id", editingFeeId).select().single();
+    } else {
+        feeData.receipt_no = generateReceiptNo();
+        result = await sb.from("fees").insert([feeData]).select().single();
+    }
 
-    const {
-        data,
-        error
-    } = await sb
-        .from("fees")
-        .insert([feeData])
-        .select()
-        .single();
-
-
+    const { data, error } = result;
     if(error){
-
-        console.error(
-            "FEE SAVE ERROR:",
-            error
-        );
-
-        showMessage(
-            "Fee save nahi hui: " +
-            error.message,
-            "error"
-        );
-
+        console.error("FEE SAVE/UPDATE ERROR:", error);
+        showMessage("Fee save/update nahi hui: " + error.message, "error");
         return;
     }
 
-
     lastReceipt = data;
-
-
-    showMessage(
-        "Fee successfully save ho gayi. Receipt No.: " +
-        receiptNo,
-        "success"
-    );
-
-
+    const wasEditing = editingFeeId !== null;
+    editingFeeId = null;
+    const saveButton = document.querySelector('button[onclick="saveFee()"]');
+    if(saveButton) saveButton.innerHTML = "💾 Save Fee";
+    showMessage(wasEditing ? "Fee receipt successfully update ho gayi." : "Fee successfully save ho gayi. Receipt No.: " + data.receipt_no, "success");
     await loadFees();
-
-
     prepareReceipt(data);
-
-
-    setTimeout(
-        function(){
-
-            printReceipt();
-
-        },
-        300
-    );
-
+    setTimeout(printReceipt, 300);
 }
-
 
 /* ================================
    LOAD FEES
@@ -1598,56 +1428,24 @@ async function loadFees(){
 ================================ */
 
 function updateSummary(){
+    document.getElementById("totalReceipts").textContent = feeRecords.length;
+    const totalPaid = feeRecords.reduce((sum, r) => sum + Number(r.paid || 0), 0);
+    const totalDiscount = feeRecords.reduce((sum, r) => sum + Number(r.discount || 0), 0);
 
-    const totalReceipts =
-        feeRecords.length;
-
-
-    const totalPaid =
-        feeRecords.reduce(
-            (sum,r)=>
-                sum + Number(r.paid || 0),
-            0
-        );
-
-
-    const totalDiscount =
-        feeRecords.reduce(
-            (sum,r)=>
-                sum + Number(r.discount || 0),
-            0
-        );
-
-
-    const totalBalance =
-        feeRecords.reduce(
-            (sum,r)=>
-                sum + Number(r.balance || 0),
-            0
-        );
-
-
-    document.getElementById("totalReceipts")
-        .textContent =
-        totalReceipts;
-
-
-    document.getElementById("totalPaid")
-        .textContent =
-        money(totalPaid);
-
-
-    document.getElementById("totalDiscount")
-        .textContent =
-        money(totalDiscount);
-
-
-    document.getElementById("totalBalance")
-        .textContent =
-        money(totalBalance);
-
+    // Total Balance should count only the latest receipt balance for each student/session/fee type.
+    const latest = new Map();
+    feeRecords.forEach(r => {
+        const key = [r.student_id || r.admission_no, r.session, r.fee_type].join("|");
+        const old = latest.get(key);
+        const currentTime = new Date(r.created_at || r.date || 0).getTime() || Number(r.id) || 0;
+        const oldTime = old ? (new Date(old.created_at || old.date || 0).getTime() || Number(old.id) || 0) : -1;
+        if(!old || currentTime >= oldTime) latest.set(key, r);
+    });
+    const totalBalance = Array.from(latest.values()).reduce((sum, r) => sum + Number(r.balance || 0), 0);
+    document.getElementById("totalPaid").textContent = money(totalPaid);
+    document.getElementById("totalDiscount").textContent = money(totalDiscount);
+    document.getElementById("totalBalance").textContent = money(totalBalance);
 }
-
 
 /* ================================
    FILTER
@@ -1817,6 +1615,20 @@ function renderFees(records){
                             onclick='printSavedReceipt(${JSON.stringify(r)})'>
                             🖨️
                         </button>
+                        <button
+                            type="button"
+                            class="btn btn-warning"
+                            style="padding:7px 10px;margin-left:4px;"
+                            onclick='editFee(${JSON.stringify(r.id)})'>
+                            ✏️ Edit
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-danger"
+                            style="padding:7px 10px;margin-left:4px;"
+                            onclick='deleteFee(${JSON.stringify(r.id)})'>
+                            🗑️ Delete
+                        </button>
 
                     </td>
 
@@ -1830,12 +1642,78 @@ function renderFees(records){
 
 
 /* ================================
+   EDIT / DELETE FEE RECEIPT
+================================ */
+async function editFee(id){
+    const record = feeRecords.find(r => String(r.id) === String(id));
+    if(!record){ showMessage("Fee receipt nahi mili. Refresh karke dekhein.", "error"); return; }
+
+    let student = null;
+    if(record.student_id){
+        const { data, error } = await sb.from("students").select("*").eq("id", record.student_id).limit(1);
+        if(error){ showMessage("Student details load nahi hui: " + error.message, "error"); return; }
+        if(data && data.length) student = data[0];
+    }
+    if(!student){
+        showMessage("Is receipt ka student record nahi mila, isliye edit nahi kar sakte.", "error");
+        return;
+    }
+
+    selectedStudent = student;
+    editingFeeId = record.id;
+    document.getElementById("searchAdmission").value = record.admission_no || "";
+    document.getElementById("studentBox").classList.remove("hidden");
+    document.getElementById("studentName").textContent = student.student_name || "-";
+    document.getElementById("studentAdm").textContent = student.admission_no || "-";
+    document.getElementById("studentClass").textContent = student.class_name || "-";
+    document.getElementById("studentSection").textContent = student.section || "-";
+    document.getElementById("studentFather").textContent = student.father_name || "-";
+    document.getElementById("fee_session").value = record.session || "2026-27";
+    document.getElementById("fee_type").value = record.fee_type || "Tuition Fee";
+    document.getElementById("fee_date").value = record.date || new Date().toISOString().split("T")[0];
+    document.getElementById("total_fee").value = Number(record.amount || 0);
+    document.getElementById("discount").value = Number(record.discount || 0);
+    document.getElementById("paid").value = Number(record.paid || 0);
+    document.getElementById("mode").value = record.mode || "Cash";
+    document.getElementById("transaction_id").value = record.transaction_id || "";
+    document.getElementById("remarks").value = record.remarks || "";
+    const saveButton = document.querySelector('button[onclick="saveFee()"]');
+    if(saveButton) saveButton.innerHTML = "💾 Update Fee";
+    await loadPreviousPayments();
+    showMessage("Edit mode: details sahi karke Update Fee dabayein. Receipt No. same rahega.", "success");
+    document.querySelector(".card h2").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+async function deleteFee(id){
+    const record = feeRecords.find(r => String(r.id) === String(id));
+    if(!record){ showMessage("Fee receipt nahi mili. Refresh karke dekhein.", "error"); return; }
+    if(!confirm("Kya aap receipt " + (record.receipt_no || "") + " ko permanently delete karna chahte hain? Ye action undo nahi hoga.")) return;
+
+    const { error } = await sb.from("fees").delete().eq("id", id);
+    if(error){
+        console.error(error);
+        showMessage("Receipt delete nahi hui: " + error.message, "error");
+        return;
+    }
+    if(String(editingFeeId) === String(id)) newFee();
+    showMessage("Fee receipt delete ho gayi.", "success");
+    await loadFees();
+    if(selectedStudent) await loadPreviousPayments();
+}
+
+
+/* ================================
    NEW FEE
 ================================ */
 
 function newFee(){
 
     selectedStudent = null;
+    editingFeeId = null;
+    previousPaid = 0;
+    previousDiscount = 0;
+    const saveButton = document.querySelector('button[onclick="saveFee()"]');
+    if(saveButton) saveButton.innerHTML = "💾 Save Fee";
 
     document
     .getElementById("searchAdmission")
@@ -2314,6 +2192,16 @@ function numberToWordsIndian(num){
         " Only";
 
 }
+
+
+document.getElementById("fee_type").addEventListener("change", async function(){
+    if(!editingFeeId){ document.getElementById("discount").value = "0"; document.getElementById("paid").value = "0"; }
+    await loadPreviousPayments();
+});
+document.getElementById("fee_session").addEventListener("change", async function(){
+    if(!editingFeeId){ document.getElementById("discount").value = "0"; document.getElementById("paid").value = "0"; }
+    await loadPreviousPayments();
+});
 
 </script>
 
