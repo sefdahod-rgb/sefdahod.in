@@ -1320,108 +1320,83 @@ function showMessage(
    STUDENT SEARCH
 ================================ */
 
+```javascript
 async function searchStudent(){
 
-    const adm =
-        document
+    const adm = document
         .getElementById("searchAdmission")
         .value
         .trim();
 
     if(!adm){
-
-        showMessage(
-            "Admission No. enter karo.",
-            "error"
-        );
-
+        showMessage("Admission No. enter karo.", "error");
         return;
     }
 
-
-    const {
-        data,
-        error
-    } = await sb
+    const { data, error } = await sb
         .from("students")
         .select("*")
         .eq("admission_no", adm)
         .limit(1);
 
-
     if(error){
-
         console.error(error);
-
-        showMessage(
-            "Student search error: " +
-            error.message,
-            "error"
-        );
-
+        showMessage("Student search error: " + error.message, "error");
         return;
     }
-
 
     if(!data || data.length === 0){
-
         selectedStudent = null;
 
-        document
-        .getElementById("studentBox")
-        .classList.add("hidden");
+        document.getElementById("studentBox")
+            .classList.add("hidden");
 
-        showMessage(
-            "Student nahi mila.",
-            "error"
-        );
-
+        showMessage("Student nahi mila.", "error");
         return;
     }
-
 
     selectedStudent = data[0];
 
+    document.getElementById("studentBox")
+        .classList.remove("hidden");
 
-    document
-    .getElementById("studentBox")
-    .classList.remove("hidden");
-
-
-    document.getElementById("studentName")
-        .textContent =
+    document.getElementById("studentName").textContent =
         selectedStudent.student_name || "-";
 
-
-    document.getElementById("studentAdm")
-        .textContent =
+    document.getElementById("studentAdm").textContent =
         selectedStudent.admission_no || "-";
 
-
-    document.getElementById("studentClass")
-        .textContent =
+    document.getElementById("studentClass").textContent =
         selectedStudent.class_name || "-";
 
-
-    document.getElementById("studentSection")
-        .textContent =
+    document.getElementById("studentSection").textContent =
         selectedStudent.section || "-";
 
-
-    document.getElementById("studentFather")
-        .textContent =
+    document.getElementById("studentFather").textContent =
         selectedStudent.father_name || "-";
 
-
     if(selectedStudent.session){
-
         document.getElementById("fee_session").value =
             selectedStudent.session;
-
     }
 
-}
+    // Student Master se Annual Fee lena
+    const annualFee =
+        selectedStudent.annual_fee ??
+        selectedStudent.annualFee ??
+        selectedStudent.total_fee ??
+        selectedStudent.total_fees ??
+        0;
 
+    document.getElementById("total_fee").value = annualFee;
+
+    showMessage(
+        Number(annualFee) > 0
+            ? "Student's annual fee Recipt."
+            : "Student search, But Annual Fee check in Student Master.",
+        Number(annualFee) > 0 ? "success" : "error"
+    );
+}
 
 /* ================================
    CALCULATE
