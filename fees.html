@@ -303,43 +303,83 @@ tr:hover{
     display:none;
 }
 
-/* Receipt */
+/* Professional printable fee receipt */
 .receipt{
+    position:relative;
+    isolation:isolate;
+    overflow:hidden;
     width:100%;
     max-width:760px;
     margin:auto;
-    background:white;
-    border:2px solid #222;
+    background:#fff;
+    border:3px double #173f75;
+    border-radius:10px;
     padding:18px;
+    color:#172b4d;
+    box-shadow:0 4px 18px rgba(20,55,100,.10);
 }
-
+.receipt:before{
+    content:"";
+    position:absolute;
+    z-index:-1;
+    inset:0;
+    background-image:url("logo.png");
+    background-repeat:no-repeat;
+    background-position:center 58%;
+    background-size:260px auto;
+    opacity:.055;
+    pointer-events:none;
+}
 .receipt-header{
-    text-align:center;
-    border-bottom:2px solid #222;
-    padding-bottom:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+    text-align:left;
+    border-bottom:1px solid #d6ad52;
+    padding:0 0 13px;
 }
-
+.receipt-logo{
+    width:82px;
+    height:82px;
+    object-fit:contain;
+    flex:0 0 82px;
+    padding:5px;
+    border:1px solid #e2e8f0;
+    border-radius:9px;
+    background:#fff;
+}
+.receipt-school-details{flex:1;min-width:0}
 .receipt-header h1{
     margin:0;
+    color:#173f75;
     font-size:25px;
+    letter-spacing:.5px;
 }
-
 .receipt-header h3{
     margin:5px 0;
-    font-size:15px;
+    color:#8a6821;
+    font-size:14px;
 }
-
 .receipt-header p{
     margin:3px 0;
-    font-size:12px;
+    color:#334155;
+    font-size:11px;
+    line-height:1.45;
 }
-
 .receipt-title{
+    width:max-content;
+    max-width:100%;
+    margin:14px auto 16px;
+    padding:7px 28px;
+    border:1px solid #d6ad52;
+    border-radius:20px;
+    background:#f4f7fc;
+    color:#173f75;
     text-align:center;
-    font-size:18px;
+    font-size:17px;
     font-weight:bold;
-    margin:15px 0;
-    text-decoration:underline;
+    letter-spacing:1.5px;
 }
 
 .receipt-info{
@@ -368,7 +408,8 @@ tr:hover{
 }
 
 .receipt th{
-    background:#eee;
+    background:#eaf0fa;
+    color:#173f75;
     font-weight:bold;
 }
 
@@ -393,15 +434,25 @@ tr:hover{
 .total-row.final{
     font-size:16px;
     font-weight:bold;
-    border-top:2px solid #222;
-    border-bottom:2px solid #222;
+    color:#173f75;
+    border-top:2px solid #173f75;
+    border-bottom:2px solid #173f75;
 }
 
 .signature-area{
-    margin-top:50px;
+    margin-top:42px;
+    padding-top:10px;
     display:flex;
     justify-content:space-between;
     font-size:12px;
+    color:#334155;
+}
+.receipt:after{
+    content:"";
+    display:block;
+    height:5px;
+    margin:13px 0 0;
+    background:linear-gradient(90deg,#173f75,#d6ad52,#173f75);
 }
 
 @media(max-width:900px){
@@ -416,6 +467,15 @@ tr:hover{
     .summary{
         grid-template-columns:repeat(2,1fr);
     }
+}
+
+@media screen and (max-width:600px){
+    .receipt{padding:12px;border-radius:6px}
+    .receipt-header{gap:10px}
+    .receipt-logo{width:62px;height:62px;flex-basis:62px}
+    .receipt-header h1{font-size:18px}
+    .receipt-header h3{font-size:11px}
+    .receipt-header p{font-size:10px}
 }
 
 @media(max-width:600px){
@@ -461,7 +521,15 @@ tr:hover{
 
     .receipt{
         max-width:none;
-        border:2px solid #000;
+        border:3px double #173f75;
+        border-radius:0;
+        box-shadow:none;
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
+    }
+    .receipt:before{
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
     }
 
     @page{
@@ -865,14 +933,16 @@ tr:hover{
 
         <div class="receipt-header">
 
-            <h1>RAINBOW PUBLIC SCHOOL</h1>
+            <img src="logo.png" class="receipt-logo" alt="Rainbow Public School Logo">
 
-            <h3>Conducted by Shubhi Education Foundation, Dahod</h3>
-
-            <p>
-                Shalimar Co-operative Society, Muvaliya Road, Rabdal,
-                Dahod, Gujarat - 389151
-            </p>
+            <div class="receipt-school-details">
+                <h1>RAINBOW PUBLIC SCHOOL</h1>
+                <h3>Conducted by Shubhi Education Foundation, Dahod</h3>
+                <p>
+                    Shalimar Co-operative Society, Muvaliya Road, Rabdal,
+                    Dahod, Gujarat - 389151
+                </p>
+            </div>
 
         </div>
 
