@@ -1,0 +1,364 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attendance Management - Rainbow Public School</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#172033}
+header{background:linear-gradient(120deg,#173b70,#2876d2);color:white;text-align:center;padding:24px 12px}
+header h1{margin:0 0 8px}
+header p{margin:5px;font-size:14px}
+nav{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;background:white;padding:12px}
+nav a{padding:9px 12px;border:1px solid #dbe3ef;border-radius:8px;text-decoration:none;color:#173b70;font-weight:bold;font-size:14px}
+nav a.active{background:#2463eb;color:white}
+main{max-width:1150px;margin:20px auto;padding:0 12px}
+.card{background:white;border:1px solid #dbe3ef;border-radius:12px;padding:18px;margin-bottom:16px}
+h2{font-size:19px;color:#173b70;margin-top:0}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+label{display:block;font-size:13px;font-weight:bold;margin-bottom:6px}
+input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:7px;background:white}
+button{padding:10px 13px;border:0;border-radius:7px;cursor:pointer;font-weight:bold;margin:4px 3px 4px 0}
+.primary{background:#2463eb;color:white}
+.success{background:#16834a;color:white}
+.secondary{background:#e8eef9;color:#173b70}
+.actions{margin-top:14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat{background:white;border:1px solid #dbe3ef;border-radius:10px;padding:13px;text-align:center}
+.stat strong{display:block;font-size:25px;color:#173b70}
+.stat span{font-size:12px;color:#64748b}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:720px}
+th,td{padding:10px;border-bottom:1px solid #e5eaf2;text-align:left;font-size:13px}
+th{background:#edf3ff;color:#173b70}
+.status{padding:7px;border:1px solid #dbe3ef;background:white}
+.status.selected{outline:2px solid #2463eb}
+.status.present{background:#dcfce7;color:#166534}
+.status.absent{background:#fee2e2;color:#991b1b}
+.status.leave{background:#fef3c7;color:#92400e}
+.message{display:none;padding:12px;margin-bottom:12px;border-radius:7px;white-space:pre-wrap}
+.message.ok{display:block;background:#dcfce7;color:#166534}
+.message.err{display:block;background:#fee2e2;color:#991b1b}
+.empty{text-align:center;color:#64748b;padding:24px}
+.small{font-size:12px;color:#64748b;line-height:1.6}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.card{padding:12px}}
+@media print{nav,.no-print,button{display:none!important}body{background:white}main{margin:0}.card{border:0}header{background:white;color:black}table{min-width:0}th,td{font-size:10px;padding:5px}}
+</style>
+</head>
+<body>
+<header>
+<h1>Rainbow Public School</h1>
+<p>Conducted by Shubhi Education Foundation, Dahod</p>
+<p>Shalimar Co-operative Society, Muvaliya Road, Rabdal, Dahod, Gujarat - 389151</p>
+<h2 style="color:white;margin:14px 0 0">Attendance Management</h2>
+</header>
+
+<nav>
+<a href="index.html">Home</a>
+<a href="student-master.html">Student Master</a>
+<a href="fees-management.html">Fees Management</a>
+<a href="bonafide.html">Bonafide</a>
+<a href="result-management.html">Result</a>
+<a href="attendance.html" class="active">Attendance</a>
+</nav>
+
+<main>
+<div id="message" class="message"></div>
+
+<section class="card">
+<h2>Daily Attendance</h2>
+<div class="filters">
+<div>
+<label for="attDate">Attendance Date</label>
+<input type="date" id="attDate">
+</div>
+<div>
+<label for="session">Academic Session</label>
+<select id="session">
+<option>2026-27</option><option>2027-28</option>
+<option>2028-29</option><option>2029-30</option>
+<option>2030-31</option>
+</select>
+</div>
+<div>
+<label for="className">Class</label>
+<select id="className">
+<option value="">Select Class</option>
+<option>Nursery</option><option>LKG</option><option>UKG</option>
+<option>1st</option><option>2nd</option><option>3rd</option>
+<option>4th</option><option>5th</option><option>6th</option>
+<option>7th</option><option>8th</option>
+</select>
+</div>
+<div>
+<label for="section">Section</label>
+<select id="section">
+<option value="">All Sections</option>
+<option>A</option><option>B</option><option>C</option>
+</select>
+</div>
+<div>
+<label for="search">Search Student</label>
+<input id="search" placeholder="Name / Admission No.">
+</div>
+</div>
+<div class="actions">
+<button class="primary" id="loadBtn">Load Students</button>
+<button class="secondary" id="presentBtn">Mark All Present</button>
+<button class="secondary" id="absentBtn">Mark All Absent</button>
+<button class="success" id="saveBtn">Save Attendance</button>
+<button class="secondary" id="printBtn">Print Report</button>
+</div>
+<p class="small">Select date, session, class and section, then load the students. Mark attendance and save it.</p>
+</section>
+
+<section class="stats">
+<div class="stat"><strong id="total">0</strong><span>Total Students</span></div>
+<div class="stat"><strong id="present">0</strong><span>Present</span></div>
+<div class="stat"><strong id="absent">0</strong><span>Absent</span></div>
+<div class="stat"><strong id="leave">0</strong><span>Leave</span></div>
+</section>
+
+<section class="card">
+<h2>Student Attendance List</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>#</th><th>Admission No.</th><th>Roll No.</th><th>Student Name</th><th>Class</th><th>Section</th><th>Status</th><th>Remarks</th></tr></thead>
+<tbody id="studentRows"><tr><td colspan="8" class="empty">Select class and click Load Students.</td></tr></tbody>
+</table>
+</div>
+</section>
+
+<section class="card">
+<h2>Saved Attendance Report</h2>
+<div class="filters">
+<div><label for="reportDate">Report Date</label><input type="date" id="reportDate"></div>
+<div>
+<label for="reportClass">Class</label>
+<select id="reportClass">
+<option value="">All Classes</option>
+<option>Nursery</option><option>LKG</option><option>UKG</option>
+<option>1st</option><option>2nd</option><option>3rd</option>
+<option>4th</option><option>5th</option><option>6th</option>
+<option>7th</option><option>8th</option>
+</select>
+</div>
+<div>
+<label for="reportSection">Section</label>
+<select id="reportSection">
+<option value="">All Sections</option><option>A</option><option>B</option><option>C</option>
+</select>
+</div>
+</div>
+<div class="actions">
+<button class="primary" id="reportBtn">View Saved Report</button>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>#</th><th>Date</th><th>Admission No.</th><th>Student Name</th><th>Class</th><th>Section</th><th>Status</th><th>Remarks</th></tr></thead>
+<tbody id="reportRows"><tr><td colspan="8" class="empty">Choose filters and click View Saved Report.</td></tr></tbody>
+</table>
+</div>
+</section>
+</main>
+
+<script>
+/* Student Master mein use hone wale project ka URL aur public anon/publishable key daalein. */
+const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
+const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE";
+
+const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const $ = id => document.getElementById(id);
+let students = [];
+let statuses = {};
+let remarks = {};
+
+const now = new Date();
+const today = [
+now.getFullYear(),
+String(now.getMonth()+1).padStart(2,"0"),
+String(now.getDate()).padStart(2,"0")
+].join("-");
+
+$("attDate").value = today;
+$("reportDate").value = today;
+
+function message(text,error=false){
+const el=$("message");
+el.textContent=text;
+el.className="message "+(error?"err":"ok");
+window.scrollTo({top:0,behavior:"smooth"});
+}
+function clearMessage(){
+$("message").className="message";
+$("message").textContent="";
+}
+function esc(v){
+return String(v??"").replace(/[&<>"']/g,c=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+}
+function value(s,keys){
+for(const k of keys) if(s[k]!==undefined&&s[k]!==null&&s[k]!=="")return s[k];
+return "";
+}
+function studentKey(s){
+return String(value(s,["id","admission_no","admission_number"]));
+}
+function currentStatus(s){
+return statuses[studentKey(s)]||"Present";
+}
+function updateCounts(){
+$("total").textContent=students.length;
+$("present").textContent=students.filter(s=>currentStatus(s)==="Present").length;
+$("absent").textContent=students.filter(s=>currentStatus(s)==="Absent").length;
+$("leave").textContent=students.filter(s=>currentStatus(s)==="Leave").length;
+}
+function renderStudents(){
+const q=$("search").value.trim().toLowerCase();
+const list=students.filter(s=>
+[value(s,["student_name","name"]),value(s,["admission_no","admission_number"]),value(s,["roll_no","roll_number"])]
+.some(v=>String(v).toLowerCase().includes(q))
+);
+if(!list.length){
+$("studentRows").innerHTML='<tr><td colspan="8" class="empty">No students found.</td></tr>';
+updateCounts();return;
+}
+$("studentRows").innerHTML=list.map((s,i)=>{
+const k=studentKey(s),st=currentStatus(s);
+return `<tr>
+<td>${i+1}</td>
+<td>${esc(value(s,["admission_no","admission_number"]))}</td>
+<td>${esc(value(s,["roll_no","roll_number"]))}</td>
+<td><b>${esc(value(s,["student_name","name"]))}</b></td>
+<td>${esc(value(s,["class_name","class"]))}</td>
+<td>${esc(value(s,["section","section_name"]))}</td>
+<td>
+<button class="status present ${st==="Present"?"selected":""}" data-key="${esc(k)}" data-status="Present">Present</button>
+<button class="status absent ${st==="Absent"?"selected":""}" data-key="${esc(k)}" data-status="Absent">Absent</button>
+<button class="status leave ${st==="Leave"?"selected":""}" data-key="${esc(k)}" data-status="Leave">Leave</button>
+</td>
+<td><input data-remark="${esc(k)}" value="${esc(remarks[k]||"")}" placeholder="Optional"></td>
+</tr>`;
+}).join("");
+$("studentRows").querySelectorAll("[data-status]").forEach(btn=>{
+btn.addEventListener("click",()=>{
+statuses[btn.dataset.key]=btn.dataset.status;
+renderStudents();
+});
+});
+$("studentRows").querySelectorAll("[data-remark]").forEach(inp=>{
+inp.addEventListener("change",()=>remarks[inp.dataset.remark]=inp.value);
+});
+updateCounts();
+}
+async function loadStudents(){
+clearMessage();
+const cls=$("className").value;
+if(!cls){message("Pehle Class select karein.",true);return;}
+$("loadBtn").disabled=true;
+try{
+let q=db.from("students").select("*").eq("class_name",cls);
+if($("section").value)q=q.eq("section",$("section").value);
+const {data,error}=await q.order("student_name",{ascending:true});
+if(error)throw error;
+students=data||[];
+statuses={};remarks={};
+if(!students.length){
+renderStudents();
+message("Student nahi mile. Student Master mein class_name aur section values check karein.",true);
+return;
+}
+const {data:saved,error:savedError}=await db.from("attendance_records")
+.select("*")
+.eq("attendance_date",$("attDate").value)
+.eq("class_name",cls)
+.eq("session",$("session").value);
+if(!savedError&&saved){
+saved.forEach(r=>{
+const s=students.find(x=>
+String(value(x,["id"]))===String(r.student_id)||
+String(value(x,["admission_no","admission_number"]))===String(r.admission_no)
+);
+if(s){statuses[studentKey(s)]=r.status;remarks[studentKey(s)]=r.remarks||"";}
+});
+}
+renderStudents();
+message("Students load ho gaye. Attendance check karke Save Attendance dabayein.");
+}catch(e){
+console.error(e);
+message("Students load nahi hue: "+e.message+". Supabase URL/key aur table columns check karein.",true);
+}finally{$("loadBtn").disabled=false;}
+}
+async function saveAttendance(){
+clearMessage();
+if(!students.length){message("Pehle Load Students karein.",true);return;}
+$("saveBtn").disabled=true;
+try{
+const payload=students.map(s=>({
+student_id:value(s,["id"])||null,
+admission_no:String(value(s,["admission_no","admission_number"])),
+roll_no:String(value(s,["roll_no","roll_number"])),
+student_name:String(value(s,["student_name","name"])),
+class_name:String(value(s,["class_name","class"])||$("className").value),
+section:String(value(s,["section","section_name"])||$("section").value),
+attendance_date:$("attDate").value,
+session:$("session").value,
+status:currentStatus(s),
+remarks:remarks[studentKey(s)]||""
+}));
+const {error}=await db.from("attendance_records").upsert(payload,{
+onConflict:"student_id,attendance_date"
+});
+if(error)throw error;
+message("Attendance successfully save ho gayi.");
+}catch(e){
+console.error(e);
+message("Save nahi hua: "+e.message+". attendance_records table, unique constraint aur RLS policies check karein.",true);
+}finally{$("saveBtn").disabled=false;}
+}
+async function viewReport(){
+clearMessage();
+$("reportRows").innerHTML='<tr><td colspan="8" class="empty">Loading...</td></tr>';
+try{
+let q=db.from("attendance_records").select("*")
+.eq("attendance_date",$("reportDate").value)
+.order("class_name").order("student_name");
+if($("reportClass").value)q=q.eq("class_name",$("reportClass").value);
+if($("reportSection").value)q=q.eq("section",$("reportSection").value);
+const {data,error}=await q;
+if(error)throw error;
+if(!data||!data.length){
+$("reportRows").innerHTML='<tr><td colspan="8" class="empty">Is date ke liye saved attendance nahi mili.</td></tr>';
+return;
+}
+$("reportRows").innerHTML=data.map((r,i)=>`<tr>
+<td>${i+1}</td><td>${esc(r.attendance_date)}</td>
+<td>${esc(r.admission_no)}</td><td>${esc(r.student_name)}</td>
+<td>${esc(r.class_name)}</td><td>${esc(r.section)}</td>
+<td>${esc(r.status)}</td><td>${esc(r.remarks)}</td>
+</tr>`).join("");
+}catch(e){
+console.error(e);
+$("reportRows").innerHTML='<tr><td colspan="8" class="empty">Report load nahi hui.</td></tr>';
+message("Report error: "+e.message,true);
+}
+}
+$("loadBtn").addEventListener("click",loadStudents);
+$("saveBtn").addEventListener("click",saveAttendance);
+$("reportBtn").addEventListener("click",viewReport);
+$("search").addEventListener("input",renderStudents);
+$("presentBtn").addEventListener("click",()=>{
+students.forEach(s=>statuses[studentKey(s)]="Present");renderStudents();
+});
+$("absentBtn").addEventListener("click",()=>{
+students.forEach(s=>statuses[studentKey(s)]="Absent");renderStudents();
+});
+$("printBtn").addEventListener("click",()=>window.print());
+$("attDate").addEventListener("change",()=>{if(students.length)loadStudents();});
+</script>
+</body>
+</html>
