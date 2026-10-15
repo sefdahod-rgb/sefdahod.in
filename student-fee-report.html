@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Fee Report - Rainbow Public School</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f3f6fb;color:#1f2937}
+header{background:linear-gradient(135deg,#173f75,#2a5298);color:white;padding:18px 22px;display:flex;align-items:center;gap:15px}
+.logo{width:66px;height:66px;object-fit:contain;background:#fff;padding:4px;border-radius:9px}
+.school{font-size:24px;font-weight:800}.trust{font-size:13px;margin-top:5px}
+.container{max-width:1400px;margin:22px auto;padding:0 16px}
+.actions,.filters{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+.actions{margin-bottom:18px}
+.card{background:#fff;border-radius:12px;padding:18px;margin-bottom:18px;box-shadow:0 3px 12px #0f172a0d}
+h2{margin:0 0 16px;color:#173f75;font-size:20px}
+.field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:170px}
+label{font-size:12px;font-weight:700;color:#475569}
+input,select{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:7px;background:white;font-size:14px}
+.btn{border:0;border-radius:7px;padding:11px 16px;font-weight:700;cursor:pointer}
+.primary{background:#173f75;color:white}.secondary{background:#64748b;color:white}.green{background:#198754;color:white}
+.stats{display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:12px;margin-bottom:18px}
+.stat{background:white;border-radius:10px;padding:16px;box-shadow:0 2px 10px #0f172a0a;border-top:3px solid #d6ad52}
+.stat span{font-size:12px;color:#64748b}.stat strong{display:block;font-size:21px;color:#173f75;margin-top:7px;overflow-wrap:anywhere}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:1000px}
+th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left;font-size:12px;white-space:nowrap}
+th{background:#173f75;color:white;position:sticky;top:0}
+tr:hover td{background:#f8fafc}
+.status{font-weight:bold}.paid{color:#16834a}.partial{color:#c47a12}.pending{color:#c62828}
+.muted{color:#64748b;font-size:13px}
+#message{margin-top:12px;padding:10px;border-radius:7px;display:none}
+#error{background:#fee2e2;color:#991b1b}#ok{background:#dcfce7;color:#166534}
+.print-head{display:none}
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,minmax(130px,1fr))}.school{font-size:20px}}
+@media print{
+ body{background:white}
+ header,.actions,.filters,.no-print{display:none!important}
+ .container{max-width:none;margin:0;padding:0}
+ .card{box-shadow:none;padding:8px;margin:0 0 10px;border:0}
+ .print-head{display:flex;align-items:center;gap:12px;border-bottom:2px solid #d6ad52;padding-bottom:10px;margin-bottom:14px}
+ .print-head img{width:62px;height:62px;object-fit:contain}
+ .stats{grid-template-columns:repeat(5,1fr);gap:5px}
+ .stat{padding:8px;border:1px solid #ddd;box-shadow:none}
+ .stat strong{font-size:14px}
+ .table-wrap{overflow:visible}
+ table{min-width:0;width:100%}
+ th,td{font-size:9px;padding:5px;white-space:normal}
+ th{position:static;background:#eaf0fa!important;color:#173f75!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ @page{size:A4 landscape;margin:9mm}
+}
+</style>
+</head>
+<body>
+<header>
+  <img src="logo.png" class="logo" alt="School Logo">
+  <div><div class="school">Rainbow Public School</div><div class="trust">Conducted by Shubhi Education Foundation, Dahod</div><div class="trust">Student Fee Report</div></div>
+</header>
+<div class="container">
+  <div class="actions no-print">
+    <button class="btn primary" onclick="location.href='fees.html'">← Fees Management</button>
+    <button class="btn secondary" onclick="location.href='student-master.html'">Student Master</button>
+    <button class="btn green" onclick="window.print()">🖨️ Print Report</button>
+    <button class="btn secondary" onclick="loadReport()">↻ Refresh</button>
+  </div>
+  <div class="print-head">
+    <img src="logo.png" alt="School Logo">
+    <div><h2 style="margin:0">RAINBOW PUBLIC SCHOOL</h2><div>Conducted by Shubhi Education Foundation, Dahod</div><div>Student Fee Report</div></div>
+  </div>
+  <div class="card no-print">
+    <h2>🔎 Report Filters</h2>
+    <div class="filters">
+      <div class="field"><label>Search Student / Admission No.</label><input id="search" placeholder="Name or admission number" oninput="renderReport()"></div>
+      <div class="field"><label>Session</label><select id="session" onchange="renderReport()">
+        <option value="">All Sessions</option><option>2026-27</option><option>2027-28</option><option>2028-29</option><option>2029-30</option><option>2030-31</option>
+      </select></div>
+      <div class="field"><label>Class</label><select id="classFilter" onchange="renderReport()"><option value="">All Classes</option></select></div>
+      <div class="field"><label>Fee Type</label><select id="typeFilter" onchange="renderReport()"><option value="">All Fee Types</option></select></div>
+      <button class="btn primary" onclick="clearFilters()">Clear Filters</button>
+    </div>
+    <div id="message"></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><span>Students / Fee Groups</span><strong id="groupsCount">0</strong></div>
+    <div class="stat"><span>Total Fee</span><strong id="totalFee">₹0</strong></div>
+    <div class="stat"><span>Total Late Fee</span><strong id="totalLate">₹0</strong></div>
+    <div class="stat"><span>Total Paid</span><strong id="totalPaid">₹0</strong></div>
+    <div class="stat"><span>Total Balance</span><strong id="totalBalance">₹0</strong></div>
+  </div>
+  <div class="card">
+    <h2>📊 Student-wise Outstanding Fee Summary</h2>
+    <p class="muted">One row per student, session and fee type. Balance uses the latest saved receipt for that fee group; payments and discounts are added across receipts.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Admission No.</th><th>Student Name</th><th>Class / Section</th><th>Session</th><th>Fee Type</th><th>Total Fee</th><th>Late Fee</th><th>Discount</th><th>Total Paid</th><th>Balance</th><th>Status</th></tr></thead>
+      <tbody id="summaryBody"><tr><td colspan="11">Loading report...</td></tr></tbody>
+    </table></div>
+  </div>
+  <div class="card">
+    <h2>🧾 Receipt / Payment Details</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Receipt No.</th><th>Date</th><th>Admission No.</th><th>Student Name</th><th>Session</th><th>Fee Type</th><th>Late Fee</th><th>Discount</th><th>Paid</th><th>Balance</th><th>Mode</th></tr></thead>
+      <tbody id="detailsBody"><tr><td colspan="11">Loading...</td></tr></tbody>
+    </table></div>
+  </div>
+</div>
+<script>
+const SUPABASE_URL = "https://kqahcvaoxnmxfcgyyync.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+let allFees = [];
+let filteredGroups = [];
+function money(v){return "₹"+Number(v||0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+function dateFmt(v){if(!v)return "-";const d=new Date(v+"T00:00:00");return isNaN(d.getTime())?esc(v):String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear();}
+function showMessage(msg,isError=false){const el=document.getElementById("message");el.textContent=msg;el.style.display="block";el.style.background=isError?"#fee2e2":"#dcfce7";el.style.color=isError?"#991b1b":"#166534";}
+async function loadReport(){
+  document.getElementById("summaryBody").innerHTML='<tr><td colspan="11">Loading report...</td></tr>';
+  document.getElementById("detailsBody").innerHTML='<tr><td colspan="11">Loading...</td></tr>';
+  const {data,error}=await sb.from("fees").select("*").order("id",{ascending:false}).limit(5000);
+  if(error){showMessage("Report load nahi hui: "+error.message,true);document.getElementById("summaryBody").innerHTML='<tr><td colspan="11">Data load error.</td></tr>';return;}
+  allFees=data||[];
+  fillOptions();
+  renderReport();
+  showMessage("Report loaded. Records: "+allFees.length);
+}
+function fillOptions(){
+ const classes=[...new Set(allFees.map(r=>String(r.class_name||"").trim()).filter(Boolean))].sort();
+ const types=[...new Set(allFees.map(r=>String(r.fee_type||"").trim()).filter(Boolean))].sort();
+ const c=document.getElementById("classFilter"), t=document.getElementById("typeFilter");
+ const oldC=c.value, oldT=t.value;
+ c.innerHTML='<option value="">All Classes</option>'+classes.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join("");
+ t.innerHTML='<option value="">All Fee Types</option>'+types.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join("");
+ c.value=classes.includes(oldC)?oldC:"";t.value=types.includes(oldT)?oldT:"";
+}
+function clearFilters(){document.getElementById("search").value="";document.getElementById("session").value="";document.getElementById("classFilter").value="";document.getElementById("typeFilter").value="";renderReport();}
+function keyOf(r){return [r.student_id||r.admission_no||r.student_name,r.session,r.fee_type].join("|");}
+function orderValue(r){return Number(r.id)||new Date(r.created_at||r.date||0).getTime()||0;}
+function buildGroups(rows){
+ const map=new Map();
+ rows.forEach(r=>{
+   const k=keyOf(r);
+   if(!map.has(k))map.set(k,{rows:[],latest:r});
+   const g=map.get(k);g.rows.push(r);
+   if(orderValue(r)>=orderValue(g.latest))g.latest=r;
+ });
+ return [...map.values()].map(g=>{
+   const r=g.latest;
+   return {latest:r,rows:g.rows,total:Number(r.amount||0),late:g.rows.reduce((a,x)=>a+Number(x.late_fee||0),0),discount:g.rows.reduce((a,x)=>a+Number(x.discount||0),0),paid:g.rows.reduce((a,x)=>a+Number(x.paid||0),0),balance:Number(r.balance||0)};
+ }).sort((a,b)=>String(a.latest.student_name||"").localeCompare(String(b.latest.student_name||""))||String(a.latest.fee_type||"").localeCompare(String(b.latest.fee_type||"")));
+}
+function renderReport(){
+ const search=document.getElementById("search").value.trim().toLowerCase(),session=document.getElementById("session").value,cl=document.getElementById("classFilter").value,type=document.getElementById("typeFilter").value;
+ const rows=allFees.filter(r=>{
+   const text=[r.student_name,r.admission_no,r.receipt_no].join(" ").toLowerCase();
+   return (!search||text.includes(search))&&(!session||r.session===session)&&(!cl||String(r.class_name||"")===cl)&&(!type||r.fee_type===type);
+ });
+ const groups=buildGroups(rows);filteredGroups=groups;
+ document.getElementById("groupsCount").textContent=groups.length;
+ document.getElementById("totalFee").textContent=money(groups.reduce((a,g)=>a+g.total,0));
+ document.getElementById("totalLate").textContent=money(groups.reduce((a,g)=>a+g.late,0));
+ document.getElementById("totalPaid").textContent=money(groups.reduce((a,g)=>a+g.paid,0));
+ document.getElementById("totalBalance").textContent=money(groups.reduce((a,g)=>a+g.balance,0));
+ const sbod=document.getElementById("summaryBody");
+ sbod.innerHTML=groups.length?groups.map(g=>{const r=g.latest;const status=String(r.payment_status||"Pending").toLowerCase();const cls=status==="paid"?"paid":status==="partial"?"partial":"pending";return `<tr><td>${esc(r.admission_no||"-")}</td><td>${esc(r.student_name||"-")}</td><td>${esc((r.class_name||"-")+(r.section?" / "+r.section:""))}</td><td>${esc(r.session||"-")}</td><td>${esc(r.fee_type||"-")}</td><td>${money(g.total)}</td><td>${money(g.late)}</td><td>${money(g.discount)}</td><td>${money(g.paid)}</td><td><b>${money(g.balance)}</b></td><td class="status ${cls}">${esc(r.payment_status||"Pending")}</td></tr>`}).join(""):'<tr><td colspan="11" style="text-align:center">No matching fee records.</td></tr>';
+ const dbod=document.getElementById("detailsBody");
+ const sorted=rows.slice().sort((a,b)=>orderValue(b)-orderValue(a));
+ dbod.innerHTML=sorted.length?sorted.map(r=>`<tr><td>${esc(r.receipt_no||"-")}</td><td>${dateFmt(r.date)}</td><td>${esc(r.admission_no||"-")}</td><td>${esc(r.student_name||"-")}</td><td>${esc(r.session||"-")}</td><td>${esc(r.fee_type||"-")}</td><td>${money(r.late_fee)}</td><td>${money(r.discount)}</td><td>${money(r.paid)}</td><td>${money(r.balance)}</td><td>${esc(r.mode||"-")}</td></tr>`).join(""):'<tr><td colspan="11" style="text-align:center">No matching receipts.</td></tr>';
+}
+loadReport();
+</script>
+</body>
+</html>
