@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,10 +58,7 @@ th{background:#edf3ff;color:#173b70}
 <nav>
 <a href="index.html">Home</a>
 <a href="student-master.html">Student Master</a>
-<a href="fees-management.html">Fees Management</a>
-<a href="bonafide.html">Bonafide</a>
-<a href="result-management.html">Result</a>
-<a href="attendance.html" class="active">Attendance</a>
+
 </nav>
 
 <main>
@@ -167,8 +163,8 @@ th{background:#edf3ff;color:#173b70}
 
 <script>
 /* Student Master mein use hone wale project ka URL aur public anon/publishable key daalein. */
-const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
-const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE";
+const SUPABASE_URL = "https://kqahcvaoxnmxfcgyyync.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg";
 
 const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 const $ = id => document.getElementById(id);
