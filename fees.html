@@ -732,6 +732,19 @@ tr:hover{
 
 
             <div class="field">
+                <label>Late Fee (₹)</label>
+
+                <input
+                    type="number"
+                    id="late_fee"
+                    min="0"
+                    step="0.01"
+                    value="0"
+                    oninput="calculateAmount()">
+            </div>
+
+
+            <div class="field">
                 <label>Discount</label>
 
                 <input
@@ -897,6 +910,7 @@ tr:hover{
                         <th>Class</th>
                         <th>Fee Type</th>
                         <th>Total</th>
+                        <th>Late Fee</th>
                         <th>Discount</th>
                         <th>Paid</th>
                         <th>Balance</th>
@@ -908,7 +922,7 @@ tr:hover{
 
                 <tbody id="feeTable">
                     <tr>
-                        <td colspan="12" style="text-align:center;">
+                        <td colspan="13" style="text-align:center;">
                             Loading...
                         </td>
                     </tr>
@@ -1014,6 +1028,11 @@ tr:hover{
                 </tr>
 
                 <tr>
+                    <td>Late Fee</td>
+                    <td id="r_late_fee">₹0</td>
+                </tr>
+
+                <tr>
                     <td>Discount</td>
                     <td id="r_discount">₹0</td>
                 </tr>
@@ -1035,6 +1054,11 @@ tr:hover{
                 <div class="total-row">
                     <span>Total Fee</span>
                     <span id="r_total2">₹0</span>
+                </div>
+
+                <div class="total-row">
+                    <span>Late Fee</span>
+                    <span id="r_late_fee2">₹0</span>
                 </div>
 
                 <div class="total-row">
@@ -1120,6 +1144,7 @@ let lastReceipt = null;
 let editingFeeId = null;
 let previousPaid = 0;
 let previousDiscount = 0;
+let previousLateFee = 0;
 
 
 /* ================================
@@ -1279,7 +1304,7 @@ async function loadPreviousPayments(){
     const session = document.getElementById("fee_session").value;
     const feeType = document.getElementById("fee_type").value;
 
-    let query = sb.from("fees").select("id, paid, discount")
+    let query = sb.from("fees").select("id, paid, discount, late_fee")
         .eq("student_id", selectedStudent.id)
         .eq("session", session)
         .eq("fee_type", feeType);
@@ -1294,14 +1319,16 @@ async function loadPreviousPayments(){
     const rows = (data || []).filter(row => String(row.id) !== String(editingFeeId));
     previousPaid = rows.reduce((sum, row) => sum + (Number(row.paid) || 0), 0);
     previousDiscount = rows.reduce((sum, row) => sum + (Number(row.discount) || 0), 0);
+    previousLateFee = rows.reduce((sum, row) => sum + (Number(row.late_fee) || 0), 0);
     calculateAmount();
 }
 
 function calculateAmount(){
     const total = Number(document.getElementById("total_fee").value) || 0;
+    const lateFee = Number(document.getElementById("late_fee").value) || 0;
     const discount = Number(document.getElementById("discount").value) || 0;
     const paid = Number(document.getElementById("paid").value) || 0;
-    const balance = Math.max(0, total - previousDiscount - discount - previousPaid - paid);
+    const balance = Math.max(0, total + previousLateFee + lateFee - previousDiscount - discount - previousPaid - paid);
     document.getElementById("balance").value = balance.toFixed(2);
 
     const totalPaid = previousPaid + paid;
@@ -1373,15 +1400,16 @@ async function saveFee(){
     await loadPreviousPayments();
 
     const total = Number(document.getElementById("total_fee").value) || 0;
+    const lateFee = Number(document.getElementById("late_fee").value) || 0;
     const discount = Number(document.getElementById("discount").value) || 0;
     const paid = Number(document.getElementById("paid").value) || 0;
-    const balance = Math.max(0, total - previousDiscount - discount - previousPaid - paid);
+    const balance = Math.max(0, total + previousLateFee + lateFee - previousDiscount - discount - previousPaid - paid);
 
     if(total <= 0){ showMessage("Total Fee enter karo.", "error"); return; }
-    if(discount < 0 || paid < 0){ showMessage("Amount valid nahi hai.", "error"); return; }
-    if(previousDiscount + discount > total){ showMessage("Total discount, total fee se zyada nahi ho sakta.", "error"); return; }
-    if(previousPaid + previousDiscount + discount + paid > total){
-        showMessage("Paid/discount amount remaining fee se zyada ho raha hai. Remaining balance ₹" + Math.max(0,total-previousPaid-previousDiscount).toFixed(2) + " hai.", "error");
+    if(lateFee < 0 || discount < 0 || paid < 0){ showMessage("Amount valid nahi hai.", "error"); return; }
+    if(previousDiscount + discount > total + previousLateFee + lateFee){ showMessage("Total discount, total fee aur late fee se zyada nahi ho sakta.", "error"); return; }
+    if(previousPaid + previousDiscount + discount + paid > total + previousLateFee + lateFee){
+        showMessage("Paid/discount amount remaining fee se zyada ho raha hai. Remaining balance ₹" + Math.max(0,total+previousLateFee+lateFee-previousPaid-previousDiscount).toFixed(2) + " hai.", "error");
         return;
     }
 
@@ -1392,7 +1420,7 @@ async function saveFee(){
     const transactionId = document.getElementById("transaction_id").value.trim();
     const totalPaidAfter = previousPaid + paid;
     const totalDiscountAfter = previousDiscount + discount;
-    const paymentStatus = total - totalPaidAfter - totalDiscountAfter <= 0 ? "Paid" : (totalPaidAfter > 0 || totalDiscountAfter > 0 ? "Partial" : "Pending");
+    const paymentStatus = total + previousLateFee + lateFee - totalPaidAfter - totalDiscountAfter <= 0 ? "Paid" : (totalPaidAfter > 0 || totalDiscountAfter > 0 ? "Partial" : "Pending");
 
     const feeData = {
         student_id: selectedStudent.id,
@@ -1403,6 +1431,7 @@ async function saveFee(){
         session,
         fee_type: feeType,
         amount: total,
+        late_fee: lateFee,
         discount,
         paid,
         balance,
@@ -1451,7 +1480,7 @@ async function loadFees(){
 
     tbody.innerHTML =
         `<tr>
-            <td colspan="12" style="text-align:center;">
+            <td colspan="13" style="text-align:center;">
                 Loading...
             </td>
         </tr>`;
@@ -1590,7 +1619,7 @@ function renderFees(records){
 
         tbody.innerHTML =
             `<tr>
-                <td colspan="12" style="text-align:center;">
+                <td colspan="13" style="text-align:center;">
                     No fee records found.
                 </td>
             </tr>`;
@@ -1658,6 +1687,10 @@ function renderFees(records){
 
                     <td>
                         ${money(r.amount)}
+                    </td>
+
+                    <td>
+                        ${money(r.late_fee)}
                     </td>
 
                     <td>
@@ -1742,6 +1775,7 @@ async function editFee(id){
     document.getElementById("fee_type").value = record.fee_type || "Tuition Fee";
     document.getElementById("fee_date").value = record.date || new Date().toISOString().split("T")[0];
     document.getElementById("total_fee").value = Number(record.amount || 0);
+    document.getElementById("late_fee").value = Number(record.late_fee || 0);
     document.getElementById("discount").value = Number(record.discount || 0);
     document.getElementById("paid").value = Number(record.paid || 0);
     document.getElementById("mode").value = record.mode || "Cash";
@@ -1916,6 +1950,11 @@ function prepareReceipt(r){
         money(r.amount);
 
 
+    document.getElementById("r_late_fee")
+        .textContent =
+        money(r.late_fee);
+
+
     document.getElementById("r_discount")
         .textContent =
         money(r.discount);
@@ -1929,6 +1968,11 @@ function prepareReceipt(r){
     document.getElementById("r_total2")
         .textContent =
         money(r.amount);
+
+
+    document.getElementById("r_late_fee2")
+        .textContent =
+        money(r.late_fee);
 
 
     document.getElementById("r_discount2")
