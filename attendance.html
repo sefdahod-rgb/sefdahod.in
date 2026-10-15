@@ -257,9 +257,26 @@ const cls=$("className").value;
 if(!cls){message("Pehle Class select karein.",true);return;}
 $("loadBtn").disabled=true;
 try{
-let q=db.from("students").select("*").eq("class_name",cls);
-if($("section").value)q=q.eq("section",$("section").value);
-const {data,error}=await q.order("student_name",{ascending:true});
+
+let q = db
+  .from("students")
+  .select("*")
+  .eq("class_name", cls)
+  .eq("student_status", "Active");
+
+if ($("section").value) {
+  q = q.eq("section", $("section").value);
+}
+
+const { data, error } = await q
+  .order("student_name", { ascending: true });
+
+if (error) throw error;
+
+students = data || [];
+statuses = {};
+remarks = {};
+
 if(error)throw error;
 students=data||[];
 statuses={};remarks={};
