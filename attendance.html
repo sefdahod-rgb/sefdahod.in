@@ -43,6 +43,9 @@ th{background:#edf3ff;color:#173b70}
 .message.err{display:block;background:#fee2e2;color:#991b1b}
 .empty{text-align:center;color:#64748b;padding:24px}
 .small{font-size:12px;color:#64748b;line-height:1.6}
+.protected-app{display:none}
+.login-card{max-width:520px;margin:20px auto}
+.login-note{font-size:13px;color:#64748b;line-height:1.6}
 @media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.card{padding:12px}}
 @media print{nav,.no-print,button{display:none!important}body{background:white}main{margin:0}.card{border:0}header{background:white;color:black}table{min-width:0}th,td{font-size:10px;padding:5px}}
 </style>
@@ -64,6 +67,24 @@ th{background:#edf3ff;color:#173b70}
 <main>
 <div id="message" class="message"></div>
 
+<section id="loginCard" class="card login-card">
+<h2>Attendance Admin Login</h2>
+<p class="login-note">Attendance manage karne ke liye Supabase Admin email aur password se login karein.</p>
+<form id="loginForm">
+  <div style="margin-bottom:12px">
+    <label for="loginEmail">Admin Email</label>
+    <input id="loginEmail" type="email" autocomplete="username" required placeholder="Admin email">
+  </div>
+  <div style="margin-bottom:12px">
+    <label for="loginPassword">Password</label>
+    <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Password">
+  </div>
+  <button class="primary" id="loginBtn" type="submit">Login</button>
+</form>
+<p class="small">Password sirf is login form mein enter karein. Use kisi ke saath share na karein.</p>
+</section>
+
+<div id="protectedApp" class="protected-app">
 <section class="card">
 <h2>Daily Attendance</h2>
 <div class="filters">
@@ -107,6 +128,7 @@ th{background:#edf3ff;color:#173b70}
 <button class="secondary" id="absentBtn">Mark All Absent</button>
 <button class="success" id="saveBtn">Save Attendance</button>
 <button class="secondary" id="printBtn">Print Report</button>
+<button class="secondary" id="logoutBtn">Logout</button>
 </div>
 <p class="small">Select date, session, class and section, then load the students. Mark attendance and save it.</p>
 </section>
@@ -139,7 +161,7 @@ th{background:#edf3ff;color:#173b70}
 <option>Nursery</option><option>LKG</option><option>UKG</option>
 <option>1st</option><option>2nd</option><option>3rd</option>
 <option>4th</option><option>5th</option><option>6th</option>
-<option>7th</option><option>8th</option>
+<option>7th</option><option value="8">8</option>
 </select>
 </div>
 <div>
@@ -159,6 +181,7 @@ th{background:#edf3ff;color:#173b70}
 </table>
 </div>
 </section>
+</div>
 </main>
 
 <script>
@@ -167,10 +190,79 @@ const SUPABASE_URL = "https://kqahcvaoxnmxfcgyyync.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg";
 
 const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const ADMIN_USER_ID = "59ca9f10-4950-4415-980a-a14b8206e30d";
 const $ = id => document.getElementById(id);
 let students = [];
 let statuses = {};
 let remarks = {};
+
+function showProtectedApp(user){
+  const isAdmin = !!user && user.id === ADMIN_USER_ID;
+  $("loginCard").style.display = isAdmin ? "none" : "block";
+  $("protectedApp").style.display = isAdmin ? "block" : "none";
+  if (isAdmin) {
+    clearMessage();
+  }
+  return isAdmin;
+}
+
+async function checkAuth(){
+  const {data,error} = await db.auth.getSession();
+  if(error){
+    showProtectedApp(null);
+    message("Login status check nahi hua: " + error.message, true);
+    return;
+  }
+  const user = data.session?.user || null;
+  if(user && user.id !== ADMIN_USER_ID){
+    await db.auth.signOut();
+    showProtectedApp(null);
+    message("Is Attendance page ke liye authorized Admin account se login karein.", true);
+    return;
+  }
+  showProtectedApp(user);
+}
+
+$("loginForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  clearMessage();
+  $("loginBtn").disabled = true;
+  try {
+    const email = $("loginEmail").value.trim();
+    const password = $("loginPassword").value;
+    const {data,error} = await db.auth.signInWithPassword({email,password});
+    if(error) throw error;
+    if(!data.user || data.user.id !== ADMIN_USER_ID){
+      await db.auth.signOut();
+      throw new Error("Yeh email is Attendance Admin UID se match nahi karta.");
+    }
+    $("loginPassword").value = "";
+    showProtectedApp(data.user);
+    message("Admin login successful.");
+  } catch(e) {
+    showProtectedApp(null);
+    message("Login nahi hua: " + e.message, true);
+  } finally {
+    $("loginBtn").disabled = false;
+  }
+});
+
+$("logoutBtn").addEventListener("click", async () => {
+  const {error} = await db.auth.signOut();
+  showProtectedApp(null);
+  if(error) message("Logout error: " + error.message, true);
+  else message("Logout ho gaya.");
+});
+
+db.auth.onAuthStateChange((_event, session) => {
+  const user = session?.user || null;
+  if(user && user.id !== ADMIN_USER_ID){
+    setTimeout(() => db.auth.signOut(), 0);
+    showProtectedApp(null);
+    return;
+  }
+  showProtectedApp(user);
+});
 
 const now = new Date();
 const today = [
@@ -181,6 +273,7 @@ String(now.getDate()).padStart(2,"0")
 
 $("attDate").value = today;
 $("reportDate").value = today;
+checkAuth();
 
 function message(text,error=false){
 const el=$("message");
@@ -276,10 +369,6 @@ if (error) throw error;
 students = data || [];
 statuses = {};
 remarks = {};
-
-if(error)throw error;
-students=data||[];
-statuses={};remarks={};
 if(!students.length){
 renderStudents();
 message("Student nahi mile. Student Master mein class_name aur section values check karein.",true);
