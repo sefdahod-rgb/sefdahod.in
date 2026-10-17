@@ -1,136 +1,164 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Admin Login</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>School Login - SEF Dahod</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
+*{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:Segoe UI;
-  background: linear-gradient(135deg,#004080,#0F9D58);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
+  margin:0;min-height:100vh;display:flex;align-items:center;
+  justify-content:center;padding:20px;font-family:Segoe UI,Arial,sans-serif;
+  background:linear-gradient(135deg,#003b73,#0f9d58)
 }
-
-.login-box{
-  background:#fff;
-  padding:30px;
-  border-radius:12px;
-  width:320px;
-  box-shadow:0 10px 30px rgba(0,0,0,.2);
-  text-align:center;
+.box{
+  background:white;color:#172033;width:100%;max-width:390px;
+  padding:28px;border-radius:16px;box-shadow:0 12px 35px #0003
 }
-
+.logo{width:75px;height:75px;object-fit:contain}
+h2{margin:12px 0 5px}
+.sub{color:#64748b;font-size:14px;margin-bottom:22px}
 input{
-  width:100%;
-  padding:10px;
-  margin:10px 0;
-  border-radius:6px;
-  border:1px solid #ccc;
+  width:100%;padding:12px;margin:8px 0;border:1px solid #cbd5e1;
+  border-radius:8px;font-size:16px
 }
-
 button{
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:6px;
-  background:#0F9D58;
-  color:#fff;
-  font-weight:bold;
-  cursor:pointer;
+  width:100%;padding:12px;border:0;border-radius:8px;
+  background:#0f9d58;color:white;font-size:16px;font-weight:bold;
+  cursor:pointer;margin-top:10px
 }
-
-button:hover{
-  background:#0c7f47;
-}
-
+button:disabled{opacity:.6;cursor:wait}
 .link{
-  margin-top:10px;
-  display:block;
-  color:#0F9D58;
-  cursor:pointer;
-  font-size:14px;
+  display:block;text-align:center;margin-top:16px;color:#087443;
+  cursor:pointer;background:none;border:0;font-size:14px
 }
-
-#msg{
-  color:red;
-  margin-top:10px;
-}
+#msg{font-size:14px;line-height:1.5;overflow-wrap:anywhere}
 </style>
 </head>
-
 <body>
+<div class="box">
+  <img src="logo.png" class="logo" alt="SEF Logo">
+  <h2>School Login</h2>
+  <div class="sub">Shubhi Education Foundation · Dahod</div>
 
-<div class="login-box">
-  <h2>Admin Login</h2>
-
-  <form onsubmit="login(event)">
-    <input id="user" placeholder="Username" required>
-    <input id="pass" type="password" placeholder="Password" required>
-    <button type="submit">Login</button>
+  <form id="loginForm">
+    <input id="email" type="email" placeholder="Email Address"
+      autocomplete="username" required>
+    <input id="password" type="password" placeholder="Password"
+      autocomplete="current-password" required>
+    <button id="loginBtn" type="submit">Login</button>
   </form>
 
-  <span class="link" onclick="forgot()">Forgot Password?</span>
-
-  <p id="msg"></p>
+  <button class="link" id="forgotBtn" type="button">
+    Forgot Password? ईमेल से Reset करें
+  </button>
+  <p id="msg" role="status"></p>
 </div>
 
 <script>
+const SUPABASE_URL = "https://kqahcvaoxnmxfcgyyync.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5bmMiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc3NDg4NDc1OSwiZXhwIjoyMDkwNDYwNzU5fQ.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg";
 
-// 🔐 DEFAULT + SECRET
-const DEFAULT_USER = "admin";
-const DEFAULT_PASS = "admin123";
-const SECRET_CODE = "SEF2026"; // change this
+const client = window.supabase.createClient(
+  SUPABASE_URL, SUPABASE_ANON_KEY
+);
 
-// LOGIN
-function login(e){
+const msg = document.getElementById("msg");
+const loginBtn = document.getElementById("loginBtn");
+
+function message(text, ok=false) {
+  msg.textContent = text;
+  msg.style.color = ok ? "#087443" : "#b91c1c";
+}
+
+document.getElementById("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
+  loginBtn.disabled = true;
+  message("Login जाँच रहे हैं...", true);
 
-  const u = document.getElementById("user").value.trim();
-  const p = document.getElementById("pass").value.trim();
+  try {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
 
-  let savedPass = localStorage.getItem("adminPass") || DEFAULT_PASS;
+    const {data, error} = await client.auth.signInWithPassword({
+      email, password
+    });
 
-  if(u === DEFAULT_USER && p === savedPass){
+    if (error) throw error;
 
-    localStorage.setItem("isAdmin","yes");
+    const {data: roleData, error: roleError} = await client
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", data.user.id)
+      .maybeSingle();
 
-    // 🔥 last page check
-    let go = localStorage.getItem("redirectAfterLogin") || "admin.html";
+    if (roleError || !roleData) {
+      await client.auth.signOut();
+      throw new Error("इस खाते का School Role नहीं मिला। Admin से संपर्क करें।");
+    }
 
-    window.location.href = go;
+    if (roleData.role !== "owner") {
+      // Other roles will be enabled after their permissions and dashboards
+      // have been configured and tested.
+      await client.auth.signOut();
+      throw new Error("यह Login अभी केवल Owner खाते के लिए चालू है।");
+    }
 
-  } else {
-    document.getElementById("msg").innerText = "Invalid login";
+    // Temporary compatibility for existing pages.
+    // Legacy pages must also be secured separately.
+    localStorage.setItem("isAdmin", "yes");
+    localStorage.setItem("schoolRole", "owner");
+
+    const allowedPages = [
+      "admin.html", "student-master.html", "fees-management.html",
+      "attendance.html", "bonafide.html", "index.html"
+    ];
+
+    let destination = localStorage.getItem("redirectAfterLogin") || "admin.html";
+    localStorage.removeItem("redirectAfterLogin");
+
+    if (!allowedPages.includes(destination)) destination = "admin.html";
+
+    window.location.replace(destination);
+  } catch (error) {
+    message(error.message || "Login नहीं हो पाया।");
+  } finally {
+    loginBtn.disabled = false;
   }
-}
+});
 
-// 🔁 FORGOT PASSWORD
-function forgot(){
+document.getElementById("forgotBtn").addEventListener("click", async () => {
+  const email = document.getElementById("email").value.trim();
 
-  let code = prompt("Enter Secret Code");
-
-  if(code !== SECRET_CODE){
-    alert("Wrong Secret Code ❌");
+  if (!email) {
+    message("पहले ऊपर अपना Email Address लिखें।");
+    document.getElementById("email").focus();
     return;
   }
 
-  let newPass = prompt("Enter New Password");
+  const btn = document.getElementById("forgotBtn");
+  btn.disabled = true;
+  message("Reset ईमेल भेजने की कोशिश हो रही है...", true);
 
-  if(!newPass || newPass.length < 4){
-    alert("Password must be at least 4 characters");
-    return;
+  try {
+    const {error} = await client.auth.resetPasswordForEmail(email, {
+      redirectTo: "https://www.sefdahod.in/reset-password.html"
+    });
+
+    if (error) throw error;
+
+    message(
+      "यदि यह ईमेल पंजीकृत है, तो Password Reset लिंक भेज दिया गया है। Inbox और Spam जाँचें।",
+      true
+    );
+  } catch (error) {
+    message(error.message || "Reset ईमेल नहीं भेजा जा सका।");
+  } finally {
+    btn.disabled = false;
   }
-
-  localStorage.setItem("adminPass", newPass);
-
-  alert("✅ Password Changed Successfully");
-}
-
+});
 </script>
-
 </body>
 </html>
