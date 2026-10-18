@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="hi">
 <head>
@@ -112,9 +111,14 @@ document.getElementById("loginForm").addEventListener("submit", async e => {
     localStorage.setItem("schoolRole", "owner");
 
     const allowedPages = [
-      "admin.html", "student-master.html", "fees-management.html",
-      "attendance.html", "bonafide.html", "index.html"
-    ];
+  "admin.html",
+  "student-master.html",
+  "fees-management.html",
+  "attendance.html",
+  "bonafide.html",
+  "index.html",
+  "user-management.html"
+];
 
     let destination = localStorage.getItem("redirectAfterLogin") || "admin.html";
     localStorage.removeItem("redirectAfterLogin");
