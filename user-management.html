@@ -13,7 +13,7 @@ header h2{margin:0;font-size:21px}
 header p{margin:5px 0 0;color:#cbd5e1;font-size:13px}
 button,a.btn{border:0;border-radius:7px;padding:10px 14px;cursor:pointer;text-decoration:none;display:inline-block;font-size:14px}
 .back{background:#e2e8f0;color:#172033}
-main{max-width:1050px;margin:22px auto;padding:0 14px}
+main{max-width:1100px;margin:22px auto;padding:0 14px}
 .card{background:white;border-radius:12px;padding:22px;margin-bottom:20px;box-shadow:0 3px 15px #0f172a10}
 h3{margin-top:0;color:#1e3a8a}
 .formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
@@ -25,16 +25,19 @@ input,select{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:7px;
 .success{background:#dcfce7;color:#166534}
 .error{background:#fee2e2;color:#991b1b}
 .tablewrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;min-width:550px}
-th,td{text-align:left;padding:12px;border-bottom:1px solid #e2e8f0;font-size:14px}
+table{border-collapse:collapse;width:100%;min-width:650px}
+th,td{text-align:left;padding:12px;border-bottom:1px solid #e2e8f0;font-size:14px;vertical-align:top}
 th{background:#eff6ff;color:#1e3a8a}
 .status{padding:4px 8px;border-radius:20px;background:#dcfce7;color:#166534;font-size:12px}
-.muted{color:#64748b;font-size:13px}
-@media(max-width:600px){.formgrid{grid-template-columns:1fr}header h2{font-size:18px}.card{padding:16px}}
+.muted{color:#64748b;font-size:13px;line-height:1.5}
+.classes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}
+.class-option{display:flex;align-items:center;gap:8px;border:1px solid #cbd5e1;border-radius:8px;padding:10px;font-size:14px}
+.class-option input{width:auto;margin:0}
+.action{background:#dbeafe;color:#1d4ed8;margin:2px}
+@media(max-width:600px){.formgrid{grid-template-columns:1fr}.classes{grid-template-columns:repeat(2,minmax(0,1fr))}header h2{font-size:18px}.card{padding:16px}}
 </style>
 </head>
 <body>
-
 <header>
   <div>
     <h2>👥 User Management</h2>
@@ -48,8 +51,7 @@ th{background:#eff6ff;color:#1e3a8a}
 
   <section class="card">
     <h3>➕ Add New Staff</h3>
-    <p class="muted">Username में छोटे English अक्षर, अंक, dot, underscore या hyphen इस्तेमाल करें। Password कम से कम 8 अक्षरों का होना चाहिए।</p>
-
+    <p class="muted">Username में छोटे English अक्षर, अंक, dot, underscore या hyphen इस्तेमाल करें। Password कम से कम 8 अक्षरों का रखें।</p>
     <form id="staffForm">
       <div class="formgrid">
         <div>
@@ -78,22 +80,30 @@ th{background:#eff6ff;color:#1e3a8a}
     </form>
   </section>
 
+  <section class="card" id="assignmentCard">
+    <h3>🏫 Assign Classes to Teacher</h3>
+    <p class="muted">Teacher चुनें और उसकी एक या अधिक कक्षाएँ चुनें। Save करने पर उसकी पुरानी Class Assignment बदल जाएगी।</p>
+    <label for="teacherSelect">Teacher चुनें</label>
+    <select id="teacherSelect">
+      <option value="">पहले Staff List Refresh करें</option>
+    </select>
+
+    <div id="classOptions" class="classes"></div>
+    <p id="currentClasses" class="muted">Teacher चुनने पर उसकी मौजूदा कक्षाएँ यहाँ दिखेंगी।</p>
+    <button id="saveClassesBtn" class="primary" type="button">Save Class Assignment</button>
+  </section>
+
   <section class="card">
     <h3>📋 Staff List</h3>
     <button class="secondary" id="refreshBtn" type="button">Refresh List</button>
-    <p class="muted">इस सूची में Staff का Password कभी नहीं दिखाया जाएगा।</p>
+    <p class="muted">Staff का Password इस सूची में नहीं दिखाया जाएगा।</p>
     <div class="tablewrap">
       <table>
         <thead>
-          <tr>
-            <th>नाम</th>
-            <th>Username</th>
-            <th>Role</th>
-            <th>Status</th>
-          </tr>
+          <tr><th>नाम</th><th>Username</th><th>Role</th><th>Assigned Classes</th><th>Status</th></tr>
         </thead>
         <tbody id="staffRows">
-          <tr><td colspan="4">Loading...</td></tr>
+          <tr><td colspan="5">Loading...</td></tr>
         </tbody>
       </table>
     </div>
@@ -102,66 +112,64 @@ th{background:#eff6ff;color:#1e3a8a}
 
 <script>
 const SUPABASE_URL = "https://kqahcvaoxnmxfcgyyync.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxahcvaoxnmxfcgyyyncIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg";
 
 const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const messageBox = document.getElementById("message");
 const form = document.getElementById("staffForm");
 const saveBtn = document.getElementById("saveBtn");
-let ownerVerified = false;
+const teacherSelect = document.getElementById("teacherSelect");
 
-function showMessage(text, type) {
+const CLASSES = [
+  "Nursery","LKG","UKG","1st","2nd","3rd","4th",
+  "5th","6th","7th","8th"
+];
+
+let ownerVerified = false;
+let staffCache = [];
+let assignmentCache = [];
+
+function showMessage(text,type) {
   messageBox.textContent = text;
   messageBox.className = type;
   messageBox.style.display = "block";
-  messageBox.scrollIntoView({behavior:"smooth", block:"nearest"});
+  messageBox.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 
 function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, function(ch) {
-    return {
-      "&":"&amp;",
-      "<":"&lt;",
-      ">":"&gt;",
-      '"':"&quot;",
-      "'":"&#39;"
-    }[ch];
-  });
+  return String(value ?? "").replace(/[&<>"']/g,ch=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[ch]);
 }
 
 async function verifyOwner() {
-  if (localStorage.getItem("isAdmin") !== "yes") {
-    localStorage.setItem("redirectAfterLogin", "user-management.html");
+  if(localStorage.getItem("isAdmin") !== "yes") {
+    localStorage.setItem("redirectAfterLogin","user-management.html");
     location.href = "login.html";
     return false;
   }
 
-  const {data: sessionData, error: sessionError} =
-    await client.auth.getSession();
-
-  const session = sessionData && sessionData.session;
-
-  if (sessionError || !session || !session.access_token) {
-    showMessage("आपका Supabase Login Session नहीं मिला। कृपया login.html से दोबारा Login करें।", "error");
+  const {data:sessionData,error:sessionError} = await client.auth.getSession();
+  if(sessionError || !sessionData?.session?.access_token) {
+    showMessage("Supabase Login Session नहीं मिला। दोबारा Login करें।","error");
     return false;
   }
 
-  const {data: userData, error: userError} = await client.auth.getUser();
-
-  if (userError || !userData.user) {
-    showMessage("Login सत्यापित नहीं हुआ। कृपया दोबारा Login करें।", "error");
+  const {data:userData,error:userError} = await client.auth.getUser();
+  if(userError || !userData?.user) {
+    showMessage("Login सत्यापित नहीं हुआ। दोबारा Login करें।","error");
     return false;
   }
 
-  const {data: ownerRole, error: roleError} = await client
+  const {data:ownerRole,error:roleError} = await client
     .from("user_roles")
     .select("role")
-    .eq("user_id", userData.user.id)
-    .eq("role", "owner")
+    .eq("user_id",userData.user.id)
+    .eq("role","owner")
     .maybeSingle();
 
-  if (roleError || !ownerRole) {
-    showMessage("Access Denied: केवल Owner इस पेज का उपयोग कर सकता है।", "error");
+  if(roleError || !ownerRole) {
+    showMessage("Access Denied: केवल Owner इस पेज का उपयोग कर सकता है।","error");
     return false;
   }
 
@@ -169,119 +177,223 @@ async function verifyOwner() {
   return true;
 }
 
-async function loadStaff() {
-  if (!ownerVerified) return;
-
-  const tbody = document.getElementById("staffRows");
-  tbody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
-
-  const {data, error} = await client
-    .from("staff_profiles")
-    .select("username, display_name, role, is_active, created_at")
-    .order("created_at", {ascending:false});
-
-  if (error) {
-    tbody.innerHTML = '<tr><td colspan="4">Staff list load नहीं हुई।</td></tr>';
-    showMessage("Staff list error: " + error.message, "error");
-    return;
-  }
-
-  if (!data || data.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4">अभी कोई Staff नहीं है।</td></tr>';
-    return;
-  }
-
-  tbody.innerHTML = data.map(function(staff) {
-    const status = staff.is_active
-      ? '<span class="status">Active</span>'
-      : '<span>Inactive</span>';
-
-    return '<tr>' +
-      '<td>' + escapeHTML(staff.display_name) + '</td>' +
-      '<td>' + escapeHTML(staff.username) + '</td>' +
-      '<td>' + escapeHTML(staff.role) + '</td>' +
-      '<td>' + status + '</td>' +
-      '</tr>';
-  }).join("");
+function renderClassOptions(selected=[]) {
+  document.getElementById("classOptions").innerHTML = CLASSES.map(c=>
+    '<label class="class-option"><input type="checkbox" value="'+escapeHTML(c)+'" '+(selected.includes(c)?"checked":"")+'>'+escapeHTML(c)+'</label>'
+  ).join("");
 }
 
-form.addEventListener("submit", async function(event) {
+function getSelectedClasses() {
+  return Array.from(document.querySelectorAll("#classOptions input:checked"))
+    .map(el=>el.value);
+}
+
+async function loadAssignments() {
+  const {data,error} = await client
+    .from("teacher_classes")
+    .select("teacher_auth_id,class_name");
+
+  if(error) {
+    showMessage("Class assignments पढ़ने में समस्या: "+error.message,"error");
+    assignmentCache = [];
+    return false;
+  }
+
+  assignmentCache = data || [];
+  return true;
+}
+
+function showSelectedTeacherClasses() {
+  const id = teacherSelect.value;
+  const selected = assignmentCache
+    .filter(x=>x.teacher_auth_id===id)
+    .map(x=>x.class_name);
+
+  renderClassOptions(selected);
+  document.getElementById("currentClasses").textContent =
+    selected.length ? "मौजूदा कक्षाएँ: "+selected.join(", ")
+                     : "इस Teacher को अभी कोई कक्षा नहीं दी गई है।";
+}
+
+async function loadStaff() {
+  if(!ownerVerified) return;
+
+  const tbody = document.getElementById("staffRows");
+  tbody.innerHTML = '<tr><td colspan="5">Loading...</td></tr>';
+
+  const {data,error} = await client
+    .from("staff_profiles")
+    .select("auth_user_id,username,display_name,role,is_active,created_at")
+    .order("created_at",{ascending:false});
+
+  if(error) {
+    tbody.innerHTML = '<tr><td colspan="5">Staff list load नहीं हुई।</td></tr>';
+    showMessage("Staff list error: "+error.message,"error");
+    return;
+  }
+
+  staffCache = data || [];
+  const assignmentsOK = await loadAssignments();
+
+  if(!staffCache.length) {
+    tbody.innerHTML = '<tr><td colspan="5">अभी कोई Staff नहीं है।</td></tr>';
+    teacherSelect.innerHTML = '<option value="">कोई Teacher नहीं मिला</option>';
+    renderClassOptions([]);
+    return;
+  }
+
+  const teachers = staffCache.filter(s=>s.role==="teacher");
+  const oldSelection = teacherSelect.value;
+
+  teacherSelect.innerHTML = '<option value="">Teacher चुनें</option>' +
+    teachers.map(t=>'<option value="'+escapeHTML(t.auth_user_id)+'">'+
+      escapeHTML(t.display_name)+' ('+escapeHTML(t.username)+')</option>').join("");
+
+  if(teachers.some(t=>t.auth_user_id===oldSelection)) {
+    teacherSelect.value = oldSelection;
+  } else if(teachers.length===1) {
+    teacherSelect.value = teachers[0].auth_user_id;
+  }
+
+  tbody.innerHTML = staffCache.map(s=>{
+    const assigned = assignmentCache
+      .filter(a=>a.teacher_auth_id===s.auth_user_id)
+      .map(a=>a.class_name);
+    return '<tr><td>'+escapeHTML(s.display_name)+'</td>'+
+      '<td>'+escapeHTML(s.username)+'</td>'+
+      '<td>'+escapeHTML(s.role)+'</td>'+
+      '<td>'+escapeHTML(s.role==="teacher"?(assigned.join(", ")||"Not assigned"):"—")+'</td>'+
+      '<td>'+(s.is_active?'<span class="status">Active</span>':'<span>Inactive</span>')+'</td></tr>';
+  }).join("");
+
+  if(!assignmentsOK) {
+    document.getElementById("currentClasses").textContent =
+      "Assignment list नहीं पढ़ी जा सकी। RLS policies जाँचें।";
+  }
+
+  showSelectedTeacherClasses();
+}
+
+form.addEventListener("submit",async event=>{
   event.preventDefault();
-
-  if (!ownerVerified) {
-    showMessage("Owner verification जरूरी है। पेज Refresh करके दोबारा प्रयास करें।", "error");
+  if(!ownerVerified) {
+    showMessage("Owner verification जरूरी है। Refresh करके दोबारा प्रयास करें।","error");
     return;
   }
 
-  const username = document.getElementById("username").value.trim().toLowerCase();
-  const display_name = document.getElementById("displayName").value.trim();
-  const password = document.getElementById("password").value;
-  const role = document.getElementById("role").value;
+  const username=document.getElementById("username").value.trim().toLowerCase();
+  const display_name=document.getElementById("displayName").value.trim();
+  const password=document.getElementById("password").value;
+  const role=document.getElementById("role").value;
 
-  if (!/^[a-z0-9._-]{3,30}$/.test(username)) {
-    showMessage("Username 3 से 30 अक्षरों का होना चाहिए।", "error");
+  if(!/^[a-z0-9._-]{3,30}$/.test(username)) {
+    showMessage("Username 3 से 30 अक्षरों का होना चाहिए।","error");
+    return;
+  }
+  if(password.length<8) {
+    showMessage("Password कम से कम 8 अक्षरों का रखें।","error");
     return;
   }
 
-  if (password.length < 8) {
-    showMessage("Password कम से कम 8 अक्षरों का रखें।", "error");
-    return;
-  }
-
-  saveBtn.disabled = true;
-  saveBtn.textContent = "Creating...";
+  saveBtn.disabled=true;
+  saveBtn.textContent="Creating...";
 
   try {
-    const {data, error} = await client.functions.invoke(
-      "create-staff-user",
-      {
-        body: {
-          username: username,
-          display_name: display_name,
-          password: password,
-          role: role
-        }
-      }
-    );
+    const {data,error}=await client.functions.invoke("create-staff-user",{
+      body:{username,display_name,password,role}
+    });
 
-    if (error) {
-      let detail = error.message || "Function request failed.";
+    if(error) {
+      let detail=error.message||"Function request failed.";
       try {
-        if (error.context && typeof error.context.json === "function") {
-          const responseBody = await error.context.json();
-          if (responseBody && responseBody.error) {
-            detail = responseBody.error;
-          }
+        if(error.context && typeof error.context.json==="function") {
+          const body=await error.context.json();
+          if(body?.error) detail=body.error;
         }
-      } catch (_) {}
-      showMessage("Staff नहीं बना: " + detail, "error");
+      } catch(_) {}
+      showMessage("Staff नहीं बना: "+detail,"error");
       return;
     }
 
-    if (!data || !data.success) {
-      showMessage("Staff नहीं बना: " + ((data && data.error) || "Unknown error"), "error");
+    if(!data?.success) {
+      showMessage("Staff नहीं बना: "+(data?.error||"Unknown error"),"error");
       return;
     }
 
     form.reset();
-    showMessage("Staff account बन गया। Username: " + data.username + " | Role: " + data.role, "success");
+    showMessage("Staff account बन गया: "+data.username+" ("+data.role+")","success");
     await loadStaff();
-
-  } catch (err) {
-    showMessage("Request error: " + (err.message || "Please try again."), "error");
+  } catch(err) {
+    showMessage("Request error: "+(err.message||"Please try again."),"error");
   } finally {
-    saveBtn.disabled = false;
-    saveBtn.textContent = "Create Staff Account";
+    saveBtn.disabled=false;
+    saveBtn.textContent="Create Staff Account";
   }
 });
 
-document.getElementById("refreshBtn").addEventListener("click", loadStaff);
+teacherSelect.addEventListener("change",showSelectedTeacherClasses);
 
-(async function init() {
-  const ok = await verifyOwner();
-  if (ok) {
-    await loadStaff();
+document.getElementById("saveClassesBtn").addEventListener("click",async()=>{
+  if(!ownerVerified) {
+    showMessage("केवल Owner Class Assignment बदल सकता है।","error");
+    return;
   }
+
+  const teacherId=teacherSelect.value;
+  const teacher=staffCache.find(s=>s.auth_user_id===teacherId && s.role==="teacher");
+
+  if(!teacher) {
+    showMessage("पहले Teacher चुनें।","error");
+    return;
+  }
+
+  const selected=getSelectedClasses();
+  const btn=document.getElementById("saveClassesBtn");
+  btn.disabled=true;
+  btn.textContent="Saving...";
+
+  try {
+    // Existing assignments are read before replacement.
+    const {error:deleteError}=await client
+      .from("teacher_classes")
+      .delete()
+      .eq("teacher_auth_id",teacherId);
+
+    if(deleteError) throw deleteError;
+
+    if(selected.length) {
+      const rows=selected.map(class_name=>({
+        teacher_auth_id:teacherId,
+        class_name
+      }));
+
+      const {error:insertError}=await client
+        .from("teacher_classes")
+        .insert(rows);
+
+      if(insertError) throw insertError;
+    }
+
+    showMessage("Class Assignment सेव हो गया: "+(selected.join(", ")||"सभी कक्षाएँ हटाई गईं"),"success");
+    await loadStaff();
+  } catch(err) {
+    showMessage("Assignment सेव नहीं हुआ: "+err.message+
+      " — teacher_classes की Owner SELECT/INSERT/DELETE RLS policies जाँचें।","error");
+    await loadAssignments();
+    showSelectedTeacherClasses();
+  } finally {
+    btn.disabled=false;
+    btn.textContent="Save Class Assignment";
+  }
+});
+
+document.getElementById("refreshBtn").addEventListener("click",loadStaff);
+
+renderClassOptions([]);
+
+(async function init(){
+  const ok=await verifyOwner();
+  if(ok) await loadStaff();
 })();
 </script>
 </body>
