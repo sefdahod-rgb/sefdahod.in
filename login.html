@@ -150,7 +150,7 @@ document.getElementById("loginForm").addEventListener("submit", async e => {
       throw new Error("आपका Staff Account बंद है। Owner से संपर्क करें।");
     }
 
-    if (!["admin", "accountant", "teacher"].includes(staff.role)) {
+    if (!["admin", "accountant", "teacher", "principal", "supervisor"].includes(staff.role)) {
       await client.auth.signOut();
       throw new Error("Staff Role सही नहीं है। Owner से संपर्क करें।");
     }
