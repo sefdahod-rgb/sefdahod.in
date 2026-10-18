@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="hi">
 <head>
@@ -58,7 +59,7 @@ button:disabled{opacity:.6;cursor:wait}
 
 <script>
 const SUPABASE_URL = "https://kqahcvaoxnmxfcgyyync.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxahcvaoxnmxfcgyyyncIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg";
 
 const client = window.supabase.createClient(
   SUPABASE_URL, SUPABASE_ANON_KEY
@@ -87,45 +88,83 @@ document.getElementById("loginForm").addEventListener("submit", async e => {
 
     if (error) throw error;
 
-    const {data: roleData, error: roleError} = await client
+    const user = data.user;
+
+    // पहले Owner की भूमिका जाँचें
+    const {data: ownerData, error: ownerError} = await client
       .from("user_roles")
       .select("role")
-      .eq("user_id", data.user.id)
+      .eq("user_id", user.id)
       .maybeSingle();
 
-    if (roleError || !roleData) {
-      await client.auth.signOut();
-      throw new Error("इस खाते का School Role नहीं मिला। Admin से संपर्क करें।");
+    if (!ownerError && ownerData?.role === "owner") {
+      localStorage.setItem("isAdmin", "yes");
+      localStorage.setItem("schoolRole", "owner");
+
+      const allowedPages = [
+        "admin.html",
+        "student-master.html",
+        "fees-management.html",
+        "attendance.html",
+        "bonafide.html",
+        "index.html",
+        "user-management.html"
+      ];
+
+      let destination =
+        localStorage.getItem("redirectAfterLogin") || "admin.html";
+
+      localStorage.removeItem("redirectAfterLogin");
+
+      if (!allowedPages.includes(destination)) {
+        destination = "admin.html";
+      }
+
+      window.location.replace(destination);
+      return;
     }
 
-    if (roleData.role !== "owner") {
-      // Other roles will be enabled after their permissions and dashboards
-      // have been configured and tested.
-      await client.auth.signOut();
-      throw new Error("यह Login अभी केवल Owner खाते के लिए चालू है।");
+    // Owner नहीं है तो Staff Profile जाँचें
+    const {data: staff, error: staffError} = await client
+      .from("staff_profiles")
+      .select("username, display_name, role, is_active")
+      .eq("auth_user_id", user.id)
+      .maybeSingle();
+
+    if (staffError) {
+      throw new Error(
+        "Staff विवरण पढ़ने में समस्या है। Supabase RLS Policies जाँचें।"
+      );
     }
 
-    // Temporary compatibility for existing pages.
-    // Legacy pages must also be secured separately.
-    localStorage.setItem("isAdmin", "yes");
-    localStorage.setItem("schoolRole", "owner");
+    if (!staff) {
+      await client.auth.signOut();
+      localStorage.removeItem("isAdmin");
+      localStorage.removeItem("schoolRole");
+      throw new Error(
+        "इस खाते का Staff Profile नहीं मिला। Owner से संपर्क करें।"
+      );
+    }
 
-    const allowedPages = [
-  "admin.html",
-  "student-master.html",
-  "fees-management.html",
-  "attendance.html",
-  "bonafide.html",
-  "index.html",
-  "user-management.html"
-];
+    if (!staff.is_active) {
+      await client.auth.signOut();
+      throw new Error("आपका Staff Account बंद है। Owner से संपर्क करें।");
+    }
 
-    let destination = localStorage.getItem("redirectAfterLogin") || "admin.html";
-    localStorage.removeItem("redirectAfterLogin");
+    if (!["admin", "accountant", "teacher"].includes(staff.role)) {
+      await client.auth.signOut();
+      throw new Error("Staff Role सही नहीं है। Owner से संपर्क करें।");
+    }
 
-    if (!allowedPages.includes(destination)) destination = "admin.html";
+    // Staff को Owner/Admin का legacy access नहीं दें
+    localStorage.removeItem("isAdmin");
+    localStorage.setItem("schoolRole", staff.role);
+    localStorage.setItem("staffName", staff.display_name);
+    localStorage.setItem("staffUsername", staff.username);
 
-    window.location.replace(destination);
+    // फिलहाल Staff को मुख्य वेबसाइट पर भेजें
+    window.location.replace("index.html");
+
   } catch (error) {
     message(error.message || "Login नहीं हो पाया।");
   } finally {
@@ -166,3 +205,4 @@ document.getElementById("forgotBtn").addEventListener("click", async () => {
 </script>
 </body>
 </html>
+```
