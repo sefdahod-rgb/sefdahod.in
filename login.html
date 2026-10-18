@@ -162,7 +162,12 @@ document.getElementById("loginForm").addEventListener("submit", async e => {
     localStorage.setItem("staffUsername", staff.username);
 
     // फिलहाल Staff को मुख्य वेबसाइट पर भेजें
-    window.location.replace("index.html");
+   // Role ke hisaab se Staff ko bhejein
+if (staff.role === "principal" || staff.role === "supervisor") {
+  window.location.replace("attendance.html");
+} else {
+  window.location.replace("index.html");
+}
 
   } catch (error) {
     message(error.message || "Login नहीं हो पाया।");
