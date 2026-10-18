@@ -144,18 +144,26 @@ if(localStorage.getItem("isAdmin") !== "yes"){
 </div>
 
 <!-- TABLE -->
+
+<!-- TABLE -->
 <div class="card">
 
   <a href="gallery.html" class="btn export">🖼️ View Gallery</a>
 
   <a href="gallery_admin.html" class="btn export">📤 Gallery Upload</a>
- 
-    <a href="tally-finance.html">📜 Tally-Finance</a>
-    <a href="lc-management.html">📜 LC Management</a>
-    
-  </a>
 
-  <input type="text" id="search" class="search" placeholder="Search name...">
+  <a href="tally-finance.html" class="btn export">📊 Tally Finance</a>
+
+  <a href="lc-management.html" class="btn export">📜 LC Management</a>
+
+  <a href="user-management.html" class="btn export">👥 User Management</a>
+
+  <input
+    type="text"
+    id="search"
+    class="search"
+    placeholder="Search name..."
+  >
 
   <button class="btn refresh" onclick="load()">Refresh</button>
 
