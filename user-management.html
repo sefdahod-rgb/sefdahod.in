@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>User Management - Rainbow Public School</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#f1f5f9;color:#172033}
+header{background:#172554;color:white;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+header h2{margin:0;font-size:21px}
+header p{margin:5px 0 0;color:#cbd5e1;font-size:13px}
+button,a.btn{border:0;border-radius:7px;padding:10px 14px;cursor:pointer;text-decoration:none;display:inline-block;font-size:14px}
+.back{background:#e2e8f0;color:#172033}
+main{max-width:1050px;margin:22px auto;padding:0 14px}
+.card{background:white;border-radius:12px;padding:22px;margin-bottom:20px;box-shadow:0 3px 15px #0f172a10}
+h3{margin-top:0;color:#1e3a8a}
+.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+label{font-size:14px;font-weight:600;display:block;margin-bottom:6px}
+input,select{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:7px;font-size:15px;background:white}
+.primary{background:#2563eb;color:white}
+.secondary{background:#e2e8f0;color:#172033}
+#message{padding:12px;border-radius:7px;margin:12px 0;display:none;overflow-wrap:anywhere}
+.success{background:#dcfce7;color:#166534}
+.error{background:#fee2e2;color:#991b1b}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:550px}
+th,td{text-align:left;padding:12px;border-bottom:1px solid #e2e8f0;font-size:14px}
+th{background:#eff6ff;color:#1e3a8a}
+.status{padding:4px 8px;border-radius:20px;background:#dcfce7;color:#166534;font-size:12px}
+.muted{color:#64748b;font-size:13px}
+@media(max-width:600px){.formgrid{grid-template-columns:1fr}header h2{font-size:18px}.card{padding:16px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h2>👥 User Management</h2>
+    <p>Shubhi Education Foundation | Rainbow Public School</p>
+  </div>
+  <a class="btn back" href="admin.html">← Admin Dashboard</a>
+</header>
+
+<main>
+  <div id="message" role="status"></div>
+
+  <section class="card">
+    <h3>➕ Add New Staff</h3>
+    <p class="muted">Username में छोटे English अक्षर, अंक, dot, underscore या hyphen इस्तेमाल करें। Password कम से कम 8 अक्षरों का होना चाहिए।</p>
+
+    <form id="staffForm">
+      <div class="formgrid">
+        <div>
+          <label for="displayName">Staff का पूरा नाम *</label>
+          <input id="displayName" maxlength="100" required placeholder="जैसे Rahul Patel">
+        </div>
+        <div>
+          <label for="username">Username *</label>
+          <input id="username" minlength="3" maxlength="30" pattern="[A-Za-z0-9._-]{3,30}" required placeholder="जैसे rahul.patel">
+        </div>
+        <div>
+          <label for="password">Password *</label>
+          <input id="password" type="password" minlength="8" required autocomplete="new-password" placeholder="कम से कम 8 अक्षर">
+        </div>
+        <div>
+          <label for="role">Staff Role *</label>
+          <select id="role" required>
+            <option value="">Role चुनें</option>
+            <option value="admin">Admin</option>
+            <option value="accountant">Accountant</option>
+            <option value="teacher">Teacher</option>
+          </select>
+        </div>
+      </div>
+      <p><button id="saveBtn" class="primary" type="submit">Create Staff Account</button></p>
+    </form>
+  </section>
+
+  <section class="card">
+    <h3>📋 Staff List</h3>
+    <button class="secondary" id="refreshBtn" type="button">Refresh List</button>
+    <p class="muted">इस सूची में Staff का Password कभी नहीं दिखाया जाएगा।</p>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th>नाम</th>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="staffRows">
+          <tr><td colspan="4">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script>
+const SUPABASE_URL = "https://kqahcvaoxnmxfcgyyync.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxahcvaoxnmxfcgyyyncIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg";
+
+const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const messageBox = document.getElementById("message");
+const form = document.getElementById("staffForm");
+const saveBtn = document.getElementById("saveBtn");
+let ownerVerified = false;
+
+function showMessage(text, type) {
+  messageBox.textContent = text;
+  messageBox.className = type;
+  messageBox.style.display = "block";
+  messageBox.scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, function(ch) {
+    return {
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#39;"
+    }[ch];
+  });
+}
+
+async function verifyOwner() {
+  if (localStorage.getItem("isAdmin") !== "yes") {
+    localStorage.setItem("redirectAfterLogin", "user-management.html");
+    location.href = "login.html";
+    return false;
+  }
+
+  const {data: sessionData, error: sessionError} =
+    await client.auth.getSession();
+
+  const session = sessionData && sessionData.session;
+
+  if (sessionError || !session || !session.access_token) {
+    showMessage("आपका Supabase Login Session नहीं मिला। कृपया login.html से दोबारा Login करें।", "error");
+    return false;
+  }
+
+  const {data: userData, error: userError} = await client.auth.getUser();
+
+  if (userError || !userData.user) {
+    showMessage("Login सत्यापित नहीं हुआ। कृपया दोबारा Login करें।", "error");
+    return false;
+  }
+
+  const {data: ownerRole, error: roleError} = await client
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userData.user.id)
+    .eq("role", "owner")
+    .maybeSingle();
+
+  if (roleError || !ownerRole) {
+    showMessage("Access Denied: केवल Owner इस पेज का उपयोग कर सकता है।", "error");
+    return false;
+  }
+
+  ownerVerified = true;
+  return true;
+}
+
+async function loadStaff() {
+  if (!ownerVerified) return;
+
+  const tbody = document.getElementById("staffRows");
+  tbody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
+
+  const {data, error} = await client
+    .from("staff_profiles")
+    .select("username, display_name, role, is_active, created_at")
+    .order("created_at", {ascending:false});
+
+  if (error) {
+    tbody.innerHTML = '<tr><td colspan="4">Staff list load नहीं हुई।</td></tr>';
+    showMessage("Staff list error: " + error.message, "error");
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4">अभी कोई Staff नहीं है।</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = data.map(function(staff) {
+    const status = staff.is_active
+      ? '<span class="status">Active</span>'
+      : '<span>Inactive</span>';
+
+    return '<tr>' +
+      '<td>' + escapeHTML(staff.display_name) + '</td>' +
+      '<td>' + escapeHTML(staff.username) + '</td>' +
+      '<td>' + escapeHTML(staff.role) + '</td>' +
+      '<td>' + status + '</td>' +
+      '</tr>';
+  }).join("");
+}
+
+form.addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  if (!ownerVerified) {
+    showMessage("Owner verification जरूरी है। पेज Refresh करके दोबारा प्रयास करें।", "error");
+    return;
+  }
+
+  const username = document.getElementById("username").value.trim().toLowerCase();
+  const display_name = document.getElementById("displayName").value.trim();
+  const password = document.getElementById("password").value;
+  const role = document.getElementById("role").value;
+
+  if (!/^[a-z0-9._-]{3,30}$/.test(username)) {
+    showMessage("Username 3 से 30 अक्षरों का होना चाहिए।", "error");
+    return;
+  }
+
+  if (password.length < 8) {
+    showMessage("Password कम से कम 8 अक्षरों का रखें।", "error");
+    return;
+  }
+
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Creating...";
+
+  try {
+    const {data, error} = await client.functions.invoke(
+      "create-staff-user",
+      {
+        body: {
+          username: username,
+          display_name: display_name,
+          password: password,
+          role: role
+        }
+      }
+    );
+
+    if (error) {
+      let detail = error.message || "Function request failed.";
+      try {
+        if (error.context && typeof error.context.json === "function") {
+          const responseBody = await error.context.json();
+          if (responseBody && responseBody.error) {
+            detail = responseBody.error;
+          }
+        }
+      } catch (_) {}
+      showMessage("Staff नहीं बना: " + detail, "error");
+      return;
+    }
+
+    if (!data || !data.success) {
+      showMessage("Staff नहीं बना: " + ((data && data.error) || "Unknown error"), "error");
+      return;
+    }
+
+    form.reset();
+    showMessage("Staff account बन गया। Username: " + data.username + " | Role: " + data.role, "success");
+    await loadStaff();
+
+  } catch (err) {
+    showMessage("Request error: " + (err.message || "Please try again."), "error");
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = "Create Staff Account";
+  }
+});
+
+document.getElementById("refreshBtn").addEventListener("click", loadStaff);
+
+(async function init() {
+  const ok = await verifyOwner();
+  if (ok) {
+    await loadStaff();
+  }
+})();
+</script>
+</body>
+</html>
