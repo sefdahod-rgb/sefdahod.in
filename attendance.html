@@ -2,465 +2,519 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Attendance Management - Rainbow Public School</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#172033}
-header{background:linear-gradient(120deg,#173b70,#2876d2);color:white;text-align:center;padding:24px 12px}
-header h1{margin:0 0 8px}
-header p{margin:5px;font-size:14px}
-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;background:white;padding:12px}
-nav a{padding:9px 12px;border:1px solid #dbe3ef;border-radius:8px;text-decoration:none;color:#173b70;font-weight:bold;font-size:14px}
-nav a.active{background:#2463eb;color:white}
-main{max-width:1150px;margin:20px auto;padding:0 12px}
-.card{background:white;border:1px solid #dbe3ef;border-radius:12px;padding:18px;margin-bottom:16px}
-h2{font-size:19px;color:#173b70;margin-top:0}
-.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
-label{display:block;font-size:13px;font-weight:bold;margin-bottom:6px}
-input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:7px;background:white}
-button{padding:10px 13px;border:0;border-radius:7px;cursor:pointer;font-weight:bold;margin:4px 3px 4px 0}
-.primary{background:#2463eb;color:white}
-.success{background:#16834a;color:white}
-.secondary{background:#e8eef9;color:#173b70}
-.actions{margin-top:14px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-.stat{background:white;border:1px solid #dbe3ef;border-radius:10px;padding:13px;text-align:center}
-.stat strong{display:block;font-size:25px;color:#173b70}
-.stat span{font-size:12px;color:#64748b}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#1e293b}
+header{background:#123b70;color:white;text-align:center;padding:22px 12px}
+header h1{margin:0 0 7px;font-size:27px}
+header p{margin:0}
+.container{max-width:1200px;margin:20px auto;padding:0 14px}
+.card{background:white;border-radius:12px;padding:20px;margin-bottom:18px;box-shadow:0 3px 12px #00000010}
+h2{margin-top:0;color:#123b70}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+label{display:block;font-weight:bold;margin-bottom:6px}
+input,select,button{font:inherit}
+input,select{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:7px;background:white}
+button{border:0;border-radius:7px;padding:11px 15px;cursor:pointer;font-weight:bold;margin:5px 3px}
+.primary{background:#1456a0;color:white}
+.success{background:#15803d;color:white}
+.danger{background:#b91c1c;color:white}
+.secondary{background:#e2e8f0;color:#1e293b}
+button:disabled{opacity:.6;cursor:not-allowed}
+.actions{margin-top:16px}
+.message{padding:12px;border-radius:7px;margin:12px 0;display:none;overflow-wrap:anywhere}
+.error{display:block;background:#fee2e2;color:#991b1b}
+.ok{display:block;background:#dcfce7;color:#166534}
+table{width:100%;border-collapse:collapse;min-width:700px}
+th,td{padding:10px;border:1px solid #e2e8f0;text-align:left}
+th{background:#eaf1fb}
 .table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:720px}
-th,td{padding:10px;border-bottom:1px solid #e5eaf2;text-align:left;font-size:13px}
-th{background:#edf3ff;color:#173b70}
-.status{padding:7px;border:1px solid #dbe3ef;background:white}
-.status.selected{outline:2px solid #2463eb}
-.status.present{background:#dcfce7;color:#166534}
-.status.absent{background:#fee2e2;color:#991b1b}
-.status.leave{background:#fef3c7;color:#92400e}
-.message{display:none;padding:12px;margin-bottom:12px;border-radius:7px;white-space:pre-wrap}
-.message.ok{display:block;background:#dcfce7;color:#166534}
-.message.err{display:block;background:#fee2e2;color:#991b1b}
-.empty{text-align:center;color:#64748b;padding:24px}
-.small{font-size:12px;color:#64748b;line-height:1.6}
-.protected-app{display:none}
-.login-card{max-width:520px;margin:20px auto}
-.login-note{font-size:13px;color:#64748b;line-height:1.6}
-@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.card{padding:12px}}
-@media print{nav,.no-print,button{display:none!important}body{background:white}main{margin:0}.card{border:0}header{background:white;color:black}table{min-width:0}th,td{font-size:10px;padding:5px}}
+.status-select{min-width:120px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{padding:16px;border-radius:9px;background:#eaf1fb}
+.stat strong{display:block;font-size:25px;color:#123b70;margin-top:5px}
+#protectedApp{display:none}
+@media print{
+  header{background:white!important;color:black!important}
+  .no-print,#loginCard,#message{display:none!important}
+  body{background:white}
+  .container{max-width:none;margin:0;padding:0}
+  .card{box-shadow:none;border:1px solid #ddd}
+  table{min-width:0;font-size:11px}
+  th,td{padding:6px}
+}
 </style>
 </head>
+
 <body>
 <header>
-<h1>Rainbow Public School</h1>
-<p>Conducted by Shubhi Education Foundation, Dahod</p>
-<p>Shalimar Co-operative Society, Muvaliya Road, Rabdal, Dahod, Gujarat - 389151</p>
-<h2 style="color:white;margin:14px 0 0">Attendance Management</h2>
+  <h1>Rainbow Public School</h1>
+  <p>Conducted by Shubhi Education Foundation, Dahod</p>
+  <p>Attendance Management System</p>
 </header>
 
-<nav>
-<a href="index.html">Home</a>
-<a href="student-master.html">Student Master</a>
+<div class="container">
+  <div id="message" class="message"></div>
 
-</nav>
+  <section id="loginCard" class="card">
+    <h2>Attendance Login</h2>
+    <p>Owner, Active Principal या Active Supervisor ही लॉगिन कर सकते हैं।</p>
+    <form id="loginForm">
+      <div class="grid">
+        <div>
+          <label for="loginEmail">Staff Email / Login Email</label>
+          <input id="loginEmail" type="email" required
+                 placeholder="username@staff.sefdahod.in">
+        </div>
+        <div>
+          <label for="loginPassword">Password</label>
+          <input id="loginPassword" type="password" required>
+        </div>
+      </div>
+      <button id="loginBtn" class="primary" type="submit">Login</button>
+    </form>
+  </section>
 
-<main>
-<div id="message" class="message"></div>
+  <main id="protectedApp">
+    <section class="card no-print">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+        <h2>Attendance Dashboard</h2>
+        <button id="logoutBtn" class="danger">Logout</button>
+      </div>
 
-<section id="loginCard" class="card login-card">
-<h2>Attendance Admin Login</h2>
-<p class="login-note">Attendance manage karne ke liye Supabase Admin email aur password se login karein.</p>
-<form id="loginForm">
-  <div style="margin-bottom:12px">
-    <label for="loginEmail">Admin Email</label>
-    <input id="loginEmail" type="email" autocomplete="username" required placeholder="Admin email">
-  </div>
-  <div style="margin-bottom:12px">
-    <label for="loginPassword">Password</label>
-    <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Password">
-  </div>
-  <button class="primary" id="loginBtn" type="submit">Login</button>
-</form>
-<p class="small">Password sirf is login form mein enter karein. Use kisi ke saath share na karein.</p>
-</section>
+      <div class="grid">
+        <div>
+          <label for="attendanceDate">Attendance Date</label>
+          <input type="date" id="attendanceDate" required>
+        </div>
+        <div>
+          <label for="attendanceSession">Session</label>
+          <select id="attendanceSession">
+            <option>2026-27</option>
+            <option>2027-28</option>
+            <option>2028-29</option>
+            <option>2029-30</option>
+            <option>2030-31</option>
+          </select>
+        </div>
+        <div>
+          <label for="className">Class</label>
+          <select id="className">
+            <option value="">Select Class</option>
+            <option>Nursery</option>
+            <option>LKG</option>
+            <option>UKG</option>
+            <option>1st</option>
+            <option>2nd</option>
+            <option>3rd</option>
+            <option>4th</option>
+            <option>5th</option>
+            <option>6th</option>
+            <option>7th</option>
+            <option>8th</option>
+          </select>
+        </div>
+        <div>
+          <label for="section">Section</label>
+          <select id="section">
+            <option value="">All Sections</option>
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+          </select>
+        </div>
+      </div>
 
-<div id="protectedApp" class="protected-app">
-<section class="card">
-<h2>Daily Attendance</h2>
-<div class="filters">
-<div>
-<label for="attDate">Attendance Date</label>
-<input type="date" id="attDate">
-</div>
-<div>
-<label for="session">Academic Session</label>
-<select id="session">
-<option>2026-27</option><option>2027-28</option>
-<option>2028-29</option><option>2029-30</option>
-<option>2030-31</option>
-</select>
-</div>
-<div>
-<label for="className">Class</label>
-<select id="className">
-<option value="">Select Class</option>
-<option>Nursery</option><option>LKG</option><option>UKG</option>
-<option>1st</option><option>2nd</option><option>3rd</option>
-<option>4th</option><option>5th</option><option>6th</option>
-<option>7th</option><option value="8">8</option>
-</select>
-</div>
-<div>
-<label for="section">Section</label>
-<select id="section">
-<option value="">All Sections</option>
-<option>A</option><option>B</option><option>C</option>
-</select>
-</div>
-<div>
-<label for="search">Search Student</label>
-<input id="search" placeholder="Name / Admission No.">
-</div>
-</div>
-<div class="actions">
-<button class="primary" id="loadBtn">Load Students</button>
-<button class="secondary" id="presentBtn">Mark All Present</button>
-<button class="secondary" id="absentBtn">Mark All Absent</button>
-<button class="success" id="saveBtn">Save Attendance</button>
-<button class="secondary" id="printBtn">Print Report</button>
-<button class="secondary" id="logoutBtn">Logout</button>
-</div>
-<p class="small">Select date, session, class and section, then load the students. Mark attendance and save it.</p>
-</section>
+      <div class="actions">
+        <button class="primary" id="loadBtn">Load Students</button>
+        <button class="success" id="allPresentBtn">Mark All Present</button>
+        <button class="secondary" id="allAbsentBtn">Mark All Absent</button>
+        <button class="secondary" id="allLeaveBtn">Mark All Leave</button>
+      </div>
+    </section>
 
-<section class="stats">
-<div class="stat"><strong id="total">0</strong><span>Total Students</span></div>
-<div class="stat"><strong id="present">0</strong><span>Present</span></div>
-<div class="stat"><strong id="absent">0</strong><span>Absent</span></div>
-<div class="stat"><strong id="leave">0</strong><span>Leave</span></div>
-</section>
+    <section class="card">
+      <h2>Attendance Summary</h2>
+      <div class="stats">
+        <div class="stat">Total Students<strong id="totalCount">0</strong></div>
+        <div class="stat">Present<strong id="presentCount">0</strong></div>
+        <div class="stat">Absent<strong id="absentCount">0</strong></div>
+        <div class="stat">Leave<strong id="leaveCount">0</strong></div>
+      </div>
+    </section>
 
-<section class="card">
-<h2>Student Attendance List</h2>
-<div class="table-wrap">
-<table>
-<thead><tr><th>#</th><th>Admission No.</th><th>Roll No.</th><th>Student Name</th><th>Class</th><th>Section</th><th>Status</th><th>Remarks</th></tr></thead>
-<tbody id="studentRows"><tr><td colspan="8" class="empty">Select class and click Load Students.</td></tr></tbody>
-</table>
-</div>
-</section>
+    <section class="card">
+      <h2>Student Attendance</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Sr.</th>
+              <th>Admission No.</th>
+              <th>Roll No.</th>
+              <th>Student Name</th>
+              <th>Class</th>
+              <th>Section</th>
+              <th>Status</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody id="studentTable">
+            <tr><td colspan="8">पहले Class चुनकर Load Students पर क्लिक करें।</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="actions no-print">
+        <button id="saveBtn" class="success">Save Attendance</button>
+        <button id="reportBtn" class="primary">View Saved Report</button>
+        <button id="printBtn" class="secondary">Print Report</button>
+      </div>
+    </section>
 
-<section class="card">
-<h2>Saved Attendance Report</h2>
-<div class="filters">
-<div><label for="reportDate">Report Date</label><input type="date" id="reportDate"></div>
-<div>
-<label for="reportClass">Class</label>
-<select id="reportClass">
-<option value="">All Classes</option>
-<option>Nursery</option><option>LKG</option><option>UKG</option>
-<option>1st</option><option>2nd</option><option>3rd</option>
-<option>4th</option><option>5th</option><option>6th</option>
-<option>7th</option><option value="8">8</option>
-</select>
+    <section class="card">
+      <h2>Saved Attendance Report</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Sr.</th>
+              <th>Date</th>
+              <th>Admission No.</th>
+              <th>Student Name</th>
+              <th>Class</th>
+              <th>Section</th>
+              <th>Status</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody id="reportTable">
+            <tr><td colspan="8">View Saved Report पर क्लिक करें।</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
 </div>
-<div>
-<label for="reportSection">Section</label>
-<select id="reportSection">
-<option value="">All Sections</option><option>A</option><option>B</option><option>C</option>
-</select>
-</div>
-</div>
-<div class="actions">
-<button class="primary" id="reportBtn">View Saved Report</button>
-</div>
-<div class="table-wrap">
-<table>
-<thead><tr><th>#</th><th>Date</th><th>Admission No.</th><th>Student Name</th><th>Class</th><th>Section</th><th>Status</th><th>Remarks</th></tr></thead>
-<tbody id="reportRows"><tr><td colspan="8" class="empty">Choose filters and click View Saved Report.</td></tr></tbody>
-</table>
-</div>
-</section>
-</div>
-</main>
 
 <script>
-/* Student Master mein use hone wale project ka URL aur public anon/publishable key daalein. */
 const SUPABASE_URL = "https://kqahcvaoxnmxfcgyyync.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg";
-
-const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGciOiJIUzI1NiIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg";
 const ADMIN_USER_ID = "59ca9f10-4950-4415-980a-a14b8206e30d";
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const $ = id => document.getElementById(id);
 let students = [];
-let statuses = {};
-let remarks = {};
+let currentUser = null;
 
-function showProtectedApp(user){
-  const isAdmin = !!user && user.id === ADMIN_USER_ID;
-  $("loginCard").style.display = isAdmin ? "none" : "block";
-  $("protectedApp").style.display = isAdmin ? "block" : "none";
-  if (isAdmin) {
-    clearMessage();
-  }
-  return isAdmin;
+function message(text, isError = false) {
+  const el = $("message");
+  el.textContent = text;
+  el.className = "message " + (isError ? "error" : "ok");
+  el.style.display = "block";
+}
+function clearMessage() {
+  $("message").textContent = "";
+  $("message").className = "message";
+  $("message").style.display = "none";
+}
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+function todayISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function displayDate(date) {
+  if (!date) return "";
+  const p = String(date).slice(0,10).split("-");
+  return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : date;
 }
 
-async function checkAuth(){
-  const {data,error} = await db.auth.getSession();
-  if(error){
-    showProtectedApp(null);
+async function showProtectedApp(user) {
+  let allowed = false;
+  currentUser = null;
+
+  if (user) {
+    if (user.id === ADMIN_USER_ID) {
+      allowed = true;
+    } else {
+      const { data: staff, error } = await db
+        .from("staff_profiles")
+        .select("role,is_active")
+        .eq("auth_user_id", user.id)
+        .maybeSingle();
+
+      allowed = !error && !!staff && staff.is_active === true &&
+        ["principal","supervisor"].includes(staff.role);
+    }
+  }
+
+  $("loginCard").style.display = allowed ? "none" : "block";
+  $("protectedApp").style.display = allowed ? "block" : "none";
+  if (allowed) currentUser = user;
+  return allowed;
+}
+
+async function checkAuth() {
+  const { data, error } = await db.auth.getSession();
+  if (error) {
+    await showProtectedApp(null);
     message("Login status check nahi hua: " + error.message, true);
     return;
   }
+
   const user = data.session?.user || null;
-  if(user && user.id !== ADMIN_USER_ID){
+  const allowed = await showProtectedApp(user);
+
+  if (user && !allowed) {
     await db.auth.signOut();
-    showProtectedApp(null);
-    message("Is Attendance page ke liye authorized Admin account se login karein.", true);
-    return;
+    message("Attendance ke liye Owner, Active Principal ya Active Supervisor chahiye.", true);
   }
-  showProtectedApp(user);
 }
 
-$("loginForm").addEventListener("submit", async (event) => {
+$("loginForm").addEventListener("submit", async event => {
   event.preventDefault();
   clearMessage();
   $("loginBtn").disabled = true;
+
   try {
     const email = $("loginEmail").value.trim();
     const password = $("loginPassword").value;
-    const {data,error} = await db.auth.signInWithPassword({email,password});
-    if(error) throw error;
-    if(!data.user || data.user.id !== ADMIN_USER_ID){
+    const { data, error } = await db.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+
+    const allowed = await showProtectedApp(data.user);
+    if (!allowed) {
       await db.auth.signOut();
-      throw new Error("Yeh email is Attendance Admin UID se match nahi karta.");
+      throw new Error("Sirf Owner, Active Principal ya Active Supervisor attendance khol sakte hain.");
     }
+
     $("loginPassword").value = "";
-    showProtectedApp(data.user);
-    message("Admin login successful.");
-  } catch(e) {
-    showProtectedApp(null);
+    message("Login successful.");
+  } catch (e) {
+    await showProtectedApp(null);
     message("Login nahi hua: " + e.message, true);
   } finally {
     $("loginBtn").disabled = false;
   }
 });
 
+db.auth.onAuthStateChange(() => {
+  setTimeout(() => checkAuth(), 0);
+});
+
 $("logoutBtn").addEventListener("click", async () => {
-  const {error} = await db.auth.signOut();
-  showProtectedApp(null);
-  if(error) message("Logout error: " + error.message, true);
+  const { error } = await db.auth.signOut();
+  await showProtectedApp(null);
+  if (error) message("Logout error: " + error.message, true);
   else message("Logout ho gaya.");
 });
 
-db.auth.onAuthStateChange((_event, session) => {
-  const user = session?.user || null;
-  if(user && user.id !== ADMIN_USER_ID){
-    setTimeout(() => db.auth.signOut(), 0);
-    showProtectedApp(null);
+function updateSummary() {
+  const statuses = students.map(s => s.attendanceStatus || "Present");
+  $("totalCount").textContent = students.length;
+  $("presentCount").textContent = statuses.filter(s => s === "Present").length;
+  $("absentCount").textContent = statuses.filter(s => s === "Absent").length;
+  $("leaveCount").textContent = statuses.filter(s => s === "Leave").length;
+}
+
+function renderStudents() {
+  const tbody = $("studentTable");
+  if (!students.length) {
+    tbody.innerHTML = '<tr><td colspan="8">इस क्लास में Active विद्यार्थी नहीं मिले।</td></tr>';
+    updateSummary();
     return;
   }
-  showProtectedApp(user);
-});
 
-const now = new Date();
-const today = [
-now.getFullYear(),
-String(now.getMonth()+1).padStart(2,"0"),
-String(now.getDate()).padStart(2,"0")
-].join("-");
+  tbody.innerHTML = students.map((s, i) => `
+    <tr data-index="${i}">
+      <td>${i+1}</td>
+      <td>${escapeHtml(s.admission_no)}</td>
+      <td>${escapeHtml(s.roll_no)}</td>
+      <td>${escapeHtml(s.student_name)}</td>
+      <td>${escapeHtml(s.class_name)}</td>
+      <td>${escapeHtml(s.section)}</td>
+      <td>
+        <select class="status-select" data-status="${i}">
+          <option ${s.attendanceStatus==="Present"?"selected":""}>Present</option>
+          <option ${s.attendanceStatus==="Absent"?"selected":""}>Absent</option>
+          <option ${s.attendanceStatus==="Leave"?"selected":""}>Leave</option>
+        </select>
+      </td>
+      <td><input data-remarks="${i}" value="${escapeHtml(s.attendanceRemarks || "")}" placeholder="Remarks"></td>
+    </tr>`).join("");
 
-$("attDate").value = today;
-$("reportDate").value = today;
+  tbody.querySelectorAll("[data-status]").forEach(el => {
+    el.addEventListener("change", () => {
+      students[Number(el.dataset.status)].attendanceStatus = el.value;
+      updateSummary();
+    });
+  });
+  tbody.querySelectorAll("[data-remarks]").forEach(el => {
+    el.addEventListener("input", () => {
+      students[Number(el.dataset.remarks)].attendanceRemarks = el.value;
+    });
+  });
+  updateSummary();
+}
+
+async function loadStudents() {
+  clearMessage();
+  const className = $("className").value;
+  if (!className) return message("Pehle Class select karein.", true);
+
+  $("loadBtn").disabled = true;
+  try {
+    let query = db.from("students")
+      .select("*")
+      .eq("class_name", className)
+      .eq("student_status", "Active")
+      .order("roll_no", { ascending: true });
+
+    const section = $("section").value;
+    if (section) query = query.eq("section", section);
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    students = (data || []).map(s => ({
+      ...s,
+      attendanceStatus: "Present",
+      attendanceRemarks: ""
+    }));
+
+    if (students.length) {
+      const ids = students.map(s => s.id).filter(Boolean);
+      if (ids.length) {
+        const { data: saved, error: savedError } = await db
+          .from("attendance_records")
+          .select("*")
+          .eq("attendance_date", $("attendanceDate").value)
+          .eq("session", $("attendanceSession").value)
+          .eq("class_name", className)
+          .in("student_id", ids);
+
+        if (savedError) throw savedError;
+        const byStudent = new Map((saved || []).map(r => [r.student_id, r]));
+        students = students.map(s => {
+          const r = byStudent.get(s.id);
+          return r ? {
+            ...s,
+            attendanceStatus: r.status || "Present",
+            attendanceRemarks: r.remarks || ""
+          } : s;
+        });
+      }
+    }
+
+    renderStudents();
+    message(`${students.length} विद्यार्थी मिले। अब Attendance भरें और Save करें।`);
+  } catch (e) {
+    message("Students load nahi hue: " + e.message, true);
+  } finally {
+    $("loadBtn").disabled = false;
+  }
+}
+$("loadBtn").addEventListener("click", loadStudents);
+
+function setAllStatus(status) {
+  students.forEach(s => s.attendanceStatus = status);
+  renderStudents();
+}
+$("allPresentBtn").addEventListener("click", () => setAllStatus("Present"));
+$("allAbsentBtn").addEventListener("click", () => setAllStatus("Absent"));
+$("allLeaveBtn").addEventListener("click", () => setAllStatus("Leave"));
+
+async function saveAttendance() {
+  clearMessage();
+  if (!currentUser) return message("Pehle authorized login karein.", true);
+  if (!students.length) return message("Pehle Load Students par click karein.", true);
+
+  const date = $("attendanceDate").value;
+  const session = $("attendanceSession").value;
+  if (!date || !session) return message("Date aur Session select karein.", true);
+
+  $("saveBtn").disabled = true;
+  try {
+    const payload = students.map(s => ({
+      student_id: s.id,
+      admission_no: s.admission_no || "",
+      roll_no: String(s.roll_no ?? ""),
+      student_name: s.student_name || "",
+      class_name: s.class_name || $("className").value,
+      section: s.section || "",
+      attendance_date: date,
+      session,
+      status: s.attendanceStatus || "Present",
+      remarks: s.attendanceRemarks || ""
+    }));
+
+    const { error } = await db.from("attendance_records").upsert(payload, {
+      onConflict: "student_id,attendance_date"
+    });
+    if (error) throw error;
+
+    message("Attendance successfully save ho gayi.");
+    await viewReport();
+  } catch (e) {
+    message("Attendance save nahi hui: " + e.message +
+      " | Agar duplicate/unique constraint error aaye to database me student_id aur attendance_date ka unique constraint check karna hoga.", true);
+  } finally {
+    $("saveBtn").disabled = false;
+  }
+}
+$("saveBtn").addEventListener("click", saveAttendance);
+
+async function viewReport() {
+  clearMessage();
+  $("reportBtn").disabled = true;
+  try {
+    let query = db.from("attendance_records")
+      .select("*")
+      .eq("attendance_date", $("attendanceDate").value)
+      .eq("session", $("attendanceSession").value)
+      .order("class_name")
+      .order("student_name");
+
+    if ($("className").value) query = query.eq("class_name", $("className").value);
+    if ($("section").value) query = query.eq("section", $("section").value);
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    const rows = data || [];
+    $("reportTable").innerHTML = rows.length ? rows.map((r,i) => `
+      <tr>
+        <td>${i+1}</td>
+        <td>${displayDate(r.attendance_date)}</td>
+        <td>${escapeHtml(r.admission_no)}</td>
+        <td>${escapeHtml(r.student_name)}</td>
+        <td>${escapeHtml(r.class_name)}</td>
+        <td>${escapeHtml(r.section)}</td>
+        <td>${escapeHtml(r.status)}</td>
+        <td>${escapeHtml(r.remarks)}</td>
+      </tr>`).join("") :
+      '<tr><td colspan="8">इस तारीख के लिए कोई saved attendance नहीं मिली।</td></tr>';
+
+    message(`${rows.length} attendance records report mein mile.`);
+  } catch (e) {
+    message("Report load nahi hui: " + e.message, true);
+  } finally {
+    $("reportBtn").disabled = false;
+  }
+}
+$("reportBtn").addEventListener("click", viewReport);
+$("printBtn").addEventListener("click", () => window.print());
+
+$("attendanceDate").value = todayISO();
 checkAuth();
-
-function message(text,error=false){
-const el=$("message");
-el.textContent=text;
-el.className="message "+(error?"err":"ok");
-window.scrollTo({top:0,behavior:"smooth"});
-}
-function clearMessage(){
-$("message").className="message";
-$("message").textContent="";
-}
-function esc(v){
-return String(v??"").replace(/[&<>"']/g,c=>({
-"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-}[c]));
-}
-function value(s,keys){
-for(const k of keys) if(s[k]!==undefined&&s[k]!==null&&s[k]!=="")return s[k];
-return "";
-}
-function studentKey(s){
-return String(value(s,["id","admission_no","admission_number"]));
-}
-function currentStatus(s){
-return statuses[studentKey(s)]||"Present";
-}
-function updateCounts(){
-$("total").textContent=students.length;
-$("present").textContent=students.filter(s=>currentStatus(s)==="Present").length;
-$("absent").textContent=students.filter(s=>currentStatus(s)==="Absent").length;
-$("leave").textContent=students.filter(s=>currentStatus(s)==="Leave").length;
-}
-function renderStudents(){
-const q=$("search").value.trim().toLowerCase();
-const list=students.filter(s=>
-[value(s,["student_name","name"]),value(s,["admission_no","admission_number"]),value(s,["roll_no","roll_number"])]
-.some(v=>String(v).toLowerCase().includes(q))
-);
-if(!list.length){
-$("studentRows").innerHTML='<tr><td colspan="8" class="empty">No students found.</td></tr>';
-updateCounts();return;
-}
-$("studentRows").innerHTML=list.map((s,i)=>{
-const k=studentKey(s),st=currentStatus(s);
-return `<tr>
-<td>${i+1}</td>
-<td>${esc(value(s,["admission_no","admission_number"]))}</td>
-<td>${esc(value(s,["roll_no","roll_number"]))}</td>
-<td><b>${esc(value(s,["student_name","name"]))}</b></td>
-<td>${esc(value(s,["class_name","class"]))}</td>
-<td>${esc(value(s,["section","section_name"]))}</td>
-<td>
-<button class="status present ${st==="Present"?"selected":""}" data-key="${esc(k)}" data-status="Present">Present</button>
-<button class="status absent ${st==="Absent"?"selected":""}" data-key="${esc(k)}" data-status="Absent">Absent</button>
-<button class="status leave ${st==="Leave"?"selected":""}" data-key="${esc(k)}" data-status="Leave">Leave</button>
-</td>
-<td><input data-remark="${esc(k)}" value="${esc(remarks[k]||"")}" placeholder="Optional"></td>
-</tr>`;
-}).join("");
-$("studentRows").querySelectorAll("[data-status]").forEach(btn=>{
-btn.addEventListener("click",()=>{
-statuses[btn.dataset.key]=btn.dataset.status;
-renderStudents();
-});
-});
-$("studentRows").querySelectorAll("[data-remark]").forEach(inp=>{
-inp.addEventListener("change",()=>remarks[inp.dataset.remark]=inp.value);
-});
-updateCounts();
-}
-async function loadStudents(){
-clearMessage();
-const cls=$("className").value;
-if(!cls){message("Pehle Class select karein.",true);return;}
-$("loadBtn").disabled=true;
-try{
-
-let q = db
-  .from("students")
-  .select("*")
-  .eq("class_name", cls)
-  .eq("student_status", "Active");
-
-if ($("section").value) {
-  q = q.eq("section", $("section").value);
-}
-
-const { data, error } = await q
-  .order("student_name", { ascending: true });
-
-if (error) throw error;
-
-students = data || [];
-statuses = {};
-remarks = {};
-if(!students.length){
-renderStudents();
-message("Student nahi mile. Student Master mein class_name aur section values check karein.",true);
-return;
-}
-const {data:saved,error:savedError}=await db.from("attendance_records")
-.select("*")
-.eq("attendance_date",$("attDate").value)
-.eq("class_name",cls)
-.eq("session",$("session").value);
-if(!savedError&&saved){
-saved.forEach(r=>{
-const s=students.find(x=>
-String(value(x,["id"]))===String(r.student_id)||
-String(value(x,["admission_no","admission_number"]))===String(r.admission_no)
-);
-if(s){statuses[studentKey(s)]=r.status;remarks[studentKey(s)]=r.remarks||"";}
-});
-}
-renderStudents();
-message("Students load ho gaye. Attendance check karke Save Attendance dabayein.");
-}catch(e){
-console.error(e);
-message("Students load nahi hue: "+e.message+". Supabase URL/key aur table columns check karein.",true);
-}finally{$("loadBtn").disabled=false;}
-}
-async function saveAttendance(){
-clearMessage();
-if(!students.length){message("Pehle Load Students karein.",true);return;}
-$("saveBtn").disabled=true;
-try{
-const payload=students.map(s=>({
-student_id:value(s,["id"])||null,
-admission_no:String(value(s,["admission_no","admission_number"])),
-roll_no:String(value(s,["roll_no","roll_number"])),
-student_name:String(value(s,["student_name","name"])),
-class_name:String(value(s,["class_name","class"])||$("className").value),
-section:String(value(s,["section","section_name"])||$("section").value),
-attendance_date:$("attDate").value,
-session:$("session").value,
-status:currentStatus(s),
-remarks:remarks[studentKey(s)]||""
-}));
-const {error}=await db.from("attendance_records").upsert(payload,{
-onConflict:"student_id,attendance_date"
-});
-if(error)throw error;
-message("Attendance successfully save ho gayi.");
-}catch(e){
-console.error(e);
-message("Save nahi hua: "+e.message+". attendance_records table, unique constraint aur RLS policies check karein.",true);
-}finally{$("saveBtn").disabled=false;}
-}
-async function viewReport(){
-clearMessage();
-$("reportRows").innerHTML='<tr><td colspan="8" class="empty">Loading...</td></tr>';
-try{
-let q=db.from("attendance_records").select("*")
-.eq("attendance_date",$("reportDate").value)
-.order("class_name").order("student_name");
-if($("reportClass").value)q=q.eq("class_name",$("reportClass").value);
-if($("reportSection").value)q=q.eq("section",$("reportSection").value);
-const {data,error}=await q;
-if(error)throw error;
-if(!data||!data.length){
-$("reportRows").innerHTML='<tr><td colspan="8" class="empty">Is date ke liye saved attendance nahi mili.</td></tr>';
-return;
-}
-$("reportRows").innerHTML=data.map((r,i)=>`<tr>
-<td>${i+1}</td><td>${esc(r.attendance_date)}</td>
-<td>${esc(r.admission_no)}</td><td>${esc(r.student_name)}</td>
-<td>${esc(r.class_name)}</td><td>${esc(r.section)}</td>
-<td>${esc(r.status)}</td><td>${esc(r.remarks)}</td>
-</tr>`).join("");
-}catch(e){
-console.error(e);
-$("reportRows").innerHTML='<tr><td colspan="8" class="empty">Report load nahi hui.</td></tr>';
-message("Report error: "+e.message,true);
-}
-}
-$("loadBtn").addEventListener("click",loadStudents);
-$("saveBtn").addEventListener("click",saveAttendance);
-$("reportBtn").addEventListener("click",viewReport);
-$("search").addEventListener("input",renderStudents);
-$("presentBtn").addEventListener("click",()=>{
-students.forEach(s=>statuses[studentKey(s)]="Present");renderStudents();
-});
-$("absentBtn").addEventListener("click",()=>{
-students.forEach(s=>statuses[studentKey(s)]="Absent");renderStudents();
-});
-$("printBtn").addEventListener("click",()=>window.print());
-$("attDate").addEventListener("change",()=>{if(students.length)loadStudents();});
 </script>
 </body>
 </html>
