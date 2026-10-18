@@ -39,6 +39,17 @@
   max-width:1400px !important;
 }
 
+
+/* ADDED: Login dropdown only */
+.login-menu{position:relative;display:inline-block}
+.login-menu>button{border:0;text-decoration:none;padding:9px 13px;background:#2563eb;color:#fff;border-radius:7px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;transition:.2s}
+.login-menu>button:hover{background:#1d4ed8;transform:translateY(-1px)}
+.login-dropdown{display:none;position:absolute;right:0;top:100%;min-width:175px;background:#fff;border-radius:8px;box-shadow:0 8px 22px rgba(0,0,0,.22);padding:6px;z-index:1000}
+.login-menu:hover .login-dropdown,.login-menu:focus-within .login-dropdown{display:block}
+.login-dropdown a{display:block;background:#fff;color:#173b72;padding:10px 12px;border-radius:6px;text-decoration:none;font-weight:700;font-size:14px;white-space:nowrap}
+.login-dropdown a:hover{background:#eaf1fb;transform:none}
+@media(max-width:520px){.login-menu>button{font-size:12px;padding:8px 9px}}
+
 </style>
 </head>
 <body>
@@ -54,6 +65,13 @@
 <div class="address-bar"><strong>Rainbow Public School, Muvaliya Road, Rabdal, Dahod Gujarat - 389151</strong> | Email: sefdahod@gmail.com | Mobile: 9408695001 | Ph: 02673-450037</div>
 <nav>
   <a href="index.html" class="active">Home</a><a href="dashboard.html">Dashboard</a><a href="donate.html">Donate</a><a href="donors.html">Donors</a><a href="finance.html">Finance</a><a href="online-admission.html">🎓 Online Admission</a><a href="student-master.html">student-master</a><a href="admin.html">Admin</a>
+  <div class="login-menu">
+    <button type="button" aria-haspopup="true">Login ▾</button>
+    <div class="login-dropdown">
+      <a href="login.html">School Login</a>
+      <a href="student-login.html">Student Login</a>
+    </div>
+  </div>
 </nav>
 <section class="hero">
   <img src="poster.png" class="hero-image" alt="Rainbow Public School"><div class="hero-overlay"></div>
