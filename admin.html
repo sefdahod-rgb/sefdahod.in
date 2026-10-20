@@ -4,311 +4,185 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Admin Ultra Pro</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-body{
-  margin:0;
-  font-family:Segoe UI;
-  background:#0f172a;
-  color:#fff;
-}
-
-/* HEADER */
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:#1e293b;
-  padding:15px 20px;
-}
-
-.logo{height:50px}
-.title{font-weight:bold}
-
-.actions{
-  display:flex;
-  gap:10px;
-}
-
-.btn{
-  padding:8px 12px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
-
-.logout{background:#ff3333;color:#fff}
-.toggle{background:#444;color:#fff}
-
-/* STATS */
-.stats{
-  display:flex;
-  gap:15px;
-  padding:20px;
-  flex-wrap:wrap;
-}
-
-.box{
-  flex:1;
-  min-width:150px;
-  background:#1e293b;
-  padding:15px;
-  border-radius:10px;
-  transition:0.3s;
-}
-.box:hover{transform:scale(1.05)}
-
-.box h3{font-size:12px;color:#aaa}
-.box p{font-size:22px;font-weight:bold}
-
-/* CARD */
-.card{
-  background:#1e293b;
-  margin:20px;
-  padding:20px;
-  border-radius:10px;
-}
-
-.search{
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:6px;
-  margin-bottom:10px;
-}
-
-/* TABLE */
-.table-wrap{
-  max-height:400px;
-  overflow:auto;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-th,td{
-  padding:10px;
-  border-bottom:1px solid #333;
-}
-
-th{
-  background:#374151;
-  position:sticky;
-  top:0;
-}
-
-tr:hover{
-  background:#1f2937;
-}
-
-/* BUTTON COLORS */
-.delete{background:#ff4444;color:#fff}
-.edit{background:#f59e0b;color:#fff}
-.refresh{background:#0F9D58;color:#fff}
-.export{background:#2563eb;color:#fff}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#0f172a;color:#fff}
+.header{display:flex;justify-content:space-between;align-items:center;background:#1e293b;padding:15px 20px}
+.logo{height:50px}.title{font-weight:bold}.actions{display:flex;gap:10px}
+.btn{padding:8px 12px;border:none;border-radius:6px;cursor:pointer}
+.logout{background:#ff3333;color:#fff}.toggle{background:#444;color:#fff}
+.stats{display:flex;gap:15px;padding:20px;flex-wrap:wrap}
+.box{flex:1;min-width:150px;background:#1e293b;padding:15px;border-radius:10px;transition:.3s}
+.box:hover{transform:scale(1.05)}.box h3{font-size:12px;color:#aaa}.box p{font-size:22px;font-weight:bold}
+.card{background:#1e293b;margin:20px;padding:20px;border-radius:10px}
+.search{width:100%;padding:10px;border:none;border-radius:6px;margin:10px 0;box-sizing:border-box}
+.table-wrap{max-height:400px;overflow:auto}
+table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #333;text-align:left}
+th{background:#374151;position:sticky;top:0}tr:hover{background:#1f2937}
+.delete{background:#ff4444;color:#fff}.edit{background:#f59e0b;color:#fff}
+.refresh{background:#0F9D58;color:#fff}.export{background:#2563eb;color:#fff}
+a.btn{display:inline-block;text-decoration:none;margin:0 5px 10px 0}
+@media(max-width:600px){.header{gap:12px;align-items:flex-start}.title{font-size:14px}.stats{padding:12px}.card{margin:12px;padding:12px}}
 </style>
 </head>
-
 <body>
-
-<script>
-if(localStorage.getItem("isAdmin") !== "yes"){
-  localStorage.setItem("redirectAfterLogin","admin.html");
-  location.href="login.html";
-}
-</script>
-
-<!-- HEADER -->
 <div class="header">
   <div style="display:flex;align-items:center;gap:10px">
-    <img src="logo.png" class="logo">
+    <img src="logo.png" class="logo" alt="Shubhi Education Foundation Logo">
     <div class="title">Shubhi Education Foundation</div>
   </div>
-
   <div class="actions">
     <button class="btn toggle" onclick="toggleMode()">🌗</button>
     <button class="btn logout" onclick="logout()">Logout</button>
   </div>
 </div>
-
-<!-- STATS -->
 <div class="stats">
   <div class="box"><h3>Total</h3><p id="total">₹0</p></div>
   <div class="box"><h3>Today</h3><p id="today">₹0</p></div>
   <div class="box"><h3>This Month</h3><p id="month">₹0</p></div>
   <div class="box"><h3>Donors</h3><p id="count">0</p></div>
 </div>
-
-<!-- TABLE -->
-
-<!-- TABLE -->
 <div class="card">
-
   <a href="gallery.html" class="btn export">🖼️ View Gallery</a>
-
   <a href="gallery_admin.html" class="btn export">📤 Gallery Upload</a>
-
   <a href="tally-finance.html" class="btn export">📊 Tally Finance</a>
-
   <a href="lc-management.html" class="btn export">📜 LC Management</a>
-
   <a href="user-management.html" class="btn export">👥 User Management</a>
-
-  <input
-    type="text"
-    id="search"
-    class="search"
-    placeholder="Search name..."
-  >
-
+  <a href="student-master.html" class="btn export">👨‍🎓 Student Master</a>
+  <a href="fees-management.html" class="btn export">💰 Fees Management</a>
+  <a href="attendance.html" class="btn export">🗓️ Attendance</a>
+  <input type="text" id="search" class="search" placeholder="Search name..." aria-label="Search donor name">
   <button class="btn refresh" onclick="load()">Refresh</button>
-
   <button class="btn export" onclick="exportCSV()">Export CSV</button>
-
-  <div class="table-wrap">
-    <table id="table"></table>
-  </div>
-
+  <div class="table-wrap"><table id="table"></table></div>
 </div>
-
 <script>
 const client = window.supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
+let allData = [];
+let refreshTimer = null;
 
-let allData=[];
+async function checkSchoolSession(){
+  try{
+    const {data, error} = await client.auth.getSession();
+    const role = (localStorage.getItem("schoolRole") || "").toLowerCase();
+    const allowedRoles = ["owner", "admin"];
+    if(error || !data?.session || !allowedRoles.includes(role)){
+      localStorage.setItem("redirectAfterLogin", "admin.html");
+      window.location.replace("login.html");
+      return false;
+    }
+    return true;
+  }catch(e){
+    console.error("Session check failed:", e);
+    localStorage.setItem("redirectAfterLogin", "admin.html");
+    window.location.replace("login.html");
+    return false;
+  }
+}
 
 async function load(){
   const {data,error}=await client.from("donations").select("*").order("id",{ascending:false});
-
-  if(error){
-    console.log(error);
-    return;
-  }
-
+  if(error){console.error("Donations load failed:",error);return;}
   allData=data || [];
-
   render(allData);
   stats(allData);
 }
 
 function render(data){
   const t=document.getElementById("table");
-
-  if(data.length===0){
-    t.innerHTML="<tr><td>No Data</td></tr>";
-    return;
-  }
-
-  t.innerHTML=`<tr>
-<th>Name</th><th>Email</th><th>Amount</th><th>Date</th><th>Action</th>
-</tr>`;
-
+  if(!data || data.length===0){t.innerHTML="<tr><td>No Data</td></tr>";return;}
+  t.innerHTML="<tr><th>Name</th><th>Email</th><th>Amount</th><th>Date</th><th>Action</th></tr>";
   data.forEach(d=>{
-    t.innerHTML+=`
-    <tr>
-      <td>${d.name}</td>
-      <td>${d.email||"-"}</td>
-      <td>₹${d.amount}</td>
-      <td>${new Date(d.created_at).toLocaleDateString()}</td>
-      <td>
-        <button class="btn edit" onclick="edit(${d.id},'${d.name}',${d.amount})">Edit</button>
-        <button class="btn delete" onclick="del(${d.id})">Delete</button>
-      </td>
-    </tr>`;
+    const tr=document.createElement("tr");
+    const date = d.created_at ? new Date(d.created_at).toLocaleDateString("en-IN") : "-";
+    [d.name || "", d.email || "-", "₹"+(Number(d.amount)||0), date].forEach(value=>{
+      const td=document.createElement("td");td.textContent=value;tr.appendChild(td);
+    });
+    const action=document.createElement("td");
+    const editBtn=document.createElement("button");editBtn.className="btn edit";editBtn.textContent="Edit";
+    editBtn.addEventListener("click",()=>edit(d.id,d.name || "",Number(d.amount)||0));
+    const delBtn=document.createElement("button");delBtn.className="btn delete";delBtn.textContent="Delete";
+    delBtn.addEventListener("click",()=>del(d.id));
+    action.append(editBtn,document.createTextNode(" "),delBtn);tr.appendChild(action);t.appendChild(tr);
   });
 }
 
 function stats(data){
-  let total=0,today=0,month=0;
-  const now=new Date();
-
+  let total=0,today=0,month=0;const now=new Date();
   data.forEach(d=>{
-    const amt=Number(d.amount)||0;
-    total+=amt;
-
+    const amt=Number(d.amount)||0;total+=amt;
     const dt=new Date(d.created_at);
-
-    if(dt.toDateString()===now.toDateString()) today+=amt;
-    if(dt.getMonth()===now.getMonth()) month+=amt;
+    if(d.created_at && dt.toDateString()===now.toDateString())today+=amt;
+    if(d.created_at && dt.getMonth()===now.getMonth() && dt.getFullYear()===now.getFullYear())month+=amt;
   });
-
   document.getElementById("total").innerText="₹"+total;
   document.getElementById("today").innerText="₹"+today;
   document.getElementById("month").innerText="₹"+month;
   document.getElementById("count").innerText=data.length;
 }
 
-// SEARCH
 document.getElementById("search").addEventListener("input",function(){
   const val=this.value.toLowerCase();
-  render(allData.filter(d=>d.name.toLowerCase().includes(val)));
+  render(allData.filter(d=>(d.name||"").toLowerCase().includes(val)));
 });
 
-// DELETE
 async function del(id){
-  if(confirm("Delete this donation?")){
-    await client.from("donations").delete().eq("id",id);
-    load();
-  }
+  if(!confirm("Delete this donation?"))return;
+  const {error}=await client.from("donations").delete().eq("id",id);
+  if(error){alert("Delete नहीं हुआ। Supabase permissions जाँचें।");console.error(error);return;}
+  await load();
 }
 
-// EDIT
 async function edit(id,name,amount){
-  let newName=prompt("Edit Name",name);
-  let newAmount=prompt("Edit Amount",amount);
-
-  if(!newName || !newAmount) return;
-
-  await client.from("donations").update({
-    name:newName,
-    amount:newAmount
-  }).eq("id",id);
-
-  load();
+  const newName=prompt("Edit Name",name);
+  if(newName===null || !newName.trim())return;
+  const newAmount=prompt("Edit Amount",String(amount));
+  if(newAmount===null || newAmount.trim()==="" || !Number.isFinite(Number(newAmount)) || Number(newAmount)<0){
+    if(newAmount!==null)alert("कृपया सही रकम डालें।");
+    return;
+  }
+  const {error}=await client.from("donations").update({name:newName.trim(),amount:Number(newAmount)}).eq("id",id);
+  if(error){alert("Update नहीं हुआ। Supabase permissions जाँचें।");console.error(error);return;}
+  await load();
 }
 
-// EXPORT CSV
 function exportCSV(){
-  let csv="Name,Email,Amount\n";
+  let csv="Name,Email,Amount,Date\n";
   allData.forEach(d=>{
-    csv+=`${d.name},${d.email||""},${d.amount}\n`;
+    const fields=[d.name||"",d.email||"",d.amount||"",d.created_at||""].map(v=>'"'+String(v).replace(/"/g,'""')+'"');
+    csv+=fields.join(",")+"\n";
   });
-
-  const blob=new Blob([csv],{type:"text/csv"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="donations.csv";
-  a.click();
+  const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="donations.csv";a.click();
+  URL.revokeObjectURL(a.href);
 }
 
-// DARK/LIGHT MODE
 function toggleMode(){
-  if(document.body.style.background=="white"){
-    document.body.style.background="#0f172a";
-    document.body.style.color="#fff";
+  if(document.body.style.background==="white"){
+    document.body.style.background="#0f172a";document.body.style.color="#fff";
   }else{
-    document.body.style.background="white";
-    document.body.style.color="#000";
+    document.body.style.background="white";document.body.style.color="#000";
   }
 }
 
-// LOGOUT
-function logout(){
-  localStorage.clear();
-  location.href="index.html";
+async function logout(){
+  if(refreshTimer){clearInterval(refreshTimer);refreshTimer=null;}
+  try{await client.auth.signOut();}
+  catch(error){console.error("Sign out error:",error);}
+  ["isAdmin","schoolRole","staffName","staffUsername","redirectAfterLogin","rps_login"]
+    .forEach(key=>localStorage.removeItem(key));
+  window.location.replace("index.html");
 }
 
-// AUTO REFRESH
-setInterval(load,10000);
-
-load();
+(async function init(){
+  const ok=await checkSchoolSession();
+  if(!ok)return;
+  await load();
+  refreshTimer=setInterval(load,10000);
+})();
 </script>
-
 </body>
 </html>
