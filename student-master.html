@@ -395,65 +395,6 @@ tr:hover td{
     color:#64748b;
 }
 
-#loginScreen{
-    position:fixed;
-    inset:0;
-    background:linear-gradient(135deg,#1e3a8a,#2563eb,#0284c7);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    z-index:9999;
-}
-
-.login-box{
-    width:370px;
-    max-width:92%;
-    background:white;
-    border-radius:15px;
-    padding:30px;
-    box-shadow:0 15px 45px rgba(0,0,0,.25);
-    text-align:center;
-}
-
-.login-box img{
-    width:80px;
-    height:80px;
-    object-fit:contain;
-    margin-bottom:12px;
-}
-
-.login-box h2{
-    color:#1e3a8a;
-    margin-bottom:5px;
-}
-
-.login-box p{
-    color:#64748b;
-    font-size:13px;
-    margin-bottom:22px;
-}
-
-.login-box input{
-    margin-bottom:12px;
-}
-
-.login-btn{
-    width:100%;
-    background:#2563eb;
-    color:white;
-    border:0;
-    padding:12px;
-    border-radius:7px;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-.login-error{
-    color:#dc2626;
-    font-size:13px;
-    margin-top:10px;
-    display:none;
-}
 
 .module-note{
     background:#eff6ff;
@@ -595,39 +536,6 @@ tr:hover td{
 </head>
 
 <body>
-
-<!-- LOGIN -->
-<div id="loginScreen">
-    <div class="login-box">
-        <img src="logo.png" alt="School Logo">
-
-        <h2>Rainbow Public School</h2>
-        <p>Student Management System</p>
-
-        <input
-            type="text"
-            id="loginUsername"
-            placeholder="Username"
-            autocomplete="username"
-        >
-
-        <input
-            type="password"
-            id="loginPassword"
-            placeholder="Password"
-            autocomplete="current-password"
-        >
-
-        <button class="login-btn" onclick="doLogin()">
-            Login
-        </button>
-
-        <div id="loginError" class="login-error">
-            Invalid Username or Password
-        </div>
-    </div>
-</div>
-
 
 <header>
     <img src="logo.png" alt="School Logo">
@@ -1264,82 +1172,38 @@ let students = [];
    LOGIN
 ========================================================= */
 
-function checkLogin(){
+/* =========================================================
+   COMMON SCHOOL LOGIN SESSION
+   Login is handled only by login.html. This page reuses that session.
+========================================================= */
+let schoolSessionReady = false;
 
-    if(localStorage.getItem("rps_login") === "yes"){
+async function checkSchoolSession(){
+    const { data, error } = await sb.auth.getSession();
+    const session = data && data.session;
+    const role = (localStorage.getItem("schoolRole") || "").toLowerCase();
+    const allowedRoles = ["owner", "admin", "accountant", "teacher", "principal", "supervisor"];
 
-        document.getElementById("loginScreen").style.display =
-            "none";
-
-    }else{
-
-        document.getElementById("loginScreen").style.display =
-            "flex";
-
-    }
-}
-
-
-function doLogin(){
-
-    const username =
-        document.getElementById("loginUsername").value.trim();
-
-    const password =
-        document.getElementById("loginPassword").value;
-
-    if(
-        username === "admin" &&
-        password === "admin123"
-    ){
-
-        localStorage.setItem("rps_login","yes");
-
-        document.getElementById("loginScreen").style.display =
-            "none";
-
-        loadStudents();
-
-    }else{
-
-        document.getElementById("loginError").style.display =
-            "block";
-
-    }
-}
-
-
-function logout(){
-
-    localStorage.removeItem("rps_login");
-
-    location.reload();
-
-}
-
-
-/* ENTER KEY LOGIN */
-
-document.addEventListener("keydown",function(e){
-
-    if(e.key === "Enter"){
-
-        const screen =
-            document.getElementById("loginScreen");
-
-        if(
-            screen &&
-            screen.style.display !== "none"
-        ){
-
-            doLogin();
-
-        }
-
+    if(error || !session || !allowedRoles.includes(role)){
+        localStorage.setItem("redirectAfterLogin", "student-master.html");
+        window.location.replace("login.html");
+        return false;
     }
 
-});
+    schoolSessionReady = true;
+    return true;
+}
 
+async function logout(){
+    try{
+        await sb.auth.signOut();
+    }catch(error){
+        console.error("Sign out error:", error);
+    }
+    ["isAdmin", "schoolRole", "staffName", "staffUsername", "redirectAfterLogin", "rps_login"]
+        .forEach(key => localStorage.removeItem(key));
+    window.location.replace("index.html");
+}
 
 /* =========================================================
    MESSAGE
@@ -2912,7 +2776,7 @@ function excelClass(v){const x=excelText(v);const m={"1st":"1","2nd":"2","3rd":"
 async function importStudentsExcel(event){
     const file=event.target.files&&event.target.files[0];if(!file)return;
     if(typeof XLSX==="undefined"){setExcelMessage("Excel library load nahi hui. Internet check karke page refresh karein.","error");event.target.value="";return;}
-    if(localStorage.getItem("rps_login")!=="yes"){setExcelMessage("Pehle Student Master mein login karein.","error");event.target.value="";return;}
+    if(!schoolSessionReady){setExcelMessage("Login session nahi mila. Dobara login karein.","error");event.target.value="";return;}
     try{
         setExcelMessage("Excel file read ho rahi hai...","success");
         const wb=XLSX.read(await file.arrayBuffer(),{type:"array",cellDates:true});
@@ -2967,22 +2831,12 @@ async function importStudentsExcel(event){
    INITIALIZE
 ========================================================= */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function(){
-
-        checkLogin();
-
-        if(
-            localStorage.getItem("rps_login") === "yes"
-        ){
-
-            loadStudents();
-
-        }
-
+document.addEventListener("DOMContentLoaded", async function(){
+    const ok = await checkSchoolSession();
+    if(ok){
+        await loadStudents();
     }
-);
+});
 
 </script>
 
