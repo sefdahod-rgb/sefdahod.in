@@ -10,7 +10,7 @@
 <footer class="footer"><div class="footitem"><span class="footicon">📍</span><span>Shalimar Co-operative Society,<br>Muvaliya Road, Rabdal, Dahod,<br>Gujarat - 389151</span></div><div class="footitem"><span class="footicon">✉</span><span>sefdahod@gmail.com</span></div><div class="footitem"><span class="footicon">☎</span><span>+91 94086 95001<br>02673-450037</span></div><div class="footitem"><span class="social">f ▶ ◎</span></div><div class="footitem">Together for a Brighter Future</div></footer></div>
 <script>
 const SUPABASE_URL = "https://kqahcvaoxnmxfcgyyync.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg";
+const SUPABASE_ANON_KEY = "sb_publishable_S1BSJ6qcJ5Emg-5YhXPmVA_Rj_wvZvl";
 const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);const msg=document.getElementById('msg'),loginBtn=document.getElementById('loginBtn');let loginMode='school';
 function message(t,ok=false){msg.textContent=t;msg.style.color=ok?'#087443':'#b91c1c'}
 document.getElementById('togglePassword').addEventListener('click',()=>{const p=document.getElementById('password');p.type=p.type==='password'?'text':'password';document.getElementById('togglePassword').textContent=p.type==='password'?'◎':'◉'});
