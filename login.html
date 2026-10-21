@@ -1,174 +1,187 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>School Login - SEF Dahod</title>
+<title>School Login - Rainbow Public School | SEF Dahod</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
+:root{--navy:#052e67;--blue:#0865d9;--blue2:#0788ed;--gold:#ffc629;--ink:#102b55;--muted:#60769a;--line:#d8e4f5;--white:#fff}
 *{box-sizing:border-box}
-body{
-  margin:0;min-height:100vh;display:flex;align-items:center;
-  justify-content:center;padding:20px;font-family:Segoe UI,Arial,sans-serif;
-  background:linear-gradient(135deg,#003b73,#0f9d58)
-}
-.box{
-  background:white;color:#172033;width:100%;max-width:390px;
-  padding:28px;border-radius:16px;box-shadow:0 12px 35px #0003
-}
-.logo{width:75px;height:75px;object-fit:contain}
-h2{margin:12px 0 5px}
-.sub{color:#64748b;font-size:14px;margin-bottom:22px}
-input{
-  width:100%;padding:12px;margin:8px 0;border:1px solid #cbd5e1;
-  border-radius:8px;font-size:16px
-}
-button{
-  width:100%;padding:12px;border:0;border-radius:8px;
-  background:#0f9d58;color:white;font-size:16px;font-weight:bold;
-  cursor:pointer;margin-top:10px
-}
-button:disabled{opacity:.6;cursor:wait}
-.link{
-  display:block;text-align:center;margin-top:16px;color:#087443;
-  cursor:pointer;background:none;border:0;font-size:14px
-}
-#msg{font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+body{margin:0;min-height:100vh;font-family:Inter,"Segoe UI",Arial,sans-serif;background:#eaf3ff;color:var(--ink);display:flex;align-items:center;justify-content:center;padding:22px}
+.page{width:min(1500px,100%);min-height:780px;background:white;border-radius:24px;overflow:hidden;box-shadow:0 25px 80px #123e792b;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(430px,.9fr);position:relative}
+.brand{position:relative;overflow:hidden;color:white;background:radial-gradient(circle at 70% 35%,#168ee9 0,#0758b2 43%,#04265a 100%);padding:38px 42px 118px;display:flex;flex-direction:column;align-items:center;text-align:center;isolation:isolate}
+.brand:before,.brand:after{content:"";position:absolute;z-index:-1;border:1px solid #ffffff22;border-radius:50%;width:480px;height:480px;top:70px;left:-210px}
+.brand:after{width:560px;height:560px;top:220px;left:auto;right:-340px}
+.school-logo{width:130px;height:130px;object-fit:contain;filter:drop-shadow(0 8px 10px #001c4780);margin:2px auto 8px}
+.brand h1{margin:0;font-size:clamp(28px,3.2vw,46px);font-weight:900;line-height:1.07;letter-spacing:.7px;text-transform:uppercase}
+.brand h1 span{color:var(--gold)}
+.city{display:flex;align-items:center;gap:18px;font-size:clamp(17px,1.7vw,25px);font-weight:700;margin:14px 0 0}
+.city:before,.city:after{content:"";width:clamp(35px,8vw,130px);height:2px;background:var(--gold)}
+.motto{font-size:clamp(14px,1.5vw,21px);font-style:italic;margin:12px 0 22px;color:#eef7ff}
+.campus{width:calc(100% + 84px);max-width:none;height:clamp(210px,27vw,330px);object-fit:cover;object-position:center;margin:0 -42px;clip-path:ellipse(80% 74% at 50% 48%);border-top:5px solid var(--gold);border-bottom:5px solid var(--gold);background:linear-gradient(135deg,#4f9bdf,#d9edff);display:block}
+.campus-fallback{height:0;overflow:hidden}
+.features{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%;margin-top:16px}
+.feature{padding:5px 8px;min-width:0;border-right:1px solid #ffffff44;font-size:13px;font-weight:650;line-height:1.35}
+.feature:last-child{border-right:0}
+.feature-icon{width:48px;height:48px;border:2px solid var(--gold);color:var(--gold);border-radius:50%;display:grid;place-items:center;margin:0 auto 9px;font-size:23px}
+.brand-note{margin-top:20px;font-size:13px;color:#d8e9ff}
+.login-side{display:flex;align-items:center;justify-content:center;padding:34px clamp(22px,4vw,58px) 105px;background:linear-gradient(145deg,#f9fcff,#fff 60%,#eef6ff)}
+.login-card{width:100%;max-width:510px;padding:5px 0}
+.heading-row{display:flex;align-items:center;gap:15px;margin-bottom:4px}
+.heading-icon{width:52px;height:52px;display:grid;place-items:center;border-radius:16px;background:#eaf3ff;color:var(--blue);font-size:27px}
+.login-card h2{font-size:clamp(28px,2.7vw,40px);margin:0;color:var(--ink);letter-spacing:-.8px}
+.gold-line{height:4px;width:66px;border-radius:5px;background:var(--gold);margin:15px 0 8px 3px}
+.subtitle{color:var(--muted);font-size:17px;margin:0 0 24px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.tab{border:1px solid var(--line);border-radius:12px;padding:13px 10px;background:#f7faff;color:var(--ink);font-weight:750;font-size:15px;cursor:pointer;transition:.2s}
+.tab.active{background:linear-gradient(100deg,var(--blue),var(--blue2));color:white;border-color:transparent;box-shadow:0 7px 16px #0872df2b}
+.field{margin:0 0 14px;position:relative}
+.field label{display:block;font-size:13px;font-weight:700;color:#36557f;margin:0 0 7px 2px}
+.field input,.field select{width:100%;height:49px;padding:0 14px;border:1px solid #cbdcf3;border-radius:10px;background:#fff;color:#17345e;font-size:15px;outline:none;transition:border .2s,box-shadow .2s}
+.field input:focus,.field select:focus{border-color:#3285ed;box-shadow:0 0 0 3px #3285ed1c}
+.password-wrap{position:relative}.password-wrap input{padding-right:54px}
+.show-password{position:absolute;right:5px;top:5px;height:39px;width:43px;border:0;background:transparent;color:#59749b;cursor:pointer;font-size:18px;border-radius:8px}
+.show-password:hover{background:#edf5ff}
+.role-wrap{position:relative}.role-wrap:before{content:"♟";position:absolute;z-index:1;left:14px;top:12px;font-size:20px;color:#59749b;pointer-events:none}.role-wrap select{padding-left:43px}
+.options{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:2px 0 21px;font-size:13px;color:#526d92}
+.remember{display:flex;align-items:center;gap:8px;cursor:pointer}.remember input{width:16px;height:16px;accent-color:var(--blue)}
+.text-link{border:0;background:transparent;color:var(--blue);font-size:13px;font-weight:750;cursor:pointer;padding:4px 0}
+.login-button{width:100%;height:54px;border:0;border-radius:11px;background:linear-gradient(100deg,#0862d5,#087be9);color:white;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 9px 18px #0866d52b;transition:transform .15s,filter .15s}
+.login-button:hover{filter:brightness(1.06);transform:translateY(-1px)}.login-button:disabled{opacity:.65;cursor:wait;transform:none}
+.secure-note{display:flex;align-items:center;justify-content:center;gap:9px;border-top:1px solid var(--line);margin-top:24px;padding-top:17px;font-size:12px;color:#647da2}
+#msg{min-height:20px;font-size:13px;line-height:1.5;overflow-wrap:anywhere;margin:13px 0 0;color:#b91c1c}
+.student-note{display:none;padding:12px 14px;background:#fff7df;border:1px solid #ffe29a;color:#76540a;border-radius:10px;font-size:13px;line-height:1.5;margin-bottom:14px}
+.footer{position:absolute;left:0;right:0;bottom:0;min-height:88px;padding:14px 25px;background:linear-gradient(100deg,#04285d,#064d9c);color:white;display:grid;grid-template-columns:1.2fr 1fr 1fr auto;align-items:center;gap:18px;font-size:12px}
+.contact{display:flex;align-items:center;gap:10px;line-height:1.45;min-width:0}.contact-icon{font-size:22px;color:var(--gold);flex-shrink:0}.contact a{color:white;text-decoration:none}.contact a:hover{text-decoration:underline}.social{display:flex;align-items:center;gap:9px}.social a{display:grid;place-items:center;text-decoration:none;color:white;width:31px;height:31px;border-radius:50%;background:#1877f2;font-weight:800;font-size:14px}.social a:nth-child(2){background:#f21d2f}.social a:nth-child(3){background:#b02bc7}.footer-motto{color:var(--gold);font-style:italic;font-size:17px;font-family:Georgia,serif;white-space:nowrap}
+@media(max-width:1000px){body{padding:12px}.page{grid-template-columns:1fr;max-width:680px}.brand{padding:26px 25px 28px}.school-logo{width:90px;height:90px}.brand h1{font-size:34px}.campus{width:calc(100% + 50px);height:210px;margin:0 -25px}.features{margin-top:8px}.feature{font-size:12px}.feature-icon{width:39px;height:39px;font-size:19px}.login-side{padding:32px 28px 30px}.footer{position:relative;grid-template-columns:1fr 1fr;gap:14px;padding:18px 22px}.footer-motto{white-space:normal}.page{min-height:0}}
+@media(max-width:480px){body{padding:0;background:#fff}.page{border-radius:0}.brand{padding:23px 17px}.brand h1{font-size:29px}.city{font-size:17px;gap:8px}.motto{font-size:14px}.campus{height:170px;width:calc(100% + 34px);margin:0 -17px}.features{gap:2px}.feature{font-size:10px;padding:4px 3px}.feature-icon{width:34px;height:34px;font-size:16px;margin-bottom:6px}.login-side{padding:28px 20px}.login-card h2{font-size:30px}.subtitle{font-size:15px}.tab{font-size:13px;padding:12px 6px}.footer{grid-template-columns:1fr;gap:12px}.footer-motto{font-size:16px}.options{font-size:12px}}
 </style>
 </head>
 <body>
-<div class="box">
-  <img src="logo.png" class="logo" alt="SEF Logo">
-  <h2>School Login</h2>
-  <div class="sub">Shubhi Education Foundation · Dahod</div>
+<main class="page">
+  <section class="brand" aria-label="Rainbow Public School">
+    <img src="logo.png" class="school-logo" alt="Rainbow Public School Logo" onerror="this.style.display='none'">
+    <h1><span>Rainbow</span><br>Public School</h1>
+    <div class="city">Dahod, Gujarat</div>
+    <p class="motto">Education blends with care and concern</p>
+    <!-- Replace campus.jpg with a real school photo if one is available in the website repository. -->
+    <img class="campus" src="campus.jpg" alt="Rainbow Public School campus" onerror="this.style.display='none';document.getElementById('campusFallback').style.height='210px';document.getElementById('campusFallback').style.width='100%';document.getElementById('campusFallback').style.background='linear-gradient(135deg,#6eb9f2,#dceeff)';document.getElementById('campusFallback').style.borderTop='5px solid #ffc629';document.getElementById('campusFallback').style.borderBottom='5px solid #ffc629'">
+    <div id="campusFallback" class="campus-fallback" aria-hidden="true"></div>
+    <div class="features">
+      <div class="feature"><div class="feature-icon">⌑</div>Quality<br>Education</div>
+      <div class="feature"><div class="feature-icon">♧</div>Safe &amp; Supportive<br>Environment</div>
+      <div class="feature"><div class="feature-icon">↗</div>Holistic<br>Development</div>
+      <div class="feature"><div class="feature-icon">★</div>Bright<br>Future</div>
+    </div>
+    <div class="brand-note">A place to learn, grow and succeed</div>
+  </section>
 
-  <form id="loginForm">
-    <input id="email" type="email" placeholder="Email Address"
-      autocomplete="username" required>
-    <input id="password" type="password" placeholder="Password"
-      autocomplete="current-password" required>
-    <button id="loginBtn" type="submit">Login</button>
-  </form>
+  <section class="login-side">
+    <div class="login-card">
+      <div class="heading-row"><div class="heading-icon">♙</div><h2 id="formTitle">Welcome Back</h2></div>
+      <div class="gold-line"></div>
+      <p class="subtitle" id="formSubtitle">Sign in to your school portal</p>
+      <div class="tabs" role="tablist" aria-label="Login type">
+        <button class="tab active" id="schoolTab" type="button" role="tab" aria-selected="true">▦ &nbsp; School Login</button>
+        <button class="tab" id="studentTab" type="button" role="tab" aria-selected="false">♙ &nbsp; Student Login</button>
+      </div>
+      <div class="student-note" id="studentNote">Student login accounts must be linked to a student profile in Supabase before this option can be activated. Please use School Login for staff accounts.</div>
+      <form id="loginForm">
+        <div class="field"><label for="email">Email Address</label><input id="email" type="email" placeholder="Enter your email address" autocomplete="username" required></div>
+        <div class="field"><label for="password">Password</label><div class="password-wrap"><input id="password" type="password" placeholder="Enter your password" autocomplete="current-password" required><button class="show-password" id="showPassword" type="button" aria-label="Show password" title="Show password">◉</button></div></div>
+        <div class="field role-wrap" id="roleField"><label for="role">Login as</label><select id="role" required><option value="">Select your role</option><option value="owner">Owner</option><option value="admin">Admin</option><option value="principal">Principal</option><option value="teacher">Teacher</option><option value="accountant">Accountant</option><option value="staff">Staff</option><option value="supervisor">Other Staff</option></select></div>
+        <div class="options"><label class="remember"><input type="checkbox" id="rememberMe"> Remember me</label><button class="text-link" id="forgotBtn" type="button">Forgot password?</button></div>
+        <button id="loginBtn" class="login-button" type="submit">♙ &nbsp; Secure Login &nbsp; →</button>
+      </form>
+      <p id="msg" role="status" aria-live="polite"></p>
+      <div class="secure-note">♧ <span>Secure access</span> · <span>Rainbow Public School</span></div>
+    </div>
+  </section>
 
-  <button class="link" id="forgotBtn" type="button">
-    Forgot Password? ईमेल से Reset करें
-  </button>
-  <p id="msg" role="status"></p>
-</div>
+  <footer class="footer">
+    <div class="contact"><span class="contact-icon">⌖</span><span>Shalimar Co-operative Society,<br>Muvaliya Road, Rabdal, Dahod,<br>Gujarat - 389151</span></div>
+    <div class="contact"><span class="contact-icon">✉</span><a href="mailto:sefdahod@gmail.com">sefdahod@gmail.com</a></div>
+    <div class="contact"><span class="contact-icon">☎</span><span><a href="tel:+919408695001">+91 94086 95001</a><br><a href="tel:02673450037">02673-450037</a></span></div>
+    <div class="social" aria-label="Social links"><a href="https://www.facebook.com/" target="_blank" rel="noopener" aria-label="Facebook">f</a><a href="https://www.youtube.com/" target="_blank" rel="noopener" aria-label="YouTube">▶</a><a href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram">◎</a><div class="footer-motto">Together for a Brighter Future</div></div>
+  </footer>
+</main>
 
 <script>
 const SUPABASE_URL = "https://kqahcvaoxnmxfcgyyync.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg";
-
-const client = window.supabase.createClient(
-  SUPABASE_URL, SUPABASE_ANON_KEY
-);
-
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg";
+const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const msg = document.getElementById("msg");
 const loginBtn = document.getElementById("loginBtn");
-
-function message(text, ok=false) {
-  msg.textContent = text;
-  msg.style.color = ok ? "#087443" : "#b91c1c";
+const roleSelect = document.getElementById("role");
+let loginMode = "school";
+function message(text, ok=false) { msg.textContent = text; msg.style.color = ok ? "#087443" : "#b91c1c"; }
+function setMode(mode) {
+  loginMode = mode;
+  const school = mode === "school";
+  document.getElementById("schoolTab").classList.toggle("active", school);
+  document.getElementById("studentTab").classList.toggle("active", !school);
+  document.getElementById("schoolTab").setAttribute("aria-selected", String(school));
+  document.getElementById("studentTab").setAttribute("aria-selected", String(!school));
+  document.getElementById("formTitle").textContent = school ? "Welcome Back" : "Student Login";
+  document.getElementById("formSubtitle").textContent = school ? "Sign in to your school portal" : "Sign in to your student portal";
+  document.getElementById("roleField").style.display = school ? "block" : "none";
+  roleSelect.required = school;
+  document.getElementById("studentNote").style.display = school ? "none" : "block";
+  loginBtn.textContent = school ? "♙  Secure Login  →" : "Student Login Not Yet Enabled";
+  loginBtn.disabled = !school;
+  message("");
 }
+document.getElementById("schoolTab").addEventListener("click", () => setMode("school"));
+document.getElementById("studentTab").addEventListener("click", () => setMode("student"));
+document.getElementById("showPassword").addEventListener("click", () => {
+  const input = document.getElementById("password");
+  const showing = input.type === "text";
+  input.type = showing ? "password" : "text";
+  document.getElementById("showPassword").textContent = showing ? "◉" : "◎";
+  document.getElementById("showPassword").setAttribute("aria-label", showing ? "Show password" : "Hide password");
+});
 
 document.getElementById("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
+  if (loginMode !== "school") return;
   loginBtn.disabled = true;
   message("Login जाँच रहे हैं...", true);
-
   try {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-
-    const {data, error} = await client.auth.signInWithPassword({
-      email, password
-    });
-
+    const chosenRole = roleSelect.value;
+    if (!chosenRole) throw new Error("कृपया अपनी भूमिका चुनें।");
+    const {data, error} = await client.auth.signInWithPassword({email, password});
     if (error) throw error;
-
     const user = data.user;
-
-    // पहले Owner की भूमिका जाँचें
-    const {data: ownerData, error: ownerError} = await client
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
+    const {data: ownerData, error: ownerError} = await client.from("user_roles").select("role").eq("user_id", user.id).maybeSingle();
     if (!ownerError && ownerData?.role === "owner") {
+      if (chosenRole !== "owner") { await client.auth.signOut(); throw new Error("यह खाता Owner है। कृपया Login as में Owner चुनें।"); }
       localStorage.setItem("isAdmin", "yes");
       localStorage.setItem("schoolRole", "owner");
-
-      const allowedPages = [
-        "admin.html",
-        "student-master.html",
-        "fees-management.html",
-        "attendance.html",
-        "bonafide.html",
-        "index.html",
-        "user-management.html"
-      ];
-
-      let destination =
-        localStorage.getItem("redirectAfterLogin") || "admin.html";
-
+      const allowedPages = ["admin.html","student-master.html","fees-management.html","attendance.html","bonafide.html","index.html","user-management.html"];
+      let destination = localStorage.getItem("redirectAfterLogin") || "admin.html";
       localStorage.removeItem("redirectAfterLogin");
-
-      if (!allowedPages.includes(destination)) {
-        destination = "admin.html";
-      }
-
+      if (!allowedPages.includes(destination)) destination = "admin.html";
       window.location.replace(destination);
       return;
     }
-
-    // Owner नहीं है तो Staff Profile जाँचें
-    const {data: staff, error: staffError} = await client
-      .from("staff_profiles")
-      .select("username, display_name, role, is_active")
-      .eq("auth_user_id", user.id)
-      .maybeSingle();
-
-    if (staffError) {
-      throw new Error(
-        "Staff विवरण पढ़ने में समस्या है। Supabase RLS Policies जाँचें।"
-      );
-    }
-
-    if (!staff) {
-      await client.auth.signOut();
-      localStorage.removeItem("isAdmin");
-      localStorage.removeItem("schoolRole");
-      throw new Error(
-        "इस खाते का Staff Profile नहीं मिला। Owner से संपर्क करें।"
-      );
-    }
-
-    if (!staff.is_active) {
-      await client.auth.signOut();
-      throw new Error("आपका Staff Account बंद है। Owner से संपर्क करें।");
-    }
-
-    if (!["admin", "accountant", "teacher", "principal", "supervisor"].includes(staff.role)) {
-      await client.auth.signOut();
-      throw new Error("Staff Role सही नहीं है। Owner से संपर्क करें।");
-    }
-
-    // Staff को Owner/Admin का legacy access नहीं दें
+    if (chosenRole === "owner") { await client.auth.signOut(); throw new Error("इस खाते को Owner के रूप में अधिकृत नहीं किया गया है।"); }
+    const {data: staff, error: staffError} = await client.from("staff_profiles").select("username, display_name, role, is_active").eq("auth_user_id", user.id).maybeSingle();
+    if (staffError) throw new Error("Staff विवरण पढ़ने में समस्या है। Supabase RLS Policies जाँचें।");
+    if (!staff) { await client.auth.signOut(); localStorage.removeItem("isAdmin"); localStorage.removeItem("schoolRole"); throw new Error("इस खाते का Staff Profile नहीं मिला। Owner से संपर्क करें।"); }
+    if (!staff.is_active) { await client.auth.signOut(); throw new Error("आपका Staff Account बंद है। Owner से संपर्क करें।"); }
+    const allowedRoles = ["admin", "accountant", "teacher", "principal", "supervisor", "staff"];
+    if (!allowedRoles.includes(staff.role)) { await client.auth.signOut(); throw new Error("Staff Role सही नहीं है। Owner से संपर्क करें।"); }
+    const roleMatches = chosenRole === staff.role || (chosenRole === "supervisor" && staff.role === "supervisor");
+    if (!roleMatches) { await client.auth.signOut(); throw new Error("आपने जो भूमिका चुनी है वह इस खाते से मेल नहीं खाती। सही Role चुनें।"); }
     localStorage.removeItem("isAdmin");
     localStorage.setItem("schoolRole", staff.role);
-    localStorage.setItem("staffName", staff.display_name);
-    localStorage.setItem("staffUsername", staff.username);
-
-    // फिलहाल Staff को मुख्य वेबसाइट पर भेजें
-   // Role ke hisaab se Staff ko bhejein
-if (staff.role === "principal" || staff.role === "supervisor") {
-  window.location.replace("attendance.html");
-} else {
-  window.location.replace("index.html");
-}
-
+    localStorage.setItem("staffName", staff.display_name || "");
+    localStorage.setItem("staffUsername", staff.username || "");
+    if (staff.role === "principal" || staff.role === "supervisor" || staff.role === "teacher") window.location.replace("attendance.html");
+    else window.location.replace("index.html");
   } catch (error) {
     message(error.message || "Login नहीं हो पाया।");
   } finally {
@@ -178,33 +191,16 @@ if (staff.role === "principal" || staff.role === "supervisor") {
 
 document.getElementById("forgotBtn").addEventListener("click", async () => {
   const email = document.getElementById("email").value.trim();
-
-  if (!email) {
-    message("पहले ऊपर अपना Email Address लिखें।");
-    document.getElementById("email").focus();
-    return;
-  }
-
+  if (!email) { message("पहले ऊपर अपना Email Address लिखें।"); document.getElementById("email").focus(); return; }
   const btn = document.getElementById("forgotBtn");
   btn.disabled = true;
   message("Reset ईमेल भेजने की कोशिश हो रही है...", true);
-
   try {
-    const {error} = await client.auth.resetPasswordForEmail(email, {
-      redirectTo: "https://www.sefdahod.in/reset-password.html"
-    });
-
+    const {error} = await client.auth.resetPasswordForEmail(email, {redirectTo: "https://www.sefdahod.in/reset-password.html"});
     if (error) throw error;
-
-    message(
-      "यदि यह ईमेल पंजीकृत है, तो Password Reset लिंक भेज दिया गया है। Inbox और Spam जाँचें।",
-      true
-    );
-  } catch (error) {
-    message(error.message || "Reset ईमेल नहीं भेजा जा सका।");
-  } finally {
-    btn.disabled = false;
-  }
+    message("यदि यह ईमेल पंजीकृत है, तो Password Reset लिंक भेज दिया गया है। Inbox और Spam जाँचें।", true);
+  } catch (error) { message(error.message || "Reset ईमेल नहीं भेजा जा सका।"); }
+  finally { btn.disabled = false; }
 });
 </script>
 </body>
