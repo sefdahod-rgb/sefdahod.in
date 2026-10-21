@@ -3,68 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Admin Ultra Pro</title>
+<title>Admin Dashboard - Shubhi Education Foundation</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#0f172a;color:#fff}
-.header{display:flex;justify-content:space-between;align-items:center;background:#1e293b;padding:15px 20px}
-.logo{height:50px}.title{font-weight:bold}.actions{display:flex;gap:10px}
-.btn{padding:8px 12px;border:none;border-radius:6px;cursor:pointer}
-.logout{background:#ff3333;color:#fff}.toggle{background:#444;color:#fff}
-.stats{display:flex;gap:15px;padding:20px;flex-wrap:wrap}
-.box{flex:1;min-width:150px;background:#1e293b;padding:15px;border-radius:10px;transition:.3s}
-.box:hover{transform:scale(1.05)}.box h3{font-size:12px;color:#aaa}.box p{font-size:22px;font-weight:bold}
-.card{background:#1e293b;margin:20px;padding:20px;border-radius:10px}
-.search{width:100%;padding:10px;border:none;border-radius:6px;margin:10px 0;box-sizing:border-box}
-.table-wrap{max-height:400px;overflow:auto}
-table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #333;text-align:left}
-th{background:#374151;position:sticky;top:0}tr:hover{background:#1f2937}
-.delete{background:#ff4444;color:#fff}.edit{background:#f59e0b;color:#fff}
-.refresh{background:#0F9D58;color:#fff}.export{background:#2563eb;color:#fff}
-a.btn{display:inline-block;text-decoration:none;margin:0 5px 10px 0}
-@media(max-width:600px){.header{gap:12px;align-items:flex-start}.title{font-size:14px}.stats{padding:12px}.card{margin:12px;padding:12px}}
+:root{--navy:#073b78;--blue:#0869d8;--blue2:#1688ed;--gold:#ffc629;--ink:#17345c;--muted:#61738c;--surface:rgba(255,255,255,.94);--line:#dce7f5;--shadow:0 12px 32px rgba(13,55,105,.13)}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:"Segoe UI",Arial,sans-serif;color:var(--ink);background:linear-gradient(135deg,rgba(3,42,91,.58),rgba(12,113,207,.30)),url('bg.jpg') center/cover fixed no-repeat;background-color:#eaf4ff}
+.header{display:flex;justify-content:space-between;align-items:center;gap:14px;background:rgba(5,43,91,.94);color:#fff;padding:12px 22px;border-bottom:3px solid var(--gold);box-shadow:0 5px 18px #05264b33;position:sticky;top:0;z-index:10;backdrop-filter:blur(10px)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}.logo{height:48px;width:48px;object-fit:contain;background:#fff;border-radius:10px;padding:3px}.title{font-weight:750;font-size:18px;letter-spacing:.2px}.subtitle{font-size:11px;color:#d7e8ff;margin-top:3px}.actions{display:flex;gap:8px;align-items:center}.btn{padding:9px 13px;border:0;border-radius:8px;cursor:pointer;font:600 13px "Segoe UI",Arial,sans-serif;transition:transform .18s,box-shadow .18s,background .18s}.btn:hover{transform:translateY(-1px);box-shadow:0 5px 12px #153d7024}.logout{background:#ef4444;color:#fff}.toggle{background:#ffffff20;color:#fff;border:1px solid #ffffff35}
+main{max-width:1600px;margin:0 auto;padding:22px}.hero{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 18px;color:#fff}.hero h1{font-size:clamp(22px,3vw,32px);margin:0;text-shadow:0 2px 8px #12365a4a}.hero p{margin:5px 0 0;color:#eef6ff;font-size:14px}.hero-badge{background:#ffffffdf;color:#12477f;border:1px solid #ffffff;border-radius:999px;padding:9px 14px;font-weight:700;font-size:12px;white-space:nowrap}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:20px}.box{position:relative;overflow:hidden;background:var(--surface);border:1px solid #ffffffb8;padding:19px 20px;border-radius:15px;box-shadow:var(--shadow);transition:transform .2s}.box:hover{transform:translateY(-3px)}.box:after{content:"";position:absolute;right:-22px;top:-28px;width:88px;height:88px;border-radius:50%;background:#e3f0ff}.box h3{position:relative;z-index:1;font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin:0 0 11px}.box p{position:relative;z-index:1;font-size:clamp(21px,2.5vw,28px);font-weight:800;margin:0;color:#0a4b91}.stat-icon{float:right;position:relative;z-index:1;font-size:23px}
+.card{background:var(--surface);margin:0 0 20px;padding:20px;border:1px solid #ffffffc9;border-radius:16px;box-shadow:var(--shadow);backdrop-filter:blur(10px)}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.section-head h2{margin:0;font-size:18px;color:#103e72}.section-head p{margin:4px 0 0;color:var(--muted);font-size:12px}.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-bottom:22px}.module{display:flex;align-items:center;gap:9px;min-height:45px;padding:11px 12px;text-decoration:none;color:#12457e;background:linear-gradient(135deg,#fff,#edf5ff);border:1px solid #d5e5fa;border-radius:10px;font-size:13px;font-weight:700;box-shadow:0 3px 9px #1b4c7d0b;transition:.18s}.module:hover{color:#fff;background:linear-gradient(135deg,var(--blue),var(--blue2));border-color:transparent;transform:translateY(-2px);box-shadow:0 7px 16px #0b66c52b}.module span{font-size:18px}
+.search{width:100%;padding:12px 14px;border:1px solid #cbdcf0;border-radius:9px;margin:5px 0 12px;box-sizing:border-box;font:14px "Segoe UI",Arial,sans-serif;background:#fff;color:#17345c;outline:none}.search:focus{border-color:#2484ec;box-shadow:0 0 0 3px #1688ed1a}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px}.refresh{background:#0c9870;color:#fff}.export{background:linear-gradient(135deg,#0869d8,#1688ed);color:#fff}.table-wrap{max-height:430px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff}table{width:100%;border-collapse:separate;border-spacing:0;min-width:650px;color:#243c5c;font-size:13px}th,td{padding:12px 13px;border-bottom:1px solid #e6edf6;text-align:left}th{background:#eaf2fc;color:#174a80;position:sticky;top:0;z-index:1;font-size:12px;text-transform:uppercase;letter-spacing:.35px}tr:hover td{background:#f5f9ff}tbody tr:last-child td{border-bottom:0}.delete{background:#ef4444;color:#fff}.edit{background:#f2a20c;color:#fff}.empty{padding:22px;text-align:center;color:var(--muted)}.footer{text-align:center;color:#fff;font-size:12px;padding:0 12px 18px;text-shadow:0 1px 5px #07305b}
+body.light-mode{background:linear-gradient(135deg,rgba(235,245,255,.70),rgba(255,255,255,.65)),url('bg.jpg') center/cover fixed no-repeat;background-color:#edf5ff}body.light-mode .header{background:rgba(255,255,255,.95);color:#123d70;border-bottom-color:var(--gold)}body.light-mode .subtitle{color:#647b98}body.light-mode .hero{color:#103e72}body.light-mode .hero h1{text-shadow:none}body.light-mode .hero p{color:#355a82}body.light-mode .toggle{color:#174a80;background:#edf5ff;border-color:#d7e5f6}
+@media(max-width:800px){main{padding:14px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.links{grid-template-columns:repeat(2,minmax(0,1fr))}.header{padding:10px 13px}.title{font-size:15px}.logo{width:42px;height:42px}.card{padding:14px}.hero-badge{display:none}}
+@media(max-width:430px){.stats{gap:9px}.box{padding:14px}.links{grid-template-columns:1fr 1fr;gap:7px}.module{font-size:12px;padding:9px 8px}.actions{gap:5px}.btn{padding:8px 10px}.brand{gap:8px}.title{font-size:13px}}
 </style>
 </head>
 <body>
 <div class="header">
-  <div style="display:flex;align-items:center;gap:10px">
+  <div class="brand">
     <img src="logo.png" class="logo" alt="Shubhi Education Foundation Logo">
-    <div class="title">Shubhi Education Foundation</div>
+    <div><div class="title">Shubhi Education Foundation</div><div class="subtitle">Rainbow Public School · Dahod, Gujarat</div></div>
   </div>
-  <div class="actions">
-    <button class="btn toggle" onclick="toggleMode()">🌗</button>
-    <button class="btn logout" onclick="logout()">Logout</button>
+  <div class="actions"><button class="btn toggle" onclick="toggleMode()" aria-label="Change appearance">🌗 Theme</button><button class="btn logout" onclick="logout()">Logout</button></div>
+</div>
+<main>
+  <div class="hero"><div><h1>Admin Dashboard</h1><p>School management at a glance — manage your modules from one place.</p></div><div class="hero-badge">✦ Secure School Portal</div></div>
+  <div class="stats">
+    <div class="box"><span class="stat-icon">₹</span><h3>Total Donations</h3><p id="total">₹0</p></div>
+    <div class="box"><span class="stat-icon">📅</span><h3>Today</h3><p id="today">₹0</p></div>
+    <div class="box"><span class="stat-icon">📈</span><h3>This Month</h3><p id="month">₹0</p></div>
+    <div class="box"><span class="stat-icon">👥</span><h3>Donors</h3><p id="count">0</p></div>
   </div>
-</div>
-<div class="stats">
-  <div class="box"><h3>Total</h3><p id="total">₹0</p></div>
-  <div class="box"><h3>Today</h3><p id="today">₹0</p></div>
-  <div class="box"><h3>This Month</h3><p id="month">₹0</p></div>
-  <div class="box"><h3>Donors</h3><p id="count">0</p></div>
-</div>
-<div class="card">
-  <a href="gallery.html" class="btn export">🖼️ View Gallery</a>
-  <a href="gallery_admin.html" class="btn export">📤 Gallery Upload</a>
-  <a href="tally-finance.html" class="btn export">📊 Tally Finance</a>
-  <a href="lc-management.html" class="btn export">📜 LC Management</a>
-  <a href="user-management.html" class="btn export">👥 User Management</a>
-  <a href="student-master.html" class="btn export">👨‍🎓 Student Master</a>
-  <a href="fees-management.html" class="btn export">💰 Fees Management</a>
-  <a href="members.html" class="btn export">👨‍💼 Members</a>
-  <a href="hr.html" class="btn export">👨‍💼 HR / Staff</a>
-  <a href="finance.html" class="btn export">💰 Finance ERP</a>
-  <a href="certificates.html" class="btn export">📜 Certificates</a>
-  <a href="appointments.html" class="btn export">📅 Appointments</a>
-  <a href="experience.html" class="btn export">📅 Experience</a>
-  <a href="beneficiaries.html" class="btn export">🎓 Beneficiaries</a>
-  <a href="projects.html" class="btn export">🚀 Projects</a>
-  <a href="enquiries.html" class="btn export">📩 Enquiries</a>
-  <a href="news.html" class="btn export">📰 News / Updates</a>
-  <input type="text" id="search" class="search" placeholder="Search name..." aria-label="Search donor name">
-  <button class="btn refresh" onclick="load()">Refresh</button>
-  <button class="btn export" onclick="exportCSV()">Export CSV</button>
-  <div class="table-wrap"><table id="table"></table></div>
-</div>
+  <div class="card">
+    <div class="section-head"><div><h2>School Management Modules</h2><p>Choose a module to continue</p></div></div>
+    <div class="links">
+      <a href="gallery.html" class="module"><span>🖼️</span>View Gallery</a>
+      <a href="gallery_admin.html" class="module"><span>📤</span>Gallery Upload</a>
+      <a href="tally-finance.html" class="module"><span>📊</span>Tally Finance</a>
+      <a href="lc-management.html" class="module"><span>📜</span>LC Management</a>
+      <a href="user-management.html" class="module"><span>👥</span>User Management</a>
+      <a href="student-master.html" class="module"><span>👨‍🎓</span>Student Master</a>
+      <a href="fees-management.html" class="module"><span>💰</span>Fees Management</a>
+      <a href="members.html" class="module"><span>👨‍💼</span>Members</a>
+      <a href="hr.html" class="module"><span>🧑‍💼</span>HR / Staff</a>
+      <a href="finance.html" class="module"><span>💳</span>Finance ERP</a>
+      <a href="certificates.html" class="module"><span>📜</span>Certificates</a>
+      <a href="appointments.html" class="module"><span>📅</span>Appointments</a>
+      <a href="experience.html" class="module"><span>🗂️</span>Experience</a>
+      <a href="beneficiaries.html" class="module"><span>🎓</span>Beneficiaries</a>
+      <a href="projects.html" class="module"><span>🚀</span>Projects</a>
+      <a href="enquiries.html" class="module"><span>📩</span>Enquiries</a>
+      <a href="news.html" class="module"><span>📰</span>News / Updates</a>
+    </div>
+    <div class="section-head"><div><h2>Donations Overview</h2><p>Search, refresh, edit or export donation records</p></div></div>
+    <input type="text" id="search" class="search" placeholder="Search donor name..." aria-label="Search donor name">
+    <div class="toolbar"><button class="btn refresh" onclick="load()">↻ Refresh</button><button class="btn export" onclick="exportCSV()">⬇ Export CSV</button></div>
+    <div class="table-wrap"><table id="table"></table></div>
+  </div>
+</main>
+<div class="footer">Shubhi Education Foundation · Rainbow Public School, Dahod</div>
 <script>
 const client = window.supabase.createClient(
   "https://kqahcvaoxnmxfcgyyync.supabase.co",
@@ -102,8 +100,9 @@ async function load(){
 
 function render(data){
   const t=document.getElementById("table");
-  if(!data || data.length===0){t.innerHTML="<tr><td>No Data</td></tr>";return;}
-  t.innerHTML="<tr><th>Name</th><th>Email</th><th>Amount</th><th>Date</th><th>Action</th></tr>";
+  if(!data || data.length===0){t.innerHTML="<tbody><tr><td class='empty' colspan='5'>No donation records found.</td></tr></tbody>";return;}
+  t.innerHTML="<thead><tr><th>Name</th><th>Email</th><th>Amount</th><th>Date</th><th>Action</th></tr></thead><tbody></tbody>";
+  const tbody=t.querySelector("tbody");
   data.forEach(d=>{
     const tr=document.createElement("tr");
     const date = d.created_at ? new Date(d.created_at).toLocaleDateString("en-IN") : "-";
@@ -115,7 +114,7 @@ function render(data){
     editBtn.addEventListener("click",()=>edit(d.id,d.name || "",Number(d.amount)||0));
     const delBtn=document.createElement("button");delBtn.className="btn delete";delBtn.textContent="Delete";
     delBtn.addEventListener("click",()=>del(d.id));
-    action.append(editBtn,document.createTextNode(" "),delBtn);tr.appendChild(action);t.appendChild(tr);
+    action.append(editBtn,document.createTextNode(" "),delBtn);tr.appendChild(action);tbody.appendChild(tr);
   });
 }
 
@@ -169,13 +168,7 @@ function exportCSV(){
   URL.revokeObjectURL(a.href);
 }
 
-function toggleMode(){
-  if(document.body.style.background==="white"){
-    document.body.style.background="#0f172a";document.body.style.color="#fff";
-  }else{
-    document.body.style.background="white";document.body.style.color="#000";
-  }
-}
+function toggleMode(){document.body.classList.toggle("light-mode");}
 
 async function logout(){
   if(refreshTimer){clearInterval(refreshTimer);refreshTimer=null;}
