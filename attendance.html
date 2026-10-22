@@ -9,18 +9,18 @@
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#1e293b}
-header{background:#123b70;color:white;text-align:center;padding:22px 12px}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#eaf2ff 0%,#f8fbff 48%,#fff7e8 100%);color:#1e293b;min-height:100vh}
+header{background:linear-gradient(120deg,#102f5f,#1765a8 65%,#0f766e);color:white;text-align:center;padding:28px 12px;box-shadow:0 8px 25px #123b7030}
 header h1{margin:0 0 7px;font-size:27px}
 header p{margin:0}
 .container{max-width:1200px;margin:20px auto;padding:0 14px}
-.card{background:white;border-radius:12px;padding:20px;margin-bottom:18px;box-shadow:0 3px 12px #00000010}
-h2{margin-top:0;color:#123b70}
+.card{background:#ffffffee;border:1px solid #dbe7f5;border-radius:18px;padding:22px;margin-bottom:20px;box-shadow:0 10px 28px #123b7012;backdrop-filter:blur(6px)}
+h2{margin-top:0;color:#123b70;letter-spacing:.1px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
 label{display:block;font-weight:bold;margin-bottom:6px}
 input,select,button{font:inherit}
 input,select{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:7px;background:white}
-button{border:0;border-radius:7px;padding:11px 15px;cursor:pointer;font-weight:bold;margin:5px 3px}
+button{border:0;border-radius:10px;padding:12px 17px;cursor:pointer;font-weight:bold;margin:5px 3px;box-shadow:0 3px 8px #00000012;transition:transform .15s,filter .15s}button:hover{filter:brightness(1.04);transform:translateY(-1px)}
 .primary{background:#1456a0;color:white}
 .success{background:#15803d;color:white}
 .danger{background:#b91c1c;color:white}
@@ -32,16 +32,16 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .ok{display:block;background:#dcfce7;color:#166534}
 table{width:100%;border-collapse:collapse;min-width:700px}
 th,td{padding:10px;border:1px solid #e2e8f0;text-align:left}
-th{background:#eaf1fb}
+th{background:#eaf1fb;color:#123b70;font-weight:700}tbody tr:nth-child(even){background:#f8fbff}tbody tr:hover{background:#eef6ff}
 .table-wrap{overflow-x:auto}
 .status-select{min-width:120px}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
-.stat{padding:16px;border-radius:9px;background:#eaf1fb}
-.stat strong{display:block;font-size:25px;color:#123b70;margin-top:5px}
-#protectedApp{display:none}
+.stat{padding:18px;border-radius:13px;background:linear-gradient(135deg,#eef5ff,#f8fbff);border:1px solid #d9e8fa}
+.stat strong{display:block;font-size:28px;color:#123b70;margin-top:7px}
+#protectedApp{display:none}.section-note{color:#52647b;line-height:1.55}.count-pill{display:inline-block;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:bold;background:#fee2e2;color:#991b1b}.absent-card{border-top:5px solid #dc2626}.absent-name{font-weight:700;color:#991b1b}.empty-note{padding:18px;text-align:center;color:#64748b}
 @media print{
   header{background:white!important;color:black!important}
-  .no-print,#loginCard,#message{display:none!important}
+  .no-print,#message{display:none!important}
   body{background:white}
   .container{max-width:none;margin:0;padding:0}
   .card{box-shadow:none;border:1px solid #ddd}
@@ -61,30 +61,11 @@ th{background:#eaf1fb}
 <div class="container">
   <div id="message" class="message"></div>
 
-  <section id="loginCard" class="card">
-    <h2>Attendance Login</h2>
-    <p>Owner, Active Principal या Active Supervisor ही लॉगिन कर सकते हैं।</p>
-    <form id="loginForm">
-      <div class="grid">
-        <div>
-          <label for="loginEmail">Staff Email / Login Email</label>
-          <input id="loginEmail" type="email" required
-                 placeholder="username@staff.sefdahod.in">
-        </div>
-        <div>
-          <label for="loginPassword">Password</label>
-          <input id="loginPassword" type="password" required>
-        </div>
-      </div>
-      <button id="loginBtn" class="primary" type="submit">Login</button>
-    </form>
-  </section>
 
   <main id="protectedApp">
     <section class="card no-print">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
         <h2>Attendance Dashboard</h2>
-        <button id="logoutBtn" class="danger">Logout</button>
       </div>
 
       <div class="grid">
@@ -169,6 +150,18 @@ th{background:#eaf1fb}
         <button class="primary" id="loadClassReportBtn">Show Class-wise Report</button>
         <button class="secondary" id="printClassReportBtn">Print Class-wise Report</button>
       </div>
+    </section>
+
+    <section class="card absent-card">
+      <h2>Absent Students — नाम के साथ</h2>
+      <p class="section-note">चुनी हुई तारीख और Session में जिन विद्यार्थियों की Attendance <b>Absent</b> सेव है, उनके नाम Class और Section के अनुसार यहाँ दिखेंगे। जिनकी Attendance सेव नहीं हुई है, उन्हें गलती से Absent नहीं माना जाएगा।</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Sr.</th><th>Class</th><th>Section</th><th>Roll No.</th><th>Admission No.</th><th>Student Name</th><th>Status</th></tr></thead>
+          <tbody id="absentNamesTable"><tr><td colspan="7" class="empty-note">Show Class-wise Report पर क्लिक करें।</td></tr></tbody>
+        </table>
+      </div>
+      <div class="actions no-print"><button class="primary" id="printAbsentBtn">Print Absent List</button></div>
     </section>
 
     <section class="card">
@@ -263,23 +256,16 @@ function displayDate(date) {
 async function showProtectedApp(user) {
   let allowed = false;
   currentUser = null;
-
   if (user) {
     if (user.id === ADMIN_USER_ID) {
       allowed = true;
     } else {
-      const { data: staff, error } = await db
-        .from("staff_profiles")
-        .select("role,is_active")
-        .eq("auth_user_id", user.id)
-        .maybeSingle();
-
+      const { data: staff, error } = await db.from("staff_profiles")
+        .select("role,is_active").eq("auth_user_id", user.id).maybeSingle();
       allowed = !error && !!staff && staff.is_active === true &&
-        ["principal","supervisor"].includes(staff.role);
+        ["owner","admin","principal","supervisor"].includes(String(staff.role || "").toLowerCase());
     }
   }
-
-  $("loginCard").style.display = allowed ? "none" : "block";
   $("protectedApp").style.display = allowed ? "block" : "none";
   if (allowed) currentUser = user;
   return allowed;
@@ -289,56 +275,20 @@ async function checkAuth() {
   const { data, error } = await db.auth.getSession();
   if (error) {
     await showProtectedApp(null);
-    message("Login status check nahi hua: " + error.message, true);
+    message("Login session check nahi ho saka: " + error.message, true);
     return;
   }
-
   const user = data.session?.user || null;
   const allowed = await showProtectedApp(user);
-
-  if (user && !allowed) {
-    await db.auth.signOut();
-    message("Attendance ke liye Owner, Active Principal ya Active Supervisor chahiye.", true);
+  if (!user) {
+    message("Pehle Student Master / website ke common login se login karein, phir Attendance kholein.", true);
+  } else if (!allowed) {
+    message("Is Attendance page ke liye Owner, Admin, Active Principal ya Active Supervisor ka access chahiye.", true);
   }
 }
 
-$("loginForm").addEventListener("submit", async event => {
-  event.preventDefault();
-  clearMessage();
-  $("loginBtn").disabled = true;
+db.auth.onAuthStateChange(() => { setTimeout(() => checkAuth(), 0); });
 
-  try {
-    const email = $("loginEmail").value.trim();
-    const password = $("loginPassword").value;
-    const { data, error } = await db.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-
-    const allowed = await showProtectedApp(data.user);
-    if (!allowed) {
-      await db.auth.signOut();
-      throw new Error("Sirf Owner, Active Principal ya Active Supervisor attendance khol sakte hain.");
-    }
-
-    $("loginPassword").value = "";
-    message("Login successful.");
-  } catch (e) {
-    await showProtectedApp(null);
-    message("Login nahi hua: " + e.message, true);
-  } finally {
-    $("loginBtn").disabled = false;
-  }
-});
-
-db.auth.onAuthStateChange(() => {
-  setTimeout(() => checkAuth(), 0);
-});
-
-$("logoutBtn").addEventListener("click", async () => {
-  const { error } = await db.auth.signOut();
-  await showProtectedApp(null);
-  if (error) message("Logout error: " + error.message, true);
-  else message("Logout ho gaya.");
-});
 
 function updateSummary() {
   const statuses = students.map(s => s.attendanceStatus || "Present");
@@ -540,78 +490,64 @@ async function loadClasswiseReport() {
   const date = $("attendanceDate").value;
   const session = $("attendanceSession").value;
   if (!date || !session) return message("Date aur Session select karein.", true);
-
   const btn = $("loadClassReportBtn");
   btn.disabled = true;
   try {
-    // Active students are the denominator, so unmarked students are not counted as absent.
-    const { data: activeStudents, error: studentsError } = await db
-      .from("students")
-      .select("id,class_name,section")
+    // Read active students and saved attendance for selected date/session.
+    const { data: activeStudents, error: studentsError } = await db.from("students")
+      .select("id,admission_no,roll_no,student_name,class_name,section")
       .eq("student_status", "Active");
     if (studentsError) throw studentsError;
-
-    const { data: records, error: recordsError } = await db
-      .from("attendance_records")
-      .select("student_id,class_name,section,status")
-      .eq("attendance_date", date)
-      .eq("session", session);
+    const { data: records, error: recordsError } = await db.from("attendance_records")
+      .select("student_id,admission_no,roll_no,student_name,class_name,section,status,remarks")
+      .eq("attendance_date", date).eq("session", session);
     if (recordsError) throw recordsError;
 
     const recordsByStudent = new Map((records || []).map(r => [r.student_id, r]));
     const groups = new Map();
-
+    const absentList = [];
     (activeStudents || []).forEach(student => {
       const cls = student.class_name || "Not Set";
       const section = student.section || "No Section";
+      // Honor currently selected class/section filters, if chosen.
+      if ($("className").value && cls !== $("className").value) return;
+      if ($("section").value && section !== $("section").value) return;
       const key = `${cls}|||${section}`;
-      if (!groups.has(key)) {
-        groups.set(key, { className: cls, section, total: 0, present: 0, absent: 0, leave: 0, notMarked: 0 });
-      }
-      const g = groups.get(key);
-      g.total++;
+      if (!groups.has(key)) groups.set(key, {className:cls,section,total:0,present:0,absent:0,leave:0,notMarked:0});
+      const g = groups.get(key); g.total++;
       const record = recordsByStudent.get(student.id);
       const status = record?.status;
       if (status === "Present") g.present++;
-      else if (status === "Absent") g.absent++;
-      else if (status === "Leave") g.leave++;
+      else if (status === "Absent") {
+        g.absent++;
+        absentList.push({...student, className:cls, section, status:"Absent"});
+      } else if (status === "Leave") g.leave++;
       else g.notMarked++;
     });
 
     const rows = [...groups.values()].sort((a,b) =>
-      a.className.localeCompare(b.className, undefined, { numeric: true }) ||
-      a.section.localeCompare(b.section, undefined, { numeric: true })
-    );
+      a.className.localeCompare(b.className, undefined, {numeric:true}) ||
+      a.section.localeCompare(b.section, undefined, {numeric:true}));
+    $("classReportTable").innerHTML = rows.length ? rows.map((g,i) => `
+      <tr><td>${i+1}</td><td>${escapeHtml(g.className)}</td><td>${escapeHtml(g.section)}</td>
+      <td>${g.total}</td><td>${g.present}</td><td><b style="color:#b91c1c">${g.absent}</b></td><td>${g.leave}</td><td>${g.notMarked}</td></tr>`).join("") :
+      '<tr><td colspan="8" class="empty-note">इस तारीख/फिल्टर में कोई Active विद्यार्थी नहीं मिला।</td></tr>';
+    const totals = rows.reduce((a,g) => ({total:a.total+g.total,present:a.present+g.present,absent:a.absent+g.absent,leave:a.leave+g.leave,notMarked:a.notMarked+g.notMarked}), {total:0,present:0,absent:0,leave:0,notMarked:0});
+    if (rows.length) $("classReportTable").insertAdjacentHTML("beforeend", `<tr style="font-weight:bold;background:#eaf1fb"><td colspan="3">Grand Total</td><td>${totals.total}</td><td>${totals.present}</td><td style="color:#b91c1c">${totals.absent}</td><td>${totals.leave}</td><td>${totals.notMarked}</td></tr>`);
 
-    $("classReportTable").innerHTML = rows.length ? rows.map((g, i) => `
-      <tr>
-        <td>${i + 1}</td><td>${escapeHtml(g.className)}</td><td>${escapeHtml(g.section)}</td>
-        <td>${g.total}</td><td>${g.present}</td><td>${g.absent}</td>
-        <td>${g.leave}</td><td>${g.notMarked}</td>
-      </tr>`).join("") :
-      '<tr><td colspan="8">कोई Active विद्यार्थी नहीं मिला।</td></tr>';
-
-    const totals = rows.reduce((a,g) => ({
-      total:a.total+g.total, present:a.present+g.present, absent:a.absent+g.absent,
-      leave:a.leave+g.leave, notMarked:a.notMarked+g.notMarked
-    }), {total:0,present:0,absent:0,leave:0,notMarked:0});
-    if (rows.length) {
-      $("classReportTable").insertAdjacentHTML("beforeend", `
-        <tr style="font-weight:bold;background:#eaf1fb">
-          <td colspan="3">Grand Total</td><td>${totals.total}</td><td>${totals.present}</td>
-          <td>${totals.absent}</td><td>${totals.leave}</td><td>${totals.notMarked}</td>
-        </tr>`);
-    }
-    message(`Class-wise report ready: ${date} | ${session}. Not Marked विद्यार्थियों को Absent में नहीं गिना गया।`);
+    absentList.sort((a,b) => a.className.localeCompare(b.className,undefined,{numeric:true}) || a.section.localeCompare(b.section,undefined,{numeric:true}) || String(a.roll_no||"").localeCompare(String(b.roll_no||""),undefined,{numeric:true}) || String(a.student_name||"").localeCompare(String(b.student_name||"")));
+    $("absentNamesTable").innerHTML = absentList.length ? absentList.map((s,i) => `<tr><td>${i+1}</td><td>${escapeHtml(s.className)}</td><td>${escapeHtml(s.section)}</td><td>${escapeHtml(s.roll_no)}</td><td>${escapeHtml(s.admission_no)}</td><td class="absent-name">${escapeHtml(s.student_name)}</td><td><span class="count-pill">ABSENT</span></td></tr>`).join("") :
+      '<tr><td colspan="7" class="empty-note">इस तारीख के लिए कोई saved Absent विद्यार्थी नहीं मिला। अगर हाजिरी नहीं भरी गई है, तो वे Not Marked में दिखेंगे।</td></tr>';
+    message(`Report ready: ${displayDate(date)} | ${session} — ${totals.absent} Absent विद्यार्थी नाम सहित मिले।`);
   } catch (e) {
     message("Class-wise report load nahi hui: " + e.message, true);
-  } finally {
-    btn.disabled = false;
-  }
+  } finally { btn.disabled = false; }
 }
+
 $("classReportBtn").addEventListener("click", loadClasswiseReport);
 $("loadClassReportBtn").addEventListener("click", loadClasswiseReport);
 $("printClassReportBtn").addEventListener("click", () => window.print());
+$("printAbsentBtn").addEventListener("click", () => window.print());
 $("printBtn").addEventListener("click", () => window.print());
 
 $("attendanceDate").value = todayISO();
