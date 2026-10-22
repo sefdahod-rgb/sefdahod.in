@@ -48,6 +48,10 @@ th{background:#eaf1fb;color:#123b70;font-weight:700}tbody tr:nth-child(even){bac
   table{min-width:0;font-size:11px}
   th,td{padding:6px}
 }
+
+.vacation-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.vacation-pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#fef3c7;color:#92400e;font-weight:700;font-size:12px}
+
 </style>
 </head>
 
@@ -189,6 +193,30 @@ th{background:#eaf1fb;color:#123b70;font-weight:700}tbody tr:nth-child(even){bac
         <table>
           <thead><tr><th>Date</th><th>Day</th><th>Setting</th><th class="no-print">Action</th></tr></thead>
           <tbody id="calendarTable"><tr><td colspan="4">अभी कोई custom date सेट नहीं है।</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <section class="card">
+      <h2>Vacation Calendar — Summer / Diwali</h2>
+      <p class="section-note">Summer Vacation और Diwali Vacation की तारीखें हर साल बदल सकती हैं। इस Session के लिए Start Date और End Date भरकर सेव करें। बाद में Edit करके तारीखें बदल सकते हैं। Vacation के दिन Holiday में गिने जाएँगे।</p>
+      <div class="vacation-form no-print">
+        <div><label for="vacationName">Vacation Type</label>
+          <select id="vacationName"><option value="Summer Vacation">Summer Vacation</option><option value="Diwali Vacation">Diwali Vacation</option><option value="Other Vacation">Other Vacation</option></select>
+        </div>
+        <div><label for="vacationStart">Start Date</label><input type="date" id="vacationStart"></div>
+        <div><label for="vacationEnd">End Date</label><input type="date" id="vacationEnd"></div>
+      </div>
+      <div class="actions no-print">
+        <button class="primary" id="saveVacationBtn">Save Vacation</button>
+        <button class="secondary" id="cancelVacationEditBtn" style="display:none">Cancel Edit</button>
+      </div>
+      <p class="small-note" id="vacationMessage">Vacation dates इसी browser में सेव होंगी। यदि किसी तारीख को स्कूल खुला हो, तो ऊपर Holiday & Sunday Calendar में उस तारीख को School Open सेट करें।</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Vacation</th><th>Start Date</th><th>End Date</th><th>Total Days</th><th class="no-print">Action</th></tr></thead>
+          <tbody id="vacationTable"><tr><td colspan="5">अभी कोई Vacation सेव नहीं है।</td></tr></tbody>
         </table>
       </div>
     </section>
@@ -657,12 +685,27 @@ function monthName(yyyyMm) {
 }
 
 const CALENDAR_STORAGE_KEY = "rps_attendance_calendar_v1";
+const VACATION_STORAGE_KEY = "rps_attendance_vacations_v1";
+let editingVacationId = null;
 function getCalendarSettings() {
   try { return JSON.parse(localStorage.getItem(CALENDAR_STORAGE_KEY) || "{}"); }
   catch (_) { return {}; }
 }
 function saveCalendarSettings(settings) {
   localStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(settings));
+}
+function getVacations() {
+  try {
+    const v = JSON.parse(localStorage.getItem(VACATION_STORAGE_KEY) || "[]");
+    return Array.isArray(v) ? v : [];
+  } catch (_) { return []; }
+}
+function saveVacations(vacations) {
+  localStorage.setItem(VACATION_STORAGE_KEY, JSON.stringify(vacations));
+}
+function dateRangeDays(start, end) {
+  if (!start || !end || end < start) return 0;
+  return Math.round((new Date(end+"T12:00:00") - new Date(start+"T12:00:00")) / 86400000) + 1;
 }
 function isSunday(dateStr) {
   return new Date(dateStr + "T12:00:00").getDay() === 0;
@@ -671,12 +714,74 @@ function dateDayName(dateStr) {
   return new Date(dateStr + "T12:00:00").toLocaleDateString("en-IN",{weekday:"long"});
 }
 function getDaySetting(dateStr, settings=getCalendarSettings()) {
+  // A manually selected date setting has highest priority, so a vacation/Sunday can be overridden.
   if (settings[dateStr] === "holiday") return "holiday";
   if (settings[dateStr] === "open") return "open";
+  // Vacation date ranges are holidays unless the date has been explicitly set to School Open above.
+  if (getVacations().some(v => dateStr >= v.start && dateStr <= v.end)) return "holiday";
   return isSunday(dateStr) ? "holiday" : "open";
 }
+function resetVacationForm() {
+  editingVacationId = null;
+  $("vacationName").value = "Summer Vacation";
+  $("vacationStart").value = "";
+  $("vacationEnd").value = "";
+  $("saveVacationBtn").textContent = "Save Vacation";
+  $("cancelVacationEditBtn").style.display = "none";
+}
+function renderVacations() {
+  const {start,end} = sessionBounds($("attendanceSession").value);
+  const vacations = getVacations().filter(v => v.end >= start && v.start <= end)
+    .sort((a,b) => a.start.localeCompare(b.start));
+  $("vacationTable").innerHTML = vacations.length ? vacations.map(v => `
+    <tr>
+      <td><span class="vacation-pill">${escapeHtml(v.name)}</span></td>
+      <td>${displayDate(v.start)}</td><td>${displayDate(v.end)}</td><td>${dateRangeDays(v.start,v.end)}</td>
+      <td class="no-print"><button class="primary" data-edit-vacation="${escapeHtml(v.id)}">Edit</button><button class="danger" data-delete-vacation="${escapeHtml(v.id)}">Delete</button></td>
+    </tr>`).join("") : '<tr><td colspan="5">इस Session में कोई Vacation सेव नहीं है।</td></tr>';
+  $("vacationTable").querySelectorAll("[data-edit-vacation]").forEach(btn => btn.addEventListener("click", () => {
+    const v = getVacations().find(item => item.id === btn.dataset.editVacation);
+    if (!v) return;
+    editingVacationId = v.id;
+    $("vacationName").value = v.name;
+    $("vacationStart").value = v.start;
+    $("vacationEnd").value = v.end;
+    $("saveVacationBtn").textContent = "Update Vacation";
+    $("cancelVacationEditBtn").style.display = "inline-block";
+    $("vacationMessage").textContent = "अब तारीखें बदलकर Update Vacation दबाएँ।";
+    $("vacationStart").scrollIntoView({behavior:"smooth",block:"center"});
+  }));
+  $("vacationTable").querySelectorAll("[data-delete-vacation]").forEach(btn => btn.addEventListener("click", () => {
+    const updated = getVacations().filter(v => v.id !== btn.dataset.deleteVacation);
+    saveVacations(updated);
+    renderVacations(); renderCalendarSettings(); loadAnnualReport();
+    $("vacationMessage").textContent = "Vacation delete कर दी गई।";
+  }));
+}
+function saveVacation() {
+  const name = $("vacationName").value;
+  const start = $("vacationStart").value;
+  const end = $("vacationEnd").value;
+  if (!start || !end) return message("Vacation की Start Date और End Date दोनों चुनें।", true);
+  if (end < start) return message("End Date, Start Date से पहले नहीं हो सकती।", true);
+  const vacations = getVacations();
+  const id = editingVacationId || `vac-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
+  const other = vacations.filter(v => v.id !== id);
+  const overlap = other.find(v => start <= v.end && end >= v.start);
+  if (overlap && !confirm(`यह तारीखें ${overlap.name} से overlap कर रही हैं। फिर भी सेव करें?`)) return;
+  other.push({id,name,start,end});
+  saveVacations(other);
+  resetVacationForm();
+  renderVacations(); renderCalendarSettings();
+  $("vacationMessage").textContent = `${name}: ${displayDate(start)} से ${displayDate(end)} तक सेव हो गई।`;
+  message("Vacation dates सेव हो गईं।");
+  loadAnnualReport();
+}
+$("saveVacationBtn").addEventListener("click", saveVacation);
+$("cancelVacationEditBtn").addEventListener("click", () => { resetVacationForm(); $("vacationMessage").textContent = "Edit cancel कर दिया गया।"; });
 function renderCalendarSettings() {
   const settings=getCalendarSettings();
+  if ($("vacationTable")) renderVacations();
   const session=$("attendanceSession").value;
   const {start,end}=sessionBounds(session);
   const custom=Object.keys(settings).filter(d=>d>=start&&d<=end).sort();
@@ -719,7 +824,7 @@ $("saveCalendarBtn").addEventListener("click",()=>{
   loadAnnualReport();
 });
 $("refreshCalendarBtn").addEventListener("click",renderCalendarSettings);
-$("attendanceSession").addEventListener("change",renderCalendarSettings);
+$("attendanceSession").addEventListener("change",()=>{ renderCalendarSettings(); renderVacations(); });
 
 
 async function loadAnnualReport() {
