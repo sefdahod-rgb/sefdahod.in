@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance Management - Rainbow Public School</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#eaf2ff 0%,#f8fbff 48%,#fff7e8 100%);color:#1e293b;min-height:100vh}
+header{background:linear-gradient(120deg,#102f5f,#1765a8 65%,#0f766e);color:white;text-align:center;padding:28px 12px;box-shadow:0 8px 25px #123b7030}
+header h1{margin:0 0 7px;font-size:27px}
+header p{margin:0}
+.container{max-width:1200px;margin:20px auto;padding:0 14px}
+.card{background:#ffffffee;border:1px solid #dbe7f5;border-radius:18px;padding:22px;margin-bottom:20px;box-shadow:0 10px 28px #123b7012;backdrop-filter:blur(6px)}
+h2{margin-top:0;color:#123b70;letter-spacing:.1px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+label{display:block;font-weight:bold;margin-bottom:6px}
+input,select,button{font:inherit}
+input,select{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:7px;background:white}
+button{border:0;border-radius:10px;padding:12px 17px;cursor:pointer;font-weight:bold;margin:5px 3px;box-shadow:0 3px 8px #00000012;transition:transform .15s,filter .15s}button:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.primary{background:#1456a0;color:white}
+.success{background:#15803d;color:white}
+.danger{background:#b91c1c;color:white}
+.secondary{background:#e2e8f0;color:#1e293b}
+button:disabled{opacity:.6;cursor:not-allowed}
+.actions{margin-top:16px}
+.message{padding:12px;border-radius:7px;margin:12px 0;display:none;overflow-wrap:anywhere}
+.error{display:block;background:#fee2e2;color:#991b1b}
+.ok{display:block;background:#dcfce7;color:#166534}
+table{width:100%;border-collapse:collapse;min-width:700px}
+th,td{padding:10px;border:1px solid #e2e8f0;text-align:left}
+th{background:#eaf1fb;color:#123b70;font-weight:700}tbody tr:nth-child(even){background:#f8fbff}tbody tr:hover{background:#eef6ff}
+.table-wrap{overflow-x:auto}
+.status-select{min-width:120px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{padding:18px;border-radius:13px;background:linear-gradient(135deg,#eef5ff,#f8fbff);border:1px solid #d9e8fa}
+.stat strong{display:block;font-size:28px;color:#123b70;margin-top:7px}
+#protectedApp{display:none}.section-note{color:#52647b;line-height:1.55}.count-pill{display:inline-block;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:bold;background:#fee2e2;color:#991b1b}.absent-card{border-top:5px solid #dc2626}.absent-name{font-weight:700;color:#991b1b}.empty-note{padding:18px;text-align:center;color:#64748b}.small-note{font-size:13px;color:#64748b;line-height:1.55}
+@media print{
+  header{background:white!important;color:black!important}
+  .no-print,#message{display:none!important}
+  body{background:white}
+  .container{max-width:none;margin:0;padding:0}
+  .card{box-shadow:none;border:1px solid #ddd}
+  table{min-width:0;font-size:11px}
+  th,td{padding:6px}
+}
+
+.vacation-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.vacation-pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#fef3c7;color:#92400e;font-weight:700;font-size:12px}
+
+</style>
+</head>
+
+<body>
+<header>
+  <h1>Rainbow Public School</h1>
+  <p>Conducted by Shubhi Education Foundation, Dahod</p>
+  <p>Attendance Management System</p>
+</header>
+
+<div class="container">
+  <div id="message" class="message"></div>
+
+
+  <main id="protectedApp">
+    <section class="card no-print">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+        <h2 style="margin-bottom:0">Attendance Dashboard</h2>
+        <a href="student-master.html" class="primary" style="display:inline-block;text-decoration:none;border-radius:8px;padding:11px 16px;font-weight:bold;color:white">← Back to Student Master</a>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label for="attendanceDate">Attendance Date</label>
+          <input type="date" id="attendanceDate" required>
+        </div>
+        <div>
+          <label for="attendanceSession">Session</label>
+          <select id="attendanceSession">
+            <option>2026-27</option>
+            <option>2027-28</option>
+            <option>2028-29</option>
+            <option>2029-30</option>
+            <option>2030-31</option>
+          </select>
+        </div>
+        <div>
+          <label for="className">Class</label>
+          <select id="className">
+            <option value="">Select Class</option>
+            <option>Nursery</option>
+            <option>LKG</option>
+            <option>UKG</option>
+            <option>1st</option>
+            <option>2nd</option>
+            <option>3rd</option>
+            <option>4th</option>
+            <option>5th</option>
+            <option>6th</option>
+            <option>7th</option>
+            <option>8</option>
+          </select>
+        </div>
+        <div>
+          <label for="section">Section</label>
+          <select id="section">
+            <option value="">All Sections</option>
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="loadBtn">Load Students</button>
+        <button class="success" id="allPresentBtn">Mark All Present</button>
+        <button class="secondary" id="allAbsentBtn">Mark All Absent</button>
+        <button class="secondary" id="allLeaveBtn">Mark All Leave</button>
+        <button class="primary" id="classReportBtn">Class-wise Attendance Report</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Attendance Summary</h2>
+      <div class="stats">
+        <div class="stat">Total Students<strong id="totalCount">0</strong></div>
+        <div class="stat">Present<strong id="presentCount">0</strong></div>
+        <div class="stat">Absent<strong id="absentCount">0</strong></div>
+        <div class="stat">Leave<strong id="leaveCount">0</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Class-wise Attendance Report</h2>
+      <p>चुनी हुई तारीख और Session के अनुसार हर कक्षा/Section में कुल, Present, Absent, Leave और जिनकी हाजिरी नहीं लगी उनकी संख्या देखें।</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Sr.</th><th>Class</th><th>Section</th><th>Total Students</th>
+              <th>Present</th><th>Absent</th><th>Leave</th><th>Not Marked</th>
+            </tr>
+          </thead>
+          <tbody id="classReportTable">
+            <tr><td colspan="8">Class-wise Attendance Report बटन पर क्लिक करें।</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="actions no-print">
+        <button class="primary" id="loadClassReportBtn">Show Class-wise Report</button>
+        <button class="secondary" id="printClassReportBtn">Print Class-wise Report</button>
+      </div>
+    </section>
+
+    <section class="card absent-card">
+      <h2>Absent Students — नाम के साथ</h2>
+      <p class="section-note">चुनी हुई तारीख और Session में जिन विद्यार्थियों की Attendance <b>Absent</b> सेव है, उनके नाम Class और Section के अनुसार यहाँ दिखेंगे। जिनकी Attendance सेव नहीं हुई है, उन्हें गलती से Absent नहीं माना जाएगा।</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Sr.</th><th>Class</th><th>Section</th><th>Roll No.</th><th>Admission No.</th><th>Student Name</th><th>Status</th></tr></thead>
+          <tbody id="absentNamesTable"><tr><td colspan="7" class="empty-note">Show Class-wise Report पर क्लिक करें।</td></tr></tbody>
+        </table>
+      </div>
+      <div class="actions no-print"><button class="primary" id="printAbsentBtn">Print Absent List</button></div>
+    </section>
+
+
+
+    <section class="card">
+      <h2>Holiday & Sunday Calendar</h2>
+      <p class="section-note">किसी भी तारीख को School Holiday या School Open कर सकते हैं। रविवार अपने-आप Holiday माना जाएगा। बदलाव Supabase में साझा होंगे और दूसरे डिवाइस पर भी दिखेंगे। Delete केवल Owner कर सकता है।</p>
+      <div class="grid no-print">
+        <div><label for="calendarDate">Date</label><input type="date" id="calendarDate"></div>
+        <div><label for="calendarStatus">इस दिन स्कूल</label>
+          <select id="calendarStatus">
+            <option value="holiday">Holiday / छुट्टी</option>
+            <option value="open">School Open / स्कूल खुला</option>
+            <option value="auto">Default पर वापस (Sunday = Holiday)</option>
+          </select>
+        </div>
+      </div>
+      <div class="actions no-print">
+        <button class="primary" id="saveCalendarBtn">Save Date Setting</button>
+        <button class="secondary" id="refreshCalendarBtn">Refresh Calendar</button>
+      </div>
+      <p class="small-note" id="calendarSummary">Date चुनकर holiday या school open सेट करें।</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Day</th><th>Setting</th><th class="no-print">Action</th></tr></thead>
+          <tbody id="calendarTable"><tr><td colspan="4">अभी कोई custom date सेट नहीं है।</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <section class="card">
+      <h2>Vacation Calendar — Summer / Diwali</h2>
+      <p class="section-note">Summer Vacation और Diwali Vacation की तारीखें हर साल बदल सकती हैं। इस Session के लिए Start Date और End Date भरकर सेव करें। बाद में Edit करके तारीखें बदल सकते हैं। Vacation के दिन Holiday में गिने जाएँगे।</p>
+      <div class="vacation-form no-print">
+        <div><label for="vacationName">Vacation Type</label>
+          <select id="vacationName"><option value="Summer Vacation">Summer Vacation</option><option value="Diwali Vacation">Diwali Vacation</option><option value="Other Vacation">Other Vacation</option></select>
+        </div>
+        <div><label for="vacationStart">Start Date</label><input type="date" id="vacationStart"></div>
+        <div><label for="vacationEnd">End Date</label><input type="date" id="vacationEnd"></div>
+      </div>
+      <div class="actions no-print">
+        <button class="primary" id="saveVacationBtn">Save Vacation</button>
+        <button class="secondary" id="cancelVacationEditBtn" style="display:none">Cancel Edit</button>
+      </div>
+      <p class="small-note" id="vacationMessage">Vacation dates Supabase में साझा सेव होंगी। यदि किसी तारीख को स्कूल खुला हो, तो ऊपर Holiday & Sunday Calendar में उस तारीख को School Open सेट करें। Delete केवल Owner कर सकता है।</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Vacation</th><th>Start Date</th><th>End Date</th><th>Total Days</th><th class="no-print">Action</th></tr></thead>
+          <tbody id="vacationTable"><tr><td colspan="5">अभी कोई Vacation सेव नहीं है।</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Student-wise Year & Month Report</h2>
+      <p class="section-note">Selected Session में हर active विद्यार्थी की पूरे साल की Present, Absent, Leave और महीनेवार गिनती। सबसे अधिक Present विद्यार्थी भी ऊपर दिखेगा।</p>
+      <div class="actions no-print">
+        <button class="primary" id="loadAnnualBtn">Load Year Report</button>
+        <button class="secondary" id="printAnnualBtn">Print Year Report</button>
+      </div>
+      <div class="stats">
+        <div class="stat">School Open Days*<strong id="openDaysCount">0</strong></div>
+        <div class="stat">Holiday Days<strong id="holidayCount">0</strong></div>
+        <div class="stat">Highest Present<strong id="topStudentCount">—</strong></div>
+        <div class="stat">Student Name<strong id="topStudentName">—</strong></div>
+      </div>
+      <p class="small-note">School Open Days और Holiday Days नीचे दिए Holiday & Sunday Calendar के अनुसार निकाले जाते हैं। Sunday default Holiday है; किसी Sunday को स्कूल खुला हो तो उसे School Open सेट करें।</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Sr.</th><th>Class</th><th>Section</th><th>Admission No.</th><th>Student Name</th><th>Present</th><th>Absent</th><th>Leave</th><th>Marked Days</th><th>Present %</th></tr></thead>
+          <tbody id="annualStudentTable"><tr><td colspan="10" class="empty-note">Load Year Report दबाएँ।</td></tr></tbody>
+        </table>
+      </div>
+      <h3 style="color:#123b70">Month-wise Summary</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Month</th><th>Dates with Attendance</th><th>Present Entries</th><th>Absent Entries</th><th>Leave Entries</th></tr></thead>
+          <tbody id="monthSummaryTable"><tr><td colspan="5" class="empty-note">Load Year Report दबाएँ।</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Date-wise Student Search</h2>
+      <p class="section-note">तारीख चुनें और सभी विद्यार्थियों का status देखें। नाम या Admission No. से भी खोज सकते हैं। अगर उस दिन record सेव नहीं है, तो status Not Marked दिखेगा — उसे Absent नहीं माना जाएगा।</p>
+      <div class="grid no-print">
+        <div><label for="searchDate">Date</label><input type="date" id="searchDate"></div>
+        <div><label for="searchStudent">Student Name / Admission No.</label><input id="searchStudent" placeholder="नाम या Admission No."></div>
+        <div><label for="searchClass">Class</label><select id="searchClass"><option value="">All Classes</option><option>Nursery</option><option>LKG</option><option>UKG</option><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8</option></select></div>
+        <div><label for="searchSection">Section</label><select id="searchSection"><option value="">All Sections</option><option>A</option><option>B</option><option>C</option></select></div>
+      </div>
+      <div class="actions no-print"><button class="primary" id="dateSearchBtn">Search Attendance</button><button class="secondary" id="printDateSearchBtn">Print Search</button></div>
+      <div class="stats">
+        <div class="stat">Present<strong id="datePresentCount">0</strong></div>
+        <div class="stat">Absent<strong id="dateAbsentCount">0</strong></div>
+        <div class="stat">Leave<strong id="dateLeaveCount">0</strong></div>
+        <div class="stat">Not Marked<strong id="dateUnmarkedCount">0</strong></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Sr.</th><th>Class</th><th>Section</th><th>Roll No.</th><th>Admission No.</th><th>Student Name</th><th>Status</th><th>Remarks</th></tr></thead>
+          <tbody id="dateSearchTable"><tr><td colspan="8" class="empty-note">Date चुनकर Search Attendance दबाएँ।</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Student Attendance</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Sr.</th>
+              <th>Admission No.</th>
+              <th>Roll No.</th>
+              <th>Student Name</th>
+              <th>Class</th>
+              <th>Section</th>
+              <th>Status</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody id="studentTable">
+            <tr><td colspan="8">पहले Class चुनकर Load Students पर क्लिक करें।</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="actions no-print">
+        <button id="saveBtn" class="success">Save Attendance</button>
+        <button id="reportBtn" class="primary">View Saved Report</button>
+        <button id="printBtn" class="secondary">Print Report</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Saved Attendance Report</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Sr.</th>
+              <th>Date</th>
+              <th>Admission No.</th>
+              <th>Student Name</th>
+              <th>Class</th>
+              <th>Section</th>
+              <th>Status</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody id="reportTable">
+            <tr><td colspan="8">View Saved Report पर क्लिक करें।</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const SUPABASE_URL = "https://kqahcvaoxnmxfcgyyync.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg";
+const ADMIN_USER_ID = "59ca9f10-4950-4415-980a-a14b8206e30d";
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = id => document.getElementById(id);
+let students = [];
+let currentUser = null;
+let currentRole = "";
+
+function message(text, isError = false) {
+  const el = $("message");
+  el.textContent = text;
+  el.className = "message " + (isError ? "error" : "ok");
+  el.style.display = "block";
+}
+function clearMessage() {
+  $("message").textContent = "";
+  $("message").className = "message";
+  $("message").style.display = "none";
+}
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+function todayISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function displayDate(date) {
+  if (!date) return "";
+  const p = String(date).slice(0,10).split("-");
+  return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : date;
+}
+
+async function showProtectedApp(user) {
+  let allowed = false;
+  currentUser = null;
+  currentRole = "";
+  if (user) {
+    if (user.id === ADMIN_USER_ID) {
+      allowed = true; currentRole = "owner";
+    } else {
+      const { data: staff, error } = await db.from("staff_profiles")
+        .select("role,is_active").eq("auth_user_id", user.id).maybeSingle();
+      currentRole = !error && staff && staff.is_active === true ? String(staff.role || "").trim().toLowerCase() : "";
+      allowed = ["owner","admin","principal","supervisor"].includes(currentRole);
+    }
+  }
+  $("protectedApp").style.display = allowed ? "block" : "none";
+  if (allowed) currentUser = user;
+  if (allowed) {
+    try { await loadCalendarData(); renderCalendarSettings(); await loadAnnualReport(); }
+    catch (e) { message("Shared Holiday/Vacation Calendar load nahi hua: " + e.message, true); }
+  }
+  return allowed;
+}
+
+async function checkAuth() {
+  const { data, error } = await db.auth.getSession();
+  if (error) {
+    await showProtectedApp(null);
+    message("Login session check nahi ho saka: " + error.message, true);
+    return;
+  }
+  const user = data.session?.user || null;
+  const allowed = await showProtectedApp(user);
+  if (!user) {
+    message("Pehle Student Master / website ke common login se login karein, phir Attendance kholein.", true);
+  } else if (!allowed) {
+    message("Is Attendance page ke liye Owner, Admin, Active Principal ya Active Supervisor ka access chahiye.", true);
+  }
+}
+
+db.auth.onAuthStateChange(() => { setTimeout(() => checkAuth(), 0); });
+
+
+function updateSummary() {
+  const statuses = students.map(s => s.attendanceStatus || "Present");
+  $("totalCount").textContent = students.length;
+  $("presentCount").textContent = statuses.filter(s => s === "Present").length;
+  $("absentCount").textContent = statuses.filter(s => s === "Absent").length;
+  $("leaveCount").textContent = statuses.filter(s => s === "Leave").length;
+}
+
+function renderStudents() {
+  const tbody = $("studentTable");
+  if (!students.length) {
+    tbody.innerHTML = '<tr><td colspan="8">इस क्लास में Active विद्यार्थी नहीं मिले।</td></tr>';
+    updateSummary();
+    return;
+  }
+
+  tbody.innerHTML = students.map((s, i) => `
+    <tr data-index="${i}">
+      <td>${i+1}</td>
+      <td>${escapeHtml(s.admission_no)}</td>
+      <td>${escapeHtml(s.roll_no)}</td>
+      <td>${escapeHtml(s.student_name)}</td>
+      <td>${escapeHtml(s.class_name)}</td>
+      <td>${escapeHtml(s.section)}</td>
+      <td>
+        <select class="status-select" data-status="${i}">
+          <option ${s.attendanceStatus==="Present"?"selected":""}>Present</option>
+          <option ${s.attendanceStatus==="Absent"?"selected":""}>Absent</option>
+          <option ${s.attendanceStatus==="Leave"?"selected":""}>Leave</option>
+        </select>
+      </td>
+      <td><input data-remarks="${i}" value="${escapeHtml(s.attendanceRemarks || "")}" placeholder="Remarks"></td>
+    </tr>`).join("");
+
+  tbody.querySelectorAll("[data-status]").forEach(el => {
+    el.addEventListener("change", () => {
+      students[Number(el.dataset.status)].attendanceStatus = el.value;
+      updateSummary();
+    });
+  });
+  tbody.querySelectorAll("[data-remarks]").forEach(el => {
+    el.addEventListener("input", () => {
+      students[Number(el.dataset.remarks)].attendanceRemarks = el.value;
+    });
+  });
+  updateSummary();
+}
+
+async function loadStudents() {
+  clearMessage();
+  const className = $("className").value;
+  if (!className) return message("Pehle Class select karein.", true);
+
+  $("loadBtn").disabled = true;
+  try {
+    let query = db.from("students")
+      .select("*")
+      .eq("class_name", className)
+      .eq("student_status", "Active")
+      .order("roll_no", { ascending: true });
+
+    const section = $("section").value;
+    if (section) query = query.eq("section", section);
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    students = (data || []).map(s => ({
+      ...s,
+      attendanceStatus: "Present",
+      attendanceRemarks: ""
+    }));
+
+    if (students.length) {
+      const ids = students.map(s => s.id).filter(Boolean);
+      if (ids.length) {
+        const { data: saved, error: savedError } = await db
+          .from("attendance_records")
+          .select("*")
+          .eq("attendance_date", $("attendanceDate").value)
+          .eq("session", $("attendanceSession").value)
+          .eq("class_name", className)
+          .in("student_id", ids);
+
+        if (savedError) throw savedError;
+        const byStudent = new Map((saved || []).map(r => [r.student_id, r]));
+        students = students.map(s => {
+          const r = byStudent.get(s.id);
+          return r ? {
+            ...s,
+            attendanceStatus: r.status || "Present",
+            attendanceRemarks: r.remarks || ""
+          } : s;
+        });
+      }
+    }
+
+    renderStudents();
+    message(`${students.length} विद्यार्थी मिले। अब Attendance भरें और Save करें।`);
+  } catch (e) {
+    message("Students load nahi hue: " + e.message, true);
+  } finally {
+    $("loadBtn").disabled = false;
+  }
+}
+$("loadBtn").addEventListener("click", loadStudents);
+
+function setAllStatus(status) {
+  students.forEach(s => s.attendanceStatus = status);
+  renderStudents();
+}
+$("allPresentBtn").addEventListener("click", () => setAllStatus("Present"));
+$("allAbsentBtn").addEventListener("click", () => setAllStatus("Absent"));
+$("allLeaveBtn").addEventListener("click", () => setAllStatus("Leave"));
+
+async function saveAttendance() {
+  clearMessage();
+  if (!currentUser) return message("Pehle authorized login karein.", true);
+  if (!students.length) return message("Pehle Load Students par click karein.", true);
+
+  const date = $("attendanceDate").value;
+  const session = $("attendanceSession").value;
+  if (!date || !session) return message("Date aur Session select karein.", true);
+
+  $("saveBtn").disabled = true;
+  try {
+    const payload = students.map(s => ({
+      student_id: s.id,
+      admission_no: s.admission_no || "",
+      roll_no: String(s.roll_no ?? ""),
+      student_name: s.student_name || "",
+      class_name: s.class_name || $("className").value,
+      section: s.section || "",
+      attendance_date: date,
+      session,
+      status: s.attendanceStatus || "Present",
+      remarks: s.attendanceRemarks || ""
+    }));
+
+    const { error } = await db.from("attendance_records").upsert(payload, {
+      onConflict: "student_id,attendance_date"
+    });
+    if (error) throw error;
+
+    message("Attendance successfully save ho gayi.");
+    await viewReport();
+  } catch (e) {
+    message("Attendance save nahi hui: " + e.message +
+      " | Agar duplicate/unique constraint error aaye to database me student_id aur attendance_date ka unique constraint check karna hoga.", true);
+  } finally {
+    $("saveBtn").disabled = false;
+  }
+}
+$("saveBtn").addEventListener("click", saveAttendance);
+
+async function viewReport() {
+  clearMessage();
+  $("reportBtn").disabled = true;
+  try {
+    let query = db.from("attendance_records")
+      .select("*")
+      .eq("attendance_date", $("attendanceDate").value)
+      .eq("session", $("attendanceSession").value)
+      .order("class_name")
+      .order("student_name");
+
+    if ($("className").value) query = query.eq("class_name", $("className").value);
+    if ($("section").value) query = query.eq("section", $("section").value);
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    const rows = data || [];
+    $("reportTable").innerHTML = rows.length ? rows.map((r,i) => `
+      <tr>
+        <td>${i+1}</td>
+        <td>${displayDate(r.attendance_date)}</td>
+        <td>${escapeHtml(r.admission_no)}</td>
+        <td>${escapeHtml(r.student_name)}</td>
+        <td>${escapeHtml(r.class_name)}</td>
+        <td>${escapeHtml(r.section)}</td>
+        <td>${escapeHtml(r.status)}</td>
+        <td>${escapeHtml(r.remarks)}</td>
+      </tr>`).join("") :
+      '<tr><td colspan="8">इस तारीख के लिए कोई saved attendance नहीं मिली।</td></tr>';
+
+    message(`${rows.length} attendance records report mein mile.`);
+  } catch (e) {
+    message("Report load nahi hui: " + e.message, true);
+  } finally {
+    $("reportBtn").disabled = false;
+  }
+}
+$("reportBtn").addEventListener("click", viewReport);
+
+async function loadClasswiseReport() {
+  clearMessage();
+  const date = $("attendanceDate").value;
+  const session = $("attendanceSession").value;
+  if (!date || !session) return message("Date aur Session select karein.", true);
+  const btn = $("loadClassReportBtn");
+  btn.disabled = true;
+  try {
+    // Read active students and saved attendance for selected date/session.
+    const { data: activeStudents, error: studentsError } = await db.from("students")
+      .select("id,admission_no,roll_no,student_name,class_name,section")
+      .eq("student_status", "Active");
+    if (studentsError) throw studentsError;
+    const { data: records, error: recordsError } = await db.from("attendance_records")
+      .select("student_id,admission_no,roll_no,student_name,class_name,section,status,remarks")
+      .eq("attendance_date", date).eq("session", session);
+    if (recordsError) throw recordsError;
+
+    const recordsByStudent = new Map((records || []).map(r => [r.student_id, r]));
+    const groups = new Map();
+    const absentList = [];
+    (activeStudents || []).forEach(student => {
+      const cls = student.class_name || "Not Set";
+      const section = student.section || "No Section";
+      // Honor currently selected class/section filters, if chosen.
+      if ($("className").value && cls !== $("className").value) return;
+      if ($("section").value && section !== $("section").value) return;
+      const key = `${cls}|||${section}`;
+      if (!groups.has(key)) groups.set(key, {className:cls,section,total:0,present:0,absent:0,leave:0,notMarked:0});
+      const g = groups.get(key); g.total++;
+      const record = recordsByStudent.get(student.id);
+      const status = record?.status;
+      if (status === "Present") g.present++;
+      else if (status === "Absent") {
+        g.absent++;
+        absentList.push({...student, className:cls, section, status:"Absent"});
+      } else if (status === "Leave") g.leave++;
+      else g.notMarked++;
+    });
+
+    const rows = [...groups.values()].sort((a,b) =>
+      a.className.localeCompare(b.className, undefined, {numeric:true}) ||
+      a.section.localeCompare(b.section, undefined, {numeric:true}));
+    $("classReportTable").innerHTML = rows.length ? rows.map((g,i) => `
+      <tr><td>${i+1}</td><td>${escapeHtml(g.className)}</td><td>${escapeHtml(g.section)}</td>
+      <td>${g.total}</td><td>${g.present}</td><td><b style="color:#b91c1c">${g.absent}</b></td><td>${g.leave}</td><td>${g.notMarked}</td></tr>`).join("") :
+      '<tr><td colspan="8" class="empty-note">इस तारीख/फिल्टर में कोई Active विद्यार्थी नहीं मिला।</td></tr>';
+    const totals = rows.reduce((a,g) => ({total:a.total+g.total,present:a.present+g.present,absent:a.absent+g.absent,leave:a.leave+g.leave,notMarked:a.notMarked+g.notMarked}), {total:0,present:0,absent:0,leave:0,notMarked:0});
+    if (rows.length) $("classReportTable").insertAdjacentHTML("beforeend", `<tr style="font-weight:bold;background:#eaf1fb"><td colspan="3">Grand Total</td><td>${totals.total}</td><td>${totals.present}</td><td style="color:#b91c1c">${totals.absent}</td><td>${totals.leave}</td><td>${totals.notMarked}</td></tr>`);
+
+    absentList.sort((a,b) => a.className.localeCompare(b.className,undefined,{numeric:true}) || a.section.localeCompare(b.section,undefined,{numeric:true}) || String(a.roll_no||"").localeCompare(String(b.roll_no||""),undefined,{numeric:true}) || String(a.student_name||"").localeCompare(String(b.student_name||"")));
+    $("absentNamesTable").innerHTML = absentList.length ? absentList.map((s,i) => `<tr><td>${i+1}</td><td>${escapeHtml(s.className)}</td><td>${escapeHtml(s.section)}</td><td>${escapeHtml(s.roll_no)}</td><td>${escapeHtml(s.admission_no)}</td><td class="absent-name">${escapeHtml(s.student_name)}</td><td><span class="count-pill">ABSENT</span></td></tr>`).join("") :
+      '<tr><td colspan="7" class="empty-note">इस तारीख के लिए कोई saved Absent विद्यार्थी नहीं मिला। अगर हाजिरी नहीं भरी गई है, तो वे Not Marked में दिखेंगे।</td></tr>';
+    message(`Report ready: ${displayDate(date)} | ${session} — ${totals.absent} Absent विद्यार्थी नाम सहित मिले।`);
+  } catch (e) {
+    message("Class-wise report load nahi hui: " + e.message, true);
+  } finally { btn.disabled = false; }
+}
+
+$("classReportBtn").addEventListener("click", loadClasswiseReport);
+$("loadClassReportBtn").addEventListener("click", loadClasswiseReport);
+$("printClassReportBtn").addEventListener("click", () => window.print());
+$("printAbsentBtn").addEventListener("click", () => window.print());
+$("printBtn").addEventListener("click", () => window.print());
+
+
+// Report helpers: fetch in pages to avoid the usual 1,000-row API limit.
+async function fetchAllRows(makeQuery) {
+  const all = [];
+  const pageSize = 1000;
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await makeQuery().range(from, from + pageSize - 1);
+    if (error) throw error;
+    const batch = data || [];
+    all.push(...batch);
+    if (batch.length < pageSize) break;
+  }
+  return all;
+}
+function sessionBounds(session) {
+  const startYear = Number(String(session).split("-")[0]);
+  if (!Number.isFinite(startYear)) throw new Error("Academic Session sahi select karein.");
+  return { start: `${startYear}-04-01`, end: `${startYear+1}-03-31` };
+}
+function monthName(yyyyMm) {
+  const [y,m] = yyyyMm.split("-").map(Number);
+  return new Date(y, m-1, 1).toLocaleDateString("en-IN", {month:"long", year:"numeric"});
+}
+
+let calendarSettings = {};
+let vacationsCache = [];
+let editingVacationId = null;
+function getCalendarSettings() { return calendarSettings; }
+function getVacations() { return vacationsCache; }
+async function loadCalendarData() {
+  const [settingsResult, vacationsResult] = await Promise.all([
+    db.from("school_calendar_settings").select("calendar_date,setting"),
+    db.from("school_vacations").select("id,name,start_date,end_date").order("start_date")
+  ]);
+  if (settingsResult.error) throw settingsResult.error;
+  if (vacationsResult.error) throw vacationsResult.error;
+  calendarSettings = {};
+  (settingsResult.data || []).forEach(row => { calendarSettings[String(row.calendar_date).slice(0,10)] = row.setting; });
+  vacationsCache = (vacationsResult.data || []).map(v => ({id:v.id,name:v.name,start:String(v.start_date).slice(0,10),end:String(v.end_date).slice(0,10)}));
+}
+function dateRangeDays(start, end) {
+  if (!start || !end || end < start) return 0;
+  return Math.round((new Date(end+"T12:00:00") - new Date(start+"T12:00:00")) / 86400000) + 1;
+}
+function isSunday(dateStr) { return new Date(dateStr + "T12:00:00").getDay() === 0; }
+function dateDayName(dateStr) { return new Date(dateStr + "T12:00:00").toLocaleDateString("en-IN",{weekday:"long"}); }
+function getDaySetting(dateStr, settings=getCalendarSettings()) {
+  if (settings[dateStr] === "holiday") return "holiday";
+  if (settings[dateStr] === "open") return "open";
+  if (getVacations().some(v => dateStr >= v.start && dateStr <= v.end)) return "holiday";
+  return isSunday(dateStr) ? "holiday" : "open";
+}
+function canDeleteCalendar() { return currentRole === "owner" || (!!currentUser && currentUser.id === ADMIN_USER_ID); }
+function resetVacationForm() {
+  editingVacationId = null;
+  $("vacationName").value = "Summer Vacation";
+  $("vacationStart").value = "";
+  $("vacationEnd").value = "";
+  $("saveVacationBtn").textContent = "Save Vacation";
+  $("cancelVacationEditBtn").style.display = "none";
+}
+function renderVacations() {
+  const {start,end} = sessionBounds($("attendanceSession").value);
+  const vacations = getVacations().filter(v => v.end >= start && v.start <= end).sort((a,b) => a.start.localeCompare(b.start));
+  const ownerCanDelete = canDeleteCalendar();
+  $("vacationTable").innerHTML = vacations.length ? vacations.map(v => `
+    <tr><td><span class="vacation-pill">${escapeHtml(v.name)}</span></td>
+      <td>${displayDate(v.start)}</td><td>${displayDate(v.end)}</td><td>${dateRangeDays(v.start,v.end)}</td>
+      <td class="no-print"><button class="primary" data-edit-vacation="${escapeHtml(v.id)}">Edit</button>${ownerCanDelete ? ` <button class="danger" data-delete-vacation="${escapeHtml(v.id)}">Delete</button>` : ""}</td>
+    </tr>`).join("") : '<tr><td colspan="5">इस Session में कोई Vacation सेव नहीं है।</td></tr>';
+  $("vacationTable").querySelectorAll("[data-edit-vacation]").forEach(btn => btn.addEventListener("click", () => {
+    const v = getVacations().find(item => item.id === btn.dataset.editVacation); if (!v) return;
+    editingVacationId = v.id; $("vacationName").value = v.name; $("vacationStart").value = v.start; $("vacationEnd").value = v.end;
+    $("saveVacationBtn").textContent = "Update Vacation"; $("cancelVacationEditBtn").style.display = "inline-block";
+    $("vacationMessage").textContent = "अब तारीखें बदलकर Update Vacation दबाएँ।";
+    $("vacationStart").scrollIntoView({behavior:"smooth",block:"center"});
+  }));
+  $("vacationTable").querySelectorAll("[data-delete-vacation]").forEach(btn => btn.addEventListener("click", async () => {
+    if (!canDeleteCalendar()) return message("Vacation Delete करने का अधिकार केवल Owner को है।", true);
+    if (!confirm("क्या आप इस Vacation को Delete करना चाहते हैं?")) return;
+    const {error} = await db.from("school_vacations").delete().eq("id", btn.dataset.deleteVacation);
+    if (error) return message("Vacation delete नहीं हुई: " + error.message, true);
+    await loadCalendarData(); renderVacations(); renderCalendarSettings(); await loadAnnualReport();
+    $("vacationMessage").textContent = "Vacation delete कर दी गई।";
+  }));
+}
+async function saveVacation() {
+  if (!currentUser) return message("पहले वेबसाइट के common login से login करें।", true);
+  const name = $("vacationName").value, start = $("vacationStart").value, end = $("vacationEnd").value;
+  if (!start || !end) return message("Vacation की Start Date और End Date दोनों चुनें।", true);
+  if (end < start) return message("End Date, Start Date से पहले नहीं हो सकती।", true);
+  const overlap = getVacations().find(v => v.id !== editingVacationId && start <= v.end && end >= v.start);
+  if (overlap && !confirm(`यह तारीखें ${overlap.name} से overlap कर रही हैं। फिर भी सेव करें?`)) return;
+  const payload = {name, start_date:start, end_date:end, updated_at:new Date().toISOString(), updated_by:currentUser.id};
+  let result;
+  if (editingVacationId) result = await db.from("school_vacations").update(payload).eq("id", editingVacationId);
+  else result = await db.from("school_vacations").insert(payload);
+  if (result.error) return message("Vacation सेव नहीं हुई: " + result.error.message, true);
+  await loadCalendarData(); resetVacationForm(); renderVacations(); renderCalendarSettings();
+  $("vacationMessage").textContent = `${name}: ${displayDate(start)} से ${displayDate(end)} तक Supabase में सेव हो गई।`;
+  message("Vacation dates सभी डिवाइस के लिए सेव हो गईं।"); await loadAnnualReport();
+}
+$("saveVacationBtn").addEventListener("click", saveVacation);
+$("cancelVacationEditBtn").addEventListener("click", () => { resetVacationForm(); $("vacationMessage").textContent = "Edit cancel कर दिया गया।"; });
+function renderCalendarSettings() {
+  const settings=getCalendarSettings();
+  if ($("vacationTable")) renderVacations();
+  const session=$("attendanceSession").value;
+  const {start,end}=sessionBounds(session);
+  const custom=Object.keys(settings).filter(d=>d>=start&&d<=end).sort();
+  const ownerCanDelete = canDeleteCalendar();
+  $("calendarTable").innerHTML=custom.length ? custom.map(d=>{
+    const val=settings[d]; const label=val==="holiday"?"Holiday / छुट्टी":"School Open / स्कूल खुला";
+    const color=val==="holiday"?"#b91c1c":"#15803d";
+    return `<tr><td>${displayDate(d)}</td><td>${dateDayName(d)}</td><td style="font-weight:bold;color:${color}">${label}</td><td class="no-print">${ownerCanDelete ? `<button class="danger" data-remove-calendar="${d}">Delete</button>` : ""}</td></tr>`;
+  }).join("") : '<tr><td colspan="4">इस Session में कोई custom date setting नहीं है। Sundays default Holiday हैं।</td></tr>';
+  $("calendarSummary").textContent=`${session}: ${custom.length} custom date setting(s) Supabase में सेव हैं। ${ownerCanDelete ? "आप Delete भी कर सकते हैं।" : "Delete केवल Owner कर सकता है।"}`;
+  $("calendarTable").querySelectorAll("[data-remove-calendar]").forEach(btn=>btn.addEventListener("click",async()=>{
+    if (!canDeleteCalendar()) return message("Calendar setting Delete करने का अधिकार केवल Owner को है।",true);
+    if (!confirm("क्या इस date setting को Delete करना चाहते हैं?")) return;
+    const {error}=await db.from("school_calendar_settings").delete().eq("calendar_date",btn.dataset.removeCalendar);
+    if(error) return message("Date setting delete नहीं हुई: "+error.message,true);
+    await loadCalendarData(); renderCalendarSettings(); if($("loadAnnualBtn")) await loadAnnualReport();
+  }));
+}
+function calculateSchoolCalendar(session) {
+  const {start,end}=sessionBounds(session), settings=getCalendarSettings();
+  let open=0,holiday=0; const holidayDates=[],openDates=[];
+  const d=new Date(start+"T12:00:00"), last=new Date(end+"T12:00:00");
+  while(d<=last) {
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    if(getDaySetting(key,settings)==="holiday"){holiday++;holidayDates.push(key);} else {open++;openDates.push(key);}
+    d.setDate(d.getDate()+1);
+  }
+  return {open,holiday,holidayDates,openDates};
+}
+$("saveCalendarBtn").addEventListener("click",async()=>{
+  const date=$("calendarDate").value, status=$("calendarStatus").value;
+  if(!date) return message("पहले Calendar Date चुनें।",true);
+  if(!currentUser) return message("पहले वेबसाइट के common login से login करें।",true);
+  if(status==="auto" && !canDeleteCalendar()) return message("किसी date की custom setting हटाने का अधिकार केवल Owner को है। Principal/Supervisor Holiday या School Open चुनकर Edit कर सकते हैं।",true);
+  let result;
+  if(status==="auto") {
+    result=await db.from("school_calendar_settings").delete().eq("calendar_date",date);
+  } else {
+    result=await db.from("school_calendar_settings").upsert({calendar_date:date,setting:status,updated_at:new Date().toISOString(),updated_by:currentUser.id},{onConflict:"calendar_date"});
+  }
+  if(result.error) return message("Calendar setting सेव नहीं हुई: "+result.error.message,true);
+  await loadCalendarData(); renderCalendarSettings();
+  message(`${displayDate(date)} (${dateDayName(date)}) की setting Supabase में सेव हो गई।`);
+  await loadAnnualReport();
+});
+$("refreshCalendarBtn").addEventListener("click",async()=>{try{await loadCalendarData();renderCalendarSettings();message("Shared calendar refresh हो गया।");}catch(e){message("Refresh नहीं हुआ: "+e.message,true);}});
+$("attendanceSession").addEventListener("change",()=>{ renderCalendarSettings(); renderVacations(); });
+
+async function loadAnnualReport() {
+  const btn=$("loadAnnualBtn"); btn.disabled=true; clearMessage();
+  try {
+    const session=$("attendanceSession").value;
+    const {start,end}=sessionBounds(session);
+    const activeStudents=await fetchAllRows(()=>db.from("students")
+      .select("id,admission_no,roll_no,student_name,class_name,section")
+      .eq("student_status","Active").order("student_name"));
+    const records=await fetchAllRows(()=>db.from("attendance_records")
+      .select("student_id,attendance_date,session,status,class_name,section")
+      .eq("session",session).gte("attendance_date",start).lte("attendance_date",end)
+      .order("attendance_date"));
+    const byStudent=new Map();
+    const byMonth=new Map();
+    const recordedDates=new Set();
+    records.forEach(r=>{
+      const date=String(r.attendance_date||"").slice(0,10);
+      if(date) recordedDates.add(date);
+      const id=r.student_id;
+      if(!byStudent.has(id)) byStudent.set(id,{present:0,absent:0,leave:0,marked:0});
+      const agg=byStudent.get(id);
+      if(r.status==="Present") agg.present++;
+      else if(r.status==="Absent") agg.absent++;
+      else if(r.status==="Leave") agg.leave++;
+      if(["Present","Absent","Leave"].includes(r.status)) agg.marked++;
+      const key=date.slice(0,7);
+      if(key){
+        if(!byMonth.has(key)) byMonth.set(key,{dates:new Set(),present:0,absent:0,leave:0});
+        const m=byMonth.get(key);m.dates.add(date);
+        if(r.status==="Present")m.present++; else if(r.status==="Absent")m.absent++; else if(r.status==="Leave")m.leave++;
+      }
+    });
+    const summary=activeStudents.map(s=>{
+      const a=byStudent.get(s.id)||{present:0,absent:0,leave:0,marked:0};
+      const pct=a.marked?Math.round(a.present/a.marked*100):0;
+      return {...s,...a,pct};
+    }).sort((a,b)=>b.present-a.present || a.class_name.localeCompare(b.class_name,undefined,{numeric:true}) || String(a.student_name).localeCompare(String(b.student_name)));
+    const top=summary.filter(s=>s.marked>0).sort((a,b)=>b.present-a.present)[0];
+    const calendarTotals=calculateSchoolCalendar(session);
+    $("openDaysCount").textContent=calendarTotals.open;
+    $("holidayCount").textContent=calendarTotals.holiday;
+    $("topStudentCount").textContent=top?top.present:"—";
+    $("topStudentName").textContent=top?`${top.student_name} (${top.class_name})`:"—";
+    $("annualStudentTable").innerHTML=summary.length?summary.map((s,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(s.class_name)}</td><td>${escapeHtml(s.section)}</td><td>${escapeHtml(s.admission_no)}</td><td>${escapeHtml(s.student_name)}</td><td><b style="color:#15803d">${s.present}</b></td><td><b style="color:#b91c1c">${s.absent}</b></td><td>${s.leave}</td><td>${s.marked}</td><td>${s.pct}%</td></tr>`).join(""):'<tr><td colspan="10" class="empty-note">Active students नहीं मिले।</td></tr>';
+    const months=[...byMonth.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
+    $("monthSummaryTable").innerHTML=months.length?months.map(([key,m])=>`<tr><td>${escapeHtml(monthName(key))}</td><td>${m.dates.size}</td><td style="color:#15803d;font-weight:bold">${m.present}</td><td style="color:#b91c1c;font-weight:bold">${m.absent}</td><td>${m.leave}</td></tr>`).join(""):'<tr><td colspan="5" class="empty-note">इस session में saved attendance नहीं मिली।</td></tr>';
+    message(`Year report तैयार: ${session} | ${summary.length} विद्यार्थी | School Open: ${calendarTotals.open} दिन | Holiday: ${calendarTotals.holiday} दिन | Attendance records ${recordedDates.size} तारीखों पर सेव हैं।`);
+  } catch(e) { message("Year report load नहीं हुई: "+e.message,true); }
+  finally {btn.disabled=false;}
+}
+async function searchDateAttendance() {
+  const btn=$("dateSearchBtn"); btn.disabled=true; clearMessage();
+  try {
+    const date=$("searchDate").value;
+    if(!date) throw new Error("पहले तारीख चुनें।");
+    const session=$("attendanceSession").value;
+    const {data:studentData,error:studentError}=await db.from("students")
+      .select("id,admission_no,roll_no,student_name,class_name,section")
+      .eq("student_status","Active").order("student_name");
+    if(studentError)throw studentError;
+    const {data:recordData,error:recordError}=await db.from("attendance_records")
+      .select("student_id,attendance_date,session,status,remarks,admission_no,roll_no,student_name,class_name,section")
+      .eq("attendance_date",date).eq("session",session);
+    if(recordError)throw recordError;
+    const recordsById=new Map((recordData||[]).map(r=>[r.student_id,r]));
+    const needle=$("searchStudent").value.trim().toLocaleLowerCase();
+    const cls=$("searchClass").value, section=$("searchSection").value;
+    const rows=(studentData||[]).filter(s=>
+      (!cls||s.class_name===cls)&&(!section||(s.section||"")===section)&&
+      (!needle||String(s.student_name||"").toLocaleLowerCase().includes(needle)||String(s.admission_no||"").toLocaleLowerCase().includes(needle))
+    ).map(s=>({...s,record:recordsById.get(s.id)})).sort((a,b)=>
+      String(a.class_name||"").localeCompare(String(b.class_name||""),undefined,{numeric:true})||
+      String(a.section||"").localeCompare(String(b.section||""),undefined,{numeric:true})||
+      String(a.roll_no||"").localeCompare(String(b.roll_no||""),undefined,{numeric:true}));
+    let p=0,a=0,l=0,u=0;
+    rows.forEach(s=>{const st=s.record?.status;if(st==="Present")p++;else if(st==="Absent")a++;else if(st==="Leave")l++;else u++;});
+    $("datePresentCount").textContent=p;$("dateAbsentCount").textContent=a;$("dateLeaveCount").textContent=l;$("dateUnmarkedCount").textContent=u;
+    $("dateSearchTable").innerHTML=rows.length?rows.map((s,i)=>{
+      const st=s.record?.status||"Not Marked";
+      const badge=st==="Present"?"tag-present":st==="Absent"?"tag-absent":st==="Leave"?"tag-leave":"tag-unmarked";
+      return `<tr><td>${i+1}</td><td>${escapeHtml(s.class_name)}</td><td>${escapeHtml(s.section)}</td><td>${escapeHtml(s.roll_no)}</td><td>${escapeHtml(s.admission_no)}</td><td><b>${escapeHtml(s.student_name)}</b></td><td><span class="tag ${badge}">${escapeHtml(st)}</span></td><td>${escapeHtml(s.record?.remarks||"")}</td></tr>`;
+    }).join(""):'<tr><td colspan="8" class="empty-note">इस खोज में विद्यार्थी नहीं मिले।</td></tr>';
+    message(`${displayDate(date)}: Present ${p}, Absent ${a}, Leave ${l}, Not Marked ${u}.`);
+  } catch(e){message("Date-wise search नहीं हुई: "+e.message,true);}
+  finally{btn.disabled=false;}
+}
+$("loadAnnualBtn").addEventListener("click",loadAnnualReport);
+$("dateSearchBtn").addEventListener("click",searchDateAttendance);
+$("printAnnualBtn").addEventListener("click",()=>window.print());
+$("printDateSearchBtn").addEventListener("click",()=>window.print());
+
+$("attendanceDate").value = todayISO();
+$("searchDate").value = todayISO();
+$("calendarDate").value = todayISO();
+renderCalendarSettings();
+checkAuth();
+</script>
+</body>
+</html>
