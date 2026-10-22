@@ -135,6 +135,7 @@ th{background:#eaf1fb}
         <button class="success" id="allPresentBtn">Mark All Present</button>
         <button class="secondary" id="allAbsentBtn">Mark All Absent</button>
         <button class="secondary" id="allLeaveBtn">Mark All Leave</button>
+        <button class="primary" id="classReportBtn">Class-wise Attendance Report</button>
       </div>
     </section>
 
@@ -145,6 +146,28 @@ th{background:#eaf1fb}
         <div class="stat">Present<strong id="presentCount">0</strong></div>
         <div class="stat">Absent<strong id="absentCount">0</strong></div>
         <div class="stat">Leave<strong id="leaveCount">0</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Class-wise Attendance Report</h2>
+      <p>चुनी हुई तारीख और Session के अनुसार हर कक्षा/Section में कुल, Present, Absent, Leave और जिनकी हाजिरी नहीं लगी उनकी संख्या देखें।</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Sr.</th><th>Class</th><th>Section</th><th>Total Students</th>
+              <th>Present</th><th>Absent</th><th>Leave</th><th>Not Marked</th>
+            </tr>
+          </thead>
+          <tbody id="classReportTable">
+            <tr><td colspan="8">Class-wise Attendance Report बटन पर क्लिक करें।</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="actions no-print">
+        <button class="primary" id="loadClassReportBtn">Show Class-wise Report</button>
+        <button class="secondary" id="printClassReportBtn">Print Class-wise Report</button>
       </div>
     </section>
 
@@ -511,6 +534,84 @@ async function viewReport() {
   }
 }
 $("reportBtn").addEventListener("click", viewReport);
+
+async function loadClasswiseReport() {
+  clearMessage();
+  const date = $("attendanceDate").value;
+  const session = $("attendanceSession").value;
+  if (!date || !session) return message("Date aur Session select karein.", true);
+
+  const btn = $("loadClassReportBtn");
+  btn.disabled = true;
+  try {
+    // Active students are the denominator, so unmarked students are not counted as absent.
+    const { data: activeStudents, error: studentsError } = await db
+      .from("students")
+      .select("id,class_name,section")
+      .eq("student_status", "Active");
+    if (studentsError) throw studentsError;
+
+    const { data: records, error: recordsError } = await db
+      .from("attendance_records")
+      .select("student_id,class_name,section,status")
+      .eq("attendance_date", date)
+      .eq("session", session);
+    if (recordsError) throw recordsError;
+
+    const recordsByStudent = new Map((records || []).map(r => [r.student_id, r]));
+    const groups = new Map();
+
+    (activeStudents || []).forEach(student => {
+      const cls = student.class_name || "Not Set";
+      const section = student.section || "No Section";
+      const key = `${cls}|||${section}`;
+      if (!groups.has(key)) {
+        groups.set(key, { className: cls, section, total: 0, present: 0, absent: 0, leave: 0, notMarked: 0 });
+      }
+      const g = groups.get(key);
+      g.total++;
+      const record = recordsByStudent.get(student.id);
+      const status = record?.status;
+      if (status === "Present") g.present++;
+      else if (status === "Absent") g.absent++;
+      else if (status === "Leave") g.leave++;
+      else g.notMarked++;
+    });
+
+    const rows = [...groups.values()].sort((a,b) =>
+      a.className.localeCompare(b.className, undefined, { numeric: true }) ||
+      a.section.localeCompare(b.section, undefined, { numeric: true })
+    );
+
+    $("classReportTable").innerHTML = rows.length ? rows.map((g, i) => `
+      <tr>
+        <td>${i + 1}</td><td>${escapeHtml(g.className)}</td><td>${escapeHtml(g.section)}</td>
+        <td>${g.total}</td><td>${g.present}</td><td>${g.absent}</td>
+        <td>${g.leave}</td><td>${g.notMarked}</td>
+      </tr>`).join("") :
+      '<tr><td colspan="8">कोई Active विद्यार्थी नहीं मिला।</td></tr>';
+
+    const totals = rows.reduce((a,g) => ({
+      total:a.total+g.total, present:a.present+g.present, absent:a.absent+g.absent,
+      leave:a.leave+g.leave, notMarked:a.notMarked+g.notMarked
+    }), {total:0,present:0,absent:0,leave:0,notMarked:0});
+    if (rows.length) {
+      $("classReportTable").insertAdjacentHTML("beforeend", `
+        <tr style="font-weight:bold;background:#eaf1fb">
+          <td colspan="3">Grand Total</td><td>${totals.total}</td><td>${totals.present}</td>
+          <td>${totals.absent}</td><td>${totals.leave}</td><td>${totals.notMarked}</td>
+        </tr>`);
+    }
+    message(`Class-wise report ready: ${date} | ${session}. Not Marked विद्यार्थियों को Absent में नहीं गिना गया।`);
+  } catch (e) {
+    message("Class-wise report load nahi hui: " + e.message, true);
+  } finally {
+    btn.disabled = false;
+  }
+}
+$("classReportBtn").addEventListener("click", loadClasswiseReport);
+$("loadClassReportBtn").addEventListener("click", loadClasswiseReport);
+$("printClassReportBtn").addEventListener("click", () => window.print());
 $("printBtn").addEventListener("click", () => window.print());
 
 $("attendanceDate").value = todayISO();
