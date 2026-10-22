@@ -38,7 +38,7 @@ th{background:#eaf1fb;color:#123b70;font-weight:700}tbody tr:nth-child(even){bac
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .stat{padding:18px;border-radius:13px;background:linear-gradient(135deg,#eef5ff,#f8fbff);border:1px solid #d9e8fa}
 .stat strong{display:block;font-size:28px;color:#123b70;margin-top:7px}
-#protectedApp{display:none}.section-note{color:#52647b;line-height:1.55}.count-pill{display:inline-block;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:bold;background:#fee2e2;color:#991b1b}.absent-card{border-top:5px solid #dc2626}.absent-name{font-weight:700;color:#991b1b}.empty-note{padding:18px;text-align:center;color:#64748b}
+#protectedApp{display:none}.section-note{color:#52647b;line-height:1.55}.count-pill{display:inline-block;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:bold;background:#fee2e2;color:#991b1b}.absent-card{border-top:5px solid #dc2626}.absent-name{font-weight:700;color:#991b1b}.empty-note{padding:18px;text-align:center;color:#64748b}.small-note{font-size:13px;color:#64748b;line-height:1.55}
 @media print{
   header{background:white!important;color:black!important}
   .no-print,#message{display:none!important}
@@ -64,8 +64,9 @@ th{background:#eaf1fb;color:#123b70;font-weight:700}tbody tr:nth-child(even){bac
 
   <main id="protectedApp">
     <section class="card no-print">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
-        <h2>Attendance Dashboard</h2>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+        <h2 style="margin-bottom:0">Attendance Dashboard</h2>
+        <a href="student-master.html" class="primary" style="display:inline-block;text-decoration:none;border-radius:8px;padding:11px 16px;font-weight:bold;color:white">← Back to Student Master</a>
       </div>
 
       <div class="grid">
@@ -162,6 +163,60 @@ th{background:#eaf1fb;color:#123b70;font-weight:700}tbody tr:nth-child(even){bac
         </table>
       </div>
       <div class="actions no-print"><button class="primary" id="printAbsentBtn">Print Absent List</button></div>
+    </section>
+
+
+    <section class="card">
+      <h2>Student-wise Year & Month Report</h2>
+      <p class="section-note">Selected Session में हर active विद्यार्थी की पूरे साल की Present, Absent, Leave और महीनेवार गिनती। सबसे अधिक Present विद्यार्थी भी ऊपर दिखेगा।</p>
+      <div class="actions no-print">
+        <button class="primary" id="loadAnnualBtn">Load Year Report</button>
+        <button class="secondary" id="printAnnualBtn">Print Year Report</button>
+      </div>
+      <div class="stats">
+        <div class="stat">School Open Days*<strong id="openDaysCount">0</strong></div>
+        <div class="stat">Holiday Days<strong id="holidayCount">Not Set</strong></div>
+        <div class="stat">Highest Present<strong id="topStudentCount">—</strong></div>
+        <div class="stat">Student Name<strong id="topStudentName">—</strong></div>
+      </div>
+      <p class="small-note">*School Open Days यहाँ उन अलग-अलग तारीखों की गिनती है जिन पर कम-से-कम एक attendance record सेव है। छुट्टियों की वास्तविक गिनती के लिए school holiday calendar की अलग table चाहिए; अभी उसे अनुमान से नहीं गिना जाएगा।</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Sr.</th><th>Class</th><th>Section</th><th>Admission No.</th><th>Student Name</th><th>Present</th><th>Absent</th><th>Leave</th><th>Marked Days</th><th>Present %</th></tr></thead>
+          <tbody id="annualStudentTable"><tr><td colspan="10" class="empty-note">Load Year Report दबाएँ।</td></tr></tbody>
+        </table>
+      </div>
+      <h3 style="color:#123b70">Month-wise Summary</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Month</th><th>Dates with Attendance</th><th>Present Entries</th><th>Absent Entries</th><th>Leave Entries</th></tr></thead>
+          <tbody id="monthSummaryTable"><tr><td colspan="5" class="empty-note">Load Year Report दबाएँ।</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Date-wise Student Search</h2>
+      <p class="section-note">तारीख चुनें और सभी विद्यार्थियों का status देखें। नाम या Admission No. से भी खोज सकते हैं। अगर उस दिन record सेव नहीं है, तो status Not Marked दिखेगा — उसे Absent नहीं माना जाएगा।</p>
+      <div class="grid no-print">
+        <div><label for="searchDate">Date</label><input type="date" id="searchDate"></div>
+        <div><label for="searchStudent">Student Name / Admission No.</label><input id="searchStudent" placeholder="नाम या Admission No."></div>
+        <div><label for="searchClass">Class</label><select id="searchClass"><option value="">All Classes</option><option>Nursery</option><option>LKG</option><option>UKG</option><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8</option></select></div>
+        <div><label for="searchSection">Section</label><select id="searchSection"><option value="">All Sections</option><option>A</option><option>B</option><option>C</option></select></div>
+      </div>
+      <div class="actions no-print"><button class="primary" id="dateSearchBtn">Search Attendance</button><button class="secondary" id="printDateSearchBtn">Print Search</button></div>
+      <div class="stats">
+        <div class="stat">Present<strong id="datePresentCount">0</strong></div>
+        <div class="stat">Absent<strong id="dateAbsentCount">0</strong></div>
+        <div class="stat">Leave<strong id="dateLeaveCount">0</strong></div>
+        <div class="stat">Not Marked<strong id="dateUnmarkedCount">0</strong></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Sr.</th><th>Class</th><th>Section</th><th>Roll No.</th><th>Admission No.</th><th>Student Name</th><th>Status</th><th>Remarks</th></tr></thead>
+          <tbody id="dateSearchTable"><tr><td colspan="8" class="empty-note">Date चुनकर Search Attendance दबाएँ।</td></tr></tbody>
+        </table>
+      </div>
     </section>
 
     <section class="card">
@@ -550,7 +605,121 @@ $("printClassReportBtn").addEventListener("click", () => window.print());
 $("printAbsentBtn").addEventListener("click", () => window.print());
 $("printBtn").addEventListener("click", () => window.print());
 
+
+// Report helpers: fetch in pages to avoid the usual 1,000-row API limit.
+async function fetchAllRows(makeQuery) {
+  const all = [];
+  const pageSize = 1000;
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await makeQuery().range(from, from + pageSize - 1);
+    if (error) throw error;
+    const batch = data || [];
+    all.push(...batch);
+    if (batch.length < pageSize) break;
+  }
+  return all;
+}
+function sessionBounds(session) {
+  const startYear = Number(String(session).split("-")[0]);
+  if (!Number.isFinite(startYear)) throw new Error("Academic Session sahi select karein.");
+  return { start: `${startYear}-04-01`, end: `${startYear+1}-03-31` };
+}
+function monthName(yyyyMm) {
+  const [y,m] = yyyyMm.split("-").map(Number);
+  return new Date(y, m-1, 1).toLocaleDateString("en-IN", {month:"long", year:"numeric"});
+}
+async function loadAnnualReport() {
+  const btn=$("loadAnnualBtn"); btn.disabled=true; clearMessage();
+  try {
+    const session=$("attendanceSession").value;
+    const {start,end}=sessionBounds(session);
+    const activeStudents=await fetchAllRows(()=>db.from("students")
+      .select("id,admission_no,roll_no,student_name,class_name,section")
+      .eq("student_status","Active").order("student_name"));
+    const records=await fetchAllRows(()=>db.from("attendance_records")
+      .select("student_id,attendance_date,session,status,class_name,section")
+      .eq("session",session).gte("attendance_date",start).lte("attendance_date",end)
+      .order("attendance_date"));
+    const byStudent=new Map();
+    const byMonth=new Map();
+    const openDates=new Set();
+    records.forEach(r=>{
+      const date=String(r.attendance_date||"").slice(0,10);
+      if(date) openDates.add(date);
+      const id=r.student_id;
+      if(!byStudent.has(id)) byStudent.set(id,{present:0,absent:0,leave:0,marked:0});
+      const agg=byStudent.get(id);
+      if(r.status==="Present") agg.present++;
+      else if(r.status==="Absent") agg.absent++;
+      else if(r.status==="Leave") agg.leave++;
+      if(["Present","Absent","Leave"].includes(r.status)) agg.marked++;
+      const key=date.slice(0,7);
+      if(key){
+        if(!byMonth.has(key)) byMonth.set(key,{dates:new Set(),present:0,absent:0,leave:0});
+        const m=byMonth.get(key);m.dates.add(date);
+        if(r.status==="Present")m.present++; else if(r.status==="Absent")m.absent++; else if(r.status==="Leave")m.leave++;
+      }
+    });
+    const summary=activeStudents.map(s=>{
+      const a=byStudent.get(s.id)||{present:0,absent:0,leave:0,marked:0};
+      const pct=a.marked?Math.round(a.present/a.marked*100):0;
+      return {...s,...a,pct};
+    }).sort((a,b)=>b.present-a.present || a.class_name.localeCompare(b.class_name,undefined,{numeric:true}) || String(a.student_name).localeCompare(String(b.student_name)));
+    const top=summary.filter(s=>s.marked>0).sort((a,b)=>b.present-a.present)[0];
+    $("openDaysCount").textContent=openDates.size;
+    $("holidayCount").textContent="Not Set";
+    $("topStudentCount").textContent=top?top.present:"—";
+    $("topStudentName").textContent=top?`${top.student_name} (${top.class_name})`:"—";
+    $("annualStudentTable").innerHTML=summary.length?summary.map((s,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(s.class_name)}</td><td>${escapeHtml(s.section)}</td><td>${escapeHtml(s.admission_no)}</td><td>${escapeHtml(s.student_name)}</td><td><b style="color:#15803d">${s.present}</b></td><td><b style="color:#b91c1c">${s.absent}</b></td><td>${s.leave}</td><td>${s.marked}</td><td>${s.pct}%</td></tr>`).join(""):'<tr><td colspan="10" class="empty-note">Active students नहीं मिले।</td></tr>';
+    const months=[...byMonth.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
+    $("monthSummaryTable").innerHTML=months.length?months.map(([key,m])=>`<tr><td>${escapeHtml(monthName(key))}</td><td>${m.dates.size}</td><td style="color:#15803d;font-weight:bold">${m.present}</td><td style="color:#b91c1c;font-weight:bold">${m.absent}</td><td>${m.leave}</td></tr>`).join(""):'<tr><td colspan="5" class="empty-note">इस session में saved attendance नहीं मिली।</td></tr>';
+    message(`Year report तैयार: ${session} | ${summary.length} विद्यार्थी | ${openDates.size} अलग-अलग तारीखों पर attendance सेव है।`);
+  } catch(e) { message("Year report load नहीं हुई: "+e.message,true); }
+  finally {btn.disabled=false;}
+}
+async function searchDateAttendance() {
+  const btn=$("dateSearchBtn"); btn.disabled=true; clearMessage();
+  try {
+    const date=$("searchDate").value;
+    if(!date) throw new Error("पहले तारीख चुनें।");
+    const session=$("attendanceSession").value;
+    const {data:studentData,error:studentError}=await db.from("students")
+      .select("id,admission_no,roll_no,student_name,class_name,section")
+      .eq("student_status","Active").order("student_name");
+    if(studentError)throw studentError;
+    const {data:recordData,error:recordError}=await db.from("attendance_records")
+      .select("student_id,attendance_date,session,status,remarks,admission_no,roll_no,student_name,class_name,section")
+      .eq("attendance_date",date).eq("session",session);
+    if(recordError)throw recordError;
+    const recordsById=new Map((recordData||[]).map(r=>[r.student_id,r]));
+    const needle=$("searchStudent").value.trim().toLocaleLowerCase();
+    const cls=$("searchClass").value, section=$("searchSection").value;
+    const rows=(studentData||[]).filter(s=>
+      (!cls||s.class_name===cls)&&(!section||(s.section||"")===section)&&
+      (!needle||String(s.student_name||"").toLocaleLowerCase().includes(needle)||String(s.admission_no||"").toLocaleLowerCase().includes(needle))
+    ).map(s=>({...s,record:recordsById.get(s.id)})).sort((a,b)=>
+      String(a.class_name||"").localeCompare(String(b.class_name||""),undefined,{numeric:true})||
+      String(a.section||"").localeCompare(String(b.section||""),undefined,{numeric:true})||
+      String(a.roll_no||"").localeCompare(String(b.roll_no||""),undefined,{numeric:true}));
+    let p=0,a=0,l=0,u=0;
+    rows.forEach(s=>{const st=s.record?.status;if(st==="Present")p++;else if(st==="Absent")a++;else if(st==="Leave")l++;else u++;});
+    $("datePresentCount").textContent=p;$("dateAbsentCount").textContent=a;$("dateLeaveCount").textContent=l;$("dateUnmarkedCount").textContent=u;
+    $("dateSearchTable").innerHTML=rows.length?rows.map((s,i)=>{
+      const st=s.record?.status||"Not Marked";
+      const badge=st==="Present"?"tag-present":st==="Absent"?"tag-absent":st==="Leave"?"tag-leave":"tag-unmarked";
+      return `<tr><td>${i+1}</td><td>${escapeHtml(s.class_name)}</td><td>${escapeHtml(s.section)}</td><td>${escapeHtml(s.roll_no)}</td><td>${escapeHtml(s.admission_no)}</td><td><b>${escapeHtml(s.student_name)}</b></td><td><span class="tag ${badge}">${escapeHtml(st)}</span></td><td>${escapeHtml(s.record?.remarks||"")}</td></tr>`;
+    }).join(""):'<tr><td colspan="8" class="empty-note">इस खोज में विद्यार्थी नहीं मिले।</td></tr>';
+    message(`${displayDate(date)}: Present ${p}, Absent ${a}, Leave ${l}, Not Marked ${u}.`);
+  } catch(e){message("Date-wise search नहीं हुई: "+e.message,true);}
+  finally{btn.disabled=false;}
+}
+$("loadAnnualBtn").addEventListener("click",loadAnnualReport);
+$("dateSearchBtn").addEventListener("click",searchDateAttendance);
+$("printAnnualBtn").addEventListener("click",()=>window.print());
+$("printDateSearchBtn").addEventListener("click",()=>window.print());
+
 $("attendanceDate").value = todayISO();
+$("searchDate").value = todayISO();
 checkAuth();
 </script>
 </body>
