@@ -166,6 +166,33 @@ th{background:#eaf1fb;color:#123b70;font-weight:700}tbody tr:nth-child(even){bac
     </section>
 
 
+
+    <section class="card">
+      <h2>Holiday & Sunday Calendar</h2>
+      <p class="section-note">किसी भी तारीख को School Holiday या School Open कर सकते हैं। रविवार अपने-आप Holiday माना जाएगा, लेकिन यदि रविवार को स्कूल खुला हो तो उसे School Open चुनें। बदलाव इसी ब्राउज़र में सेव होंगे।</p>
+      <div class="grid no-print">
+        <div><label for="calendarDate">Date</label><input type="date" id="calendarDate"></div>
+        <div><label for="calendarStatus">इस दिन स्कूल</label>
+          <select id="calendarStatus">
+            <option value="holiday">Holiday / छुट्टी</option>
+            <option value="open">School Open / स्कूल खुला</option>
+            <option value="auto">Default पर वापस (Sunday = Holiday)</option>
+          </select>
+        </div>
+      </div>
+      <div class="actions no-print">
+        <button class="primary" id="saveCalendarBtn">Save Date Setting</button>
+        <button class="secondary" id="refreshCalendarBtn">Refresh Calendar</button>
+      </div>
+      <p class="small-note" id="calendarSummary">Date चुनकर holiday या school open सेट करें।</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Day</th><th>Setting</th><th class="no-print">Action</th></tr></thead>
+          <tbody id="calendarTable"><tr><td colspan="4">अभी कोई custom date सेट नहीं है।</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
     <section class="card">
       <h2>Student-wise Year & Month Report</h2>
       <p class="section-note">Selected Session में हर active विद्यार्थी की पूरे साल की Present, Absent, Leave और महीनेवार गिनती। सबसे अधिक Present विद्यार्थी भी ऊपर दिखेगा।</p>
@@ -175,11 +202,11 @@ th{background:#eaf1fb;color:#123b70;font-weight:700}tbody tr:nth-child(even){bac
       </div>
       <div class="stats">
         <div class="stat">School Open Days*<strong id="openDaysCount">0</strong></div>
-        <div class="stat">Holiday Days<strong id="holidayCount">Not Set</strong></div>
+        <div class="stat">Holiday Days<strong id="holidayCount">0</strong></div>
         <div class="stat">Highest Present<strong id="topStudentCount">—</strong></div>
         <div class="stat">Student Name<strong id="topStudentName">—</strong></div>
       </div>
-      <p class="small-note">*School Open Days यहाँ उन अलग-अलग तारीखों की गिनती है जिन पर कम-से-कम एक attendance record सेव है। छुट्टियों की वास्तविक गिनती के लिए school holiday calendar की अलग table चाहिए; अभी उसे अनुमान से नहीं गिना जाएगा।</p>
+      <p class="small-note">School Open Days और Holiday Days नीचे दिए Holiday & Sunday Calendar के अनुसार निकाले जाते हैं। Sunday default Holiday है; किसी Sunday को स्कूल खुला हो तो उसे School Open सेट करें।</p>
       <div class="table-wrap">
         <table>
           <thead><tr><th>Sr.</th><th>Class</th><th>Section</th><th>Admission No.</th><th>Student Name</th><th>Present</th><th>Absent</th><th>Leave</th><th>Marked Days</th><th>Present %</th></tr></thead>
@@ -628,6 +655,73 @@ function monthName(yyyyMm) {
   const [y,m] = yyyyMm.split("-").map(Number);
   return new Date(y, m-1, 1).toLocaleDateString("en-IN", {month:"long", year:"numeric"});
 }
+
+const CALENDAR_STORAGE_KEY = "rps_attendance_calendar_v1";
+function getCalendarSettings() {
+  try { return JSON.parse(localStorage.getItem(CALENDAR_STORAGE_KEY) || "{}"); }
+  catch (_) { return {}; }
+}
+function saveCalendarSettings(settings) {
+  localStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(settings));
+}
+function isSunday(dateStr) {
+  return new Date(dateStr + "T12:00:00").getDay() === 0;
+}
+function dateDayName(dateStr) {
+  return new Date(dateStr + "T12:00:00").toLocaleDateString("en-IN",{weekday:"long"});
+}
+function getDaySetting(dateStr, settings=getCalendarSettings()) {
+  if (settings[dateStr] === "holiday") return "holiday";
+  if (settings[dateStr] === "open") return "open";
+  return isSunday(dateStr) ? "holiday" : "open";
+}
+function renderCalendarSettings() {
+  const settings=getCalendarSettings();
+  const session=$("attendanceSession").value;
+  const {start,end}=sessionBounds(session);
+  const custom=Object.keys(settings).filter(d=>d>=start&&d<=end).sort();
+  $("calendarTable").innerHTML=custom.length ? custom.map(d=>{
+    const val=settings[d];
+    const label=val==="holiday"?"Holiday / छुट्टी":"School Open / स्कूल खुला";
+    const color=val==="holiday"?"#b91c1c":"#15803d";
+    return `<tr><td>${displayDate(d)}</td><td>${dateDayName(d)}</td><td style="font-weight:bold;color:${color}">${label}</td><td class="no-print"><button class="danger" data-remove-calendar="${d}">Remove</button></td></tr>`;
+  }).join("") : '<tr><td colspan="4">इस Session में कोई custom date setting नहीं है। Sundays default Holiday हैं।</td></tr>';
+  $("calendarSummary").textContent=`${session}: ${custom.length} custom date setting(s) सेव हैं।`;
+  $("calendarTable").querySelectorAll("[data-remove-calendar]").forEach(btn=>btn.addEventListener("click",()=>{
+    const s=getCalendarSettings(); delete s[btn.dataset.removeCalendar]; saveCalendarSettings(s);
+    renderCalendarSettings(); if($("loadAnnualBtn")) loadAnnualReport();
+  }));
+}
+function calculateSchoolCalendar(session) {
+  const {start,end}=sessionBounds(session);
+  const settings=getCalendarSettings();
+  let open=0,holiday=0;
+  const holidayDates=[];
+  const openDates=[];
+  const d=new Date(start+"T12:00:00");
+  const last=new Date(end+"T12:00:00");
+  while(d<=last) {
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    if(getDaySetting(key,settings)==="holiday"){holiday++;holidayDates.push(key);}
+    else {open++;openDates.push(key);}
+    d.setDate(d.getDate()+1);
+  }
+  return {open,holiday,holidayDates,openDates};
+}
+$("saveCalendarBtn").addEventListener("click",()=>{
+  const date=$("calendarDate").value, status=$("calendarStatus").value;
+  if(!date) return message("पहले Calendar Date चुनें।",true);
+  const settings=getCalendarSettings();
+  if(status==="auto") delete settings[date]; else settings[date]=status;
+  saveCalendarSettings(settings);
+  renderCalendarSettings();
+  message(`${displayDate(date)} (${dateDayName(date)}) की setting सेव हो गई।`);
+  loadAnnualReport();
+});
+$("refreshCalendarBtn").addEventListener("click",renderCalendarSettings);
+$("attendanceSession").addEventListener("change",renderCalendarSettings);
+
+
 async function loadAnnualReport() {
   const btn=$("loadAnnualBtn"); btn.disabled=true; clearMessage();
   try {
@@ -642,10 +736,10 @@ async function loadAnnualReport() {
       .order("attendance_date"));
     const byStudent=new Map();
     const byMonth=new Map();
-    const openDates=new Set();
+    const recordedDates=new Set();
     records.forEach(r=>{
       const date=String(r.attendance_date||"").slice(0,10);
-      if(date) openDates.add(date);
+      if(date) recordedDates.add(date);
       const id=r.student_id;
       if(!byStudent.has(id)) byStudent.set(id,{present:0,absent:0,leave:0,marked:0});
       const agg=byStudent.get(id);
@@ -666,14 +760,15 @@ async function loadAnnualReport() {
       return {...s,...a,pct};
     }).sort((a,b)=>b.present-a.present || a.class_name.localeCompare(b.class_name,undefined,{numeric:true}) || String(a.student_name).localeCompare(String(b.student_name)));
     const top=summary.filter(s=>s.marked>0).sort((a,b)=>b.present-a.present)[0];
-    $("openDaysCount").textContent=openDates.size;
-    $("holidayCount").textContent="Not Set";
+    const calendarTotals=calculateSchoolCalendar(session);
+    $("openDaysCount").textContent=calendarTotals.open;
+    $("holidayCount").textContent=calendarTotals.holiday;
     $("topStudentCount").textContent=top?top.present:"—";
     $("topStudentName").textContent=top?`${top.student_name} (${top.class_name})`:"—";
     $("annualStudentTable").innerHTML=summary.length?summary.map((s,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(s.class_name)}</td><td>${escapeHtml(s.section)}</td><td>${escapeHtml(s.admission_no)}</td><td>${escapeHtml(s.student_name)}</td><td><b style="color:#15803d">${s.present}</b></td><td><b style="color:#b91c1c">${s.absent}</b></td><td>${s.leave}</td><td>${s.marked}</td><td>${s.pct}%</td></tr>`).join(""):'<tr><td colspan="10" class="empty-note">Active students नहीं मिले।</td></tr>';
     const months=[...byMonth.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
     $("monthSummaryTable").innerHTML=months.length?months.map(([key,m])=>`<tr><td>${escapeHtml(monthName(key))}</td><td>${m.dates.size}</td><td style="color:#15803d;font-weight:bold">${m.present}</td><td style="color:#b91c1c;font-weight:bold">${m.absent}</td><td>${m.leave}</td></tr>`).join(""):'<tr><td colspan="5" class="empty-note">इस session में saved attendance नहीं मिली।</td></tr>';
-    message(`Year report तैयार: ${session} | ${summary.length} विद्यार्थी | ${openDates.size} अलग-अलग तारीखों पर attendance सेव है।`);
+    message(`Year report तैयार: ${session} | ${summary.length} विद्यार्थी | School Open: ${calendarTotals.open} दिन | Holiday: ${calendarTotals.holiday} दिन | Attendance records ${recordedDates.size} तारीखों पर सेव हैं।`);
   } catch(e) { message("Year report load नहीं हुई: "+e.message,true); }
   finally {btn.disabled=false;}
 }
@@ -720,6 +815,8 @@ $("printDateSearchBtn").addEventListener("click",()=>window.print());
 
 $("attendanceDate").value = todayISO();
 $("searchDate").value = todayISO();
+$("calendarDate").value = todayISO();
+renderCalendarSettings();
 checkAuth();
 </script>
 </body>
