@@ -173,7 +173,7 @@ th{background:#eaf1fb;color:#123b70;font-weight:700}tbody tr:nth-child(even){bac
 
     <section class="card">
       <h2>Holiday & Sunday Calendar</h2>
-      <p class="section-note">किसी भी तारीख को School Holiday या School Open कर सकते हैं। रविवार अपने-आप Holiday माना जाएगा, लेकिन यदि रविवार को स्कूल खुला हो तो उसे School Open चुनें। बदलाव इसी ब्राउज़र में सेव होंगे।</p>
+      <p class="section-note">किसी भी तारीख को School Holiday या School Open कर सकते हैं। रविवार अपने-आप Holiday माना जाएगा। बदलाव Supabase में साझा होंगे और दूसरे डिवाइस पर भी दिखेंगे। Delete केवल Owner कर सकता है।</p>
       <div class="grid no-print">
         <div><label for="calendarDate">Date</label><input type="date" id="calendarDate"></div>
         <div><label for="calendarStatus">इस दिन स्कूल</label>
@@ -212,7 +212,7 @@ th{background:#eaf1fb;color:#123b70;font-weight:700}tbody tr:nth-child(even){bac
         <button class="primary" id="saveVacationBtn">Save Vacation</button>
         <button class="secondary" id="cancelVacationEditBtn" style="display:none">Cancel Edit</button>
       </div>
-      <p class="small-note" id="vacationMessage">Vacation dates इसी browser में सेव होंगी। यदि किसी तारीख को स्कूल खुला हो, तो ऊपर Holiday & Sunday Calendar में उस तारीख को School Open सेट करें।</p>
+      <p class="small-note" id="vacationMessage">Vacation dates Supabase में साझा सेव होंगी। यदि किसी तारीख को स्कूल खुला हो, तो ऊपर Holiday & Sunday Calendar में उस तारीख को School Open सेट करें। Delete केवल Owner कर सकता है।</p>
       <div class="table-wrap">
         <table>
           <thead><tr><th>Vacation</th><th>Start Date</th><th>End Date</th><th>Total Days</th><th class="no-print">Action</th></tr></thead>
@@ -336,6 +336,7 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const $ = id => document.getElementById(id);
 let students = [];
 let currentUser = null;
+let currentRole = "";
 
 function message(text, isError = false) {
   const el = $("message");
@@ -366,18 +367,23 @@ function displayDate(date) {
 async function showProtectedApp(user) {
   let allowed = false;
   currentUser = null;
+  currentRole = "";
   if (user) {
     if (user.id === ADMIN_USER_ID) {
-      allowed = true;
+      allowed = true; currentRole = "owner";
     } else {
       const { data: staff, error } = await db.from("staff_profiles")
         .select("role,is_active").eq("auth_user_id", user.id).maybeSingle();
-      allowed = !error && !!staff && staff.is_active === true &&
-        ["owner","admin","principal","supervisor"].includes(String(staff.role || "").toLowerCase());
+      currentRole = !error && staff && staff.is_active === true ? String(staff.role || "").trim().toLowerCase() : "";
+      allowed = ["owner","admin","principal","supervisor"].includes(currentRole);
     }
   }
   $("protectedApp").style.display = allowed ? "block" : "none";
   if (allowed) currentUser = user;
+  if (allowed) {
+    try { await loadCalendarData(); renderCalendarSettings(); await loadAnnualReport(); }
+    catch (e) { message("Shared Holiday/Vacation Calendar load nahi hua: " + e.message, true); }
+  }
   return allowed;
 }
 
@@ -684,43 +690,35 @@ function monthName(yyyyMm) {
   return new Date(y, m-1, 1).toLocaleDateString("en-IN", {month:"long", year:"numeric"});
 }
 
-const CALENDAR_STORAGE_KEY = "rps_attendance_calendar_v1";
-const VACATION_STORAGE_KEY = "rps_attendance_vacations_v1";
+let calendarSettings = {};
+let vacationsCache = [];
 let editingVacationId = null;
-function getCalendarSettings() {
-  try { return JSON.parse(localStorage.getItem(CALENDAR_STORAGE_KEY) || "{}"); }
-  catch (_) { return {}; }
-}
-function saveCalendarSettings(settings) {
-  localStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(settings));
-}
-function getVacations() {
-  try {
-    const v = JSON.parse(localStorage.getItem(VACATION_STORAGE_KEY) || "[]");
-    return Array.isArray(v) ? v : [];
-  } catch (_) { return []; }
-}
-function saveVacations(vacations) {
-  localStorage.setItem(VACATION_STORAGE_KEY, JSON.stringify(vacations));
+function getCalendarSettings() { return calendarSettings; }
+function getVacations() { return vacationsCache; }
+async function loadCalendarData() {
+  const [settingsResult, vacationsResult] = await Promise.all([
+    db.from("school_calendar_settings").select("calendar_date,setting"),
+    db.from("school_vacations").select("id,name,start_date,end_date").order("start_date")
+  ]);
+  if (settingsResult.error) throw settingsResult.error;
+  if (vacationsResult.error) throw vacationsResult.error;
+  calendarSettings = {};
+  (settingsResult.data || []).forEach(row => { calendarSettings[String(row.calendar_date).slice(0,10)] = row.setting; });
+  vacationsCache = (vacationsResult.data || []).map(v => ({id:v.id,name:v.name,start:String(v.start_date).slice(0,10),end:String(v.end_date).slice(0,10)}));
 }
 function dateRangeDays(start, end) {
   if (!start || !end || end < start) return 0;
   return Math.round((new Date(end+"T12:00:00") - new Date(start+"T12:00:00")) / 86400000) + 1;
 }
-function isSunday(dateStr) {
-  return new Date(dateStr + "T12:00:00").getDay() === 0;
-}
-function dateDayName(dateStr) {
-  return new Date(dateStr + "T12:00:00").toLocaleDateString("en-IN",{weekday:"long"});
-}
+function isSunday(dateStr) { return new Date(dateStr + "T12:00:00").getDay() === 0; }
+function dateDayName(dateStr) { return new Date(dateStr + "T12:00:00").toLocaleDateString("en-IN",{weekday:"long"}); }
 function getDaySetting(dateStr, settings=getCalendarSettings()) {
-  // A manually selected date setting has highest priority, so a vacation/Sunday can be overridden.
   if (settings[dateStr] === "holiday") return "holiday";
   if (settings[dateStr] === "open") return "open";
-  // Vacation date ranges are holidays unless the date has been explicitly set to School Open above.
   if (getVacations().some(v => dateStr >= v.start && dateStr <= v.end)) return "holiday";
   return isSunday(dateStr) ? "holiday" : "open";
 }
+function canDeleteCalendar() { return currentRole === "owner" || (!!currentUser && currentUser.id === ADMIN_USER_ID); }
 function resetVacationForm() {
   editingVacationId = null;
   $("vacationName").value = "Summer Vacation";
@@ -731,51 +729,44 @@ function resetVacationForm() {
 }
 function renderVacations() {
   const {start,end} = sessionBounds($("attendanceSession").value);
-  const vacations = getVacations().filter(v => v.end >= start && v.start <= end)
-    .sort((a,b) => a.start.localeCompare(b.start));
+  const vacations = getVacations().filter(v => v.end >= start && v.start <= end).sort((a,b) => a.start.localeCompare(b.start));
+  const ownerCanDelete = canDeleteCalendar();
   $("vacationTable").innerHTML = vacations.length ? vacations.map(v => `
-    <tr>
-      <td><span class="vacation-pill">${escapeHtml(v.name)}</span></td>
+    <tr><td><span class="vacation-pill">${escapeHtml(v.name)}</span></td>
       <td>${displayDate(v.start)}</td><td>${displayDate(v.end)}</td><td>${dateRangeDays(v.start,v.end)}</td>
-      <td class="no-print"><button class="primary" data-edit-vacation="${escapeHtml(v.id)}">Edit</button><button class="danger" data-delete-vacation="${escapeHtml(v.id)}">Delete</button></td>
+      <td class="no-print"><button class="primary" data-edit-vacation="${escapeHtml(v.id)}">Edit</button>${ownerCanDelete ? ` <button class="danger" data-delete-vacation="${escapeHtml(v.id)}">Delete</button>` : ""}</td>
     </tr>`).join("") : '<tr><td colspan="5">इस Session में कोई Vacation सेव नहीं है।</td></tr>';
   $("vacationTable").querySelectorAll("[data-edit-vacation]").forEach(btn => btn.addEventListener("click", () => {
-    const v = getVacations().find(item => item.id === btn.dataset.editVacation);
-    if (!v) return;
-    editingVacationId = v.id;
-    $("vacationName").value = v.name;
-    $("vacationStart").value = v.start;
-    $("vacationEnd").value = v.end;
-    $("saveVacationBtn").textContent = "Update Vacation";
-    $("cancelVacationEditBtn").style.display = "inline-block";
+    const v = getVacations().find(item => item.id === btn.dataset.editVacation); if (!v) return;
+    editingVacationId = v.id; $("vacationName").value = v.name; $("vacationStart").value = v.start; $("vacationEnd").value = v.end;
+    $("saveVacationBtn").textContent = "Update Vacation"; $("cancelVacationEditBtn").style.display = "inline-block";
     $("vacationMessage").textContent = "अब तारीखें बदलकर Update Vacation दबाएँ।";
     $("vacationStart").scrollIntoView({behavior:"smooth",block:"center"});
   }));
-  $("vacationTable").querySelectorAll("[data-delete-vacation]").forEach(btn => btn.addEventListener("click", () => {
-    const updated = getVacations().filter(v => v.id !== btn.dataset.deleteVacation);
-    saveVacations(updated);
-    renderVacations(); renderCalendarSettings(); loadAnnualReport();
+  $("vacationTable").querySelectorAll("[data-delete-vacation]").forEach(btn => btn.addEventListener("click", async () => {
+    if (!canDeleteCalendar()) return message("Vacation Delete करने का अधिकार केवल Owner को है।", true);
+    if (!confirm("क्या आप इस Vacation को Delete करना चाहते हैं?")) return;
+    const {error} = await db.from("school_vacations").delete().eq("id", btn.dataset.deleteVacation);
+    if (error) return message("Vacation delete नहीं हुई: " + error.message, true);
+    await loadCalendarData(); renderVacations(); renderCalendarSettings(); await loadAnnualReport();
     $("vacationMessage").textContent = "Vacation delete कर दी गई।";
   }));
 }
-function saveVacation() {
-  const name = $("vacationName").value;
-  const start = $("vacationStart").value;
-  const end = $("vacationEnd").value;
+async function saveVacation() {
+  if (!currentUser) return message("पहले वेबसाइट के common login से login करें।", true);
+  const name = $("vacationName").value, start = $("vacationStart").value, end = $("vacationEnd").value;
   if (!start || !end) return message("Vacation की Start Date और End Date दोनों चुनें।", true);
   if (end < start) return message("End Date, Start Date से पहले नहीं हो सकती।", true);
-  const vacations = getVacations();
-  const id = editingVacationId || `vac-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
-  const other = vacations.filter(v => v.id !== id);
-  const overlap = other.find(v => start <= v.end && end >= v.start);
+  const overlap = getVacations().find(v => v.id !== editingVacationId && start <= v.end && end >= v.start);
   if (overlap && !confirm(`यह तारीखें ${overlap.name} से overlap कर रही हैं। फिर भी सेव करें?`)) return;
-  other.push({id,name,start,end});
-  saveVacations(other);
-  resetVacationForm();
-  renderVacations(); renderCalendarSettings();
-  $("vacationMessage").textContent = `${name}: ${displayDate(start)} से ${displayDate(end)} तक सेव हो गई।`;
-  message("Vacation dates सेव हो गईं।");
-  loadAnnualReport();
+  const payload = {name, start_date:start, end_date:end, updated_at:new Date().toISOString(), updated_by:currentUser.id};
+  let result;
+  if (editingVacationId) result = await db.from("school_vacations").update(payload).eq("id", editingVacationId);
+  else result = await db.from("school_vacations").insert(payload);
+  if (result.error) return message("Vacation सेव नहीं हुई: " + result.error.message, true);
+  await loadCalendarData(); resetVacationForm(); renderVacations(); renderCalendarSettings();
+  $("vacationMessage").textContent = `${name}: ${displayDate(start)} से ${displayDate(end)} तक Supabase में सेव हो गई।`;
+  message("Vacation dates सभी डिवाइस के लिए सेव हो गईं।"); await loadAnnualReport();
 }
 $("saveVacationBtn").addEventListener("click", saveVacation);
 $("cancelVacationEditBtn").addEventListener("click", () => { resetVacationForm(); $("vacationMessage").textContent = "Edit cancel कर दिया गया।"; });
@@ -785,47 +776,50 @@ function renderCalendarSettings() {
   const session=$("attendanceSession").value;
   const {start,end}=sessionBounds(session);
   const custom=Object.keys(settings).filter(d=>d>=start&&d<=end).sort();
+  const ownerCanDelete = canDeleteCalendar();
   $("calendarTable").innerHTML=custom.length ? custom.map(d=>{
-    const val=settings[d];
-    const label=val==="holiday"?"Holiday / छुट्टी":"School Open / स्कूल खुला";
+    const val=settings[d]; const label=val==="holiday"?"Holiday / छुट्टी":"School Open / स्कूल खुला";
     const color=val==="holiday"?"#b91c1c":"#15803d";
-    return `<tr><td>${displayDate(d)}</td><td>${dateDayName(d)}</td><td style="font-weight:bold;color:${color}">${label}</td><td class="no-print"><button class="danger" data-remove-calendar="${d}">Remove</button></td></tr>`;
+    return `<tr><td>${displayDate(d)}</td><td>${dateDayName(d)}</td><td style="font-weight:bold;color:${color}">${label}</td><td class="no-print">${ownerCanDelete ? `<button class="danger" data-remove-calendar="${d}">Delete</button>` : ""}</td></tr>`;
   }).join("") : '<tr><td colspan="4">इस Session में कोई custom date setting नहीं है। Sundays default Holiday हैं।</td></tr>';
-  $("calendarSummary").textContent=`${session}: ${custom.length} custom date setting(s) सेव हैं।`;
-  $("calendarTable").querySelectorAll("[data-remove-calendar]").forEach(btn=>btn.addEventListener("click",()=>{
-    const s=getCalendarSettings(); delete s[btn.dataset.removeCalendar]; saveCalendarSettings(s);
-    renderCalendarSettings(); if($("loadAnnualBtn")) loadAnnualReport();
+  $("calendarSummary").textContent=`${session}: ${custom.length} custom date setting(s) Supabase में सेव हैं। ${ownerCanDelete ? "आप Delete भी कर सकते हैं।" : "Delete केवल Owner कर सकता है।"}`;
+  $("calendarTable").querySelectorAll("[data-remove-calendar]").forEach(btn=>btn.addEventListener("click",async()=>{
+    if (!canDeleteCalendar()) return message("Calendar setting Delete करने का अधिकार केवल Owner को है।",true);
+    if (!confirm("क्या इस date setting को Delete करना चाहते हैं?")) return;
+    const {error}=await db.from("school_calendar_settings").delete().eq("calendar_date",btn.dataset.removeCalendar);
+    if(error) return message("Date setting delete नहीं हुई: "+error.message,true);
+    await loadCalendarData(); renderCalendarSettings(); if($("loadAnnualBtn")) await loadAnnualReport();
   }));
 }
 function calculateSchoolCalendar(session) {
-  const {start,end}=sessionBounds(session);
-  const settings=getCalendarSettings();
-  let open=0,holiday=0;
-  const holidayDates=[];
-  const openDates=[];
-  const d=new Date(start+"T12:00:00");
-  const last=new Date(end+"T12:00:00");
+  const {start,end}=sessionBounds(session), settings=getCalendarSettings();
+  let open=0,holiday=0; const holidayDates=[],openDates=[];
+  const d=new Date(start+"T12:00:00"), last=new Date(end+"T12:00:00");
   while(d<=last) {
     const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-    if(getDaySetting(key,settings)==="holiday"){holiday++;holidayDates.push(key);}
-    else {open++;openDates.push(key);}
+    if(getDaySetting(key,settings)==="holiday"){holiday++;holidayDates.push(key);} else {open++;openDates.push(key);}
     d.setDate(d.getDate()+1);
   }
   return {open,holiday,holidayDates,openDates};
 }
-$("saveCalendarBtn").addEventListener("click",()=>{
+$("saveCalendarBtn").addEventListener("click",async()=>{
   const date=$("calendarDate").value, status=$("calendarStatus").value;
   if(!date) return message("पहले Calendar Date चुनें।",true);
-  const settings=getCalendarSettings();
-  if(status==="auto") delete settings[date]; else settings[date]=status;
-  saveCalendarSettings(settings);
-  renderCalendarSettings();
-  message(`${displayDate(date)} (${dateDayName(date)}) की setting सेव हो गई।`);
-  loadAnnualReport();
+  if(!currentUser) return message("पहले वेबसाइट के common login से login करें।",true);
+  if(status==="auto" && !canDeleteCalendar()) return message("किसी date की custom setting हटाने का अधिकार केवल Owner को है। Principal/Supervisor Holiday या School Open चुनकर Edit कर सकते हैं।",true);
+  let result;
+  if(status==="auto") {
+    result=await db.from("school_calendar_settings").delete().eq("calendar_date",date);
+  } else {
+    result=await db.from("school_calendar_settings").upsert({calendar_date:date,setting:status,updated_at:new Date().toISOString(),updated_by:currentUser.id},{onConflict:"calendar_date"});
+  }
+  if(result.error) return message("Calendar setting सेव नहीं हुई: "+result.error.message,true);
+  await loadCalendarData(); renderCalendarSettings();
+  message(`${displayDate(date)} (${dateDayName(date)}) की setting Supabase में सेव हो गई।`);
+  await loadAnnualReport();
 });
-$("refreshCalendarBtn").addEventListener("click",renderCalendarSettings);
+$("refreshCalendarBtn").addEventListener("click",async()=>{try{await loadCalendarData();renderCalendarSettings();message("Shared calendar refresh हो गया।");}catch(e){message("Refresh नहीं हुआ: "+e.message,true);}});
 $("attendanceSession").addEventListener("change",()=>{ renderCalendarSettings(); renderVacations(); });
-
 
 async function loadAnnualReport() {
   const btn=$("loadAnnualBtn"); btn.disabled=true; clearMessage();
