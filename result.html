@@ -555,6 +555,17 @@ th{
     color:#64748b;
 }
 
+
+.sideBySideGrades{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start;margin-top:5px;}
+.sideBySideGrades .sectionBand{margin-top:5px;}
+.sideGradeTable{margin-top:0!important;}
+.sideGradeTable th,.sideGradeTable td{padding:3px 4px!important;font-size:8.5px!important;}
+.sideGradeTable th:not(:first-child),.sideGradeTable td:not(:first-child){width:17%;text-align:center;}
+.compactBand{font-size:10px!important;padding:4px 6px!important;}
+.reportGrade{max-width:48px;font-size:8px;padding:0;border:0;background:transparent;}
+@media(max-width:650px){.sideBySideGrades{grid-template-columns:1fr;}}
+@media print{.sideBySideGrades{grid-template-columns:1fr 1fr!important;gap:6px!important;}.sideGradeTable th,.sideGradeTable td{padding:2px 3px!important;font-size:7.5px!important;}.compactBand{font-size:9px!important;padding:3px 5px!important;}}
+
 /* CO-SCHOLASTIC & PERSONAL TRAITS */
 .coScholastic, .personalTraits, .gradingScale{
     width:100%;
@@ -2217,6 +2228,23 @@ function coScholasticHTML(examType="SA-1"){
 }
 
 
+function coScholasticCombinedHTML(){
+    const {activities, traits}=getManageLists();
+    const grades=["A1","A2","B1","B2","C1","C2","D"];
+    const gradeCell=(examKey,type,item)=>{
+        const key=`result_grade_${examKey}_${type}_${item}`;
+        const saved=localStorage.getItem(key)||"";
+        return `<select class="reportGrade" aria-label="${examKey} ${escapeHtml(item)} grade" onchange="localStorage.setItem('result_grade_${examKey}_${type}_'+this.dataset.gradeItem,this.value)" data-grade-item="${escapeHtml(item)}"><option value="">—</option>${grades.map(g=>`<option value="${g}" ${g===saved?'selected':''}>${g}</option>`).join("")}</select>`;
+    };
+    const makeTable=(title,type,items)=>`<div class="sectionBand compactBand">${title}</div>
+      <table class="coScholastic sideGradeTable"><thead><tr><th style="text-align:left">${type==="activities"?"Activity":"Trait"}</th><th>SA-1</th><th>SA-2</th></tr></thead><tbody>
+      ${items.map(item=>`<tr><td>${escapeHtml(item)}</td><td>${gradeCell("SA-1",type,item)}</td><td>${gradeCell("SA-2",type,item)}</td></tr>`).join("")}</tbody></table>`;
+    return `<div class="sideBySideGrades">${makeTable("CO-SCHOLASTIC AREAS","activities",activities)}${makeTable("PERSONAL AND SOCIAL TRAITS","traits",traits)}</div>
+      <div class="sectionBand compactBand">GRADING SCALE</div>
+      <table class="gradingScale"><tbody><tr><th>Grade</th><td>A1</td><td>A2</td><td>B1</td><td>B2</td><td>C1</td><td>C2</td><td>D</td></tr><tr><th>Marks %</th><td>91–100</td><td>81–90</td><td>71–80</td><td>61–70</td><td>51–60</td><td>41–50</td><td>33–40</td></tr></tbody></table>`;
+}
+
+
 /* ==========================================
    SINGLE RESULT
 ========================================== */
@@ -2790,9 +2818,7 @@ function createCombinedReport(
     </div>
 
 
-    ${coScholasticHTML("SA-1")}
-
-    ${coScholasticHTML("SA-2")}
+    ${coScholasticCombinedHTML()}
 
     ${attendanceHTML(
         fa2 ||
