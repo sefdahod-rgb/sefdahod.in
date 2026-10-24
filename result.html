@@ -635,9 +635,10 @@ th{
 
 @media print{
 
+    /* Paper size is selected in the browser print dialog (A4 or Legal). */
     @page{
-        size:A4;
-        margin:7mm;
+        size:auto;
+        margin:5mm;
     }
 
     body{
@@ -664,16 +665,50 @@ th{
 
     .printReport{
         page-break-inside:avoid;
+        width:100% !important;
+        box-sizing:border-box !important;
+        padding:2mm !important;
+        font-size:9pt !important;
+        -webkit-print-color-adjust:exact !important;
+        print-color-adjust:exact !important;
     }
 
-    .printMarks{
-        page-break-inside:auto;
+    .printHeader{
+        padding:5px !important;
+        gap:8px !important;
+        border-width:2px !important;
+        background:linear-gradient(135deg,#eff6ff,#f5f3ff) !important;
+        -webkit-print-color-adjust:exact !important;
+        print-color-adjust:exact !important;
     }
-
-    tr{
-        page-break-inside:avoid;
+    .printLogo{width:58px !important;height:58px !important;}
+    .printSchool h1{font-size:18px !important;}
+    .printSchool h2{font-size:12px !important;}
+    .printSchool p{font-size:8px !important;}
+    .studentPhotoBox{width:62px !important;height:75px !important;}
+    .reportTitle{padding:5px !important;margin:5px 0 !important;}
+    .studentInfo{gap:3px !important;margin:5px 0 !important;}
+    .infoCell{padding:3px 5px !important;font-size:8px !important;}
+    .printMarks th,.printMarks td{padding:3px 5px !important;font-size:9px !important;}
+    .summaryGrid{gap:4px !important;margin:5px 0 !important;}
+    .summaryBox{padding:4px !important;}
+    .summaryBox b,.summaryBox span{font-size:9px !important;}
+    .sectionBand{
+        margin-top:5px !important;padding:4px 6px !important;font-size:9px !important;
+        -webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;
     }
+    .coScholastic,.personalTraits,.gradingScale{margin-top:4px !important;}
+    .coScholastic th,.personalTraits th,.gradingScale th,
+    .coScholastic td,.personalTraits td,.gradingScale td{padding:2px 4px !important;font-size:8px !important;}
+    .signatureRow{margin-top:12px !important;gap:10px !important;font-size:8px !important;}
+    .signature{padding-top:14px !important;}
+    .printFooter{margin-top:5px !important;padding-top:3px !important;font-size:7px !important;}
+    .printMarks{page-break-inside:auto;}
+    tr{page-break-inside:avoid;}
 }
+
+.reportGrade { max-width: 78px; padding: 2px; }
+@media print { .reportGrade { appearance: none; border: 0; background: transparent; color: #111; text-align: center; } .reportGrade option { color: #111; } #coScholasticManager { display:none !important; } }
 </style>
 </head>
 
@@ -882,6 +917,25 @@ th{
     Load Common Subjects
 </button>
 
+</div>
+
+<div class="card" id="coScholasticManager">
+  <h2>Manage Co-Scholastic Areas & Personal/Social Traits</h2>
+  <p>Add, rename, or remove items. Changes are saved in this browser and appear in report cards.</p>
+  <h3>Co-Scholastic Areas</h3>
+  <div id="activitiesManageList"></div>
+  <div class="subjectRow">
+    <input id="newActivityName" type="text" placeholder="New activity name">
+    <button class="btn btnPrimary" type="button" onclick="addManageItem('activities')">+ Add Activity</button>
+  </div>
+  <h3>Personal and Social Traits</h3>
+  <div id="traitsManageList"></div>
+  <div class="subjectRow">
+    <input id="newTraitName" type="text" placeholder="New trait name">
+    <button class="btn btnPrimary" type="button" onclick="addManageItem('traits')">+ Add Trait</button>
+  </div>
+  <button class="btn btnDark" type="button" onclick="saveManageLists(true)">Save Changes</button>
+  <div id="manageListsMessage" class="message"></div>
 </div>
 
 
@@ -2103,26 +2157,58 @@ function reportHeader(student,title){
    CO-SCHOLASTIC AND PERSONAL TRAITS
    These are teacher-assessed grades, not academic subjects.
 ========================================== */
+function getManageLists(){
+    const defaults = {
+        activities: ["Work Education", "Art Education", "Health & Physical Education", "Discipline"],
+        traits: ["Regularity & Punctuality", "Sincerity", "Respect for Others", "Care of Belongings", "Teamwork", "Confidence", "Neatness", "Responsibility"]
+    };
+    try {
+        const saved = JSON.parse(localStorage.getItem("result_co_scholastic_lists") || "null");
+        return saved && Array.isArray(saved.activities) && Array.isArray(saved.traits) ? saved : defaults;
+    } catch(e) { return defaults; }
+}
+function saveManageLists(showMessage=false){
+    const lists = {
+        activities: [...document.querySelectorAll('[data-manage-list="activities"]')].map(x=>x.value.trim()).filter(Boolean),
+        traits: [...document.querySelectorAll('[data-manage-list="traits"]')].map(x=>x.value.trim()).filter(Boolean)
+    };
+    localStorage.setItem("result_co_scholastic_lists", JSON.stringify(lists));
+    renderManageLists();
+    if(showMessage){ const m=document.getElementById("manageListsMessage"); if(m) m.textContent="Changes saved. Report cards will use the updated lists."; }
+}
+function renderManageLists(){
+    const lists=getManageLists();
+    ["activities","traits"].forEach(type=>{
+        const host=document.getElementById(type==="activities"?"activitiesManageList":"traitsManageList");
+        if(!host) return;
+        host.innerHTML="";
+        lists[type].forEach((name,index)=>{
+            const row=document.createElement("div"); row.className="subjectRow";
+            row.innerHTML=`<input type="text" data-manage-list="${type}" value="${escapeHtml(name)}" aria-label="${type} name"><button class="btn btnDanger" type="button">Remove</button>`;
+            row.querySelector("button").onclick=()=>{ row.remove(); saveManageLists(false); };
+            row.querySelector("input").onchange=()=>saveManageLists(false);
+            host.appendChild(row);
+        });
+    });
+}
+function addManageItem(type){
+    const input=document.getElementById(type==="activities"?"newActivityName":"newTraitName");
+    const name=input.value.trim(); if(!name) return;
+    const lists=getManageLists(); lists[type].push(name);
+    localStorage.setItem("result_co_scholastic_lists",JSON.stringify(lists)); input.value=""; renderManageLists();
+}
 function coScholasticHTML(){
-    const activities = [
-        "Work Education", "Art Education", "Health & Physical Education", "Discipline"
-    ];
-    const traits = [
-        "Regularity & Punctuality", "Sincerity", "Respect for Others", "Care of Belongings",
-        "Teamwork", "Confidence", "Neatness", "Responsibility"
-    ];
+    const {activities, traits}=getManageLists();
+    const grades=["A1","A2","B1","B2","C1","C2","D"];
+    const gradeCell=(type,item)=>{ const key=`result_grade_${type}_${item}`; const saved=localStorage.getItem(key)||""; return `<select class="reportGrade" data-grade-type="${type}" data-grade-item="${escapeHtml(item)}" onchange="localStorage.setItem('result_grade_${type}_'+this.dataset.gradeItem,this.value)"><option value="">Select</option>${grades.map(g=>`<option ${g===saved?'selected':''}>${g}</option>`).join("")}</select>`; };
     return `
         <div class="sectionBand">CO-SCHOLASTIC AREAS</div>
-        <table class="coScholastic">
-            <thead><tr><th style="text-align:left">Activity</th><th>Grade</th></tr></thead>
-            <tbody>${activities.map(item=>`<tr><td>${item}</td><td>_____</td></tr>`).join("")}</tbody>
-        </table>
+        <table class="coScholastic"><thead><tr><th style="text-align:left">Activity</th><th>Grade</th></tr></thead>
+        <tbody>${activities.map(item=>`<tr><td>${escapeHtml(item)}</td><td>${gradeCell("activities",item)}</td></tr>`).join("")}</tbody></table>
         <p class="traitNote">To be assessed by the class teacher.</p>
         <div class="sectionBand">PERSONAL AND SOCIAL TRAITS</div>
-        <table class="personalTraits">
-            <thead><tr><th style="text-align:left">Trait</th><th>Grade</th></tr></thead>
-            <tbody>${traits.map(item=>`<tr><td>${item}</td><td>_____</td></tr>`).join("")}</tbody>
-        </table>
+        <table class="personalTraits"><thead><tr><th style="text-align:left">Trait</th><th>Grade</th></tr></thead>
+        <tbody>${traits.map(item=>`<tr><td>${escapeHtml(item)}</td><td>${gradeCell("traits",item)}</td></tr>`).join("")}</tbody></table>
         <div class="sectionBand">GRADING SCALE</div>
         <table class="gradingScale"><tbody><tr><th>Grade</th><td>A1</td><td>A2</td><td>B1</td><td>B2</td><td>C1</td><td>C2</td><td>D</td></tr><tr><th>Marks %</th><td>91–100</td><td>81–90</td><td>71–80</td><td>61–70</td><td>51–60</td><td>41–50</td><td>33–40</td></tr></tbody></table>
     `;
@@ -3463,6 +3549,7 @@ document.addEventListener(
         ){
 
             loadDefaultSubjects();
+            renderManageLists();
 
         }
 
