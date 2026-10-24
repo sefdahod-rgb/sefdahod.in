@@ -2136,6 +2136,26 @@ function reportHeader(student,title){
             </div>
 
             <div class="infoCell">
+                <b>Mother:</b>
+                ${escapeHtml(student?.mother_name || student?.mother || "")}
+            </div>
+
+            <div class="infoCell">
+                <b>Date of Birth:</b>
+                ${escapeHtml(student?.dob || student?.date_of_birth || student?.birth_date || "")}
+            </div>
+
+            <div class="infoCell">
+                <b>Gender:</b>
+                ${escapeHtml(student?.gender || "")}
+            </div>
+
+            <div class="infoCell">
+                <b>Roll No.:</b>
+                ${escapeHtml(student?.roll_no || student?.roll_number || student?.rollnumber || "")}
+            </div>
+
+            <div class="infoCell">
                 <b>Class:</b>
                 ${escapeHtml(
                     student?.class_name || ""
@@ -2395,6 +2415,8 @@ function createSingleReport(
     ${coScholasticCombinedHTML()}
 
     ${attendanceHTML(result)}
+
+    ${result?.remarks ? `<div class="attendanceBox"><b>Remark:</b> ${escapeHtml(result.remarks)}</div>` : ""}
 
     ${signatureHTML()}
 
@@ -2831,6 +2853,7 @@ function createCombinedReport(
         {}
     )}
 
+    ${(fa2 || sa2 || fa1 || sa1 || {}).remarks ? `<div class="attendanceBox"><b>Remark:</b> ${escapeHtml((fa2 || sa2 || fa1 || sa1).remarks)}</div>` : ""}
 
     ${signatureHTML()}
 
