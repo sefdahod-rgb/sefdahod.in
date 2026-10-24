@@ -2197,16 +2197,18 @@ function addManageItem(type){
     const lists=getManageLists(); lists[type].push(name);
     localStorage.setItem("result_co_scholastic_lists",JSON.stringify(lists)); input.value=""; renderManageLists();
 }
-function coScholasticHTML(){
+function coScholasticHTML(examType="SA-1"){
     const {activities, traits}=getManageLists();
     const grades=["A1","A2","B1","B2","C1","C2","D"];
-    const gradeCell=(type,item)=>{ const key=`result_grade_${type}_${item}`; const saved=localStorage.getItem(key)||""; return `<select class="reportGrade" data-grade-type="${type}" data-grade-item="${escapeHtml(item)}" onchange="localStorage.setItem('result_grade_${type}_'+this.dataset.gradeItem,this.value)"><option value="">Select</option>${grades.map(g=>`<option ${g===saved?'selected':''}>${g}</option>`).join("")}</select>`; };
+    const examKey = examType === "SA-2" ? "SA-2" : "SA-1";
+    const examLabel = examKey === "SA-1" ? "HALF YEARLY (SA-1)" : "FINAL (SA-2)";
+    const gradeCell=(type,item)=>{ const key=`result_grade_${examKey}_${type}_${item}`; const saved=localStorage.getItem(key)||""; return `<select class="reportGrade" data-grade-type="${type}" data-grade-item="${escapeHtml(item)}" onchange="localStorage.setItem('result_grade_${examKey}_${type}_'+this.dataset.gradeItem,this.value)"><option value="">Select</option>${grades.map(g=>`<option ${g===saved?'selected':''}>${g}</option>`).join("")}</select>`; };
     return `
-        <div class="sectionBand">CO-SCHOLASTIC AREAS</div>
+        <div class="sectionBand">${examLabel} — CO-SCHOLASTIC AREAS</div>
         <table class="coScholastic"><thead><tr><th style="text-align:left">Activity</th><th>Grade</th></tr></thead>
         <tbody>${activities.map(item=>`<tr><td>${escapeHtml(item)}</td><td>${gradeCell("activities",item)}</td></tr>`).join("")}</tbody></table>
         <p class="traitNote">To be assessed by the class teacher.</p>
-        <div class="sectionBand">PERSONAL AND SOCIAL TRAITS</div>
+        <div class="sectionBand">${examLabel} — PERSONAL AND SOCIAL TRAITS</div>
         <table class="personalTraits"><thead><tr><th style="text-align:left">Trait</th><th>Grade</th></tr></thead>
         <tbody>${traits.map(item=>`<tr><td>${escapeHtml(item)}</td><td>${gradeCell("traits",item)}</td></tr>`).join("")}</tbody></table>
         <div class="sectionBand">GRADING SCALE</div>
@@ -2359,7 +2361,7 @@ function createSingleReport(
     </div>
 
 
-    ${coScholasticHTML()}
+    ${coScholasticHTML(result.exam_type)}
 
     ${attendanceHTML(result)}
 
@@ -2788,7 +2790,9 @@ function createCombinedReport(
     </div>
 
 
-    ${coScholasticHTML()}
+    ${coScholasticHTML("SA-1")}
+
+    ${coScholasticHTML("SA-2")}
 
     ${attendanceHTML(
         fa2 ||
