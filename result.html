@@ -555,6 +555,43 @@ th{
     color:#64748b;
 }
 
+/* CO-SCHOLASTIC & PERSONAL TRAITS */
+.coScholastic, .personalTraits, .gradingScale{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+    page-break-inside:avoid;
+}
+.sectionBand{
+    margin-top:12px;
+    padding:7px 9px;
+    background:linear-gradient(90deg,#0f766e,#2563eb);
+    color:#fff;
+    border-radius:5px 5px 0 0;
+    font-weight:bold;
+    font-size:12px;
+    letter-spacing:.2px;
+}
+.coScholastic th, .personalTraits th, .gradingScale th{
+    background:#e0f2fe;
+    color:#164e63;
+    text-align:center;
+    font-size:10px;
+    padding:5px;
+}
+.coScholastic td, .personalTraits td, .gradingScale td{
+    font-size:10px;
+    padding:5px 6px;
+    border:1px solid #cbd5e1;
+}
+.coScholastic td:last-child, .personalTraits td:last-child{text-align:center; font-weight:bold; color:#1d4ed8;}
+.traitNote{font-size:9px;color:#64748b;margin:4px 0 0;}
+.reportContact{font-size:10px!important;color:#334155;}
+@media print{
+    .sectionBand{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .coScholastic,.personalTraits,.gradingScale{page-break-inside:avoid;}
+}
+
 /* MOBILE */
 
 @media(max-width:900px){
@@ -1991,13 +2028,11 @@ function reportHeader(student,title){
 
                 <h1>Rainbow Public School</h1>
 
-                <h2>Conducted by Shubhi Education Foundation</h2>
+                <h2>Shubhi Education Foundation, Dahod</h2>
 
-                <p>
-                    Shalimar Co-operative Society,
-                    Muvaliya Road, Rabdal,
-                    Dahod, Gujarat - 389151
-                </p>
+                <p><b>UDISE Code: 24180105602</b> &nbsp; | &nbsp; Academic Session: ${escapeHtml(student?.session || "2026-27")}</p>
+                <p>Shalimar Co-operative Society, Muvaliya Road, Rabdal, Dahod, Gujarat - 389151</p>
+                <p class="reportContact">Email: rpsdahod@gmail.com &nbsp; | &nbsp; Phone: 02673-450037, 9408695001 &nbsp; | &nbsp; www.sefdahod.in</p>
 
             </div>
 
@@ -2061,6 +2096,36 @@ function reportHeader(student,title){
 
     `;
 
+}
+
+
+/* ==========================================
+   CO-SCHOLASTIC AND PERSONAL TRAITS
+   These are teacher-assessed grades, not academic subjects.
+========================================== */
+function coScholasticHTML(){
+    const activities = [
+        "Work Education", "Art Education", "Health & Physical Education", "Discipline"
+    ];
+    const traits = [
+        "Regularity & Punctuality", "Sincerity", "Respect for Others", "Care of Belongings",
+        "Teamwork", "Confidence", "Neatness", "Responsibility"
+    ];
+    return `
+        <div class="sectionBand">CO-SCHOLASTIC AREAS</div>
+        <table class="coScholastic">
+            <thead><tr><th style="text-align:left">Activity</th><th>Grade</th></tr></thead>
+            <tbody>${activities.map(item=>`<tr><td>${item}</td><td>_____</td></tr>`).join("")}</tbody>
+        </table>
+        <p class="traitNote">To be assessed by the class teacher.</p>
+        <div class="sectionBand">PERSONAL AND SOCIAL TRAITS</div>
+        <table class="personalTraits">
+            <thead><tr><th style="text-align:left">Trait</th><th>Grade</th></tr></thead>
+            <tbody>${traits.map(item=>`<tr><td>${item}</td><td>_____</td></tr>`).join("")}</tbody>
+        </table>
+        <div class="sectionBand">GRADING SCALE</div>
+        <table class="gradingScale"><tbody><tr><th>Grade</th><td>A1</td><td>A2</td><td>B1</td><td>B2</td><td>C1</td><td>C2</td><td>D</td></tr><tr><th>Marks %</th><td>91–100</td><td>81–90</td><td>71–80</td><td>61–70</td><td>51–60</td><td>41–50</td><td>33–40</td></tr></tbody></table>
+    `;
 }
 
 
@@ -2207,6 +2272,8 @@ function createSingleReport(
 
     </div>
 
+
+    ${coScholasticHTML()}
 
     ${attendanceHTML(result)}
 
@@ -2634,6 +2701,8 @@ function createCombinedReport(
 
     </div>
 
+
+    ${coScholasticHTML()}
 
     ${attendanceHTML(
         fa2 ||
