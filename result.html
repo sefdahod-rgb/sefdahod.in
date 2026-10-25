@@ -3192,196 +3192,146 @@ function printCurrentResult(){
 
 
 /* ==========================================
+   FINAL SUMMARY HELPERS
+   Only used by Class Result and School Result.
+========================================== */
+
+function buildFinalSummaryRows(data){
+
+    const exams = ["FA-1", "SA-1", "FA-2", "SA-2"];
+    const students = {};
+
+    data.filter(r => exams.includes(r.exam_type)).forEach(r => {
+
+        // Admission number is preferred; name is a fallback if it is missing.
+        const studentId = r.admission_no || r.student_name || "UNKNOWN";
+        const key = `${r.session}|${r.class_name}|${studentId}`;
+
+        if(!students[key]){
+            students[key] = {
+                session: r.session,
+                class_name: r.class_name,
+                admission_no: r.admission_no || "",
+                student_name: r.student_name || "",
+                obtained_marks: 0,
+                total_max: 0,
+                percentage: 0,
+                grade: "",
+                result: "",
+                _seenExams: new Set()
+            };
+        }
+
+        // Prevent duplicate records for the same exam from being added twice.
+        if(students[key]._seenExams.has(r.exam_type)) return;
+        students[key]._seenExams.add(r.exam_type);
+        students[key].obtained_marks += Number(r.obtained_marks || 0);
+        students[key].total_max += Number(r.total_max || 0);
+    });
+
+    return Object.values(students).map(s => {
+        const percentage = s.total_max > 0
+            ? (s.obtained_marks / s.total_max) * 100
+            : 0;
+        return {
+            ...s,
+            percentage: Number(percentage.toFixed(2)),
+            grade: calculateGrade(percentage),
+            result: percentage >= 33 ? "PASS" : "FAIL",
+            obtained: s.obtained_marks,
+            max: s.total_max
+        };
+    });
+}
+
+
+/* ==========================================
    CLASS RESULT
 ========================================== */
 
 async function showClassResult(){
 
-    const session =
-        document.getElementById(
-            "classSession"
-        ).value;
-
-    const className =
-        document.getElementById(
-            "classFilter"
-        ).value;
-
-    const exam =
-        document.getElementById(
-            "classExam"
-        ).value;
-
+    const session = document.getElementById("classSession").value;
+    const className = document.getElementById("classFilter").value;
+    const exam = document.getElementById("classExam").value;
 
     if(!className){
-
         alert("Please select class.");
-
         return;
-
     }
 
+    const preview = document.getElementById("classResultPreview");
+    preview.innerHTML = "<div class='card'>Loading...</div>";
 
-    const preview =
-        document.getElementById(
-            "classResultPreview"
-        );
-
-
-    preview.innerHTML=
-        "<div class='card'>Loading...</div>";
-
-
-    const {data,error} =
-        await supabaseClient
+    let query = supabaseClient
         .from("student_results")
         .select("*")
-        .eq("session",session)
-        .eq("class_name",className)
-        .eq("exam_type",exam)
-        .order("student_name");
+        .eq("session", session)
+        .eq("class_name", className);
 
+    if(exam !== "FINAL"){
+        query = query.eq("exam_type", exam);
+    }
+
+    const {data, error} = await query.order("student_name");
 
     if(error){
-
-        preview.innerHTML=
-            `<div class="card">
-                ${escapeHtml(error.message)}
-            </div>`;
-
+        preview.innerHTML = `<div class="card">${escapeHtml(error.message)}</div>`;
         return;
-
     }
-
 
     if(!data || !data.length){
-
-        preview.innerHTML=
-            "<div class='card'>No result found.</div>";
-
+        preview.innerHTML = "<div class='card'>No result found.</div>";
         return;
-
     }
 
+    const resultRows = exam === "FINAL"
+        ? buildFinalSummaryRows(data)
+        : data.filter(r => r.exam_type === exam).map(r => ({
+            ...r,
+            obtained: Number(r.obtained_marks || 0),
+            max: Number(r.total_max || 0),
+            percentage: Number(r.percentage || 0)
+        }));
 
-    let html=`
+    if(!resultRows.length){
+        preview.innerHTML = "<div class='card'>No result found.</div>";
+        return;
+    }
 
-    <div class="card">
-
-    <h2>
-        ${escapeHtml(className)}
-        - ${escapeHtml(exam)}
-        Result
-    </h2>
-
-    <div class="tableWrap">
-
-    <table>
-
-    <thead>
-
-    <tr>
-
-        <th>Rank</th>
-        <th>Admission No.</th>
-        <th>Student Name</th>
-        <th>Total</th>
-        <th>Percentage</th>
-        <th>Grade</th>
-        <th>Result</th>
-
-    </tr>
-
-    </thead>
-
-    <tbody>
-    `;
-
-
-    const sorted =
-        [...data].sort(
-            (a,b)=>
-                Number(b.percentage||0)-
-                Number(a.percentage||0)
-        );
-
-
-    sorted.forEach(
-        (r,index)=>{
-
-            html += `
-
-            <tr>
-
-                <td>
-                    ${index+1}
-                </td>
-
-                <td>
-                    ${escapeHtml(
-                        r.admission_no||""
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHtml(
-                        r.student_name||""
-                    )}
-                </td>
-
-                <td>
-                    ${Number(
-                        r.obtained_marks||0
-                    )}
-                    /
-                    ${Number(
-                        r.total_max||0
-                    )}
-                </td>
-
-                <td>
-                    ${Number(
-                        r.percentage||0
-                    )}%
-                </td>
-
-                <td>
-                    ${escapeHtml(
-                        r.grade||""
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHtml(
-                        r.result||""
-                    )}
-                </td>
-
-            </tr>
-
-            `;
-
-        }
+    const sorted = [...resultRows].sort((a,b) =>
+        Number(b.percentage || 0) - Number(a.percentage || 0)
     );
 
+    let html = `
+    <div class="card">
+        <h2>${escapeHtml(className)} - ${escapeHtml(exam)} Result</h2>
+        <div class="tableWrap">
+        <table>
+            <thead><tr>
+                <th>Rank</th><th>Admission No.</th><th>Student Name</th>
+                <th>Total</th><th>Percentage</th><th>Grade</th><th>Result</th>
+            </tr></thead>
+            <tbody>`;
 
-    html += `
+    sorted.forEach((r,index) => {
+        const obtained = exam === "FINAL" ? r.obtained_marks : r.obtained_marks;
+        const max = exam === "FINAL" ? r.total_max : r.total_max;
+        html += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${escapeHtml(r.admission_no || "")}</td>
+                <td>${escapeHtml(r.student_name || "")}</td>
+                <td>${Number(obtained || 0)}/${Number(max || 0)}</td>
+                <td>${Number(r.percentage || 0)}%</td>
+                <td>${escapeHtml(r.grade || "")}</td>
+                <td>${escapeHtml(r.result || "")}</td>
+            </tr>`;
+    });
 
-    </tbody>
-
-    </table>
-
-    </div>
-
-    </div>
-
-    `;
-
-
-    preview.innerHTML=html;
-
+    html += `</tbody></table></div></div>`;
+    preview.innerHTML = html;
 }
-
 
 /* ==========================================
    SCHOOL RESULT
@@ -3390,150 +3340,83 @@ async function showClassResult(){
 
 async function showSchoolResult(){
 
-    const session =
-        document.getElementById("schoolSession").value;
+    const session = document.getElementById("schoolSession").value;
+    const exam = document.getElementById("schoolExam").value;
+    const preview = document.getElementById("schoolResultPreview");
 
-    const exam =
-        document.getElementById("schoolExam").value;
+    preview.innerHTML = "<div class='card'>Loading...</div>";
 
-    const preview =
-        document.getElementById("schoolResultPreview");
-
-    preview.innerHTML =
-        "<div class='card'>Loading...</div>";
-
-    const {data,error} = await supabaseClient
+    const {data, error} = await supabaseClient
         .from("student_results")
         .select("*")
-        .eq("session",session)
+        .eq("session", session)
         .order("class_name")
         .order("student_name");
 
     if(error){
-        preview.innerHTML =
-            `<div class="card">${escapeHtml(error.message)}</div>`;
+        preview.innerHTML = `<div class="card">${escapeHtml(error.message)}</div>`;
         return;
     }
 
     if(!data || !data.length){
-        preview.innerHTML =
-            "<div class='card'>No result found.</div>";
+        preview.innerHTML = "<div class='card'>No result found.</div>";
         return;
     }
 
     let rows = [];
 
     if(exam === "FINAL"){
-
-        const exams = ["FA-1","SA-1","FA-2","SA-2"];
-        const students = {};
-
-        data.filter(r => exams.includes(r.exam_type))
-            .forEach(r => {
-
-                const key =
-                    `${r.session}|${r.class_name}|${r.admission_no}`;
-
-                if(!students[key]){
-                    students[key] = {
-                        class_name: r.class_name,
-                        admission_no: r.admission_no,
-                        student_name: r.student_name,
-                        obtained: 0,
-                        max: 160
-                    };
-                }
-
-                students[key].obtained +=
-                    Number(r.obtained_marks || 0);
-            });
-
-        rows = Object.values(students).map(s => {
-
-            const percentage =
-                s.max > 0
-                ? (s.obtained / s.max) * 100
-                : 0;
-
-            return {
-                ...s,
-                percentage: Number(percentage.toFixed(2)),
-                grade: calculateGrade(percentage),
-                result: percentage >= 33 ? "PASS" : "FAIL"
-            };
-        });
-
-    } else {
-
-        rows = data
-            .filter(r => r.exam_type === exam)
-            .map(r => ({
-                class_name: r.class_name,
-                admission_no: r.admission_no,
-                student_name: r.student_name,
-                obtained: Number(r.obtained_marks || 0),
-                max: Number(r.total_max || 0),
-                percentage: Number(r.percentage || 0),
-                grade: r.grade || "",
-                result: r.result || ""
-            }));
+        rows = buildFinalSummaryRows(data);
+    }else{
+        rows = data.filter(r => r.exam_type === exam).map(r => ({
+            class_name: r.class_name,
+            admission_no: r.admission_no,
+            student_name: r.student_name,
+            obtained: Number(r.obtained_marks || 0),
+            max: Number(r.total_max || 0),
+            percentage: Number(r.percentage || 0),
+            grade: r.grade || "",
+            result: r.result || ""
+        }));
     }
 
     if(!rows.length){
-        preview.innerHTML =
-            "<div class='card'>No result found.</div>";
+        preview.innerHTML = "<div class='card'>No result found.</div>";
         return;
     }
 
-    rows.sort((a,b) =>
-        b.percentage - a.percentage
-    );
+    rows.sort((a,b) => Number(b.percentage || 0) - Number(a.percentage || 0));
 
     let html = `
     <div class="card">
         <h2>School Result - ${escapeHtml(exam)}</h2>
         <div class="tableWrap">
         <table>
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Class</th>
-                    <th>Admission No.</th>
-                    <th>Student Name</th>
-                    <th>Total</th>
-                    <th>Percentage</th>
-                    <th>Grade</th>
-                    <th>Result</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
+            <thead><tr>
+                <th>Rank</th><th>Class</th><th>Admission No.</th><th>Student Name</th>
+                <th>Total</th><th>Percentage</th><th>Grade</th><th>Result</th>
+            </tr></thead>
+            <tbody>`;
 
     rows.forEach((r,index) => {
+        const obtained = exam === "FINAL" ? r.obtained_marks : r.obtained;
+        const max = exam === "FINAL" ? r.total_max : r.max;
         html += `
             <tr>
                 <td>${index + 1}</td>
                 <td>${escapeHtml(r.class_name || "")}</td>
                 <td>${escapeHtml(r.admission_no || "")}</td>
                 <td>${escapeHtml(r.student_name || "")}</td>
-                <td>${r.obtained}/${r.max}</td>
-                <td>${r.percentage}%</td>
+                <td>${Number(obtained || 0)}/${Number(max || 0)}</td>
+                <td>${Number(r.percentage || 0)}%</td>
                 <td>${escapeHtml(r.grade || "")}</td>
                 <td>${escapeHtml(r.result || "")}</td>
-            </tr>
-        `;
+            </tr>`;
     });
 
-    html += `
-            </tbody>
-        </table>
-        </div>
-    </div>
-    `;
-
+    html += `</tbody></table></div></div>`;
     preview.innerHTML = html;
 }
-
 
 
 /* ==========================================
