@@ -226,6 +226,9 @@ async function addStaff(){
 
   const name = document.getElementById("name").value.trim();
   const designation = document.getElementById("designation").value.trim();
+  const teacher_username = document.getElementById("teacherUsername").value.trim() || null;
+  const assigned_class = document.getElementById("teacherClass").value.trim() || null;
+  const subject = document.getElementById("teacherSubject").value.trim() || null;
   const department = document.getElementById("department").value;
   const salary = Number(document.getElementById("salary").value);
   const joining_date = document.getElementById("joining").value;
@@ -260,6 +263,9 @@ async function addStaff(){
 
   document.getElementById("name").value="";
   document.getElementById("designation").value="";
+  document.getElementById("teacherUsername").value="";
+  document.getElementById("teacherClass").value="";
+  document.getElementById("teacherSubject").value="";
   document.getElementById("salary").value="";
   document.getElementById("joining").value="";
 
