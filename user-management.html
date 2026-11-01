@@ -53,6 +53,12 @@ th{background:#eff6ff;color:#1e3a8a}
     <h3>➕ Add New Staff</h3>
     <p class="muted">Username में छोटे English अक्षर, अंक, dot, underscore या hyphen इस्तेमाल करें। Password कम से कम 8 अक्षरों का रखें।</p>
     <form id="staffForm">
+      <div style="margin-bottom:15px;">
+  <label for="hrStaffSelect">HR से कर्मचारी चुनें *</label>
+  <select id="hrStaffSelect" required>
+    <option value="">HR Staff List लोड हो रही है...</option>
+  </select>
+</div>
       <div class="formgrid">
         <div>
           <label for="displayName">Staff का पूरा नाम *</label>
@@ -125,6 +131,7 @@ const messageBox = document.getElementById("message");
 const form = document.getElementById("staffForm");
 const saveBtn = document.getElementById("saveBtn");
 const teacherSelect = document.getElementById("teacherSelect");
+  const hrStaffSelect = document.getElementById("hrStaffSelect");
 
 const CLASSES = [
   "Nursery","LKG","UKG","1st","2nd","3rd","4th",
@@ -193,7 +200,46 @@ function getSelectedClasses() {
   return Array.from(document.querySelectorAll("#classOptions input:checked"))
     .map(el=>el.value);
 }
+async function loadHRStaff() {
+  if (!ownerVerified) return;
 
+  hrStaffSelect.innerHTML = '<option value="">HR Staff लोड हो रहे हैं...</option>';
+
+  const { data, error } = await client
+    .from("hr_staff")
+    .select("id,name,teacher_username,assigned_class,subject,designation,status")
+    .order("name", { ascending: true });
+
+  if (error) {
+    hrStaffSelect.innerHTML = '<option value="">HR Staff लोड नहीं हुए</option>';
+    showMessage("HR Staff Error: " + error.message, "error");
+    return;
+  }
+
+  const staff = data || [];
+
+  hrStaffSelect.innerHTML = '<option value="">कर्मचारी चुनें</option>' +
+    staff.map(s =>
+      '<option value="' + escapeHTML(s.id) + '">' +
+      escapeHTML(s.name) + ' — ' +
+      escapeHTML(s.designation || "") + ' (' +
+      escapeHTML(s.teacher_username || "Username नहीं है") + ')' +
+      '</option>'
+    ).join("");
+
+  hrStaffSelect.dataset.staff = JSON.stringify(staff);
+}
+
+hrStaffSelect.addEventListener("change", () => {
+  const staff = JSON.parse(hrStaffSelect.dataset.staff || "[]");
+  const selected = staff.find(s => String(s.id) === hrStaffSelect.value);
+
+  if (!selected) return;
+
+  document.getElementById("displayName").value = selected.name || "";
+  document.getElementById("username").value =
+    (selected.teacher_username || "").toLowerCase();
+});
 async function loadAssignments() {
   const {data,error} = await client
     .from("teacher_classes")
@@ -406,7 +452,10 @@ renderClassOptions([]);
 
 (async function init(){
   const ok=await verifyOwner();
-  if(ok) await loadStaff();
+  if(ok) {
+  await loadHRStaff();
+  await loadStaff();
+}
 })();
 </script>
 </body>
