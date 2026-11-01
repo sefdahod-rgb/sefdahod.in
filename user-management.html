@@ -63,6 +63,10 @@ th{background:#eff6ff;color:#1e3a8a}
           <input id="username" minlength="3" maxlength="30" pattern="[A-Za-z0-9._-]{3,30}" required placeholder="जैसे rahul.patel">
         </div>
         <div>
+  <label for="staffEmail">Teacher का HR Email *</label>
+  <input id="staffEmail" type="email" placeholder="HR में दर्ज Teacher Email">
+</div>
+        <div>
           <label for="password">Password *</label>
           <input id="password" type="password" minlength="8" required autocomplete="new-password" placeholder="कम से कम 8 अक्षर">
         </div>
@@ -287,6 +291,7 @@ form.addEventListener("submit",async event=>{
   const display_name=document.getElementById("displayName").value.trim();
   const password=document.getElementById("password").value;
   const role=document.getElementById("role").value;
+  const email=document.getElementById("staffEmail").value.trim().toLowerCase();
 
   if(!/^[a-z0-9._-]{3,30}$/.test(username)) {
     showMessage("Username 3 से 30 अक्षरों का होना चाहिए।","error");
@@ -296,13 +301,19 @@ form.addEventListener("submit",async event=>{
     showMessage("Password कम से कम 8 अक्षरों का रखें।","error");
     return;
   }
+  if(role==="teacher") {
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showMessage("Teacher का सही HR Email दर्ज करें।","error");
+    return;
+  }
+}
 
   saveBtn.disabled=true;
   saveBtn.textContent="Creating...";
 
   try {
     const {data,error}=await client.functions.invoke("create-staff-user",{
-      body:{username,display_name,password,role}
+      body:{username,display_name,password,role,email}
     });
 
     if(error) {
