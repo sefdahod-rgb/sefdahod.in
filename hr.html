@@ -164,6 +164,11 @@ if(localStorage.getItem("isAdmin")!=="yes"){
     <input type="text" id="name" placeholder="Full Name">
 
     <input type="text" id="designation" placeholder="Designation">
+    <input type="text" id="teacher_username" placeholder="Teacher Username (जैसे rahul.patel)">
+
+<input type="text" id="assigned_class" placeholder="Assigned Class (जैसे 5th A)">
+
+<input type="text" id="subject" placeholder="Subject (जैसे Mathematics)">
 
     <select id="department">
       <option value="Education">Education</option>
@@ -218,6 +223,9 @@ async function addStaff(){
   const salary = Number(document.getElementById("salary").value);
   const joining_date = document.getElementById("joining").value;
   const status = document.getElementById("status").value;
+  const teacher_username = document.getElementById("teacher_username").value.trim().toLowerCase();
+const assigned_class = document.getElementById("assigned_class").value.trim();
+const subject = document.getElementById("subject").value.trim();
 
   if(!name || !designation || !salary || !joining_date){
     alert("Please fill all required fields");
@@ -228,11 +236,14 @@ async function addStaff(){
     .from("hr_staff")
     .insert([{
       name,
-      designation,
-      department,
-      salary,
-      joining_date,
-      status
+designation,
+teacher_username,
+assigned_class,
+subject,
+department,
+salary,
+joining_date,
+status
     }]);
 
   if(error){
