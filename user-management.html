@@ -219,19 +219,19 @@ async function loadHRStaff() {
 );
 
   hrStaffSelect.innerHTML = '<option value="">कर्मचारी चुनें</option>' +
-    activestaff.map(s =>
-      '<option value="' + escapeHTML(s.id) + '">' +
-      escapeHTML(s.name) + ' — ' +
-      escapeHTML(s.designation || "") + ' (' +
-      escapeHTML(s.teacher_username || "Username नहीं है") + ')' +
-      '</option>'
-    ).join("");
+  activeStaff.map(s =>
+    '<option value="' + escapeHTML(s.id) + '">' +
+    escapeHTML(s.name) + ' — ' +
+    escapeHTML(s.designation || "") + ' (' +
+    escapeHTML(s.teacher_username || "Username नहीं है") + ')' +
+    '</option>'
+  ).join("");
 
   hrStaffSelect.dataset.staff = JSON.stringify(activeStaff);
 }
 
 hrStaffSelect.addEventListener("change", () => {
-  const staff = JSON.parse(hrStaffSelect.dataset.Staff || "[]");
+  const staff = JSON.parse(hrStaffSelect.dataset.staff || "[]");
   const selected = staff.find(s => String(s.id) === hrStaffSelect.value);
 
   if (!selected) return;
@@ -326,6 +326,54 @@ async function loadStaff() {
   showSelectedTeacherClasses();
 }
 
+// Teacher बदलने पर उसकी मौजूदा Classes दिखाएँ
+teacherSelect.addEventListener("change", () => {
+  showSelectedTeacherClasses();
+});
+
+// Class Assignment Save करें
+document.getElementById("saveClassesBtn").addEventListener("click", async () => {
+  if (!ownerVerified) {
+    showMessage("केवल Owner Class Assignment बदल सकता है।", "error");
+    return;
+  }
+
+  const teacherId = teacherSelect.value;
+
+  if (!teacherId) {
+    showMessage("पहले Teacher चुनें।", "error");
+    return;
+  }
+
+  const selectedClasses = getSelectedClasses();
+  const saveButton = document.getElementById("saveClassesBtn");
+
+  saveButton.disabled = true;
+  saveButton.textContent = "Saving...";
+
+  try {
+    const { error } = await client.rpc("replace_teacher_classes", {
+      p_teacher_auth_id: teacherId,
+      p_classes: selectedClasses
+    });
+
+    if (error) throw error;
+
+    showMessage("Teacher की Class Assignment सफलतापूर्वक सेव हो गई।", "success");
+    await loadStaff();
+
+  } catch (error) {
+    showMessage("Assignment Save नहीं हुई: " + error.message, "error");
+  } finally {
+    saveButton.disabled = false;
+    saveButton.textContent = "Save Class Assignment";
+  }
+});
+// Staff List Refresh करें
+document.getElementById("refreshBtn").addEventListener("click", async () => {
+  await loadHRStaff();
+  await loadStaff();
+});  
 
 form.addEventListener("submit", async event => {
   event.preventDefault();
@@ -407,8 +455,6 @@ form.addEventListener("submit", async event => {
     saveBtn.textContent = "Create Staff Account";
   }
 });
-
-</script>
   (async function initUserManagement() {
   const ok = await verifyOwner();
   if (!ok) return;
@@ -416,5 +462,6 @@ form.addEventListener("submit", async event => {
   await loadHRStaff();
   await loadStaff();
 })();
+  </script>
 </body>
 </html>
