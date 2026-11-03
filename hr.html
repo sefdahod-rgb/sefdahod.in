@@ -4,115 +4,39 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>HR Management - Shubhi Education Foundation</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-body{
-  margin:0;
-  font-family:Segoe UI,sans-serif;
-  background:#f1f5f9;
-}
-.header{
-  background:#16a34a;
-  color:white;
-  text-align:center;
-  padding:20px;
-}
-.header img{
-  width:70px;
-}
-nav{
-  background:#15803d;
-  padding:10px;
-  text-align:center;
-}
-nav a{
-  color:white;
-  text-decoration:none;
-  margin:8px;
-  padding:8px 14px;
-  display:inline-block;
-}
-.container{
-  max-width:1300px;
-  margin:auto;
-  padding:20px;
-}
-.card{
-  background:white;
-  padding:20px;
-  margin-bottom:20px;
-  border-radius:10px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.08);
-}
-input, select{
-  width:100%;
-  padding:10px;
-  margin:8px 0;
-  border:1px solid #ccc;
-  border-radius:6px;
-}
-button{
-  padding:10px 15px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  background:#16a34a;
-  color:white;
-}
-button:hover{
-  background:#15803d;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-th,td{
-  padding:10px;
-  border-bottom:1px solid #ddd;
-  text-align:left;
-}
-th{
-  background:#16a34a;
-  color:white;
-}
-.delete-btn{
-  background:#dc2626;
-}
-.edit-btn{
-  background:#2563eb;
-}
-.salary-btn{
-  background:#7c3aed;
-}
-.stats{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:15px;
-}
-.stat-box{
-  background:#dcfce7;
-  padding:15px;
-  border-radius:8px;
-  text-align:center;
-}
-.stat-box h3{
-  margin:0;
-  color:#166534;
-}
-.stat-box p{
-  font-size:22px;
-  font-weight:bold;
-}
-@media(max-width:768px){
-  table{
-    font-size:14px;
-  }
-}
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,sans-serif;background:#f1f5f9;color:#172033}
+.header{background:#16a34a;color:white;text-align:center;padding:20px}
+.header img{width:70px}
+nav{background:#15803d;padding:10px;text-align:center}
+nav a{color:white;text-decoration:none;margin:8px;padding:8px 14px;display:inline-block}
+.container{max-width:1300px;margin:auto;padding:20px}
+.card{background:white;padding:20px;margin-bottom:20px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+input,select{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:6px}
+button{padding:10px 15px;border:none;border-radius:6px;cursor:pointer;background:#16a34a;color:white}
+button:hover{filter:brightness(.94)}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th,td{padding:10px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top}
+th{background:#16a34a;color:white}
+.delete-btn{background:#dc2626}
+.edit-btn{background:#2563eb}
+.salary-btn{background:#7c3aed}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px}
+.stat-box{background:#dcfce7;padding:15px;border-radius:8px;text-align:center}
+.stat-box h3{margin:0;color:#166534}
+.stat-box p{font-size:22px;font-weight:bold}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px}
+.form-grid label{font-weight:600;font-size:14px}
+.table-wrap{overflow-x:auto}
+.form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+#formTitle{margin-top:0}
+#cancelEditBtn{background:#64748b;display:none}
+.note{font-size:13px;color:#64748b;line-height:1.5}
+@media(max-width:768px){.form-grid{grid-template-columns:1fr}.container{padding:12px}.card{padding:15px}table{font-size:13px}}
 </style>
 </head>
-
 <body>
 
 <script>
@@ -123,7 +47,7 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 </script>
 
 <div class="header">
-  <img src="logo.png">
+  <img src="logo.png" alt="School Logo">
   <h1>Shubhi Education Foundation</h1>
   <p>HR & Staff Management System</p>
 </div>
@@ -136,76 +60,54 @@ if(localStorage.getItem("isAdmin")!=="yes"){
 </nav>
 
 <div class="container">
-
-  <!-- STATS -->
   <div class="stats">
-    <div class="stat-box">
-      <h3>Total Staff</h3>
-      <p id="totalStaff">0</p>
-    </div>
-    <div class="stat-box">
-      <h3>Total Salary</h3>
-      <p id="totalSalary">₹0</p>
-    </div>
-    <div class="stat-box">
-      <h3>Teachers</h3>
-      <p id="teachers">0</p>
-    </div>
-    <div class="stat-box">
-      <h3>Volunteers</h3>
-      <p id="volunteers">0</p>
-    </div>
+    <div class="stat-box"><h3>Total Staff</h3><p id="totalStaff">0</p></div>
+    <div class="stat-box"><h3>Total Salary</h3><p id="totalSalary">₹0</p></div>
+    <div class="stat-box"><h3>Teachers</h3><p id="teachers">0</p></div>
+    <div class="stat-box"><h3>Volunteers</h3><p id="volunteers">0</p></div>
   </div>
 
-  <!-- ADD STAFF -->
   <div class="card">
-    <h2>➕ Add Employee / Volunteer</h2>
-
-    <input type="text" id="name" placeholder="Full Name">
-
-    <input type="text" id="designation" placeholder="Designation">
-    <input type="text" id="teacher_username" placeholder="Teacher Username (जैसे rahul.patel)">
-
-<input type="text" id="assigned_class" placeholder="Assigned Class (जैसे 5th A)">
-
-<input type="text" id="subject" placeholder="Subject (जैसे Mathematics)">
-
-    <select id="department">
-      <option value="Education">Education</option>
-      <option value="Admin">Admin</option>
-      <option value="Volunteer">Volunteer</option>
-      <option value="Finance">Finance</option>
-    </select>
-
-    <input type="number" id="salary" placeholder="Monthly Salary">
-
-    <input type="date" id="joining">
-
-    <select id="status">
-      <option value="Active">Active</option>
-      <option value="Inactive">Inactive</option>
-    </select>
-
-    <button onclick="addStaff()">Add Staff</button>
+    <h2 id="formTitle">➕ Add Employee / Volunteer</h2>
+    <p class="note">Teacher Username वही रखें जो User Management में Teacher Login बनाते समय इस्तेमाल करना है। उदाहरण: rahul.patel</p>
+    <form id="staffForm">
+      <div class="form-grid">
+        <div><label for="name">Full Name *</label><input type="text" id="name" maxlength="100" required placeholder="Full Name"></div>
+        <div><label for="designation">Designation *</label><input type="text" id="designation" maxlength="100" required placeholder="Designation"></div>
+        <div><label for="teacher_username">Teacher Username</label><input type="text" id="teacher_username" maxlength="30" placeholder="जैसे rahul.patel"></div>
+        <div><label for="assigned_class">Assigned Class</label><input type="text" id="assigned_class" placeholder="जैसे 5th A"></div>
+        <div><label for="subject">Subject</label><input type="text" id="subject" placeholder="जैसे Mathematics"></div>
+        <div>
+          <label for="department">Department</label>
+          <select id="department">
+            <option value="Education">Education</option><option value="Admin">Admin</option>
+            <option value="Volunteer">Volunteer</option><option value="Finance">Finance</option>
+          </select>
+        </div>
+        <div><label for="salary">Monthly Salary *</label><input type="number" id="salary" min="0" step="0.01" required placeholder="Monthly Salary"></div>
+        <div><label for="joining">Joining Date *</label><input type="date" id="joining" required></div>
+        <div>
+          <label for="status">Status</label>
+          <select id="status"><option value="Active">Active</option><option value="Inactive">Inactive</option></select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" id="submitStaffBtn">Add Staff</button>
+        <button type="button" id="cancelEditBtn">Cancel Edit</button>
+      </div>
+    </form>
   </div>
 
-  <!-- STAFF TABLE -->
   <div class="card">
     <h2>👥 Staff Records</h2>
-
-    <table id="staffTable">
-      <tr>
-        <th>Name</th>
-        <th>Designation</th>
-        <th>Department</th>
-        <th>Salary</th>
-        <th>Joining Date</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-    </table>
+    <p class="note">Edit में सभी HR विवरण बदले जा सकते हैं। HR रिकॉर्ड Delete करने से जुड़ा Login Profile अपने-आप delete नहीं होगा।</p>
+    <div class="table-wrap">
+      <table id="staffTable">
+        <thead><tr><th>Name</th><th>Designation</th><th>Teacher Username</th><th>Assigned Class</th><th>Subject</th><th>Department</th><th>Salary</th><th>Joining Date</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="staffRows"><tr><td colspan="10">Loading...</td></tr></tbody>
+      </table>
+    </div>
   </div>
-
 </div>
 
 <script>
@@ -214,384 +116,212 @@ const client = window.supabase.createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYWhjdmFveG5teGZjZ3l5eW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4ODQ3NTksImV4cCI6MjA5MDQ2MDc1OX0.H_aABgpGglAMnVaDkBZU7xihvhHW8XT3U9PoR2VsFWg"
 );
 
-/* ADD STAFF */
-async function addStaff(){
 
-  const name = document.getElementById("name").value.trim();
-  const designation = document.getElementById("designation").value.trim();
-  const department = document.getElementById("department").value;
-  const salary = Number(document.getElementById("salary").value);
-  const joining_date = document.getElementById("joining").value;
-  const status = document.getElementById("status").value;
-  const teacher_username = document.getElementById("teacher_username").value.trim().toLowerCase();
-const assigned_class = document.getElementById("assigned_class").value.trim();
-const subject = document.getElementById("subject").value.trim();
+const staffForm = document.getElementById("staffForm");
+const staffRows = document.getElementById("staffRows");
+let staffRecords = [];
+let editingStaffId = null;
 
-  if(!name || !designation || !salary || !joining_date){
-    alert("Please fill all required fields");
-    return;
-  }
-
-  const { error } = await client
-    .from("hr_staff")
-    .insert([{
-      name,
-designation,
-teacher_username,
-assigned_class,
-subject,
-department,
-salary,
-joining_date,
-status
-    }]);
-
-  if(error){
-    console.log(error);
-    alert("Failed to add staff");
-    return;
-  }
-
-  alert("Staff added successfully ✅");
-
-  document.getElementById("name").value="";
-  document.getElementById("designation").value="";
-  document.getElementById("salary").value="";
-  document.getElementById("joining").value="";
-
-  loadStaff();
+function safe(value){
+  return String(value ?? "").replace(/[&<>"']/g,ch=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[ch]);
 }
 
-/* LOAD STAFF */
-async function loadStaff(){
+function formValues(){
+  return {
+    name:document.getElementById("name").value.trim(),
+    designation:document.getElementById("designation").value.trim(),
+    teacher_username:document.getElementById("teacher_username").value.trim().toLowerCase(),
+    assigned_class:document.getElementById("assigned_class").value.trim(),
+    subject:document.getElementById("subject").value.trim(),
+    department:document.getElementById("department").value,
+    salary:Number(document.getElementById("salary").value),
+    joining_date:document.getElementById("joining").value,
+    status:document.getElementById("status").value
+  };
+}
 
-  const { data, error } = await client
-    .from("hr_staff")
-    .select("*")
-    .order("id", { ascending:false });
+function resetStaffForm(){
+  staffForm.reset();
+  editingStaffId=null;
+  document.getElementById("formTitle").textContent="➕ Add Employee / Volunteer";
+  document.getElementById("submitStaffBtn").textContent="Add Staff";
+  document.getElementById("cancelEditBtn").style.display="none";
+}
 
-  const table = document.getElementById("staffTable");
+staffForm.addEventListener("submit",async function(event){
+  event.preventDefault();
+  const values=formValues();
 
-  if(error){
-    console.log(error);
-    alert("Failed to load staff");
+  if(!values.name || !values.designation || !values.joining_date || !Number.isFinite(values.salary) || values.salary<0){
+    alert("कृपया Name, Designation, सही Salary और Joining Date भरें।");
+    return;
+  }
+  if(values.teacher_username && !/^[a-z0-9._-]{3,30}$/.test(values.teacher_username)){
+    alert("Teacher Username 3 से 30 अक्षरों का हो। केवल English छोटे अक्षर, अंक, dot, underscore या hyphen इस्तेमाल करें।");
     return;
   }
 
-  table.innerHTML = `
-    <tr>
-      <th>Name</th>
-      <th>Designation</th>
-      <th>Department</th>
-      <th>Salary</th>
-      <th>Joining Date</th>
-      <th>Status</th>
-      <th>Action</th>
-    </tr>
-  `;
+  const submitButton=document.getElementById("submitStaffBtn");
+  submitButton.disabled=true;
+  submitButton.textContent=editingStaffId ? "Updating..." : "Saving...";
+  try{
+    let result;
+    if(editingStaffId){
+      result=await client.from("hr_staff").update(values).eq("id",editingStaffId);
+    }else{
+      result=await client.from("hr_staff").insert([values]);
+    }
+    if(result.error) throw result.error;
 
-  let totalSalary = 0;
-  let teachers = 0;
-  let volunteers = 0;
+    alert(editingStaffId ? "Staff details updated successfully ✅" : "Staff added successfully ✅");
+    resetStaffForm();
+    await loadStaff();
+  }catch(error){
+    console.error(error);
+    alert("Save नहीं हुआ: "+(error.message||"Unknown error"));
+  }finally{
+    submitButton.disabled=false;
+    submitButton.textContent=editingStaffId ? "Update Staff" : "Add Staff";
+  }
+});
 
-  if(!data || data.length===0){
-    table.innerHTML += `
-      <tr>
-        <td colspan="7">No staff records found.</td>
-      </tr>
-    `;
+async function loadStaff(){
+  const {data,error}=await client.from("hr_staff").select("*").order("id",{ascending:false});
+  if(error){
+    console.error(error);
+    staffRows.innerHTML='<tr><td colspan="10">Staff load नहीं हुआ: '+safe(error.message)+'</td></tr>';
+    alert("Failed to load staff: "+error.message);
+    return;
   }
 
-  data.forEach(s => {
+  staffRecords=data||[];
+  staffRows.innerHTML="";
+  let totalSalary=0,teachers=0,volunteers=0;
 
-    totalSalary += Number(s.salary) || 0;
+  if(!staffRecords.length){
+    staffRows.innerHTML='<tr><td colspan="10">No staff records found.</td></tr>';
+  }
 
-    if((s.designation || "").toLowerCase().includes("teacher")){
-      teachers++;
-    }
+  staffRecords.forEach(s=>{
+    totalSalary+=Number(s.salary)||0;
+    if((s.designation||"").toLowerCase().includes("teacher")) teachers++;
+    if((s.department||"").toLowerCase()==="volunteer") volunteers++;
 
-    if((s.department || "").toLowerCase() === "volunteer"){
-      volunteers++;
-    }
-
-    table.innerHTML += `
-      <tr>
-        <td>${s.name || "-"}</td>
-        <td>${s.designation || "-"}</td>
-        <td>${s.department || "-"}</td>
-        <td>₹${s.salary || 0}</td>
-        <td>${s.joining_date ? new Date(s.joining_date).toLocaleDateString() : "-"}</td>
-        <td>${s.status || "-"}</td>
-        <td>
-          <button class="edit-btn"
-            onclick="editStaff(
-              ${s.id},
-              \`${s.name || ""}\`,
-              \`${s.designation || ""}\`,
-              ${s.salary || 0}
-            )">
-            Edit
-          </button>
-
-          <button class="salary-btn"
-            onclick="generateSalarySlip(
-              \`${s.name || ""}\`,
-              \`${s.designation || ""}\`,
-              ${s.salary || 0}
-            )">
-            Salary Slip
-          </button>
-
-          <button class="delete-btn"
-            onclick="deleteStaff(${s.id})">
-            Delete
-          </button>
-        </td>
-      </tr>
-    `;
+    const tr=document.createElement("tr");
+    tr.innerHTML=
+      '<td>'+safe(s.name||"-")+'</td>'+
+      '<td>'+safe(s.designation||"-")+'</td>'+
+      '<td>'+safe(s.teacher_username||"-")+'</td>'+
+      '<td>'+safe(s.assigned_class||"-")+'</td>'+
+      '<td>'+safe(s.subject||"-")+'</td>'+
+      '<td>'+safe(s.department||"-")+'</td>'+
+      '<td>₹'+safe(s.salary||0)+'</td>'+
+      '<td>'+safe(s.joining_date||"-")+'</td>'+
+      '<td>'+safe(s.status||"-")+'</td>'+
+      '<td><button type="button" class="edit-btn" data-action="edit" data-id="'+safe(s.id)+'">Edit</button> '+
+      '<button type="button" class="salary-btn" data-action="salary" data-id="'+safe(s.id)+'">Salary Slip</button> '+
+      '<button type="button" class="delete-btn" data-action="delete" data-id="'+safe(s.id)+'">Delete</button></td>';
+    staffRows.appendChild(tr);
   });
 
-  document.getElementById("totalStaff").innerText = data.length;
-  document.getElementById("totalSalary").innerText = "₹" + totalSalary;
-  document.getElementById("teachers").innerText = teachers;
-  document.getElementById("volunteers").innerText = volunteers;
+  document.getElementById("totalStaff").innerText=staffRecords.length;
+  document.getElementById("totalSalary").innerText="₹"+totalSalary.toLocaleString("en-IN");
+  document.getElementById("teachers").innerText=teachers;
+  document.getElementById("volunteers").innerText=volunteers;
 }
 
-/* DELETE STAFF */
+function editStaff(id){
+  const s=staffRecords.find(x=>String(x.id)===String(id));
+  if(!s) return alert("Staff record नहीं मिला। Refresh करके प्रयास करें।");
+
+  document.getElementById("name").value=s.name||"";
+  document.getElementById("designation").value=s.designation||"";
+  document.getElementById("teacher_username").value=s.teacher_username||"";
+  document.getElementById("assigned_class").value=s.assigned_class||"";
+  document.getElementById("subject").value=s.subject||"";
+  document.getElementById("department").value=s.department||"Education";
+  document.getElementById("salary").value=s.salary??"";
+  document.getElementById("joining").value=s.joining_date||"";
+  document.getElementById("status").value=s.status||"Active";
+
+  editingStaffId=s.id;
+  document.getElementById("formTitle").textContent="✏️ Edit Employee / Volunteer";
+  document.getElementById("submitStaffBtn").textContent="Update Staff";
+  document.getElementById("cancelEditBtn").style.display="inline-block";
+  document.querySelector(".card").scrollIntoView({behavior:"smooth"});
+}
+
+document.getElementById("cancelEditBtn").addEventListener("click",resetStaffForm);
+
 async function deleteStaff(id){
+  const s=staffRecords.find(x=>String(x.id)===String(id));
+  if(!s) return;
+  if(!confirm("क्या आप HR record में से "+s.name+" को delete करना चाहते हैं?\\n\\nध्यान दें: यह HR record हटेगा। User Management का Login Account इससे अपने-आप delete नहीं होगा।")) return;
 
-  if(!confirm("Delete this employee?")) return;
-
-  await client
-    .from("hr_staff")
-    .delete()
-    .eq("id", id);
-
-  loadStaff();
+  try{
+    const {error}=await client.from("hr_staff").delete().eq("id",id);
+    if(error) throw error;
+    alert("HR staff record deleted.");
+    if(String(editingStaffId)===String(id)) resetStaffForm();
+    await loadStaff();
+  }catch(error){
+    console.error(error);
+    alert("Delete नहीं हुआ: "+error.message);
+  }
 }
 
-/* EDIT STAFF */
-async function editStaff(id, oldName, oldDesignation, oldSalary){
+staffRows.addEventListener("click",event=>{
+  const btn=event.target.closest("button[data-action]");
+  if(!btn) return;
+  const id=btn.dataset.id;
+  const staff=staffRecords.find(s=>String(s.id)===String(id));
+  if(!staff) return;
+  if(btn.dataset.action==="edit") editStaff(id);
+  if(btn.dataset.action==="delete") deleteStaff(id);
+  if(btn.dataset.action==="salary") generateSalarySlip(staff.name||"",staff.designation||"",Number(staff.salary)||0);
+});
 
-  const newName = prompt("Edit Name:", oldName);
-  const newDesignation = prompt("Edit Designation:", oldDesignation);
-  const newSalary = prompt("Edit Salary:", oldSalary);
+function generateSalarySlip(name,designation,salary){
+  const win=window.open("","_blank");
+  if(!win){alert("Pop-up blocked. कृपया इस साइट के लिए pop-ups allow करें।");return;}
 
-  if(!newName || !newDesignation || !newSalary) return;
-
-  await client
-    .from("hr_staff")
-    .update({
-      name:newName,
-      designation:newDesignation,
-      salary:newSalary
-    })
-    .eq("id", id);
-
-  loadStaff();
-}
-
-/* SALARY SLIP */
-function generateSalarySlip(name, designation, salary){
-
-  const win = window.open("", "_blank");
-
-  // ✅ ONLY DATE FIX
-  const currentDate = new Date();
-  const formattedDate =
-    String(currentDate.getDate()).padStart(2,'0') + '/' +
-    String(currentDate.getMonth()+1).padStart(2,'0') + '/' +
-    currentDate.getFullYear();
-
-  const salaryMonth =
-    currentDate.toLocaleString('default',{month:'long'}) +
-    ' ' +
-    currentDate.getFullYear();
+  const currentDate=new Date();
+  const formattedDate=String(currentDate.getDate()).padStart(2,"0")+"/"+String(currentDate.getMonth()+1).padStart(2,"0")+"/"+currentDate.getFullYear();
+  const salaryMonth=currentDate.toLocaleString("default",{month:"long"})+" "+currentDate.getFullYear();
+  const safeName=safe(name),safeDesignation=safe(designation),safeSalary=safe(salary);
 
   win.document.write(`
-  <html>
-  <head>
-    <title>Salary Slip</title>
-    <style>
-      body{
-        font-family:Arial,sans-serif;
-        background:#f3f4f6;
-        padding:30px;
-      }
-
-      .slip{
-        max-width:850px;
-        margin:auto;
-        background:white;
-        padding:40px;
-        border:3px solid #16a34a;
-        border-radius:15px;
-        box-shadow:0 0 20px rgba(0,0,0,0.15);
-        position:relative;
-      }
-
-      .watermark{
-        position:absolute;
-        top:35%;
-        left:50%;
-        transform:translate(-50%,-50%);
-        opacity:0.08;
-        width:250px;
-      }
-
-      .header{
-        text-align:center;
-        border-bottom:3px solid #16a34a;
-        padding-bottom:15px;
-        margin-bottom:25px;
-      }
-
-      .header img{
-        width:80px;
-      }
-
-      .header h1{
-        margin:10px 0 5px;
-        color:#166534;
-      }
-
-      .header p{
-        margin:0;
-        color:#555;
-      }
-
-      .title{
-        text-align:center;
-        font-size:28px;
-        font-weight:bold;
-        color:#15803d;
-        margin:20px 0;
-      }
-
-      table{
-        width:100%;
-        border-collapse:collapse;
-        margin-top:20px;
-      }
-
-      th,td{
-        border:1px solid #ccc;
-        padding:12px;
-        text-align:left;
-      }
-
-      th{
-        background:#dcfce7;
-        color:#166534;
-      }
-
-      .salary{
-        font-size:26px;
-        font-weight:bold;
-        color:#7c3aed;
-      }
-
-      .footer{
-        margin-top:50px;
-        display:flex;
-        justify-content:space-between;
-      }
-
-      .signature{
-        text-align:center;
-        margin-top:50px;
-      }
-
-      button{
-        margin-top:25px;
-        padding:12px 20px;
-        background:#16a34a;
-        color:white;
-        border:none;
-        border-radius:8px;
-        cursor:pointer;
-      }
-
-      @media print{
-        button{
-          display:none;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-
-    <div class="slip">
-
-      <img src="logo.png" class="watermark">
-
-      <div class="header">
-        <img src="logo.png">
-        <h1>Shubhi Education Foundation</h1>
-        <p>Official Salary Slip</p>
-      </div>
-
-      <div class="title">
-        Salary Slip
-      </div>
-
-      <table>
-        <tr>
-          <th>Employee Name</th>
-          <td>${name}</td>
-        </tr>
-
-        <tr>
-          <th>Designation</th>
-          <td>${designation}</td>
-        </tr>
-
-        <tr>
-          <th>Salary Month</th>
-          <td>${salaryMonth}</td>
-        </tr>
-
-        <tr>
-          <th>Basic Salary</th>
-          <td class="salary">₹${salary}</td>
-        </tr>
-
-        <tr>
-          <th>Total Payable</th>
-          <td class="salary">₹${salary}</td>
-        </tr>
-
-        <tr>
-          <th>Status</th>
-          <td>Paid</td>
-        </tr>
-      </table>
-
-      <div class="footer">
-        <div>
-          <strong>Date:</strong><br>
-          ${formattedDate}
-        </div>
-
-        <div class="signature">
-          ___________________<br>
-          HR Authorized Signature
-        </div>
-      </div>
-
-      <center>
-        <button onclick="window.print()">
-          Print / Download Salary Slip
-        </button>
-      </center>
-
-    </div>
-
-  </body>
-  </html>
-  `);
+  <!DOCTYPE html><html><head><title>Salary Slip</title>
+  <style>
+  body{font-family:Arial,sans-serif;background:#f3f4f6;padding:30px}
+  .slip{max-width:850px;margin:auto;background:white;padding:40px;border:3px solid #16a34a;border-radius:15px;position:relative}
+  .watermark{position:absolute;top:35%;left:50%;transform:translate(-50%,-50%);opacity:.08;width:250px}
+  .header{text-align:center;border-bottom:3px solid #16a34a;padding-bottom:15px;margin-bottom:25px}
+  .header img{width:80px}.header h1{margin:10px 0 5px;color:#166534}.header p{margin:0;color:#555}
+  .title{text-align:center;font-size:28px;font-weight:bold;color:#15803d;margin:20px 0}
+  table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #ccc;padding:12px;text-align:left}
+  th{background:#dcfce7;color:#166534}.salary{font-size:26px;font-weight:bold;color:#7c3aed}
+  .footer{margin-top:50px;display:flex;justify-content:space-between}.signature{text-align:center;margin-top:50px}
+  button{margin-top:25px;padding:12px 20px;background:#16a34a;color:white;border:0;border-radius:8px;cursor:pointer}
+  @media print{button{display:none}body{background:white;padding:0}.slip{box-shadow:none}}
+  </style></head><body><div class="slip">
+  <img src="logo.png" class="watermark"><div class="header"><img src="logo.png"><h1>Shubhi Education Foundation</h1><p>Official Salary Slip</p></div>
+  <div class="title">Salary Slip</div><table>
+  <tr><th>Employee Name</th><td>${safeName}</td></tr>
+  <tr><th>Designation</th><td>${safeDesignation}</td></tr>
+  <tr><th>Salary Month</th><td>${safe(salaryMonth)}</td></tr>
+  <tr><th>Basic Salary</th><td class="salary">₹${safeSalary}</td></tr>
+  <tr><th>Total Payable</th><td class="salary">₹${safeSalary}</td></tr>
+  <tr><th>Status</th><td>Paid</td></tr></table>
+  <div class="footer"><div><strong>Date:</strong><br>${safe(formattedDate)}</div><div class="signature">___________________<br>HR Authorized Signature</div></div>
+  <center><button onclick="window.print()">Print / Download Salary Slip</button></center>
+  </div></body></html>`);
+  win.document.close();
 }
-/* INIT */
+
 loadStaff();
 </script>
+</body>
+</html>
