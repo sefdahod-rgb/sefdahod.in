@@ -407,7 +407,14 @@ form.addEventListener("submit", async event => {
     saveBtn.textContent = "Create Staff Account";
   }
 });
-();
+
+  (async function initUserManagement() {
+  const ok = await verifyOwner();
+  if (!ok) return;
+
+  await loadHRStaff();
+  await loadStaff();
+})();
 </script>
 </body>
 </html>
