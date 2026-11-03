@@ -408,6 +408,7 @@ form.addEventListener("submit", async event => {
   }
 });
 
+</script>
   (async function initUserManagement() {
   const ok = await verifyOwner();
   if (!ok) return;
@@ -415,6 +416,5 @@ form.addEventListener("submit", async event => {
   await loadHRStaff();
   await loadStaff();
 })();
-</script>
 </body>
 </html>
