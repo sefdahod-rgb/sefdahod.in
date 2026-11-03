@@ -275,7 +275,7 @@ async function loadStaff() {
 
   const {data,error} = await client
     .from("staff_profiles")
-    .select("auth_user_id,username,display_name,role,is_active,created_at")
+    .select("auth_user_id,username,display_name,role,is_active,created_at,hr_staff_id")
     .order("created_at",{ascending:false});
 
   if(error) {
