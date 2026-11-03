@@ -219,7 +219,7 @@ async function loadHRStaff() {
 );
 
   hrStaffSelect.innerHTML = '<option value="">कर्मचारी चुनें</option>' +
-    staff.map(s =>
+    activestaff.map(s =>
       '<option value="' + escapeHTML(s.id) + '">' +
       escapeHTML(s.name) + ' — ' +
       escapeHTML(s.designation || "") + ' (' +
@@ -231,7 +231,7 @@ async function loadHRStaff() {
 }
 
 hrStaffSelect.addEventListener("change", () => {
-  const staff = JSON.parse(hrStaffSelect.dataset.activeStaff || "[]");
+  const staff = JSON.parse(hrStaffSelect.dataset.Staff || "[]");
   const selected = staff.find(s => String(s.id) === hrStaffSelect.value);
 
   if (!selected) return;
@@ -326,147 +326,88 @@ async function loadStaff() {
   showSelectedTeacherClasses();
 }
 
-form.addEventListener("submit",async event=>{
+
+form.addEventListener("submit", async event => {
   event.preventDefault();
-  if(!ownerVerified) {
-    showMessage("Owner verification जरूरी है। Refresh करके दोबारा प्रयास करें।","error");
+
+  if (!ownerVerified) {
+    showMessage("Owner verification जरूरी है। Refresh करके दोबारा प्रयास करें।", "error");
     return;
   }
 
-  const username=document.getElementById("username").value.trim().toLowerCase();
-  const display_name=document.getElementById("displayName").value.trim();
-  const password=document.getElementById("password").value;
-  const role=document.getElementById("role").value;
- 
+  const username = document.getElementById("username").value.trim().toLowerCase();
+  const password = document.getElementById("password").value;
+  const role = document.getElementById("role").value;
+  const hr_staff_id = Number(hrStaffSelect.value);
 
-  if(!/^[a-z0-9._-]{3,30}$/.test(username)) {
-    showMessage("Username 3 से 30 अक्षरों का होना चाहिए।","error");
+  if (!hr_staff_id) {
+    showMessage("पहले HR से कर्मचारी चुनें।", "error");
     return;
   }
-  if(password.length<8) {
-    showMessage("Password कम से कम 8 अक्षरों का रखें।","error");
+
+  if (!/^[a-z0-9._-]{3,30}$/.test(username)) {
+    showMessage("Username 3 से 30 अक्षरों का होना चाहिए।", "error");
     return;
   }
- 
-  }
-}
 
-  saveBtn.disabled=true;
-  saveBtn.textContent="Creating...";
+  if (password.length < 8) {
+    showMessage("Password कम से कम 8 अक्षरों का रखें।", "error");
+    return;
+  }
+
+  if (!role) {
+    showMessage("Staff Role चुनें।", "error");
+    return;
+  }
+
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Creating...";
 
   try {
-    const hr_staff_id = Number(hrStaffSelect.value);
-
-if (!hr_staff_id) {
-  showMessage("पहले HR से कर्मचारी चुनें।", "error");
-  return;
-}
-
-const {data,error}=await client.functions.invoke("create-staff-user",{
-  body:{
-    hr_staff_id,
-    username,
-    password,
-    role
-  }
-});
+    const { data, error } = await client.functions.invoke("create-staff-user", {
+      body: {
+        hr_staff_id,
+        username,
+        password,
+        role
+      }
     });
 
-    if(error) {
-      let detail=error.message||"Function request failed.";
+    if (error) {
+      let detail = error.message || "Function request failed.";
+
       try {
-        if(error.context && typeof error.context.json==="function") {
-          const body=await error.context.json();
-          if(body?.error) detail=body.error;
+        if (error.context && typeof error.context.json === "function") {
+          const body = await error.context.json();
+          if (body?.error) detail = body.error;
         }
-      } catch(_) {}
-      showMessage("Staff नहीं बना: "+detail,"error");
+      } catch (_) {}
+
+      showMessage("Staff नहीं बना: " + detail, "error");
       return;
     }
 
-    if(!data?.success) {
-      showMessage("Staff नहीं बना: "+(data?.error||"Unknown error"),"error");
+    if (!data?.success) {
+      showMessage("Staff नहीं बना: " + (data?.error || "Unknown error"), "error");
       return;
     }
 
     form.reset();
-    showMessage("Staff account बन गया: "+data.username+" ("+data.role+")","success");
+    showMessage(
+      "Staff account बन गया: " + data.username + " (" + data.role + ")",
+      "success"
+    );
+
     await loadStaff();
-  } catch(err) {
-    showMessage("Request error: "+(err.message||"Please try again."),"error");
+
+  } catch (err) {
+    showMessage("Request error: " + (err.message || "Please try again."), "error");
   } finally {
-    saveBtn.disabled=false;
-    saveBtn.textContent="Create Staff Account";
+    saveBtn.disabled = false;
+    saveBtn.textContent = "Create Staff Account";
   }
 });
-
-teacherSelect.addEventListener("change",showSelectedTeacherClasses);
-
-document.getElementById("saveClassesBtn").addEventListener("click",async()=>{
-  if(!ownerVerified) {
-    showMessage("केवल Owner Class Assignment बदल सकता है।","error");
-    return;
-  }
-
-  const teacherId=teacherSelect.value;
-  const teacher=staffCache.find(s=>s.auth_user_id===teacherId && s.role==="teacher");
-
-  if(!teacher) {
-    showMessage("पहले Teacher चुनें।","error");
-    return;
-  }
-
-  const selected=getSelectedClasses();
-  const btn=document.getElementById("saveClassesBtn");
-  btn.disabled=true;
-  btn.textContent="Saving...";
-
-  try {
-    // Existing assignments are read before replacement.
-    const {error:deleteError}=await client
-      .from("teacher_classes")
-      .delete()
-      .eq("teacher_auth_id",teacherId);
-
-    if(deleteError) throw deleteError;
-
-    if(selected.length) {
-      const rows=selected.map(class_name=>({
-        teacher_auth_id:teacherId,
-        class_name
-      }));
-
-      const {error:insertError}=await client
-        .from("teacher_classes")
-        .insert(rows);
-
-      if(insertError) throw insertError;
-    }
-
-    showMessage("Class Assignment सेव हो गया: "+(selected.join(", ")||"सभी कक्षाएँ हटाई गईं"),"success");
-    await loadStaff();
-  } catch(err) {
-    showMessage("Assignment सेव नहीं हुआ: "+err.message+
-      " — teacher_classes की Owner SELECT/INSERT/DELETE RLS policies जाँचें।","error");
-    await loadAssignments();
-    showSelectedTeacherClasses();
-  } finally {
-    btn.disabled=false;
-    btn.textContent="Save Class Assignment";
-  }
-});
-
-document.getElementById("refreshBtn").addEventListener("click",loadStaff);
-
-renderClassOptions([]);
-
-(async function init(){
-  const ok=await verifyOwner();
-  if(ok) {
-  await loadHRStaff();
-  await loadStaff();
-}
-})();
+();
 </script>
 </body>
 </html>
