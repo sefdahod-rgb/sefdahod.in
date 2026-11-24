@@ -29,7 +29,23 @@ function uniq(vals){return [...new Set(vals.filter(v=>v!==null&&v!==undefined&&S
 function fillSelect(id,values,placeholder){const el=$(id),old=el.value;el.innerHTML=`<option value="">${placeholder}</option>`+values.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');if(values.includes(old))el.value=old;}
 function sessionYear(session){const match=String(session||'').match(/(?:19|20)\d{2}/);return match?match[0]:String(new Date().getFullYear());}
 function makeStudentId(s){const admission=String(s.admission_no??'').trim();return `RPS-${sessionYear(s.session)}-${admission||'NO-ADMISSION-NO'}`;}
-async function loadCards(){
+function generateStudentQRCodes(){
+  document.querySelectorAll('.qr-code').forEach(el=>{
+    const value=el.dataset.qr;
+    if(!value || el.dataset.generated==='yes') return;
+
+    el.innerHTML='';
+    new QRCode(el,{
+      text:value,
+      width:65,
+      height:65,
+      correctLevel:QRCode.CorrectLevel.M
+    });
+
+    el.dataset.generated='yes';
+  });
+}
+ async function loadCards(){
  $('status').textContent='Students लोड हो रहे हैं…';
  try{const {data,error}=await sb.from('students').select('*').order('class_name',{ascending:true}).order('roll_no',{ascending:true});if(error)throw error;students=data||[];
  fillSelect('session',uniq(students.map(s=>s.session)),'All Sessions');fillSelect('classFilter',uniq(students.map(s=>s.class_name)),'All Classes');fillSelect('sectionFilter',uniq(students.map(s=>s.section)),'All Sections');renderPreview();
@@ -67,7 +83,20 @@ function card(s,i){
     <div class="card-foot">Contact: 02673-450037 • 9408695001 | www.sefdahod.in</div>
   </article>`;
 }
-function renderPreview(){const list=filtered();$('preview').innerHTML=list.map((s,i)=>`<label style="display:flex;flex-direction:column;gap:6px;cursor:pointer"><span><input type="checkbox" class="pick" value="${esc(s.id)}" checked> Select</span>${card(s,i)}</label>`).join('');$('status').textContent=`कुल ${students.length} रिकॉर्ड लोड हुए। फ़िल्टर में ${list.length} विद्यार्थी हैं।`;}
+function renderPreview(){
+  const list=filtered();
+
+  $('preview').innerHTML=list.map((s,i)=>
+    `<label style="display:flex;flex-direction:column;gap:6px;cursor:pointer">
+      <span><input type="checkbox" class="pick" value="${esc(s.id)}" checked> Select</span>
+      ${card(s,i)}
+    </label>`
+  ).join('');
+
+  generateStudentQRCodes();
+
+  $('status').textContent=`कुल ${students.length} रिकॉर्ड लोड हुए। फ़िल्टर में ${list.length} विद्यार्थी हैं।`;
+}
 function selectAll(v){document.querySelectorAll('.pick').forEach(x=>x.checked=v);}
 function printSelected(){const ids=[...document.querySelectorAll('.pick:checked')].map(x=>String(x.value));const selected=filtered().filter(s=>ids.includes(String(s.id)));if(!selected.length){alert('पहले कम से कम एक विद्यार्थी चुनें।');return;}const sheet=$('printSheet');const pages=[];for(let i=0;i<selected.length;i+=10){pages.push(`<div class="print-page">${selected.slice(i,i+10).map((s,j)=>card(s,i+j)).join('')}</div>`);}sheet.innerHTML=pages.join('');window.print();}
 ['session','classFilter','sectionFilter','search'].forEach(id=>$(id).addEventListener('input',renderPreview));
