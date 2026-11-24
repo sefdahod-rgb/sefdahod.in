@@ -114,7 +114,36 @@ function renderPreview(){
   $('status').textContent=`कुल ${students.length} रिकॉर्ड लोड हुए। फ़िल्टर में ${list.length} विद्यार्थी हैं।`;
 }
 function selectAll(v){document.querySelectorAll('.pick').forEach(x=>x.checked=v);}
-function printSelected(){const ids=[...document.querySelectorAll('.pick:checked')].map(x=>String(x.value));const selected=filtered().filter(s=>ids.includes(String(s.id)));if(!selected.length){alert('पहले कम से कम एक विद्यार्थी चुनें।');return;}const sheet=$('printSheet');const pages=[];for(let i=0;i<selected.length;i+=10){pages.push(`<div class="print-page">${selected.slice(i,i+10).map((s,j)=>card(s,i+j)).join('')}</div>`);}sheet.innerHTML=pages.join('');window.print();}
+function printSelected(){
+  const ids=[...document.querySelectorAll('.pick:checked')]
+    .map(x=>String(x.value));
+
+  const selected=filtered().filter(s=>ids.includes(String(s.id)));
+
+  if(!selected.length){
+    alert('पहले कम से कम एक विद्यार्थी चुनें।');
+    return;
+  }
+
+  const sheet=$('printSheet');
+  const pages=[];
+
+  for(let i=0;i<selected.length;i+=10){
+    pages.push(
+      `<div class="print-page">
+        ${selected.slice(i,i+10).map((s,j)=>card(s,i+j)).join('')}
+      </div>`
+    );
+  }
+
+  sheet.innerHTML=pages.join('');
+
+  generateStudentQRCodes();
+
+  setTimeout(()=>{
+    window.print();
+  },500);
+}
 ['session','classFilter','sectionFilter','search'].forEach(id=>$(id).addEventListener('input',renderPreview));
 loadCards();
 </script>
