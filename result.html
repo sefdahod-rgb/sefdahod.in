@@ -1114,7 +1114,21 @@ th{
       <div class="field"><label>Class</label><select id="subjectClass" onchange="loadSubjectManager()"><option value="">Select Class</option><option>Nursery</option><option>LKG</option><option>UKG</option><option>SRKG</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div>
       <div class="field"><label>Session</label><select id="subjectSession" onchange="loadSubjectManager()"><option>2026-27</option><option>2027-28</option><option>2028-29</option><option>2029-30</option><option>2030-31</option></select></div>
       <div class="field"><label>Exam</label><select id="subjectExam" onchange="loadSubjectManager()"><option>FA-1</option><option>SA-1</option><option>FA-2</option><option>SA-2</option></select></div>
-      <div class="field"><label>Subject Name</label><input id="subjectNameInput" list="subjectNameOptions" placeholder="Enter subject name"><datalist id="subjectNameOptions"><option value="English"><option value="Hindi"><option value="Gujarati"><option value="Mathematics"><option value="EVS"><option value="Science"><option value="Social Science"><option value="Computer"><option value="General Knowledge"><option value="Drawing"><option value="Hindi-1"><option value="Hindi-2"><option value="English-1"><option value="English-2"><option value="Sanskrit"></datalist></div>
+      <div class="field">
+        <label>Subject Name</label>
+        <select id="subjectNameSelect" onchange="toggleCustomSubjectInput()">
+          <option value="">Select Subject</option>
+          <option>English</option><option>Hindi</option><option>Gujarati</option>
+          <option>Mathematics</option><option>EVS</option><option>Science</option>
+          <option>Social Science</option><option>Computer</option>
+          <option>General Knowledge</option><option>Drawing</option>
+          <option>Hindi-1</option><option>Hindi-2</option>
+          <option>English-1</option><option>English-2</option><option>Sanskrit</option>
+          <option value="__custom__">Other - Enter New Subject</option>
+        </select>
+        <input id="subjectNameInput" type="text" placeholder="Enter new subject name"
+               style="display:none;margin-top:7px" autocomplete="off">
+      </div>
       <div class="field"><label>Max Marks</label><input id="subjectMaxMarks" type="number" min="1" value="30"></div>
     </div>
     <input type="hidden" id="editingSubjectId">
@@ -1626,9 +1640,19 @@ function showSubjectManagerMessage(message,success=false){
     el.className="message "+(success?"success":"error");
 }
 
+function toggleCustomSubjectInput(){
+    const select=document.getElementById("subjectNameSelect");
+    const input=document.getElementById("subjectNameInput");
+    const custom=select.value==="__custom__";
+    input.style.display=custom?"block":"none";
+    if(!custom) input.value="";
+}
+
 function resetSubjectForm(){
     document.getElementById("editingSubjectId").value="";
+    document.getElementById("subjectNameSelect").value="";
     document.getElementById("subjectNameInput").value="";
+    document.getElementById("subjectNameInput").style.display="none";
     document.getElementById("subjectMaxMarks").value=
       ["FA-1","FA-2"].includes(document.getElementById("subjectExam").value)?30:50;
 }
@@ -1653,7 +1677,18 @@ async function loadSubjectManager(){
 
 function editManagedSubject(id,name,max){
     document.getElementById("editingSubjectId").value=id;
-    document.getElementById("subjectNameInput").value=name;
+    const subjectSelect=document.getElementById("subjectNameSelect");
+    const subjectInput=document.getElementById("subjectNameInput");
+    const standardOption=Array.from(subjectSelect.options).some(o=>o.value===name || o.text===name);
+    if(standardOption){
+        subjectSelect.value=name;
+        subjectInput.value="";
+        subjectInput.style.display="none";
+    }else{
+        subjectSelect.value="__custom__";
+        subjectInput.value=name;
+        subjectInput.style.display="block";
+    }
     document.getElementById("subjectMaxMarks").value=max;
     showSubjectManagerMessage("Subject edit mode: naam ya Max Marks badal kar Save Subject karein.",true);
     window.scrollTo({top:0,behavior:"smooth"});
@@ -1667,7 +1702,9 @@ async function saveManagedSubject(){
     const cls=document.getElementById("subjectClass").value;
     const session=document.getElementById("subjectSession").value;
     const exam=document.getElementById("subjectExam").value;
-    const name=document.getElementById("subjectNameInput").value.trim();
+    const selectedSubject=document.getElementById("subjectNameSelect").value;
+    const customSubject=document.getElementById("subjectNameInput").value.trim();
+    const name=selectedSubject==="__custom__"?customSubject:selectedSubject.trim();
     const max=Number(document.getElementById("subjectMaxMarks").value);
     const id=document.getElementById("editingSubjectId").value;
     if(!cls||!name||!Number.isInteger(max)||max<1){showSubjectManagerMessage("Class, Subject Name aur valid Max Marks bharna zaroori hai.");return;}
