@@ -2372,6 +2372,92 @@ function reportHeader(student,title){
 
 
 /* ==========================================
+   STUDENT-WISE CO-SCHOLASTIC GRADE STORAGE
+========================================== */
+let currentCoScholasticContext = null;
+let currentCoScholasticGrades = {};
+
+function coScholasticGradeKey(examKey, type, item){
+    return `${examKey}_${type}_${item}`;
+}
+
+async function loadCoScholasticGrades(student, session){
+    currentCoScholasticContext = {
+        admission_no: String(student?.admission_no || "").trim(),
+        student_id: student?.id != null ? String(student.id) : null,
+        student_name: student?.student_name || "",
+        class_name: student?.class_name || "",
+        section: student?.section || "",
+        session: String(session || "")
+    };
+    currentCoScholasticGrades = {};
+
+    if(!currentCoScholasticContext.admission_no || !currentCoScholasticContext.session) return;
+
+    const {data, error} = await supabaseClient
+        .from("student_co_scholastic_grades")
+        .select("exam_type, grades")
+        .eq("admission_no", currentCoScholasticContext.admission_no)
+        .eq("session", currentCoScholasticContext.session)
+        .in("exam_type", ["SA-1", "SA-2"]);
+
+    if(error){
+        console.error("Co-scholastic grades load error:", error.message);
+        return;
+    }
+
+    (data || []).forEach(row => {
+        const examKey = row.exam_type;
+        const values = row.grades && typeof row.grades === "object" ? row.grades : {};
+        Object.entries(values).forEach(([key, value]) => {
+            currentCoScholasticGrades[`${examKey}_${key}`] = value || "";
+        });
+    });
+}
+
+async function saveCoScholasticGrade(examKey, type, item, value){
+    if(!currentCoScholasticContext?.admission_no || !currentCoScholasticContext?.session){
+        alert("Pehle student ka result open karein.");
+        return;
+    }
+
+    const gradeKey = `${type}_${item}`;
+    currentCoScholasticGrades[`${examKey}_${gradeKey}`] = value;
+
+    const grades = {};
+    Object.entries(currentCoScholasticGrades).forEach(([key, grade]) => {
+        const prefix = `${examKey}_`;
+        if(key.startsWith(prefix)){
+            grades[key.slice(prefix.length)] = grade;
+        }
+    });
+
+    const payload = {
+        admission_no: currentCoScholasticContext.admission_no,
+        student_id: currentCoScholasticContext.student_id,
+        student_name: currentCoScholasticContext.student_name,
+        class_name: currentCoScholasticContext.class_name,
+        section: currentCoScholasticContext.section,
+        session: currentCoScholasticContext.session,
+        exam_type: examKey,
+        grades: grades,
+        updated_at: new Date().toISOString()
+    };
+
+    const {error} = await supabaseClient
+        .from("student_co_scholastic_grades")
+        .upsert(payload, {onConflict:"admission_no,session,exam_type"});
+
+    const status = document.getElementById("coScholasticSaveStatus");
+    if(error){
+        console.error("Co-scholastic grade save error:", error.message);
+        if(status) status.textContent = "Grade save nahi hua: " + error.message;
+        return;
+    }
+    if(status) status.textContent = "Grades saved successfully.";
+}
+
+/* ==========================================
    CO-SCHOLASTIC AND PERSONAL TRAITS
    These are teacher-assessed grades, not academic subjects.
 ========================================== */
@@ -2439,9 +2525,8 @@ function coScholasticCombinedHTML(){
     const {activities, traits}=getManageLists();
     const grades=["A1","A2","B1","B2","C1","C2","D"];
     const gradeCell=(examKey,type,item)=>{
-        const key=`result_grade_${examKey}_${type}_${item}`;
-        const saved=localStorage.getItem(key)||"";
-        return `<select class="reportGrade" aria-label="${examKey} ${escapeHtml(item)} grade" onchange="localStorage.setItem('result_grade_${examKey}_${type}_'+this.dataset.gradeItem,this.value)" data-grade-item="${escapeHtml(item)}"><option value="">—</option>${grades.map(g=>`<option value="${g}" ${g===saved?'selected':''}>${g}</option>`).join("")}</select>`;
+        const saved=currentCoScholasticGrades[coScholasticGradeKey(examKey,type,item)] || "";
+        return `<select class="reportGrade" aria-label="${examKey} ${escapeHtml(item)} grade" onchange="saveCoScholasticGrade('${examKey}','${type}',this.dataset.gradeItem,this.value)" data-grade-item="${escapeHtml(item)}"><option value="">—</option>${grades.map(g=>`<option value="${g}" ${g===saved?'selected':''}>${g}</option>`).join("")}</select>`;
     };
     const makeTable=(title,type,items)=>`<div class="gradePanel"><div class="sectionBand compactBand">${title}</div>
       <table class="coScholastic sideGradeTable"><thead><tr><th style="text-align:left">${type==="activities"?"Activity":"Trait"}</th><th>SA-1</th><th>SA-2</th></tr></thead><tbody>
@@ -3218,6 +3303,7 @@ async function showStudentResult(){
 
 
     const attendanceSummary = await getAttendanceSummary(student, session);
+    await loadCoScholasticGrades(student, session);
 
     let resultHTML="";
 
@@ -3319,6 +3405,7 @@ async function showStudentResult(){
         </div>
 
         ${resultHTML}
+        <div id="coScholasticSaveStatus" style="padding:8px;color:#166534;font-weight:bold;">Grades change karne par automatically save honge.</div>
 
     `;
 
@@ -3357,6 +3444,8 @@ function printCurrentResult(){
     // Print button wala card report ka hissa nahi hai.
     const printButtonCard = previewCopy.querySelector(".card.center");
     if(printButtonCard) printButtonCard.remove();
+    const saveStatus = previewCopy.querySelector("#coScholasticSaveStatus");
+    if(saveStatus) saveStatus.remove();
 
     const liveSelects = livePreview.querySelectorAll("select");
     const copiedSelects = previewCopy.querySelectorAll("select");
