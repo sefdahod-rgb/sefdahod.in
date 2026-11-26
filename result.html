@@ -3348,8 +3348,34 @@ function printCurrentResult(){
         );
 
 
-    printArea.innerHTML =
-        window.currentResultHTML;
+    // Print preview ke live controls se latest selected grades copy karein.
+    // currentResultHTML ek purana HTML string hota hai, isliye usme baad ke
+    // select changes reflect nahi hote.
+    const livePreview = document.getElementById("studentResultPreview");
+    const previewCopy = livePreview.cloneNode(true);
+
+    // Print button wala card report ka hissa nahi hai.
+    const printButtonCard = previewCopy.querySelector(".card.center");
+    if(printButtonCard) printButtonCard.remove();
+
+    const liveSelects = livePreview.querySelectorAll("select");
+    const copiedSelects = previewCopy.querySelectorAll("select");
+
+    copiedSelects.forEach((copiedSelect, index) => {
+        const liveSelect = liveSelects[index];
+        if(!liveSelect) return;
+
+        Array.from(copiedSelect.options).forEach(option => {
+            option.selected = option.value === liveSelect.value;
+            if(option.selected) {
+                option.setAttribute("selected", "selected");
+            } else {
+                option.removeAttribute("selected");
+            }
+        });
+    });
+
+    printArea.innerHTML = previewCopy.innerHTML;
 
 
     printArea.style.display="block";
