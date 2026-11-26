@@ -2373,6 +2373,7 @@ function reportHeader(student,title){
 
 /* ==========================================
    STUDENT-WISE CO-SCHOLASTIC GRADE STORAGE
+   Uses public.student_result_grades (one row per item).
 ========================================== */
 let currentCoScholasticContext = null;
 let currentCoScholasticGrades = {};
@@ -2384,7 +2385,6 @@ function coScholasticGradeKey(examKey, type, item){
 async function loadCoScholasticGrades(student, session){
     currentCoScholasticContext = {
         admission_no: String(student?.admission_no || "").trim(),
-        student_id: student?.id != null ? String(student.id) : null,
         student_name: student?.student_name || "",
         class_name: student?.class_name || "",
         section: student?.section || "",
@@ -2392,69 +2392,74 @@ async function loadCoScholasticGrades(student, session){
     };
     currentCoScholasticGrades = {};
 
-    if(!currentCoScholasticContext.admission_no || !currentCoScholasticContext.session) return;
+    if(!currentCoScholasticContext.admission_no || !currentCoScholasticContext.session){
+        return {ok:false, message:"Student Admission No. ya Session missing hai."};
+    }
 
     const {data, error} = await supabaseClient
-        .from("student_co_scholastic_grades")
-        .select("exam_type, grades")
+        .from("student_result_grades")
+        .select("exam_type,category,item_name,grade")
         .eq("admission_no", currentCoScholasticContext.admission_no)
         .eq("session", currentCoScholasticContext.session)
         .in("exam_type", ["SA-1", "SA-2"]);
 
     if(error){
         console.error("Co-scholastic grades load error:", error.message);
-        return;
+        return {ok:false, message:error.message};
     }
 
     (data || []).forEach(row => {
-        const examKey = row.exam_type;
-        const values = row.grades && typeof row.grades === "object" ? row.grades : {};
-        Object.entries(values).forEach(([key, value]) => {
-            currentCoScholasticGrades[`${examKey}_${key}`] = value || "";
-        });
+        currentCoScholasticGrades[coScholasticGradeKey(row.exam_type, row.category, row.item_name)] = row.grade || "";
     });
+    return {ok:true};
 }
 
-async function saveCoScholasticGrade(examKey, type, item, value){
+async function saveCoScholasticGrade(selectElement){
     if(!currentCoScholasticContext?.admission_no || !currentCoScholasticContext?.session){
         alert("Pehle student ka result open karein.");
         return;
     }
 
-    const gradeKey = `${type}_${item}`;
-    currentCoScholasticGrades[`${examKey}_${gradeKey}`] = value;
+    const examKey = selectElement.dataset.gradeExam;
+    const type = selectElement.dataset.gradeType;
+    const item = selectElement.dataset.gradeItem;
+    const value = selectElement.value;
 
-    const grades = {};
-    Object.entries(currentCoScholasticGrades).forEach(([key, grade]) => {
-        const prefix = `${examKey}_`;
-        if(key.startsWith(prefix)){
-            grades[key.slice(prefix.length)] = grade;
-        }
-    });
+    if(!["SA-1","SA-2"].includes(examKey) || !["activities","traits"].includes(type) || !item){
+        alert("Grade details sahi nahi hain. Result page refresh karke dobara try karein.");
+        return;
+    }
+
+    const gradeKey = coScholasticGradeKey(examKey, type, item);
+    currentCoScholasticGrades[gradeKey] = value;
 
     const payload = {
         admission_no: currentCoScholasticContext.admission_no,
-        student_id: currentCoScholasticContext.student_id,
         student_name: currentCoScholasticContext.student_name,
         class_name: currentCoScholasticContext.class_name,
         section: currentCoScholasticContext.section,
         session: currentCoScholasticContext.session,
         exam_type: examKey,
-        grades: grades,
+        category: type,
+        item_name: item,
+        grade: value || null,
         updated_at: new Date().toISOString()
     };
 
-    const {error} = await supabaseClient
-        .from("student_co_scholastic_grades")
-        .upsert(payload, {onConflict:"admission_no,session,exam_type"});
-
     const status = document.getElementById("coScholasticSaveStatus");
+    if(status) status.textContent = "Grade save ho raha hai...";
+
+    const {error} = await supabaseClient
+        .from("student_result_grades")
+        .upsert(payload, {onConflict:"admission_no,session,exam_type,category,item_name"});
+
     if(error){
         console.error("Co-scholastic grade save error:", error.message);
         if(status) status.textContent = "Grade save nahi hua: " + error.message;
+        alert("Grade save nahi hua: " + error.message);
         return;
     }
-    if(status) status.textContent = "Grades saved successfully.";
+    if(status) status.textContent = "Grade saved successfully.";
 }
 
 /* ==========================================
@@ -2526,7 +2531,7 @@ function coScholasticCombinedHTML(){
     const grades=["A1","A2","B1","B2","C1","C2","D"];
     const gradeCell=(examKey,type,item)=>{
         const saved=currentCoScholasticGrades[coScholasticGradeKey(examKey,type,item)] || "";
-        return `<select class="reportGrade" aria-label="${examKey} ${escapeHtml(item)} grade" onchange="saveCoScholasticGrade('${examKey}','${type}',this.dataset.gradeItem,this.value)" data-grade-item="${escapeHtml(item)}"><option value="">—</option>${grades.map(g=>`<option value="${g}" ${g===saved?'selected':''}>${g}</option>`).join("")}</select>`;
+        return `<select class="reportGrade" aria-label="${examKey} ${escapeHtml(item)} grade" onchange="saveCoScholasticGrade(this)" data-grade-exam="${examKey}" data-grade-type="${type}" data-grade-item="${escapeHtml(item)}"><option value="">—</option>${grades.map(g=>`<option value="${g}" ${g===saved?'selected':''}>${g}</option>`).join("")}</select>`;
     };
     const makeTable=(title,type,items)=>`<div class="gradePanel"><div class="sectionBand compactBand">${title}</div>
       <table class="coScholastic sideGradeTable"><thead><tr><th style="text-align:left">${type==="activities"?"Activity":"Trait"}</th><th>SA-1</th><th>SA-2</th></tr></thead><tbody>
@@ -3303,7 +3308,11 @@ async function showStudentResult(){
 
 
     const attendanceSummary = await getAttendanceSummary(student, session);
-    await loadCoScholasticGrades(student, session);
+    const gradeLoad = await loadCoScholasticGrades(student, session);
+    if(!gradeLoad.ok){
+        preview.innerHTML = `<div class="card" style="color:#b91c1c">Co-Scholastic grades load nahi hue: ${escapeHtml(gradeLoad.message)}<br>Supabase table student_result_grades aur uski permissions check karein.</div>`;
+        return;
+    }
 
     let resultHTML="";
 
@@ -3405,7 +3414,7 @@ async function showStudentResult(){
         </div>
 
         ${resultHTML}
-        <div id="coScholasticSaveStatus" style="padding:8px;color:#166534;font-weight:bold;">Grades change karne par automatically save honge.</div>
+        <div id="coScholasticSaveStatus" style="padding:8px;color:#166534;font-weight:bold;">Co-Scholastic aur Personal/Social Traits ke grades badalne par Supabase mein automatically save honge.</div>
 
     `;
 
