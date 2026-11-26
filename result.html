@@ -352,6 +352,78 @@ th{
     margin-top:20px;
 }
 
+
+/* CLEAN RESULT CARD DESIGN + SCHOOL LOGO WATERMARK */
+.printReport{
+    position:relative;
+    isolation:isolate;
+    overflow:hidden;
+    border:1px solid #cbd5e1;
+    border-radius:12px;
+    padding:10px;
+    background:#fff;
+    box-shadow:0 5px 18px rgba(15,45,85,.08);
+}
+.printReport::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:-1;
+    pointer-events:none;
+    background-image:url("logo.png");
+    background-repeat:no-repeat;
+    background-position:center 55%;
+    background-size:240px auto;
+    opacity:.055;
+}
+.printHeader{
+    border:2px solid #174a8b;
+    border-radius:12px;
+    padding:12px;
+    background:linear-gradient(135deg,#f0f7ff,#fffdf5);
+}
+.reportTitle{
+    margin:12px 0;
+    padding:9px 12px;
+    border-radius:7px;
+    background:linear-gradient(90deg,#174a8b,#2678c9);
+    letter-spacing:.6px;
+    font-weight:800;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+}
+.studentInfo{
+    border:1px solid #b8c9dc;
+    border-radius:7px;
+    overflow:hidden;
+    background:rgba(255,255,255,.88);
+}
+.infoCell{background:rgba(255,255,255,.88);}
+.printMarks{
+    border:1px solid #b8c9dc;
+    border-radius:7px;
+    overflow:hidden;
+}
+.printMarks th{
+    background:#174a8b;
+    color:#fff;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+}
+.printMarks td{background:rgba(255,255,255,.9);}
+.summaryBox{
+    border:1px solid #b8c9dc;
+    background:rgba(248,251,255,.94);
+}
+.summaryBox:nth-child(2){background:rgba(239,246,255,.94);}
+.summaryBox:nth-child(3){background:rgba(250,245,255,.94);}
+.summaryBox:nth-child(4){background:rgba(240,253,244,.94);}
+@media print{
+    .printReport{box-shadow:none;border:1px solid #94a3b8;border-radius:8px;}
+    .printReport::before{opacity:.07 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .printMarks td,.infoCell,.summaryBox{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+}
+
 /* PRINT AREA */
 
 #printArea{
@@ -1345,62 +1417,90 @@ function showSchoolApp(){
 }
 
 async function initializeSchoolSession(){
-    const { data: sessionData, error: sessionError } =
-        await supabaseClient.auth.getSession();
+    const loginErrorBox = document.getElementById("loginError");
 
-    const session = sessionData && sessionData.session;
+    try {
+        const { data: sessionData, error: sessionError } =
+            await supabaseClient.auth.getSession();
 
-    if(sessionError || !session){
-        localStorage.setItem("redirectAfterLogin", "result.html");
-        window.location.replace("login.html");
-        return;
-    }
+        if(sessionError) {
+            throw new Error("School session check failed: " + sessionError.message);
+        }
 
-    const userId = session.user.id;
-    let role = "";
-
-    // Owner accounts are stored in user_roles.
-    const { data: ownerData } = await supabaseClient
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId)
-        .maybeSingle();
-
-    if(String(ownerData?.role || "").toLowerCase() === "owner"){
-        role = "owner";
-    }else{
-        // Staff accounts (Principal, Supervisor, Teacher, etc.).
-        const { data: staffData, error: staffError } = await supabaseClient
-            .from("staff_profiles")
-            .select("role,is_active,display_name,username")
-            .eq("auth_user_id", userId)
-            .maybeSingle();
-
-        if(staffError || !staffData || staffData.is_active !== true){
+        const session = sessionData && sessionData.session;
+        if(!session || !session.user) {
             localStorage.setItem("redirectAfterLogin", "result.html");
             window.location.replace("login.html");
             return;
         }
 
-        role = String(staffData.role || "").toLowerCase();
-        localStorage.setItem("staffName", staffData.display_name || "");
-        localStorage.setItem("staffUsername", staffData.username || "");
+        const userId = session.user.id;
+        let role = "";
+
+        // Fetch at most one role row. This also avoids maybeSingle() failing
+        // if an older database has duplicate role rows for the same user.
+        const { data: ownerRows, error: ownerError } = await supabaseClient
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", userId)
+            .limit(1);
+
+        if(ownerError) {
+            throw new Error("Owner role verify nahi ho paya: " + ownerError.message);
+        }
+
+        const ownerRole = String(ownerRows?.[0]?.role || "").trim().toLowerCase();
+
+        if(ownerRole === "owner") {
+            role = "owner";
+        } else {
+            const { data: staffRows, error: staffError } = await supabaseClient
+                .from("staff_profiles")
+                .select("role,is_active,display_name,username")
+                .eq("auth_user_id", userId)
+                .limit(1);
+
+            if(staffError) {
+                throw new Error("Staff profile check nahi ho paya: " + staffError.message);
+            }
+
+            const staffData = staffRows?.[0];
+            if(!staffData) {
+                throw new Error("Is login account ka Owner ya Staff profile nahi mila. Supabase user_roles / staff_profiles check karein.");
+            }
+
+            if(staffData.is_active !== true) {
+                throw new Error("Aapka Staff Account inactive hai. Owner se sampark karein.");
+            }
+
+            role = String(staffData.role || "").trim().toLowerCase();
+            localStorage.setItem("staffName", staffData.display_name || "");
+            localStorage.setItem("staffUsername", staffData.username || "");
+        }
+
+        const allowedRoles = ["owner","admin","accountant","teacher","principal","supervisor","staff","other_staff"];
+        if(!allowedRoles.includes(role)) {
+            throw new Error("Is account ki role value allowed nahi hai: " + (role || "blank"));
+        }
+
+        currentSchoolRole = role;
+        localStorage.setItem("schoolRole", role);
+        if(role === "owner") localStorage.setItem("isAdmin", "yes");
+        else localStorage.removeItem("isAdmin");
+
+        showSchoolApp();
+        await loadDefaultSubjects();
+        renderManageLists();
+
+    } catch(error) {
+        console.error("Result Management login check:", error);
+        if(loginErrorBox) {
+            loginErrorBox.style.display = "block";
+            loginErrorBox.textContent = error.message || "School login verify nahi ho paya.";
+        }
+        const p = document.querySelector("#loginScreen .loginBox p");
+        if(p) p.textContent = "Login verification mein dikkat hai.";
     }
-
-    const allowedRoles = ["owner","admin","accountant","teacher","principal","supervisor","staff","other_staff"];
-    if(!allowedRoles.includes(role)){
-        localStorage.setItem("redirectAfterLogin", "result.html");
-        window.location.replace("login.html");
-        return;
-    }
-
-    currentSchoolRole = role;
-    localStorage.setItem("schoolRole", role);
-    if(role === "owner") localStorage.setItem("isAdmin", "yes");
-
-    showSchoolApp();
-    loadDefaultSubjects();
-    renderManageLists();
 }
 
 async function logout(){
