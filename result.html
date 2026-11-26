@@ -738,32 +738,12 @@ th{
 <div class="loginScreen" id="loginScreen">
 
     <div class="loginBox">
-
         <img src="logo.png" alt="School Logo">
-
         <h2>Rainbow Public School</h2>
-        <p>Result Management System</p>
-
-        <input
-            type="text"
-            id="loginUsername"
-            placeholder="Username"
-        >
-
-        <input
-            type="password"
-            id="loginPassword"
-            placeholder="Password"
-        >
-
-        <button onclick="doLogin()">
-            LOGIN
-        </button>
-
+        <p>Checking your school login...</p>
         <div class="loginError" id="loginError">
-            Invalid Username or Password
+            Valid school login nahi mila. Login page par bheja ja raha hai.
         </div>
-
     </div>
 
 </div>
@@ -1050,7 +1030,7 @@ th{
 
 <!-- ================= SUBJECT MANAGEMENT ================= -->
 <section id="subjectManageTab" class="tab">
-  <div class="card">
+  <div class="card" id="subjectEditorCard">
     <h2>Subject Management</h2>
     <p>Yahan subject ko Class + Session + Exam ke hisaab se add, update ya deactivate karein. Sirf Active subjects Result Entry mein dikhte hain.</p>
     <div class="subjectAdminGrid">
@@ -1344,57 +1324,104 @@ window.supabase.createClient(
 
 
 /* ==========================================
-   LOGIN
+   SHARED SCHOOL LOGIN (SUPABASE AUTH)
 ========================================== */
 
-function doLogin(){
+let currentSchoolRole = "";
 
-    const username =
-        document.getElementById("loginUsername").value.trim();
+function isSubjectManager(){
+    return ["owner","principal"].includes(
+        String(currentSchoolRole || "").toLowerCase()
+    );
+}
 
-    const password =
-        document.getElementById("loginPassword").value;
+function showSchoolApp(){
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("app").style.display = "block";
 
-    if(
-        username === "admin" &&
-        password === "admin123"
-    ){
+    // Subject settings can be viewed by staff, but only Owner/Principal can edit.
+    const editor = document.getElementById("subjectEditorCard");
+    if(editor) editor.style.display = isSubjectManager() ? "block" : "none";
+}
 
-        localStorage.setItem("result_login","yes");
+async function initializeSchoolSession(){
+    const { data: sessionData, error: sessionError } =
+        await supabaseClient.auth.getSession();
 
-        document.getElementById("loginScreen").style.display="none";
-        document.getElementById("app").style.display="block";
+    const session = sessionData && sessionData.session;
 
-        loadDefaultSubjects();
-
-    }else{
-
-        document.getElementById("loginError").style.display="block";
-
+    if(sessionError || !session){
+        localStorage.setItem("redirectAfterLogin", "result.html");
+        window.location.replace("login.html");
+        return;
     }
 
+    const userId = session.user.id;
+    let role = "";
+
+    // Owner accounts are stored in user_roles.
+    const { data: ownerData } = await supabaseClient
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+    if(String(ownerData?.role || "").toLowerCase() === "owner"){
+        role = "owner";
+    }else{
+        // Staff accounts (Principal, Supervisor, Teacher, etc.).
+        const { data: staffData, error: staffError } = await supabaseClient
+            .from("staff_profiles")
+            .select("role,is_active,display_name,username")
+            .eq("auth_user_id", userId)
+            .maybeSingle();
+
+        if(staffError || !staffData || staffData.is_active !== true){
+            localStorage.setItem("redirectAfterLogin", "result.html");
+            window.location.replace("login.html");
+            return;
+        }
+
+        role = String(staffData.role || "").toLowerCase();
+        localStorage.setItem("staffName", staffData.display_name || "");
+        localStorage.setItem("staffUsername", staffData.username || "");
+    }
+
+    const allowedRoles = ["owner","admin","accountant","teacher","principal","supervisor","staff","other_staff"];
+    if(!allowedRoles.includes(role)){
+        localStorage.setItem("redirectAfterLogin", "result.html");
+        window.location.replace("login.html");
+        return;
+    }
+
+    currentSchoolRole = role;
+    localStorage.setItem("schoolRole", role);
+    if(role === "owner") localStorage.setItem("isAdmin", "yes");
+
+    showSchoolApp();
+    loadDefaultSubjects();
+    renderManageLists();
 }
 
+async function logout(){
+    try{
+        await supabaseClient.auth.signOut();
+    }catch(error){
+        console.error("Sign out error:", error);
+    }
 
-function logout(){
+    [
+        "isAdmin",
+        "schoolRole",
+        "staffName",
+        "staffUsername",
+        "redirectAfterLogin",
+        "rps_login",
+        "result_login"
+    ].forEach(key => localStorage.removeItem(key));
 
-    localStorage.removeItem("result_login");
-
-    // Return to Student Master rather than the Result login screen.
-    window.location.href = "student-master.html";
-
+    window.location.replace("index.html");
 }
-
-
-if(
-    localStorage.getItem("result_login")==="yes"
-){
-
-    document.getElementById("loginScreen").style.display="none";
-    document.getElementById("app").style.display="block";
-
-}
-
 
 /* ==========================================
    TABS
@@ -1516,7 +1543,7 @@ async function loadSubjectManager(){
     const {data,error}=await q;
     if(error){body.innerHTML='<tr><td colspan="4">'+escapeHtml(error.message)+'</td></tr>';return;}
     if(!data||!data.length){body.innerHTML='<tr><td colspan="4">No subjects found.</td></tr>';return;}
-    body.innerHTML=data.map(x=>`<tr><td>${escapeHtml(x.subject_name)}</td><td>${x.max_marks}</td><td>${x.is_active?'Active':'Inactive'}</td><td><button class="btn btnPrimary" type="button" onclick="editManagedSubject(${x.id},${JSON.stringify(x.subject_name).replace(/</g,'\\u003c')},${x.max_marks})">Update</button><button class="btn ${x.is_active?'btnDanger':'btnSuccess'}" type="button" onclick="toggleManagedSubject(${x.id},${!x.is_active})">${x.is_active?'Delete':'Activate'}</button></td></tr>`).join("");
+    body.innerHTML=data.map(x=>`<tr><td>${escapeHtml(x.subject_name)}</td><td>${x.max_marks}</td><td>${x.is_active?'Active':'Inactive'}</td><td>${isSubjectManager()?`<button class="btn btnPrimary" type="button" onclick="editManagedSubject(${x.id},${JSON.stringify(x.subject_name).replace(/</g,'\\u003c')},${x.max_marks})">Update</button><button class="btn ${x.is_active?'btnDanger':'btnSuccess'}" type="button" onclick="toggleManagedSubject(${x.id},${!x.is_active})">${x.is_active?'Delete':'Activate'}</button>`:'View only'}</td></tr>`).join("");
 }
 
 function editManagedSubject(id,name,max){
@@ -1528,6 +1555,10 @@ function editManagedSubject(id,name,max){
 }
 
 async function saveManagedSubject(){
+    if(!isSubjectManager()){
+        showSubjectManagerMessage("Subject add/update karne ka adhikar sirf Owner aur Principal ko hai.");
+        return;
+    }
     const cls=document.getElementById("subjectClass").value;
     const session=document.getElementById("subjectSession").value;
     const exam=document.getElementById("subjectExam").value;
@@ -1561,6 +1592,10 @@ async function saveManagedSubject(){
 }
 
 async function toggleManagedSubject(id,active){
+    if(!isSubjectManager()){
+        showSubjectManagerMessage("Subject activate/deactivate karne ka adhikar sirf Owner aur Principal ko hai.");
+        return;
+    }
     const {error}=await supabaseClient.from("class_subject_settings")
       .update({is_active:active,updated_at:new Date().toISOString()}).eq("id",id);
     if(error){showSubjectManagerMessage(error.message);return;}
@@ -3465,23 +3500,9 @@ function escapeHtml(value){
    START
 ========================================== */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function(){
-
-        if(
-            localStorage.getItem(
-                "result_login"
-            )==="yes"
-        ){
-
-            loadDefaultSubjects();
-            renderManageLists();
-
-        }
-
-    }
-);
+document.addEventListener("DOMContentLoaded", function(){
+    initializeSchoolSession();
+});
 
 </script>
 
