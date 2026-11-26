@@ -253,6 +253,12 @@ input{
     color:white;
 }
 
+.subjectAdminGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:end;}
+.subjectAdminGrid .field input,.subjectAdminGrid .field select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:7px;background:white;}
+.subjectAdminRow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.subjectAdminRow button{margin:2px;}
+@media(max-width:800px){.subjectAdminGrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:520px){.subjectAdminGrid{grid-template-columns:1fr;}}
 .subjectBox{
     border:1px solid #dbeafe;
     background:#f8fbff;
@@ -811,6 +817,11 @@ th{
         School Result
     </button>
 
+    <button
+        onclick="openTab('subjectManageTab',this); loadSubjectManager()">
+        Subject Management
+    </button>
+
 </nav>
 
 
@@ -874,7 +885,7 @@ th{
 
 <div class="field">
 <label>Session</label>
-<select id="session">
+<select id="session" onchange="loadExamSubjects()">
     <option value="2026-27">2026-27</option>
     <option value="2027-28">2027-28</option>
     <option value="2028-29">2028-29</option>
@@ -928,7 +939,7 @@ th{
     class="btn btnDark"
     type="button"
     onclick="loadDefaultSubjects()">
-    Load Common Subjects
+    Reload Configured Subjects
 </button>
 
 </div>
@@ -1036,6 +1047,32 @@ th{
 
 </section>
 
+
+<!-- ================= SUBJECT MANAGEMENT ================= -->
+<section id="subjectManageTab" class="tab">
+  <div class="card">
+    <h2>Subject Management</h2>
+    <p>Yahan subject ko Class + Session + Exam ke hisaab se add, update ya deactivate karein. Sirf Active subjects Result Entry mein dikhte hain.</p>
+    <div class="subjectAdminGrid">
+      <div class="field"><label>Class</label><select id="subjectClass" onchange="loadSubjectManager()"><option value="">Select Class</option><option>Nursery</option><option>LKG</option><option>UKG</option><option>SRKG</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div>
+      <div class="field"><label>Session</label><select id="subjectSession" onchange="loadSubjectManager()"><option>2026-27</option><option>2027-28</option><option>2028-29</option><option>2029-30</option><option>2030-31</option></select></div>
+      <div class="field"><label>Exam</label><select id="subjectExam" onchange="loadSubjectManager()"><option>FA-1</option><option>SA-1</option><option>FA-2</option><option>SA-2</option></select></div>
+      <div class="field"><label>Subject Name</label><input id="subjectNameInput" list="subjectNameOptions" placeholder="Enter subject name"><datalist id="subjectNameOptions"><option value="English"><option value="Hindi"><option value="Gujarati"><option value="Mathematics"><option value="EVS"><option value="Science"><option value="Social Science"><option value="Computer"><option value="General Knowledge"><option value="Drawing"><option value="Hindi-1"><option value="Hindi-2"><option value="English-1"><option value="English-2"><option value="Sanskrit"></datalist></div>
+      <div class="field"><label>Max Marks</label><input id="subjectMaxMarks" type="number" min="1" value="30"></div>
+    </div>
+    <input type="hidden" id="editingSubjectId">
+    <div class="subjectAdminRow" style="margin-top:12px">
+      <button class="btn btnPrimary" type="button" onclick="saveManagedSubject()">Save Subject</button>
+      <button class="btn btnDark" type="button" onclick="resetSubjectForm()">Clear</button>
+    </div>
+    <div id="subjectManagerMessage" class="message"></div>
+  </div>
+  <div class="card">
+    <h2>Configured Subjects</h2>
+    <div class="field" style="max-width:220px;margin-bottom:12px"><label>Status</label><select id="subjectStatusFilter" onchange="loadSubjectManager()"><option value="all">All (Active + Inactive)</option><option value="true">Active Only</option><option value="false">Inactive Only</option></select></div>
+    <div class="tableWrap"><table><thead><tr><th>Subject</th><th>Max Marks</th><th>Status</th><th>Action</th></tr></thead><tbody id="subjectManagerRows"><tr><td colspan="4">Class, Session aur Exam select karke list dekhein.</td></tr></tbody></table></div>
+  </div>
+</section>
 
 <!-- ================= STUDENT RESULT ================= -->
 
@@ -1382,196 +1419,156 @@ function openTab(id,button){
 
 
 /* ==========================================
-   SUBJECT DEFAULTS
+   SUBJECT SETTINGS - DATABASE SOURCE
 ========================================== */
 
-function commonSubjects(){
+let currentExamSubjects = [];
 
-    const cls =
-        document.getElementById("className").value
-        .toLowerCase();
-
-    if(
-        cls==="nursery" ||
-        cls==="ukg" ||
-        cls==="srkg"
-    ){
-
-        return [
-            "English",
-            "Hindi",
-            "Mathematics",
-            "Gujarati",
-            "EVS"
-        ];
-
-    }
-
-    return [
-        "English",
-        "Hindi",
-        "Gujarati",
-        "Mathematics",
-        "EVS",
-        "Science",
-        "Social Science",
-        "Computer"
-    ];
-
+function normalizeSubjectClass(value){
+    const cls=String(value||"").trim();
+    return /^(\d+)(st|nd|rd|th)$/i.test(cls)?cls.replace(/(st|nd|rd|th)$/i,""):cls;
 }
 
+function subjectScope(){
+    return {
+        class_name: normalizeSubjectClass(document.getElementById("className").value),
+        session: document.getElementById("session").value,
+        exam_type: document.getElementById("examType").value
+    };
+}
 
-function loadDefaultSubjects(){
-
-    const container =
-        document.getElementById("subjectsContainer");
-
+async function loadDefaultSubjects(){
+    const container=document.getElementById("subjectsContainer");
     if(!container) return;
-
+    const scope=subjectScope();
     container.innerHTML="";
-
-    commonSubjects().forEach(
-        subject=>addSubject(subject)
-    );
-
-}
-
-
-function addSubject(subject=""){
-
-    const container =
-        document.getElementById("subjectsContainer");
-
-    const exam =
-        document.getElementById("examType").value;
-
-    const max =
-        exam==="FA-1" || exam==="FA-2"
-        ?30
-        :50;
-
-    const box =
-        document.createElement("div");
-
-    box.className="subjectBox";
-
-    box.innerHTML=`
-
-        <div class="subjectRow">
-
-            <div>
-                <label>Subject</label>
-
-                <select class="subjectName">
-
-                    <option value="">Select Subject</option>
-
-                    <option>English</option>
-                    <option>Hindi</option>
-                    <option>Gujarati</option>
-                    <option>Mathematics</option>
-                    <option>EVS</option>
-                    <option>Science</option>
-                    <option>Social Science</option>
-                    <option>Computer</option>
-                    <option>General Knowledge</option>
-                    <option>Drawing</option>
-                    <option>GK</option>
-                    <option>Other Subject</option>
-
-                </select>
-
-            </div>
-
-
-            <div>
-
-                <label>Max Marks</label>
-
-                <input
-                    class="maxMarks"
-                    type="number"
-                    value="${max}"
-                    min="1"
-                >
-
-            </div>
-
-
-            <div>
-
-                <label>Obtained Marks</label>
-
-                <input
-                    class="obtainedMarks"
-                    type="number"
-                    value=""
-                    min="0"
-                    max="${max}"
-                    placeholder="Marks"
-                >
-
-            </div>
-
-
-            <div>
-
-                <button
-                    class="btn btnDanger"
-                    type="button"
-                    onclick="this.closest('.subjectBox').remove()">
-
-                    Remove
-
-                </button>
-
-            </div>
-
-        </div>
-    `;
-
-    container.appendChild(box);
-
-    const select =
-        box.querySelector(".subjectName");
-
-    if(subject){
-
-        let option =
-            [...select.options]
-            .find(o=>o.value===subject);
-
-        if(!option){
-
-            option =
-                new Option(
-                    subject,
-                    subject
-                );
-
-            select.appendChild(option);
-
-        }
-
-        select.value=subject;
-
+    currentExamSubjects=[];
+    if(!scope.class_name){
+        container.innerHTML='<p>Please load a student first to get the class.</p>';
+        return;
     }
-
+    const {data,error}=await supabaseClient.from("class_subject_settings")
+        .select("id,subject_name,max_marks,is_active")
+        .eq("class_name",scope.class_name).eq("session",scope.session)
+        .eq("exam_type",scope.exam_type).eq("is_active",true)
+        .order("subject_name",{ascending:true});
+    if(error){
+        container.innerHTML='<p style="color:#b91c1c">Subjects load nahi hue: '+escapeHtml(error.message)+'</p>';
+        return;
+    }
+    currentExamSubjects=data||[];
+    if(!currentExamSubjects.length){
+        container.innerHTML='<p>No active subjects configured for this Class / Session / Exam. Subject Management tab mein pehle subjects add karein.</p>';
+        return;
+    }
+    currentExamSubjects.forEach(row=>addSubject(row.subject_name,row.max_marks));
 }
 
-
-function loadExamSubjects(){
-
-    const exam =
-        document.getElementById("examType").value;
-
-    document.getElementById("examBadge")
-        .textContent=exam;
-
-    loadDefaultSubjects();
-
+function addSubject(subject="",configuredMax=null){
+    const container=document.getElementById("subjectsContainer");
+    const exam=document.getElementById("examType").value;
+    const defaultMax=exam==="FA-1"||exam==="FA-2"?30:50;
+    const max=Number(configuredMax)||defaultMax;
+    const box=document.createElement("div");
+    box.className="subjectBox";
+    box.innerHTML=`<div class="subjectRow">
+      <div><label>Subject</label><select class="subjectName"><option value="">Select Subject</option>${currentExamSubjects.map(x=>`<option value="${escapeHtml(x.subject_name)}">${escapeHtml(x.subject_name)}</option>`).join("")}</select></div>
+      <div><label>Max Marks</label><input class="maxMarks" type="number" value="${max}" min="1"></div>
+      <div><label>Obtained Marks</label><input class="obtainedMarks" type="number" value="" min="0" max="${max}" placeholder="Marks"></div>
+      <div><button class="btn btnDanger" type="button" onclick="this.closest('.subjectBox').remove()">Remove</button></div>
+    </div>`;
+    container.appendChild(box);
+    box.querySelector(".subjectName").value=subject;
 }
 
+async function loadExamSubjects(){
+    const exam=document.getElementById("examType").value;
+    document.getElementById("examBadge").textContent=exam;
+    await loadDefaultSubjects();
+}
+
+function showSubjectManagerMessage(message,success=false){
+    const el=document.getElementById("subjectManagerMessage");
+    if(!el)return;
+    el.textContent=message;el.style.display="block";
+    el.className="message "+(success?"success":"error");
+}
+
+function resetSubjectForm(){
+    document.getElementById("editingSubjectId").value="";
+    document.getElementById("subjectNameInput").value="";
+    document.getElementById("subjectMaxMarks").value=
+      ["FA-1","FA-2"].includes(document.getElementById("subjectExam").value)?30:50;
+}
+
+async function loadSubjectManager(){
+    const cls=document.getElementById("subjectClass").value;
+    const session=document.getElementById("subjectSession").value;
+    const exam=document.getElementById("subjectExam").value;
+    const body=document.getElementById("subjectManagerRows");
+    if(!cls){body.innerHTML='<tr><td colspan="4">Please select Class.</td></tr>';return;}
+    let q=supabaseClient.from("class_subject_settings")
+      .select("id,subject_name,max_marks,is_active")
+      .eq("class_name",cls).eq("session",session).eq("exam_type",exam)
+      .order("subject_name",{ascending:true});
+    const status=document.getElementById("subjectStatusFilter").value;
+    if(status!=="all")q=q.eq("is_active",status==="true");
+    const {data,error}=await q;
+    if(error){body.innerHTML='<tr><td colspan="4">'+escapeHtml(error.message)+'</td></tr>';return;}
+    if(!data||!data.length){body.innerHTML='<tr><td colspan="4">No subjects found.</td></tr>';return;}
+    body.innerHTML=data.map(x=>`<tr><td>${escapeHtml(x.subject_name)}</td><td>${x.max_marks}</td><td>${x.is_active?'Active':'Inactive'}</td><td><button class="btn btnPrimary" type="button" onclick="editManagedSubject(${x.id},${JSON.stringify(x.subject_name).replace(/</g,'\\u003c')},${x.max_marks})">Update</button><button class="btn ${x.is_active?'btnDanger':'btnSuccess'}" type="button" onclick="toggleManagedSubject(${x.id},${!x.is_active})">${x.is_active?'Delete':'Activate'}</button></td></tr>`).join("");
+}
+
+function editManagedSubject(id,name,max){
+    document.getElementById("editingSubjectId").value=id;
+    document.getElementById("subjectNameInput").value=name;
+    document.getElementById("subjectMaxMarks").value=max;
+    showSubjectManagerMessage("Subject edit mode: naam ya Max Marks badal kar Save Subject karein.",true);
+    window.scrollTo({top:0,behavior:"smooth"});
+}
+
+async function saveManagedSubject(){
+    const cls=document.getElementById("subjectClass").value;
+    const session=document.getElementById("subjectSession").value;
+    const exam=document.getElementById("subjectExam").value;
+    const name=document.getElementById("subjectNameInput").value.trim();
+    const max=Number(document.getElementById("subjectMaxMarks").value);
+    const id=document.getElementById("editingSubjectId").value;
+    if(!cls||!name||!Number.isInteger(max)||max<1){showSubjectManagerMessage("Class, Subject Name aur valid Max Marks bharna zaroori hai.");return;}
+    let existingQuery=supabaseClient.from("class_subject_settings").select("id")
+      .eq("class_name",cls).eq("session",session).eq("exam_type",exam).ilike("subject_name",name);
+    if(id)existingQuery=existingQuery.neq("id",Number(id));
+    const {data:duplicates,error:checkError}=await existingQuery.limit(1);
+    if(checkError){showSubjectManagerMessage(checkError.message);return;}
+    if(duplicates&&duplicates.length){showSubjectManagerMessage("Is Class / Session / Exam mein ye subject pehle se maujood hai.");return;}
+    let response;
+    if(id){
+      response=await supabaseClient.from("class_subject_settings").update({subject_name:name,max_marks:max,updated_at:new Date().toISOString()}).eq("id",Number(id));
+    }else{
+      const {data:old,error:oldError}=await supabaseClient.from("class_subject_settings").select("id")
+        .eq("class_name",cls).eq("session",session).eq("exam_type",exam).ilike("subject_name",name).limit(1);
+      if(oldError){showSubjectManagerMessage(oldError.message);return;}
+      if(old&&old.length){
+        response=await supabaseClient.from("class_subject_settings").update({subject_name:name,max_marks:max,is_active:true,updated_at:new Date().toISOString()}).eq("id",old[0].id);
+      }else{
+        response=await supabaseClient.from("class_subject_settings").insert({class_name:cls,session,exam_type:exam,subject_name:name,max_marks:max,is_active:true});
+      }
+    }
+    if(response.error){showSubjectManagerMessage(response.error.message);return;}
+    resetSubjectForm();await loadSubjectManager();
+    showSubjectManagerMessage("Subject saved successfully.",true);
+    const current=subjectScope();if(current.class_name===cls&&current.session===session&&current.exam_type===exam)await loadExamSubjects();
+}
+
+async function toggleManagedSubject(id,active){
+    const {error}=await supabaseClient.from("class_subject_settings")
+      .update({is_active:active,updated_at:new Date().toISOString()}).eq("id",id);
+    if(error){showSubjectManagerMessage(error.message);return;}
+    await loadSubjectManager();
+    showSubjectManagerMessage(active?"Subject activated.":"Subject deactivated. Purane saved marks safe rahenge.",true);
+    const current=subjectScope();
+    if(current.class_name===document.getElementById("subjectClass").value && current.session===document.getElementById("subjectSession").value && current.exam_type===document.getElementById("subjectExam").value)await loadExamSubjects();
+}
 
 /* ==========================================
    STUDENT LOAD
@@ -1646,7 +1643,7 @@ async function loadStudent(){
         true
     );
 
-    loadDefaultSubjects();
+    await loadExamSubjects();
 
 }
 
@@ -1723,6 +1720,7 @@ async function saveResult(){
     }
 
     const marks=[];
+    const selectedSubjectNames=new Set();
 
     let totalMax=0;
     let obtained=0;
@@ -1749,6 +1747,12 @@ async function saveResult(){
             return;
 
         }
+
+        if(selectedSubjectNames.has(subject.toLowerCase())){
+            alert("Duplicate subject selected: "+subject);
+            return;
+        }
+        selectedSubjectNames.add(subject.toLowerCase());
 
         if(got>max){
 
