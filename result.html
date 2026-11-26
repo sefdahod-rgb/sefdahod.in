@@ -839,9 +839,14 @@ th{
 
     </div>
 
-    <button class="logoutBtn" onclick="logout()">
-        Logout
-    </button>
+    <div class="headerActions">
+        <button class="backBtn" onclick="window.location.href='student-master.html'">
+            ← Student Master
+        </button>
+        <button class="logoutBtn" onclick="logout()">
+            Logout
+        </button>
+    </div>
 
 </header>
 
@@ -1520,7 +1525,7 @@ async function logout(){
         "result_login"
     ].forEach(key => localStorage.removeItem(key));
 
-    window.location.replace("index.html");
+    window.location.replace("student-master.html");
 }
 
 /* ==========================================
