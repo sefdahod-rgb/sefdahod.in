@@ -624,8 +624,8 @@ tr:hover td{
 
 
     <!-- STUDENT FORM -->
-    <div class="card">
-
+   <div class="card" id="studentFormCard">
+<div id="studentFormAccess" style="display:none;"></div>
         <h3>
             👨‍🎓 Student Information
         </h3>
@@ -1036,7 +1036,7 @@ tr:hover td{
 
 
     <!-- EXCEL BULK IMPORT -->
-    <div class="card">
+   <div class="card" id="excelImportCard">
         <h3>📥 Excel Student Upload / Download</h3>
         <div class="module-note">Excel file se ek saath bahut saare students add kar sakte hain. Pehle template download karein, data bharein, phir upload karein. Same Admission No. hone par existing student update hoga. Excel se photo upload nahi hota.</div>
         <div class="actions" style="align-items:center">
@@ -1176,7 +1176,19 @@ let students = [];
    COMMON SCHOOL LOGIN SESSION
    Login is handled only by login.html. This page reuses that session.
 ========================================================= */
-let schoolSessionReady = false;
+function canManageStudents() {
+    function applyStudentAccess() {
+    const isManager = canManageStudents();
+    const form = document.getElementById("studentFormCard");
+
+    if (form) {
+        form.style.display = isManager ? "" : "none";
+    }
+}
+    const role = (localStorage.getItem("schoolRole") || "").toLowerCase();
+    return role === "owner" || role === "principal";
+}
+    let schoolSessionReady = false;
 
 async function checkSchoolSession(){
     const { data, error } = await sb.auth.getSession();
@@ -2920,8 +2932,9 @@ async function importStudentsExcel(event){
 document.addEventListener("DOMContentLoaded", async function(){
     const ok = await checkSchoolSession();
     if(ok){
-        await loadStudents();
-    }
+    applyStudentAccess();
+    await loadStudents();
+}
 });
 
 </script>
