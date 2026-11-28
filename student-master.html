@@ -2129,26 +2129,32 @@ function renderTable(){
 
                     <td>
 
-                        <button
-                            class="small-btn edit-btn"
-                            onclick="editStudent('${escapeHtml(s.id)}')"
-                        >
-                            Edit
-                        </button>
+    ${canManageStudents() ? `
+        <button
+            class="small-btn edit-btn"
+            onclick="editStudent('${escapeHtml(s.id)}')"
+        >
+            Edit
+        </button>
+    ` : ""}
 
-                        <button
-                            class="small-btn print-btn"
-                            onclick="printStudent('${escapeHtml(s.id)}')"
-                        >
-                            Print
-                        </button>
+    <button
+        class="small-btn print-btn"
+        onclick="printStudent('${escapeHtml(s.id)}')"
+    >
+        Print
+    </button>
 
-                        <button
-                            class="small-btn delete-btn"
-                            onclick="deleteStudent('${escapeHtml(s.id)}')"
-                        >
-                            Delete
-                        </button>
+    ${canManageStudents() ? `
+        <button
+            class="small-btn delete-btn"
+            onclick="deleteStudent('${escapeHtml(s.id)}')"
+        >
+            Delete
+        </button>
+    ` : ""}
+
+                        
 ${["owner","admin"].includes((localStorage.getItem("schoolRole") || "").toLowerCase()) ? `
 <button
     class="small-btn"
