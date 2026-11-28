@@ -1132,8 +1132,13 @@ let students = [];
    Login is handled only by login.html. This page reuses that session.
 ========================================================= */
 function canManageStudents() {
-    function applyStudentAccess() {
+    const role = (localStorage.getItem("schoolRole") || "").toLowerCase();
+    return role === "owner" || role === "principal";
+}
+
+function applyStudentAccess() {
     const isManager = canManageStudents();
+
     const form = document.getElementById("studentFormCard");
 
     if (form) {
