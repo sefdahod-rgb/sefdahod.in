@@ -2899,6 +2899,7 @@ document.addEventListener("DOMContentLoaded", async function(){
     const ok = await checkSchoolSession();
 
     if(ok){
+        applyStudentAccess();
         await loadStudents();
     }
 });
