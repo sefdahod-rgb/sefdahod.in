@@ -2390,10 +2390,13 @@ async function setStudentPassword(admissionNo, studentName){
             throw new Error(data?.error || "Password set nahi ho paya.");
         }
 
-        showMessage(
-            "Student password successfully set ho gaya.",
-            "success"
-        );
+       const msgBox = document.getElementById("formMessage");
+
+if(msgBox){
+    msgBox.textContent = "Student password successfully set ho gaya.";
+    msgBox.className = "message success";
+    msgBox.style.display = "block";
+}
 
     }
     catch(error){
