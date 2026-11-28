@@ -997,9 +997,10 @@ tr:hover td{
         <div class="actions" style="align-items:center">
             <button type="button" class="btn btn-secondary" onclick="downloadExcelTemplate()">⬇ Download Excel Template</button>
             <button type="button" class="btn btn-success" onclick="downloadStudentsExcel()">⬇ Download Student List</button>
-            <button type="button" class="btn btn-primary" onclick="document.getElementById('excelFile').click()">📤 Choose Excel File</button>
-            <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" style="display:none" onchange="importStudentsExcel(event)">
-        </div>
+            <div id="excelUploadAccess">
+    <button type="button" class="btn btn-primary" onclick="document.getElementById('excelFile').click()">📤 Choose Excel File</button>
+    <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" style="display:none" onchange="importStudentsExcel(event)">
+</div>
         <div id="excelMessage" class="message" style="display:none;margin-top:12px"></div>
         <small style="display:block;margin-top:10px;color:#64748b">Required columns: Admission No, Student Name, Class, Section. Dates: DD/MM/YYYY or Excel date cells. RTE Student: Yes or No.</small>
     </div>
@@ -1144,6 +1145,11 @@ function applyStudentAccess() {
     if (form) {
         form.style.display = isManager ? "" : "none";
     }
+    const excelUpload = document.getElementById("excelUploadAccess");
+
+if (excelUpload) {
+    excelUpload.style.display = isManager ? "" : "none";
+}
 }
     const role = (localStorage.getItem("schoolRole") || "").toLowerCase();
     return role === "owner" || role === "principal";
