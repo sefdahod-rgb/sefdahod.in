@@ -2182,7 +2182,15 @@ function renderTable(){
                         >
                             Delete
                         </button>
-
+${["owner","admin"].includes((localStorage.getItem("schoolRole") || "").toLowerCase()) ? `
+<button
+    class="small-btn"
+    style="background:#7c3aed;color:white;"
+    onclick="setStudentPassword('${escapeHtml(s.admission_no)}','${escapeHtml(s.student_name)}')"
+>
+    Set Password
+</button>
+` : ""}
                     </td>
 
                 </tr>
@@ -2320,7 +2328,86 @@ function editStudent(id){
 /* =========================================================
    DELETE STUDENT
 ========================================================= */
+async function setStudentPassword(admissionNo, studentName){
 
+    const role = (localStorage.getItem("schoolRole") || "").toLowerCase();
+
+    if(!["owner", "admin"].includes(role)){
+        showMessage("Only Owner/Admin can set student password.", "error");
+        return;
+    }
+
+    const password = prompt(
+        "Student: " + studentName +
+        "\nAdmission No: " + admissionNo +
+        "\n\nNew Password enter karein (minimum 8 characters):"
+    );
+
+    if(password === null) return;
+
+    if(password.length < 8){
+        showMessage("Password minimum 8 characters ka hona chahiye.", "error");
+        return;
+    }
+
+    const confirmPassword = prompt("Wahi password dobara enter karein:");
+
+    if(confirmPassword === null) return;
+
+    if(password !== confirmPassword){
+        showMessage("Dono password match nahi karte.", "error");
+        return;
+    }
+
+    if(!confirm("Kya aap is student ka password set/reset karna chahte hain?")){
+        return;
+    }
+
+    try{
+
+        const { data: { session } } = await sb.auth.getSession();
+
+        if(!session){
+            showMessage("Login session expired. Dobara login karein.", "error");
+            return;
+        }
+
+        const { data, error } = await sb.functions.invoke(
+            "admin-student-password",
+            {
+                body: {
+                    admission_no: admissionNo,
+                    password: password
+                }
+            }
+        );
+
+        if(error){
+            throw error;
+        }
+
+        if(!data || !data.success){
+            throw new Error(data?.error || "Password set nahi ho paya.");
+        }
+
+        showMessage(
+            "Student password successfully set ho gaya.",
+            "success"
+        );
+
+    }
+    catch(error){
+
+        console.error("Student password error:", error);
+
+        showMessage(
+            "Password set failed: " + (error.message || "Unknown error"),
+            "error"
+        );
+
+    }
+
+}
 async function deleteStudent(id){
 
     const s =
