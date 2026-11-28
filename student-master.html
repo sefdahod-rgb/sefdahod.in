@@ -2884,18 +2884,13 @@ async function importStudentsExcel(event){
    INITIALIZE
 ========================================================= */
 
-document.addEventListener("DOMContentLoaded", async function(){
+ddocument.addEventListener("DOMContentLoaded", async function(){
     const ok = await checkSchoolSession();
 
     if(ok){
-        applyStudentAccess();
-
-        await new Promise(resolve => setTimeout(resolve, 500));
-
         await loadStudents();
     }
 });
-
 </script>
 
 </body>
